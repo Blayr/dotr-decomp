@@ -393,15 +393,15 @@ void RhGeom_RoationComplexInterpolate(s32 *out, s32 *from, s32 *to, f32 weight0,
     out[2] = (((s32)(start[2] * weight0 + end[pick][2] * weight1) & 0xFFFFF) + 8) >> 4;
 }
 
-extern f32 D_003269F0;
+extern f32 vecX;
 extern f32 D_003269F4;
 extern f32 D_003269F8;
 extern f32 D_003269FC;
-extern f32 D_00326A00;
+extern f32 vecY;
 extern f32 D_00326A04;
 extern f32 D_00326A08;
 extern f32 D_00326A0C;
-extern f32 D_00326A10;
+extern f32 vecZ;
 extern f32 D_00326A14;
 extern f32 D_00326A18;
 extern f32 D_00326A1C;
@@ -430,25 +430,25 @@ void RhGeom_CreateCameraMatrix2(f32 *arg0, f32 *arg1, f32 *arg2, s32 arg3) {
     Angles_0020D5E0 angles;
     Matrix_0020D5E0 matrix;
 
-    D_003269F0 = arg2[2];
+    vecX = arg2[2];
     D_003269F4 = 0.0f;
     D_003269F8 = -arg2[0];
-    D_00326A00 = -arg2[1] * arg2[0];
+    vecY = -arg2[1] * arg2[0];
     D_00326A04 = arg2[0] * arg2[0] + arg2[2] * arg2[2];
     D_00326A08 = -arg2[1] * arg2[2];
-    *(__int128 *)&D_00326A10 = *(__int128 *)arg2;
-    normalize_0020D5E0(&D_003269F0, &D_003269F0);
-    normalize_0020D5E0(&D_00326A00, &D_00326A00);
-    normalize_0020D5E0(&D_00326A10, &D_00326A10);
-    arg0[0] = -D_003269F0;
+    *(__int128 *)&vecZ = *(__int128 *)arg2;
+    normalize_0020D5E0(&vecX, &vecX);
+    normalize_0020D5E0(&vecY, &vecY);
+    normalize_0020D5E0(&vecZ, &vecZ);
+    arg0[0] = -vecX;
     arg0[1] = -D_003269F4;
     arg0[2] = -D_003269F8;
     arg0[3] = 0.0f;
-    arg0[4] = -D_00326A00;
+    arg0[4] = -vecY;
     arg0[5] = -D_00326A04;
     arg0[6] = -D_00326A08;
     arg0[7] = 0.0f;
-    arg0[8] = D_00326A10;
+    arg0[8] = vecZ;
     arg0[9] = D_00326A14;
     arg0[10] = D_00326A18;
     arg0[11] = 0.0f;
@@ -516,7 +516,7 @@ void RhGeomEx_SetMatrixForStraightLight(void *arg0) {
 
 asm void RhGeomEx_SetMatrixForPointLight(void) {
     .set noreorder
-    la v1, D_00295060
+    la v1, vecNormal
     vmul.xyz vf1, vf28, vf28
     vmul.xyz vf2, vf29, vf29
     vmul.xyz vf3, vf30, vf30
@@ -566,7 +566,7 @@ asm void RhGeomEx_GetMatrix(void *arg0) {
 asm void RhGeomEx_PushMatrix(void) {
     .set noreorder
     lw a1, D_0032A220
-    la v1, D_00326A20
+    la v1, gRhGeom_rgl
     sll a0, a1, 3
     subu a0, a0, a1
     sll a0, a0, 4
@@ -589,7 +589,7 @@ asm void RhGeomEx_PushMatrix(void) {
 asm void RhGeomEx_PopMatrix(void) {
     .set noreorder
     lw a0, D_0032A220
-    la v1, D_00326A20
+    la v1, gRhGeom_rgl
     addiu a0, a0, -0x1
     sw a0, D_0032A220
     lw a1, D_0032A220
@@ -716,31 +716,31 @@ typedef struct Entry_0020DDB0 {
 
 s32 RhView_Init(void) {
     extern s32 D_0032A294;
-    extern Entry_0020DDB0 D_0032A2A0[];
+    extern Entry_0020DDB0 gRhView_avl[];
     s32 width;
     s32 height;
 
-    D_0032A240 = 0;
+    gRhView_nStackIndex = 0;
     D_0032A294 = 0;
     RhBase_GetScreenSize(&width, &height);
-    D_0032A2A0[0].unk160 = 400.0f;
-    D_0032A2A0[0].width = width;
-    D_0032A2A0[0].height = height;
-    D_0032A2A0[0].centerX = D_0032A2A0[0].width / 2.0f;
-    D_0032A2A0[0].centerY = D_0032A2A0[0].height / 2.0f;
-    D_0032A2A0[0].unk158 = 1.0f;
-    D_0032A2A0[0].unk15C = 0.95f;
-    D_0032A2A0[0].unk16C = 1.0f;
-    D_0032A2A0[0].farZ = 10000.0f;
-    D_0032A2A0[0].range = D_0032A2A0[0].farZ - 1000.0f;
-    D_0032A2A0[0].unk178 = D_0032A2A0[0].farZ;
-    D_0032A2A0[0].unk17C = 0.0f;
-    D_0032A2A0[0].nearZ = 1000.0f;
-    D_0032A2A0[0].a = 0xFF;
-    D_0032A2A0[0].b = 0xFF;
-    D_0032A2A0[0].g = 0xFF;
-    D_0032A2A0[0].r = 0xFF;
-    RhView_Reset(D_0032A2A0[0].unkC0);
+    gRhView_avl[0].unk160 = 400.0f;
+    gRhView_avl[0].width = width;
+    gRhView_avl[0].height = height;
+    gRhView_avl[0].centerX = gRhView_avl[0].width / 2.0f;
+    gRhView_avl[0].centerY = gRhView_avl[0].height / 2.0f;
+    gRhView_avl[0].unk158 = 1.0f;
+    gRhView_avl[0].unk15C = 0.95f;
+    gRhView_avl[0].unk16C = 1.0f;
+    gRhView_avl[0].farZ = 10000.0f;
+    gRhView_avl[0].range = gRhView_avl[0].farZ - 1000.0f;
+    gRhView_avl[0].unk178 = gRhView_avl[0].farZ;
+    gRhView_avl[0].unk17C = 0.0f;
+    gRhView_avl[0].nearZ = 1000.0f;
+    gRhView_avl[0].a = 0xFF;
+    gRhView_avl[0].b = 0xFF;
+    gRhView_avl[0].g = 0xFF;
+    gRhView_avl[0].r = 0xFF;
+    RhView_Reset(gRhView_avl[0].unkC0);
     return 1;
 }
 
@@ -756,7 +756,7 @@ extern u8 D_0032A360[];
 
 s32 RhView_GetCurView(void *arg0) {
     *(Copy_0020DEF0 *)arg0 =
-        *(Copy_0020DEF0 *)(D_0032A360 + D_0032A240 * 0x1A0);
+        *(Copy_0020DEF0 *)(D_0032A360 + gRhView_nStackIndex * 0x1A0);
     return 1;
 }
 
@@ -772,10 +772,10 @@ typedef struct State_0020DF40 {
 } State_0020DF40;
 
 s32 RhView_SetScreen(f32 fparg0, f32 fparg1, f32 fparg2, f32 fparg3, f32 fparg4) {
-    extern State_0020DF40 D_0032A2A0[];
+    extern State_0020DF40 gRhView_avl[];
     State_0020DF40 *state;
 
-    state = &D_0032A2A0[D_0032A240];
+    state = &gRhView_avl[gRhView_nStackIndex];
     state->field160 = fparg0;
     state->field164 = fparg1;
     state->field168 = fparg2;
@@ -792,10 +792,10 @@ typedef struct State_0020DF90 {
 } State_0020DF90;
 
 s32 RhView_SetAspect(f32 fparg0, f32 fparg1) {
-    extern State_0020DF90 D_0032A2A0[];
+    extern State_0020DF90 gRhView_avl[];
     State_0020DF90 *state;
 
-    state = &D_0032A2A0[D_0032A240];
+    state = &gRhView_avl[gRhView_nStackIndex];
     state->field158 = fparg0;
     state->field15C = fparg1;
     return 1;
@@ -809,10 +809,10 @@ typedef struct {
 } Entry_0020DFD0;
 
 s32 RhView_SetClipZ(f32 fparg0, f32 fparg1) {
-    extern Entry_0020DFD0 D_0032A2A0[];
+    extern Entry_0020DFD0 gRhView_avl[];
     Entry_0020DFD0 *entry;
 
-    entry = &D_0032A2A0[D_0032A240];
+    entry = &gRhView_avl[gRhView_nStackIndex];
     entry->x = fparg0;
     entry->y = fparg1;
     return 1;
@@ -825,11 +825,11 @@ typedef struct {
     u8 pad158[0x48];
 } Entry_0020E010;
 
-extern s32 D_0032A240;
-extern Entry_0020E010 D_0032A2A0[];
+extern s32 gRhView_nStackIndex;
+extern Entry_0020E010 gRhView_avl[];
 
 s32 RhView_GetScreenCenter(f32 *arg0, f32 *arg1) {
-    Entry_0020E010 *e = &D_0032A2A0[D_0032A240];
+    Entry_0020E010 *e = &gRhView_avl[gRhView_nStackIndex];
 
     *arg0 = e->x;
     *arg1 = e->y;
@@ -837,14 +837,14 @@ s32 RhView_GetScreenCenter(f32 *arg0, f32 *arg1) {
 }
 
 s32 RhView_GetScreenDist(f32 *arg0) {
-    Entry_0020E010 *e = &D_0032A2A0[D_0032A240];
+    Entry_0020E010 *e = &gRhView_avl[gRhView_nStackIndex];
 
     *arg0 = *(f32 *)&e->pad158[8];
     return 1;
 }
 
 s32 RhView_GetClipZ(f32 *arg0, f32 *arg1) {
-    Entry_0020DFD0 *entry = (Entry_0020DFD0 *)&D_0032A2A0[D_0032A240];
+    Entry_0020DFD0 *entry = (Entry_0020DFD0 *)&gRhView_avl[gRhView_nStackIndex];
 
     *arg0 = entry->x;
     *arg1 = entry->y;
@@ -869,7 +869,7 @@ s32 RhView_SetFogParameter(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2, f32 f
     } Entry_0020E0D0;
     Entry_0020E0D0 *entry;
 
-    entry = (Entry_0020E0D0 *)&D_0032A2A0[D_0032A240];
+    entry = (Entry_0020E0D0 *)&gRhView_avl[gRhView_nStackIndex];
     entry->x = fparg0;
     entry->y = fparg1;
     entry->z = fparg2;
@@ -892,7 +892,7 @@ typedef struct Entry_0020E130 {
 s32 RhView_GetFogParameter(f32 *arg0, f32 *arg1, f32 *arg2, f32 *arg3, u8 *arg4) {
     Entry_0020E130 *entry;
 
-    entry = (Entry_0020E130 *)&D_0032A2A0[D_0032A240];
+    entry = (Entry_0020E130 *)&gRhView_avl[gRhView_nStackIndex];
     *arg0 = entry->values[0];
     *arg1 = entry->values[1];
     *arg2 = entry->values[2];
@@ -913,7 +913,7 @@ typedef struct {
 
 s32 RhView_Reset(void *state) {
     if (state == NULL) {
-        state = (u8 *)&D_0032A2A0[D_0032A240] + 0xC0;
+        state = (u8 *)&gRhView_avl[gRhView_nStackIndex] + 0xC0;
     }
     RhGeom_UnitMatrix(state);
     ((State_0020E1A0 *)state)->vector40[0] = 0.0f;
@@ -958,7 +958,7 @@ s32 RhView_Set(void *arg0) {
     } State_0020E260;
     State_0020E260 *state;
 
-    state = (State_0020E260 *)&D_0032A2A0[D_0032A240];
+    state = (State_0020E260 *)&gRhView_avl[gRhView_nStackIndex];
     RhMem_CopyMemory16(state->unkC0, arg0, 9);
     lRhView_ConstructMatrix();
     RhGeom_ResetMatrixStack();
@@ -967,8 +967,8 @@ s32 RhView_Set(void *arg0) {
     state->width_squared = (state->width * state->width) / 4.0f + state->radius * state->radius;
     state->height_squared = (state->height * state->height) / 4.0f + state->radius * state->radius;
     RhGeom_GetMatrix(arg0);
-    RhView_GetWorldViewMatrix(D_0032A730);
-    RhGeom_InvertMatrix(D_0032A730, D_0032A730);
+    RhView_GetWorldViewMatrix(InvertView);
+    RhGeom_InvertMatrix(InvertView, InvertView);
     return 1;
 }
 
@@ -989,7 +989,7 @@ typedef struct State_0020E360 {
 s32 RhView_Modify(void *arg0) {
     State_0020E360 *state;
 
-    state = (State_0020E360 *)&D_0032A2A0[D_0032A240];
+    state = (State_0020E360 *)&gRhView_avl[gRhView_nStackIndex];
     RhMem_CopyMemory16((u8 *)state + 0xC0, arg0, 9);
     lRhView_ConstructMatrix();
     RhGeom_SetMatrix(&state->matrix);
@@ -999,8 +999,8 @@ s32 RhView_Modify(void *arg0) {
                            state->radius * state->radius;
     state->height_squared = (state->height * state->height) / 4.0f +
                             state->radius * state->radius;
-    RhView_GetWorldViewMatrix(D_0032A730);
-    RhGeom_InvertMatrix(D_0032A730, D_0032A730);
+    RhView_GetWorldViewMatrix(InvertView);
+    RhGeom_InvertMatrix(InvertView, InvertView);
     return 1;
 }
 
@@ -1011,25 +1011,25 @@ typedef struct Copy_0020E460 {
 s32 RhView_PushStack(void) {
     extern u8 D_0032A440[];
 
-    if (D_0032A240 + 1 >= 2) {
+    if (gRhView_nStackIndex + 1 >= 2) {
         return 0;
     }
-    ((Copy_0020E460 *)D_0032A440)[D_0032A240] = ((Copy_0020E460 *)D_0032A2A0)[D_0032A240];
-    D_0032A240 += 1;
+    ((Copy_0020E460 *)D_0032A440)[gRhView_nStackIndex] = ((Copy_0020E460 *)gRhView_avl)[gRhView_nStackIndex];
+    gRhView_nStackIndex += 1;
     return 1;
 }
 
 s32 RhView_PopStack(void) {
-    if (D_0032A240 <= 0) {
+    if (gRhView_nStackIndex <= 0) {
         return 0;
     }
-    D_0032A240 -= 1;
+    gRhView_nStackIndex -= 1;
     return 1;
 }
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032A2A0[];
+extern unsigned char gRhView_avl[];
 #endif
 
 
@@ -1071,9 +1071,9 @@ static inline void reflect_0020E520(Vec4_0020E520 *v, Vec4_0020E520 *normal) {
 }
 
 s32 RhView_PushFakeMirror(f32 *point, f32 *normal, void *output) {
-    extern State_0020E520 D_0032A250;
+    extern State_0020E520 gRhView_FakeMirror;
     extern s32 func_001A22C0(f32);
-    State_0020E520 *state = &D_0032A250;
+    State_0020E520 *state = &gRhView_FakeMirror;
     Object_0020E520 *original = (Object_0020E520 *)D_0032A360;
     u8 scratch[0xA0 + 0xF];
     Vec4_0020E520 *up;
@@ -1121,9 +1121,9 @@ s32 RhView_PushFakeMirror(f32 *point, f32 *normal, void *output) {
     RhGeom_CreateCameraMatrix2(matrix, &object->point, &object->direction, 0);
     RhGeom_MulMatrixVector(cross, matrix, cross);
     object->angle = (s32)func_001A22C0(65536.0f * (func_001A6C18(cross[1], cross[0]) / 6.2831855f)) + 0x8000;
-    if (D_0032A240 + 1 < 2) {
-        ((Block_0020E520 *)D_0032A440)[D_0032A240] = ((Block_0020E520 *)D_0032A2A0)[D_0032A240];
-        D_0032A240++;
+    if (gRhView_nStackIndex + 1 < 2) {
+        ((Block_0020E520 *)D_0032A440)[gRhView_nStackIndex] = ((Block_0020E520 *)gRhView_avl)[gRhView_nStackIndex];
+        gRhView_nStackIndex++;
     }
     state->active = 1;
     return 1;
@@ -1138,18 +1138,18 @@ typedef struct {
     __int128 data[9];
 } Buffer_0020E970;
 
-extern State_0020E970 D_0032A250;
+extern State_0020E970 gRhView_FakeMirror;
 extern s32 D_0032A294;
 extern u8 D_0032A360[];
 
 s32 RhView_PopFakeMirror(void *arg0) {
-    State_0020E970 *state = &D_0032A250;
+    State_0020E970 *state = &gRhView_FakeMirror;
 
     if (D_0032A294 == 0) {
         return 0;
     }
-    if (D_0032A240 > 0) {
-        D_0032A240 -= 1;
+    if (gRhView_nStackIndex > 0) {
+        gRhView_nStackIndex -= 1;
     }
     state->ready = 0;
     *(Buffer_0020E970 *)arg0 = *(Buffer_0020E970 *)D_0032A360;
@@ -1158,7 +1158,7 @@ s32 RhView_PopFakeMirror(void *arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032A2A0[][0x1A0];
+extern unsigned char gRhView_avl[][0x1A0];
 #endif
 
 
@@ -1192,7 +1192,7 @@ s32 lRhView_ConstructMatrix(void) {
     Object_0020E9F0 *temp_s0;
     u8 *temp_s1;
 
-    temp_s0 = (Object_0020E9F0 *)&D_0032A2A0[D_0032A240];
+    temp_s0 = (Object_0020E9F0 *)&gRhView_avl[gRhView_nStackIndex];
     temp_s1 = (u8 *) temp_s0 + 0xC0;
     RhBase_GetScreenCenter(&sp50, &sp54);
     temp_f20 = ((f32) sp50 + temp_s0->unk150) - (temp_s0->unk164 / 2.0f);
@@ -1211,7 +1211,7 @@ typedef struct {
 } Block_0020EB40;
 
 void RhView_GetWorldScreenMatrix(void *arg0) {
-    *(Block_0020EB40 *)arg0 = *(Block_0020EB40 *)&D_0032A2A0[D_0032A240];
+    *(Block_0020EB40 *)arg0 = *(Block_0020EB40 *)&gRhView_avl[gRhView_nStackIndex];
 }
 
 typedef struct {
@@ -1221,7 +1221,7 @@ typedef struct {
 extern u8 D_0032A2E0[][0x1A0];
 
 void RhView_GetWorldViewMatrix(void *arg0) {
-    *(Block_0020EBA0 *)arg0 = *(Block_0020EBA0 *)D_0032A2E0[D_0032A240];
+    *(Block_0020EBA0 *)arg0 = *(Block_0020EBA0 *)D_0032A2E0[gRhView_nStackIndex];
 }
 
 typedef struct {
@@ -1236,7 +1236,7 @@ typedef struct {
 extern Entry_0020EC00 D_0032A320[];
 
 void RhView_GetViewScreenMatrix(void *dst) {
-    *(Block_0020EC00 *)dst = D_0032A320[D_0032A240].block;
+    *(Block_0020EC00 *)dst = D_0032A320[gRhView_nStackIndex].block;
 }
 
 s32 RhView_SendViewParameters(s32 arg0) {
@@ -1246,7 +1246,7 @@ s32 RhView_SendViewParameters(s32 arg0) {
     void *result;
 
     matrix = (u8 *)(((u32)matrix_storage + 0xF) & ~0xF);
-    item = (u8 *)&D_0032A2A0[D_0032A240];
+    item = (u8 *)&gRhView_avl[gRhView_nStackIndex];
     result = RhVu1Mac_SetViewScreenMatrix((void *)arg0, item + 0x80);
     RhGeom_InvertMatrix(matrix, item);
     return (s32)RhVu1Mac_SetFogParameterEx(
@@ -1268,7 +1268,7 @@ void RhView_GetSampleZ(void *arg0, f32 fparg0) {
     Vec4_0020ED30 *vector;
     void *matrix;
 
-    matrix = (u8 *)&D_0032A2A0[D_0032A240] + 0x80;
+    matrix = (u8 *)&gRhView_avl[gRhView_nStackIndex] + 0x80;
     vector = (Vec4_0020ED30 *) (((u32) buffer + 15) & ~15);
     *vector = *(Vec4_0020ED30 *) arg0;
     vector->z -= fparg0;
@@ -1317,7 +1317,7 @@ struct DotrViewEntry {
 typedef char DotrViewEntryMustBe1a0[(sizeof(struct DotrViewEntry) == 0x1a0) ? 1 : -1];
 extern struct DotrViewEntry D_0032A2A0_20ede0[];
 extern int D_0032A240_b[];
-extern struct DotrViewVector D_0032A230;
+extern struct DotrViewVector pntDst;
 #define DOTR_VIEW_SIDE(x, n, cross, outside) \
     { \
         float d = (x); \
@@ -1352,8 +1352,8 @@ int RhView_CheckViewVolume(void *centre_v, float radius)
     flags = 0;
     e = &D_0032A2A0_20ede0[D_0032A240_b[0]];
     centre->unknown_w = 1.0f;
-    RhGeom_MulMatrixVector(&D_0032A230, 0, centre);
-    z = D_0032A230.z;
+    RhGeom_MulMatrixVector(&pntDst, 0, centre);
+    z = pntDst.z;
     if (e->unknown_16c > z + radius) {
         return 4;
     }
@@ -1370,12 +1370,12 @@ int RhView_CheckViewVolume(void *centre_v, float radius)
     sy = e->unknown_168 * (1.0f / e->unknown_15c);
     dist = e->unknown_160;
     nn = *(float *)&e->unknown_188[0];
-    ny = dist * D_0032A230.y;
+    ny = dist * pntDst.y;
     h = 2046.0f * z;
     rr = radius * radius;
     DOTR_VIEW_SIDE(h - ny, nn, flags = 6, 4)
     DOTR_VIEW_SIDE(h + ny, nn, flags = 6, 4)
-    nx = dist * D_0032A230.x;
+    nx = dist * pntDst.x;
     DOTR_VIEW_SIDE(h - nx, nn, flags = 6, 4)
     DOTR_VIEW_SIDE(h + nx, nn, flags = 6, 4)
     nn = *(float *)&e->unknown_188[8];
@@ -1504,7 +1504,7 @@ typedef struct Transform_0020F4E0 {
     } vector;
 } Transform_0020F4E0;
 
-extern s32 D_0032A770;
+extern s32 require_coordinate_index;
 
 void *RhModel_Draw(void *arg0, void *arg1) {
     extern s32 RhView_GetSampleZ(void *, f32);
@@ -1534,7 +1534,7 @@ void *RhModel_Draw(void *arg0, void *arg1) {
     if (obj->flags4.bit0 && (RhVu1Mac_GetPointLight(NULL, (void *)0x70000050, (f32 *)0x70000030, (f32 *)0x70000034, (f32 *)0x70000038) != 0) && (RhGeom_GetPointsDistance((f32 *)0x70000050, (f32 *)0x70000000) <= (*(f32 *)0x70000034 + temp_s0->vector.values.w))) {
         var_s1 = 1;
     }
-    D_0032A770 = 0;
+    require_coordinate_index = 0;
     if (obj->flags4.bit2 != 0) {
         arg0 = lRhModel_DrawNormalMethod(arg1, var_s1);
     } else {

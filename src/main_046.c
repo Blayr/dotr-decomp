@@ -366,7 +366,7 @@ static inline u8 *get_001E2220(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
         return NULL;
     }
-    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+    return (arg0 * 0x1C) + (gSzDuel_aaMapInfo + (arg1 * 0xC4));
 }
 
 s32 SzDuel_SetField(s32 arg0, s32 arg1, s8 arg2) {
@@ -384,7 +384,7 @@ static inline u8 *get_001E22B0(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
         return NULL;
     }
-    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+    return (arg0 * 0x1C) + (gSzDuel_aaMapInfo + (arg1 * 0xC4));
 }
 
 s32 SzDuel_GetField(s32 arg0, s32 arg1) {
@@ -416,7 +416,7 @@ static inline u8 *cell_001E23A0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 s32 SzDuel_SetFieldRate(s32 arg0, s32 arg1, s32 arg2) {
@@ -440,7 +440,7 @@ static inline u8 *lookup_001E2450(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 s16 SzDuel_GetFieldRate(s32 arg0, s32 arg1) {
@@ -457,7 +457,7 @@ static inline u8 *cell_001E24E0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 u8 SzDuel_GetMapMovable(s32 x, s32 y) {
@@ -646,7 +646,7 @@ static inline Cell_001E27D0 *cell_001E27D0(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E27D0 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+    return (Cell_001E27D0 *)(x * 0x1C + (gSzDuel_aaMapInfo + y * 0xC4));
 }
 
 static inline void set_001E27D0(s32 x, s32 y, s32 value) {
@@ -697,7 +697,7 @@ void lSzDuel_CalcMapMovable(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s3
     s32 i;
 
     if (arg0 != 0) {
-        row = (Cell_001E27D0 *)D_00318E60;
+        row = (Cell_001E27D0 *)gSzDuel_aaMapInfo;
         y = 0;
         do {
             x = 0;
@@ -716,7 +716,7 @@ void lSzDuel_CalcMapMovable(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s3
         s32 y;
         s32 x;
 
-        row = (Cell_001E27D0 *)D_00318E60;
+        row = (Cell_001E27D0 *)gSzDuel_aaMapInfo;
         y = 0;
         do {
             x = 0;
@@ -762,7 +762,7 @@ static inline Cell_001E2A60 *cell_001E2A60(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E2A60 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+    return (Cell_001E2A60 *)(x * 0x1C + (gSzDuel_aaMapInfo + y * 0xC4));
 }
 
 static inline s32 terrain_001E2A60(s32 x, s32 y) {
@@ -929,7 +929,7 @@ s32 SzDuel_SetMapColor2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     if (arg0 < 0 || arg0 >= 7 || arg1 < 0 || arg1 >= 7) {
         cell = NULL;
     } else {
-        cell = (Cell_001E3070 *)(D_00318E60 + arg1 * 0xC4 + arg0 * 0x1C);
+        cell = (Cell_001E3070 *)(gSzDuel_aaMapInfo + arg1 * 0xC4 + arg0 * 0x1C);
     }
 
     channel = (D_00318118 >> 8) & 0xFF;
@@ -994,7 +994,7 @@ static inline u8 *lookup_001E3230(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return D_00318E60 + y * 0xC4 + x * 0x1C;
+    return gSzDuel_aaMapInfo + y * 0xC4 + x * 0x1C;
 }
 
 s32 SzDuel_CalcMapColor(s32 x, s32 y) {
@@ -1115,7 +1115,7 @@ static inline u8 *lookup_001E3650(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 s32 SzDuel_SetMapAlpha(s32 arg0, s32 arg1, s8 arg2) {
@@ -1133,7 +1133,7 @@ static inline void **cell_001E36E0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (void **)(D_00318E60 + y * 0xC4 + x * 0x1C);
+    return (void **)(gSzDuel_aaMapInfo + y * 0xC4 + x * 0x1C);
 }
 
 s32 SzDuel_GetMapUnit(s32 arg0, s32 arg1) {
@@ -1158,7 +1158,7 @@ static inline void **lookup_001E3790(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
         return NULL;
     }
-    return (void **)(D_00318E60 + (arg1 * 0xC4) + (arg0 * 0x1C));
+    return (void **)(gSzDuel_aaMapInfo + (arg1 * 0xC4) + (arg0 * 0x1C));
 }
 
 s32 SzDuel_GetMapUnitID(s32 arg0, s32 arg1) {
@@ -1629,7 +1629,7 @@ void SzDuel_CloseHandPopup(void) {
 }
 
 void SzDuel_OpenOptionPopup(s32 arg0, s16 arg1, s16 arg2) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 i;
     s32 bit;
 
@@ -1660,7 +1660,7 @@ s32 SzDuel_ActOptionPopup(s32 arg0) {
     s32 temp_s1;
     s32 temp_s1_2;
 
-    base = D_00317490.b;
+    base = gSzDuel_dl.b;
     if (SzPad_Check(arg0, 2, 0x5000) != 0) {
         temp_s1 = base[0xD35];
         if (SzPad_Check(arg0, 2, 0x1000) != 0) {
@@ -1707,7 +1707,7 @@ void SzDuel_CloseOptionPopup(void) {
 }
 
 void SzDuel_OpenMsgPopup(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
 
     switch (arg0) {
     case 0:
@@ -1757,7 +1757,7 @@ void SzDuel_OpenMsgPopup(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 s32 SzDuel_ActMsgPopup(s32 arg0) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 temp_s1;
 
     if (SzPad_Check(arg0, 0, 0xA000) != 0) {

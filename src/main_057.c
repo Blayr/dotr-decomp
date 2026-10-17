@@ -15,7 +15,7 @@ typedef struct {
 } Data_00209D40;
 
 f32 RhBase_GetAspectY(s32 *arg0) {
-    Data_00209D40 *data = (Data_00209D40 *)D_00325F50;
+    Data_00209D40 *data = (Data_00209D40 *)gRhBase_dl;
 
     if (arg0 != NULL) {
         *arg0 = data->field_248;
@@ -42,7 +42,7 @@ s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
         Flags_00209D80 flags;
     } State_00209D80;
 
-    extern State_00209D80 D_00325F20;
+    extern State_00209D80 gRhBase_rl;
     extern Flags_00209D80 D_00325F40;
     extern s32 D_003261A8;
 
@@ -50,7 +50,7 @@ s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
     s32 value;
 
     value = D_003261A8;
-    state = &D_00325F20;
+    state = &gRhBase_rl;
     if (D_00325F40.active) {
         if (state->flags.useSaved) {
             value = state->value;
@@ -88,12 +88,12 @@ typedef struct {
     s8 flag1 : 1;
 } Flags_00209E50;
 
-extern State_00209E50 D_00325F20;
+extern State_00209E50 gRhBase_rl;
 extern Flags_00209E50 D_00325F40;
 
 s32 RhBase_GetUserGsAddress(void) {
-    u8 *base = D_00325F50;
-    State_00209E50 *state = &D_00325F20;
+    u8 *base = gRhBase_dl;
+    State_00209E50 *state = &gRhBase_rl;
     s32 var_v0;
 
     if (D_00325F40.enabled != 0) {
@@ -143,7 +143,7 @@ typedef struct State_00209EF0 {
 } State_00209EF0;
 
 s32 RhBase_GetBufferFormatEx(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
-    State_00209EF0 *state = (State_00209EF0 *)D_00325F50;
+    State_00209EF0 *state = (State_00209EF0 *)gRhBase_dl;
     u16 *var_v0;
 
     if (arg1 != NULL) {
@@ -196,8 +196,8 @@ void *RhBase_MaskFBuffer(void *arg0, u32 arg1) {
         u8 format;
     } Texture_00209F70;
     extern Entry_00209F70 D_00293F1C[];
-    u8 *textureBase = D_00325F50;
-    State_00209F70 *state = (State_00209F70 *)&D_00325F20;
+    u8 *textureBase = gRhBase_dl;
+    State_00209F70 *state = (State_00209F70 *)&gRhBase_rl;
     Texture_00209F70 *texture;
     u64 *packet = arg0;
 
@@ -261,31 +261,31 @@ typedef struct GifTag_0020A0B0 {
 } GifTag_0020A0B0;
 
 s32 RhBase_SetZBufferMode(s32 arg0, s32 arg1) {
-    extern u8 D_00325E40[];
-    extern __int128 D_00325E60;
-    extern Packet_0020A0B0 D_00325E70;
+    extern u8 gSceVif1[];
+    extern __int128 gowGif;
+    extern Packet_0020A0B0 SceZBuf;
     extern Packet_0020A0B0 D_00325FC0;
-    State_0020A0B0 *state = (State_0020A0B0 *)&D_00325F20;
+    State_0020A0B0 *state = (State_0020A0B0 *)&gRhBase_rl;
 
-    sceVif1PkInit((s32 *)D_00325E40, arg0);
-    sceVif1PkCnt(D_00325E40, 0);
-    sceVif1PkAddCode((s32 **)D_00325E40, 0x11000000);
-    sceVif1PkAlign(D_00325E40, 2, 3);
-    sceVif1PkOpenDirectHLCode(D_00325E40, 0);
-    ((u64 *)&D_00325E60)[0] = ((u64)0x10000000 << 32) | 0x8000;
-    ((u64 *)&D_00325E60)[1] = 0xE;
-    sceVif1PkOpenGifTag(D_00325E40, D_00325E60);
+    sceVif1PkInit((s32 *)gSceVif1, arg0);
+    sceVif1PkCnt(gSceVif1, 0);
+    sceVif1PkAddCode((s32 **)gSceVif1, 0x11000000);
+    sceVif1PkAlign(gSceVif1, 2, 3);
+    sceVif1PkOpenDirectHLCode(gSceVif1, 0);
+    ((u64 *)&gowGif)[0] = ((u64)0x10000000 << 32) | 0x8000;
+    ((u64 *)&gowGif)[1] = 0xE;
+    sceVif1PkOpenGifTag(gSceVif1, gowGif);
     if (D_00325F40.enabled && state->flags.apply) {
-        D_00325E70.f.value = state->base + state->offset;
-        D_00325E70.f.mode = state->mode;
+        SceZBuf.f.value = state->base + state->offset;
+        SceZBuf.f.mode = state->mode;
     } else {
-        D_00325E70 = D_00325FC0;
+        SceZBuf = D_00325FC0;
     }
-    D_00325E70.f.clear = !arg1;
-    sceVif1PkAddGsAD(D_00325E40, 0x4E, ((u64 *)&D_00325E70)[0]);
-    sceVif1PkCloseGifTag(D_00325E40);
-    sceVif1PkCloseDirectHLCode(D_00325E40);
-    return sceVif1PkTerminate(D_00325E40);
+    SceZBuf.f.clear = !arg1;
+    sceVif1PkAddGsAD(gSceVif1, 0x4E, ((u64 *)&SceZBuf)[0]);
+    sceVif1PkCloseGifTag(gSceVif1);
+    sceVif1PkCloseDirectHLCode(gSceVif1);
+    return sceVif1PkTerminate(gSceVif1);
 }
 
 typedef struct Flags_0020A280 {
@@ -312,7 +312,7 @@ typedef struct Packet_0020A280 {
 
 void RhBase_GetZBufInfo(void *arg0) {
     extern Packet_0020A280 D_00325FC0;
-    State_0020A280 *state = (State_0020A280 *)&D_00325F20;
+    State_0020A280 *state = (State_0020A280 *)&gRhBase_rl;
     Packet_0020A280 *packet = arg0;
 
     if (D_00325F40.enabled && state->flags.apply) {
@@ -338,7 +338,7 @@ void *RhBase_SetFogColor(void *arg0, void *arg1) {
 }
 
 void RhBase_CopyFrameBuffer(u32 arg0) {
-    u8 *base = D_00325F50;
+    u8 *base = gRhBase_dl;
     u16 *p;
 
     sceGsSyncPath(0, 0);
@@ -347,9 +347,9 @@ void RhBase_CopyFrameBuffer(u32 arg0) {
     } else {
         p = (u16 *)(base + 0x150);
     }
-    sceGsSetDefStoreImage(D_00325E80, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
+    sceGsSetDefStoreImage(GSI, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
     FlushCache(0);
-    sceGsExecStoreImage(D_00325E80, (void *)(arg0 & 0x0FFFFFFF));
+    sceGsExecStoreImage(GSI, (void *)(arg0 & 0x0FFFFFFF));
     sceGsSyncPath(0, 0);
 }
 
@@ -380,8 +380,8 @@ typedef struct {
 
 s32 RhBase_AssignRenderFrame(s32 arg0, s32 arg1, s32 arg2) {
     extern Table_0020A470 D_00293F1C[];
-    u8 *base = D_00325F50;
-    Full_0020A470 *state = (Full_0020A470 *)&D_00325F20;
+    u8 *base = gRhBase_dl;
+    Full_0020A470 *state = (Full_0020A470 *)&gRhBase_rl;
     s32 a = 0;
     s32 b = 0;
 
@@ -454,7 +454,7 @@ typedef struct Packet_0020A610 {
 
 void *RhBase_EnableRenderFrame(void *arg0) {
     extern Texture_0020A610 D_00293F1C[];
-    State_0020A610 *state = (State_0020A610 *)&D_00325F20;
+    State_0020A610 *state = (State_0020A610 *)&gRhBase_rl;
     Packet_0020A610 *packet = arg0;
 
     if (!D_00325F40.enabled) {
@@ -483,7 +483,7 @@ void *RhBase_EnableRenderFrame(void *arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this global with its local type. */
-extern unsigned char D_00325F20[];
+extern unsigned char gRhBase_rl[];
 #endif
 
 
@@ -519,8 +519,8 @@ typedef struct Context_0020A760 {
 } Context_0020A760;
 
 void *RhBase_DisableRenderFrame(void *arg0) {
-    Context_0020A760 *context = (Context_0020A760 *)D_00325F50;
-    Flags_0020A760 *flags = (Flags_0020A760 *)&D_00325F20;
+    Context_0020A760 *context = (Context_0020A760 *)gRhBase_dl;
+    Flags_0020A760 *flags = (Flags_0020A760 *)&gRhBase_rl;
     s64 *environment;
     Packet_0020A760 *packet = arg0;
 
@@ -593,7 +593,7 @@ static inline s32 color_0020A870(u8 *color, s32 component) {
 void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
     s32 sceGsSetDefClear(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
     Color_0020A870 defaultColor;
-    State_0020A870 *state = (State_0020A870 *)&D_00325F20;
+    State_0020A870 *state = (State_0020A870 *)&gRhBase_rl;
     s32 alpha;
     s32 red;
     s32 green;
@@ -673,7 +673,7 @@ s32 RhBase_GetTextureInfoForRender(void *arg0, void *arg1) {
     } Extra_0020AA30;
     extern Entry_0020AA30 D_00293F1C[];
     extern Entry_0020AA30 D_00293F20[];
-    State_0020AA30 *state = (State_0020AA30 *)&D_00325F20;
+    State_0020AA30 *state = (State_0020AA30 *)&gRhBase_rl;
     s32 first;
     s32 second;
     s32 kind;
@@ -997,7 +997,7 @@ f32 RhMath_CosI(s32 arg0) {
         return arg0 == 0x4000 ? sign : 0.0f;
     }
     fraction = arg0 & 0xF;
-    samples = &D_00294050[arg0 >> 4];
+    samples = &gRhMath_adwSinTable[arg0 >> 4];
     sample0 = samples[0];
     sample1 = samples[1];
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
@@ -1023,7 +1023,7 @@ f32 RhMath_SinI(s32 arg0) {
         return arg0 == 0x4000 ? sign : 0.0f;
     }
     fraction = arg0 & 0xF;
-    samples = &D_00294050[arg0 >> 4];
+    samples = &gRhMath_adwSinTable[arg0 >> 4];
     sample0 = samples[0];
     sample1 = samples[1];
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
@@ -1055,7 +1055,7 @@ f32 RhMath_Cos(f32 angle) {
     } else {
         fraction = phase & 0xF;
         weight = fraction;
-        entry = &D_00294050[phase >> 4];
+        entry = &gRhMath_adwSinTable[phase >> 4];
         lower = entry[0];
         upper = entry[1];
         sign = (sign * (lower * (16 - fraction) + upper * weight)) / 16.0f;
@@ -1089,7 +1089,7 @@ f32 RhMath_Sin(f32 angle) {
     } else {
         fraction = phase & 0xF;
         weight = fraction;
-        entry = &D_00294050[phase >> 4];
+        entry = &gRhMath_adwSinTable[phase >> 4];
         lower = entry[0];
         upper = entry[1];
         sign = (sign * (lower * (16 - fraction) + upper * weight)) / 16.0f;
@@ -1114,7 +1114,7 @@ void RhMath_HeapSortStruct(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)
     u8 *temp_s6;
     u8 *spB0;
 
-    sentinel = &D_003261F0;
+    sentinel = &abTmpBuf;
     var_fp = arg1 >> 1;
     temp_s5 = arg0 - arg2;
     var_s2 = arg1;
@@ -1210,7 +1210,7 @@ asm void RhGeom_GetMatrix(void *p) {
 asm void RhGeom_PushMatrix(s32 arg0) {
     .set noreorder
     lw a2, D_0032A220
-    la v1, D_00326A20
+    la v1, gRhGeom_rgl
     sll a1, a2, 3
     subu a1, a1, a2
     sll a1, a1, 4
@@ -1236,7 +1236,7 @@ L_0020BB38:
 asm void RhGeom_PopMatrix(void) {
     .set noreorder
     lw a0, D_0032A220
-    la v1, D_00326A20
+    la v1, gRhGeom_rgl
     addiu a0, a0, -0x1
     sw a0, D_0032A220
     lw a1, D_0032A220

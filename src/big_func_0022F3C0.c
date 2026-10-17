@@ -26,7 +26,7 @@ typedef struct TakuPair_0022F3C0 {
     s16 y;
 } TakuPair_0022F3C0;
 
-extern TakuTex_0022F3C0 D_002950A0[];
+extern TakuTex_0022F3C0 tex_uv_data[];
 extern TakuObj_0022F3C0 D_0029ABF0;
 extern TakuObj4_0022F3C0 D_0029AC20;
 extern TakuObj4_0022F3C0 D_0029ACC0;
@@ -53,7 +53,7 @@ static inline s32 obj_0022F3C0(s32 cursor, void *src, s32 x, s32 y) {
 
 s32 Taku_Camp_Ivent_Ga(s32 cursor) {
     f32 fv;
-    u8 *ctx = (u8 *)&D_00299E10;
+    u8 *ctx = (u8 *)&save_data;
     s32 x13;
     u8 *wk = (u8 *)0x01ED0000;
     TakuObj_0022F3C0 base = D_0029ABF0;
@@ -172,10 +172,10 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
         }
         frame.o[i].w[2] = w + frame.o[i].w[0];
         frame.o[i].w[3] = h + frame.o[i].w[1];
-        D_002950A0[i + 0x94].f[0] = 0;
-        D_002950A0[i + 0x94].f[1] = 0;
-        D_002950A0[i + 0x94].f[2] = w;
-        D_002950A0[i + 0x94].f[3] = h;
+        tex_uv_data[i + 0x94].f[0] = 0;
+        tex_uv_data[i + 0x94].f[1] = 0;
+        tex_uv_data[i + 0x94].f[2] = w;
+        tex_uv_data[i + 0x94].f[3] = h;
     }
     if (B8(0x01ED53AC) != 0) {
         switch (H16(ctx + 0xC2)) {
@@ -250,8 +250,8 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
         }
     }
     for (iq = 0xAB; iq < 0xAF; iq++) {
-        D_002950A0[iq].f[2] = 0x100;
-        D_002950A0[iq].f[3] = 0x100;
+        tex_uv_data[iq].f[2] = 0x100;
+        tex_uv_data[iq].f[3] = 0x100;
     }
 
     if (H16(ctx + 0xC2) == 0x2724) {
@@ -261,26 +261,26 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                 bar = D_0029AE20;
 
                 idx1 = bar.code;
-                D_002950A0[idx1].f[4] = 0;
-                D_002950A0[idx1].f[3] = 0;
-                D_002950A0[idx1].f[1] = 0;
-                D_002950A0[idx1].f[0] = 0;
-                D_002950A0[idx1].f[7] = 0x100;
-                D_002950A0[idx1].f[6] = 0x100;
-                D_002950A0[idx1].f[5] = 0x100;
-                D_002950A0[idx1].f[2] = 0x100;
+                tex_uv_data[idx1].f[4] = 0;
+                tex_uv_data[idx1].f[3] = 0;
+                tex_uv_data[idx1].f[1] = 0;
+                tex_uv_data[idx1].f[0] = 0;
+                tex_uv_data[idx1].f[7] = 0x100;
+                tex_uv_data[idx1].f[6] = 0x100;
+                tex_uv_data[idx1].f[5] = 0x100;
+                tex_uv_data[idx1].f[2] = 0x100;
                 if (n1 == 0) {
-                    D_002950A0[idx1].f[3] = 0;
-                    D_002950A0[idx1].f[1] = 0;
-                    D_002950A0[idx1].f[7] = 0xB8;
-                    D_002950A0[idx1].f[5] = 0xB8;
+                    tex_uv_data[idx1].f[3] = 0;
+                    tex_uv_data[idx1].f[1] = 0;
+                    tex_uv_data[idx1].f[7] = 0xB8;
+                    tex_uv_data[idx1].f[5] = 0xB8;
                     bar.w[7] = 0xB8;
                     bar.w[5] = 0xB8;
                 } else {
-                    D_002950A0[idx1].f[3] = 0xB8;
-                    D_002950A0[idx1].f[1] = 0xB8;
-                    D_002950A0[idx1].f[7] = 0x100;
-                    D_002950A0[idx1].f[5] = 0x100;
+                    tex_uv_data[idx1].f[3] = 0xB8;
+                    tex_uv_data[idx1].f[1] = 0xB8;
+                    tex_uv_data[idx1].f[7] = 0x100;
+                    tex_uv_data[idx1].f[5] = 0x100;
                     bar.w[3] = 0xB8;
                     bar.w[1] = 0xB8;
                     bar.w[7] = 0x100;
@@ -295,7 +295,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                     t1 = tp1[0x2A16];
                     x1p = 0x280 - t1 * 0x200 / 100;
                     y1p = t1 * 300 / 100 - 200;
-                    tex1 = &D_002950A0[bar.code];
+                    tex1 = &tex_uv_data[bar.code];
                     tex1->f[6] = 0x180;
                     tex1->f[2] = 0x180;
                     tex1->f[8] = 6;
@@ -306,29 +306,29 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                     t1 = tp1[0x2A16];
                     x1p = t1 * 448 / 100 - 0x100;
                     y1p = t1 * 200 / 100 - 100;
-                    D_002950A0[bar.code].f[8] = 7;
+                    tex_uv_data[bar.code].f[8] = 7;
                     break;
                 case 2:
                     t1 = tp1[0x2A16];
                     x1p = 0x280 - t1 * 448 / 100;
                     y1p = 300 - t1 * 200 / 100;
-                    D_002950A0[bar.code].f[8] = 8;
+                    tex_uv_data[bar.code].f[8] = 8;
                     break;
                 case 3:
                     x1p = 0x40;
                     y1p = 100;
-                    tex1 = &D_002950A0[bar.code];
+                    tex1 = &tex_uv_data[bar.code];
                     tex1->f[6] = 0x200;
                     tex1->f[2] = 0x200;
                     tex1->f[8] = 9;
                     bar.w[0] = 0x100 - tp1[0x2A16] * 256 / 100;
-                    bar.w[1] = tp1[0x2A16] * (D_002950A0[bar.code].f[3] - 0x80) / 100 + 0x80;
+                    bar.w[1] = tp1[0x2A16] * (tex_uv_data[bar.code].f[3] - 0x80) / 100 + 0x80;
                     bar.w[2] = tp1[0x2A16] * 256 / 100 + 0x100;
-                    bar.w[3] = tp1[0x2A16] * (D_002950A0[bar.code].f[3] - 0x80) / 100 + 0x80;
+                    bar.w[3] = tp1[0x2A16] * (tex_uv_data[bar.code].f[3] - 0x80) / 100 + 0x80;
                     bar.w[4] = 0x100 - tp1[0x2A16] * 256 / 100;
-                    bar.w[5] = tp1[0x2A16] * (D_002950A0[bar.code].f[7] - 0x80) / 100 + 0x80;
+                    bar.w[5] = tp1[0x2A16] * (tex_uv_data[bar.code].f[7] - 0x80) / 100 + 0x80;
                     bar.w[6] = tp1[0x2A16] * 256 / 100 + 0x100;
-                    bar.w[7] = tp1[0x2A16] * (D_002950A0[bar.code].f[7] - 0x80) / 100 + 0x80;
+                    bar.w[7] = tp1[0x2A16] * (tex_uv_data[bar.code].f[7] - 0x80) / 100 + 0x80;
                     if (tp1[0x2A16] > 100) {
                         switch (n1) {
                         case 0:
@@ -342,7 +342,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                     t1 = tp1[0x2A16];
                     x1p = t1 * 448 / 100 - 0x100;
                     y1p = 300 - t1 * 200 / 100;
-                    D_002950A0[bar.code].f[8] = 10;
+                    tex_uv_data[bar.code].f[8] = 10;
                     break;
                 }
                 cursor = Taku_GT4_Set_b(cursor, &bar, x1p, y1p, 0, 0);
@@ -354,7 +354,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
         for (n2 = 0; n2 < 2; n2++) {
             lamp = D_0029AE50;
 
-            tex2 = &D_002950A0[lamp.code];
+            tex2 = &tex_uv_data[lamp.code];
             tex2->f[4] = 0;
             tex2->f[3] = 0;
             tex2->f[1] = 0;
@@ -425,7 +425,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                 lamp.col[0][3] = lamp.col[1][3] = b2;
                 lamp.col[2][0] = lamp.col[2][1] = lamp.col[2][2] = lamp.col[3][0] = lamp.col[3][1] = lamp.col[3][2] = g2;
                 lamp.col[2][3] = lamp.col[3][3] = a2;
-                tex2 = &D_002950A0[lamp.code];
+                tex2 = &tex_uv_data[lamp.code];
                 tex2->f[6] = 0x180;
                 tex2->f[2] = 0x180;
                 tex2->f[8] = 7;
@@ -447,7 +447,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
         for (k3 = 0; k3 < 2; k3++) {
             lamp2 = D_0029AE80;
 
-            tex3 = &D_002950A0[lamp2.code];
+            tex3 = &tex_uv_data[lamp2.code];
             tex3->f[4] = 0;
             tex3->f[3] = 0;
             tex3->f[1] = 0;
@@ -525,7 +525,7 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
                 lamp2.col[0][3] = lamp2.col[1][3] = b3;
                 lamp2.col[2][0] = lamp2.col[2][1] = lamp2.col[2][2] = lamp2.col[3][0] = lamp2.col[3][1] = lamp2.col[3][2] = g3;
                 lamp2.col[2][3] = lamp2.col[3][3] = c33;
-                tex3 = &D_002950A0[lamp2.code];
+                tex3 = &tex_uv_data[lamp2.code];
                 tex3->f[6] = 0x180;
                 tex3->f[2] = 0x180;
                 tex3->f[8] = 7;
@@ -578,43 +578,43 @@ s32 Taku_Camp_Ivent_Ga(s32 cursor) {
         size = D_0029AEA8;
         cnt4 = 2;
         alpha4 = 0x80;
-        D_002950A0[page.o[0].code].f[2] = D_002950A0[page.o[0].code].f[6] = D_002950A0[page.o[1].code].f[2] =
-            D_002950A0[page.o[1].code].f[6] = 0x100;
+        tex_uv_data[page.o[0].code].f[2] = tex_uv_data[page.o[0].code].f[6] = tex_uv_data[page.o[1].code].f[2] =
+            tex_uv_data[page.o[1].code].f[6] = 0x100;
         if ((H16(ctx + 0xC2) >= 0x2760 && H16(ctx + 0xC2) <= 0x2AF8) || H16(ctx + 0xC2) == 0x2EE0) {
             page.o[1].w[2] = page.o[1].w[6] = 0x200;
-            D_002950A0[page.o[1].code].f[2] = D_002950A0[page.o[1].code].f[6] = 0x200;
+            tex_uv_data[page.o[1].code].f[2] = tex_uv_data[page.o[1].code].f[6] = 0x200;
             size.y = 0x100;
         }
         if (H16(ctx + 0xC2) >= 0x2B84 && H16(ctx + 0xC2) < 0x2B86) {
             page.o[0].w[2] = page.o[0].w[6] = 0x180;
-            D_002950A0[page.o[0].code].f[2] = D_002950A0[page.o[0].code].f[6] = 0x180;
+            tex_uv_data[page.o[0].code].f[2] = tex_uv_data[page.o[0].code].f[6] = 0x180;
             size.x = 0x80;
         }
         if (H16(ctx + 0xC2) >= 0x2B98 && H16(ctx + 0xC2) < 0x2B9B) {
             page.o[0].w[2] = page.o[0].w[6] = 0x200;
-            D_002950A0[page.o[0].code].f[2] = D_002950A0[page.o[0].code].f[6] = 0x200;
+            tex_uv_data[page.o[0].code].f[2] = tex_uv_data[page.o[0].code].f[6] = 0x200;
             page.o[1].w[2] = page.o[1].w[6] = 0x180;
             size.x = 0x100;
-            D_002950A0[page.o[1].code].f[2] = D_002950A0[page.o[1].code].f[6] = 0x180;
+            tex_uv_data[page.o[1].code].f[2] = tex_uv_data[page.o[1].code].f[6] = 0x180;
             size.y = 0x80;
         }
         if (H16(ctx + 0xC2) >= 0x2F62 && H16(ctx + 0xC2) < 0x2F65) {
             page.o[0].w[2] = page.o[0].w[6] = 0x200;
-            D_002950A0[page.o[0].code].f[2] = D_002950A0[page.o[0].code].f[6] = 0x200;
+            tex_uv_data[page.o[0].code].f[2] = tex_uv_data[page.o[0].code].f[6] = 0x200;
             page.o[1].w[2] = page.o[1].w[6] = 0x180;
             size.x = 0x100;
-            D_002950A0[page.o[1].code].f[2] = D_002950A0[page.o[1].code].f[6] = 0x180;
+            tex_uv_data[page.o[1].code].f[2] = tex_uv_data[page.o[1].code].f[6] = 0x180;
             size.y = 0x80;
         }
         if (H16(ctx + 0xC2) == 0x2F78) {
             page.o[0].w[2] = page.o[0].w[6] = 0x200;
-            D_002950A0[page.o[0].code].f[2] = D_002950A0[page.o[0].code].f[6] = 0x200;
+            tex_uv_data[page.o[0].code].f[2] = tex_uv_data[page.o[0].code].f[6] = 0x200;
             size.x = 0x100;
             cnt4 = 1;
             page.o[1].w[6] = 0x180;
             page.o[1].w[2] = 0x180;
-            D_002950A0[page.o[1].code].f[6] = 0x180;
-            D_002950A0[page.o[1].code].f[2] = 0x180;
+            tex_uv_data[page.o[1].code].f[6] = 0x180;
+            tex_uv_data[page.o[1].code].f[2] = 0x180;
             size.y = 0x80;
         }
         if (H16(ctx + 0xC2) == 0x2EE0) {

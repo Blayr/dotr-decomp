@@ -111,7 +111,7 @@ void Ex3d_InitClipPlane(void)
     f32 nw;
     f32 w;
     f32 f;
-    f32 *planes = (f32 *)D_00325CC0;
+    f32 *planes = (f32 *)gEx3d_aPlane;
     f32 *p;
 
     RhView_GetClipZ(&near, &far);
@@ -128,7 +128,7 @@ void Ex3d_InitClipPlane(void)
     v[4][0] = nw;
     v[2][0] = v[3][0] = v[3][1] = v[4][1] = w;
     v[1][2] = v[2][2] = v[3][2] = v[4][2] = f;
-    p = (f32 *)D_00325CC0;
+    p = (f32 *)gEx3d_aPlane;
     surface_00206830(v[0], v[1], v[2], p);
     p = planes + 5;
     surface_00206830(v[0], v[4], v[1], p);
@@ -145,7 +145,7 @@ void Ex3d_InitClipPlane(void)
 }
 
 void Ex3d_ViewClip(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    Ex3d_Clipping(6, D_00325CC0, arg0, arg1, arg2, arg3, arg4);
+    Ex3d_Clipping(6, gEx3d_aPlane, arg0, arg1, arg2, arg3, arg4);
 }
 
 typedef union {
@@ -249,7 +249,7 @@ s32 Ex3d_NodeL2V(void *matrix, s32 count, void *vertices, s32 arg3, void *arg4, 
     }
     RhGeom_PopMatrix();
     if (flags >= 0) {
-        result = Ex3d_Clipping(6, D_00325CC0, count, (s32)vertices, arg3, (s32)arg4, flags);
+        result = Ex3d_Clipping(6, gEx3d_aPlane, count, (s32)vertices, arg3, (s32)arg4, flags);
     }
     if (depth != NULL) {
         *depth = sum / (f32)result;
@@ -305,11 +305,11 @@ void Ex3d_NodeV2S(void *matrix, s32 count, void *vertices) {
 
 void ExInitPrim(void) {
     RhGeom_PushMatrix(0);
-    ExClearOt(D_00325D38, 0x01E08000, 0xC);
+    ExClearOt(gMyOT, 0x01E08000, 0xC);
 }
 
 void ExTermPrim(void) {
-    ExBindPrim(D_00325D38);
+    ExBindPrim(gMyOT);
     RhGeom_PopMatrix();
 }
 
@@ -336,7 +336,7 @@ typedef struct Context_002073D0 {
 } Context_002073D0;
 
 void ExClearOt(u8 *arg0, s32 arg1, s32 arg2) {
-    extern u8 D_00293D80[];
+    extern u8 gExPrim_aaRegs[];
     s32 count;
     Node_002073D0 *node;
     u64 *packet;
@@ -350,7 +350,7 @@ void ExClearOt(u8 *arg0, s32 arg1, s32 arg2) {
     ctx->start = (Tag_002073D0 *)packet;
     packet[2] = 0x100000000000800EULL;
     packet[3] = 0xE;
-    packet = RhMem_CopyMemory16(packet + 4, D_00293D80, 0xE);
+    packet = RhMem_CopyMemory16(packet + 4, gExPrim_aaRegs, 0xE);
     ctx->start->qwc = 0xF;
     ctx->start->id = 0x10;
     ctx->start->vif0 = 0x11000000;
@@ -376,7 +376,7 @@ void ExClearOt(u8 *arg0, s32 arg1, s32 arg2) {
 }
 
 u8 *ExGetMyOT(void) {
-    return D_00325D38;
+    return gMyOT;
 }
 
 typedef struct Node_00207510 {
@@ -465,7 +465,7 @@ typedef struct {
 
 
 s32 ExSortPrim_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern u8 D_00293D80[];
+    extern u8 gExPrim_aaRegs[];
     u64 *cursor;
     u64 *start;
     u64 registers;
@@ -579,7 +579,7 @@ s32 ExSortPrim_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         data++;
     }
     if (texture != 0 && (flags & 0x4000)) {
-        u64 *extra = (u64 *)(D_00293D80 + context * 0x70);
+        u64 *extra = (u64 *)(gExPrim_aaRegs + context * 0x70);
         cursor[0] = extra[8];
         cursor[1] = extra[9];
         cursor += 2;
@@ -1030,7 +1030,7 @@ s32 ExDitherMatrixEz_Pipe(s32 arg0, s32 arg1) {
         return arg0;
     }
 
-    value = D_00293EE0[arg1];
+    value = g_aqwExDitherMatrix[arg1];
     *(u64 *)(arg0 + 8) = 0;
     *(u64 *)arg0 = 0;
     *(u8 *)(arg0 + 3) = 0x10;
@@ -1049,13 +1049,13 @@ typedef struct {
     s64 padding;
 } Entry_00208680;
 
-extern Entry_00208680 D_00293D80[][7];
+extern Entry_00208680 gExPrim_aaRegs[][7];
 
 s64 ExGetRegVal(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 7) {
         return -1;
     }
-    return D_00293D80[arg0][arg1].value;
+    return gExPrim_aaRegs[arg0][arg1].value;
 }
 
 typedef struct {
@@ -1252,7 +1252,7 @@ s64 ExGetAlphaVal(s32 arg0) {
     if (arg0 < 0 || arg0 >= 4) {
         ret = 0;
     } else {
-        ret = D_002D0830[arg0];
+        ret = gExPrim_aqwAlpha[arg0];
     }
     return ret;
 }
@@ -1292,7 +1292,7 @@ void *RhVu1Mac_ChangeDrawMethod(void *arg0, s32 arg1) {
     packet[5] = 0;
     packet[6] = 0;
     packet[7] = 0x10000000;
-    D_00325DD0 = arg1;
+    gRhVu1Mac_State = arg1;
     return packet + 8;
 }
 
@@ -1341,10 +1341,10 @@ s32 RhVu1Mac_SetStraightLightToVu1_Ex(s32 packet, void *arg1, void *arg2, s32 ar
     }
     switch (arg3) {
     case 0:
-        D_00325D90 = ((f32 *)arg1)[1];
+        gRhVu1Mac_matCol = ((f32 *)arg1)[1];
         D_00325D94 = ((f32 *)arg1)[2];
         D_00325D98 = ((f32 *)arg1)[3];
-        D_00325D50 = ((f32 *)arg2)[0];
+        gRhVu1Mac_matDir = ((f32 *)arg2)[0];
         D_00325D60 = ((f32 *)arg2)[1];
         D_00325D70 = ((f32 *)arg2)[2];
         break;
@@ -1368,8 +1368,8 @@ s32 RhVu1Mac_SetStraightLightToVu1_Ex(s32 packet, void *arg1, void *arg2, s32 ar
     if (packet != 0) {
         u32 *tag = (u32 *)packet;
 
-        RhMem_CopyMemory16((void *)matrix, &D_00325D90, 4);
-        RhGeom_MulMatrix(matrix, &D_00325D50);
+        RhMem_CopyMemory16((void *)matrix, &gRhVu1Mac_matCol, 4);
+        RhGeom_MulMatrix(matrix, &gRhVu1Mac_matDir);
         tag[0] = 0x10000004;
         tag[1] = 0;
         tag[2] = 0;
@@ -1377,8 +1377,8 @@ s32 RhVu1Mac_SetStraightLightToVu1_Ex(s32 packet, void *arg1, void *arg2, s32 ar
         RhMem_CopyMemory16((void *)(packet + 0x10), (void *)matrix, 4);
         packet = (s32)(tag + 4) + 0x40;
     } else if (arg3 < 0) {
-        func_00198948(&D_00325D50, 0, 0x40);
-        func_00198948(&D_00325D90, 0, 0x40);
+        func_00198948(&gRhVu1Mac_matDir, 0, 0x40);
+        func_00198948(&gRhVu1Mac_matCol, 0, 0x40);
     }
     return packet;
 }
@@ -1632,7 +1632,7 @@ typedef struct Mode_00209510 {
 } Mode_00209510;
 
 extern u8 D_00286980[];
-extern u8 D_00293F10[];
+extern u8 gRhSys_asd[];
 extern u8 D_00293F14[];
 extern u8 D_00293F18[];
 extern s32 D_003261C8;
@@ -1641,10 +1641,10 @@ s32 RhBase_Init(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 
     void sceDmaSend(u8 *, s32);
     Env_00209510 env;
     Mode_00209510 mode;
-    State_00209510 *state = (State_00209510 *)D_00325F50;
+    State_00209510 *state = (State_00209510 *)gRhBase_dl;
     s32 *packet;
 
-    func_00198948(D_00325F50, 0, 0x2A0);
+    func_00198948(gRhBase_dl, 0, 0x2A0);
     D_003261C8 = arg6;
     if (RhFile_Init() == 0) {
         return 0;
@@ -1656,7 +1656,7 @@ s32 RhBase_Init(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 
     sceDmaGetEnv(&env);
     env.field6 = 0x100;
     sceDmaPutEnv(&env);
-    func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
+    func_00184810(0, *(s16 *)(gRhSys_asd + arg0 * 0x28),
                     *(s16 *)(D_00293F14 + arg0 * 0x28),
                     *(s16 *)(D_00293F18 + arg0 * 0x28));
     state->decoder = (u8 *)sceDmaGetChan(1);
@@ -1725,7 +1725,7 @@ void RhBase_ResetGsEnv(s32 arg0) {
     sceGsSyncPath(0, 0);
     sceGsResetPath();
     sceVpu0Reset();
-    func_00184810(0, *(s16 *)(D_00293F10 + arg0 * 0x28),
+    func_00184810(0, *(s16 *)(gRhSys_asd + arg0 * 0x28),
                     *(s16 *)(D_00293F14 + arg0 * 0x28),
                     *(s16 *)(D_00293F18 + arg0 * 0x28));
     D_0032618C = *(s32 *)(D_00293F1C + arg0 * 0x28);
@@ -1770,7 +1770,7 @@ s32 RhBase_FlipBuffer(void) {
     extern u8 D_00293F14[];
     extern s32 D_00325E30;
     extern s32 D_00326188;
-    State_002099D0 *state = (State_002099D0 *)D_00325F50;
+    State_002099D0 *state = (State_002099D0 *)gRhBase_dl;
     s32 result;
     s32 width;
     s32 period;

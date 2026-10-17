@@ -78,10 +78,10 @@ typedef struct State_001B4780 {
     s32 depth;
 } State_001B4780;
 
-extern Texture_001B4780 D_00290080[];
-extern u8 D_002BE840[];
-extern u8 D_002BE9C0[];
-extern u8 D_002BE9F8[];
+extern Texture_001B4780 gSzDuel_Icon[];
+extern u8 gSzDuel_aaicolRgba[];
+extern u8 aabFrameOfs[];
+extern u8 abDecoOfs[];
 
 static inline void tag_001B4780(Tag_001B4780 *tag, s32 count, s32 flags, u64 registers) {
     tag->flags = flags;
@@ -137,14 +137,14 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     u32 tmp;
 
     (void)&spare; /* spare's 8-byte slot sits between gradient and arrow in the original frame */
-    graphics = (State_001B4780 *)D_00317490.b;
+    graphics = (State_001B4780 *)gSzDuel_dl.b;
     tmp = style;
-    parts = &D_00290080[tmp * 9 + 0x3B];
-    margin = &D_002BE9C0[tmp * 4];
+    parts = &gSzDuel_Icon[tmp * 9 + 0x3B];
+    margin = &aabFrameOfs[tmp * 4];
     tmp = x + 0x6C0;
     style = y + 0x720;
     if (colorIndex >= 0) {
-        rgb = &D_002BE840[colorIndex * 8];
+        rgb = &gSzDuel_aaicolRgba[colorIndex * 8];
         if (cols >= 0) {
             width = ((parts[2].x1 - parts[2].x0) - margin[1]) + (((parts[0].x1 - parts[0].x0) - margin[0]) + cols * (parts[1].x1 - parts[1].x0));
         } else {
@@ -280,8 +280,8 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     if (icons >= 0) {
         do {
             kind = icons & 0xF;
-            shift = D_002BE9F8[kind];
-            icon = &D_00290080[kind + 0x2F];
+            shift = abDecoOfs[kind];
+            icon = &gSzDuel_Icon[kind + 0x2F];
             if ((u32)(kind - 3) < 2) {
                 tag_001B4780((Tag_001B4780 *)arrow.tag, 9, 0x24, 0x24242421 | ((u64)4 << 32));
                 ((Tag_001B4780 *)arrow.tag)->flags |= 0x800;
@@ -385,7 +385,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
                 cursor.c[3].xyz.x = px * 16 - 0x18;
                 cursor.c[3].xyz.y = py * 16 + 8;
                 packet = ExSortPrim_Pipe(packet, &cursor, 0, 0);
-                icon = &D_00290080[0x38];
+                icon = &gSzDuel_Icon[0x38];
                 ((UV_001B4780 *)&cursor.c[0].uv)->u = icon->x0 * 16;
                 ((UV_001B4780 *)&cursor.c[0].uv)->v = icon->y0 * 16;
                 ((UV_001B4780 *)&cursor.c[1].uv)->u = icon->x1 * 16;
@@ -445,7 +445,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
                 page.c[3].xyz.x = (px + ih) * 16 + 8;
                 page.c[3].xyz.y = py * 16 + 8;
                 packet = ExSortPrim_Pipe(packet, &page, 0, 0);
-                icon = &D_00290080[0x39];
+                icon = &gSzDuel_Icon[0x39];
                 ((UV_001B4780 *)&page.c[0].uv)->u = icon->x0 * 16;
                 ((UV_001B4780 *)&page.c[0].uv)->v = icon->y0 * 16;
                 ((UV_001B4780 *)&page.c[1].uv)->u = icon->x1 * 16;

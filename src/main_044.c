@@ -126,13 +126,13 @@ typedef struct {
 } Record_001DE4E0;
 
 u8 SzDuel_GetPlayer(s32 arg0) {
-    return ((Record_001DE4E0 *)(D_00317490.b + arg0 * 0x350))->value;
+    return ((Record_001DE4E0 *)(gSzDuel_dl.b + arg0 * 0x350))->value;
 }
 
 void SzDuel_SetPlayer(s32 arg0, s32 arg1) {
     u8 *entry;
 
-    entry = D_00317490.b + (arg0 * 0x350);
+    entry = gSzDuel_dl.b + (arg0 * 0x350);
     if (entry[0x33C] != (arg1 & 0xFF)) {
         arg1 &= 0x7F;
         entry[0x33C] = arg1;
@@ -156,7 +156,7 @@ static inline s32 nonnegative_001DE570(s32 value) {
 }
 
 void SzDuel_SetTurnCount(s32 arg0) {
-    u8 *dest = D_00317490.b;
+    u8 *dest = gSzDuel_dl.b;
 
     dest[0xD53] = nonnegative_001DE570(arg0) < 0xFF
         ? nonnegative_001DE570(arg0) : 0xFF;
@@ -169,7 +169,7 @@ typedef struct {
 } Entry_001DE5C0;
 
 s32 SzDuel_GetSummonPower(s32 arg0) {
-    return ((Entry_001DE5C0 *)(D_00317490.b + arg0 * 0x350))->value;
+    return ((Entry_001DE5C0 *)(gSzDuel_dl.b + arg0 * 0x350))->value;
 }
 
 s32 SzDuel_CalcSummonPower(s32 index, s32 operation, s32 value) {
@@ -177,7 +177,7 @@ s32 SzDuel_CalcSummonPower(s32 index, s32 operation, s32 value) {
     s32 result;
     u8 *entry;
 
-    entry = D_00317490.b + index * 0x350;
+    entry = gSzDuel_dl.b + index * 0x350;
     current = entry[0x341];
     switch (operation) {
     case 0:
@@ -212,7 +212,7 @@ typedef struct Entry_001DE690 {
 } Entry_001DE690;
 
 u8 SzDuel_GetSummonCharge(s32 arg0) {
-    return ((Entry_001DE690 *)(D_00317490.b + arg0 * 0x350))->value;
+    return ((Entry_001DE690 *)(gSzDuel_dl.b + arg0 * 0x350))->value;
 }
 
 typedef struct {
@@ -222,7 +222,7 @@ typedef struct {
 } Entry_001DE6B0;
 
 void SzDuel_SetSummonCharge(s32 arg0, s8 arg1) {
-    ((Entry_001DE6B0 *)(D_00317490.b + arg0 * 0x350))->value = arg1;
+    ((Entry_001DE6B0 *)(gSzDuel_dl.b + arg0 * 0x350))->value = arg1;
 }
 
 typedef struct {
@@ -232,7 +232,7 @@ typedef struct {
 } Entry_001DE6D0;
 
 s32 SzDuel_InqHandPhase(s32 arg0) {
-    return ((Entry_001DE6D0 *) (D_00317490.b + arg0 * 0x350))->flag ? 1 : 0;
+    return ((Entry_001DE6D0 *) (gSzDuel_dl.b + arg0 * 0x350))->flag ? 1 : 0;
 }
 
 typedef struct {
@@ -243,7 +243,7 @@ typedef struct {
 } Flags_001DE700;
 
 void SzDuel_SetHandPhase(s32 arg0, s32 arg1) {
-    Flags_001DE700 *record = (Flags_001DE700 *)(D_00317490.b + arg0 * 0x350);
+    Flags_001DE700 *record = (Flags_001DE700 *)(gSzDuel_dl.b + arg0 * 0x350);
 
     record->enabled = arg1 ? 1 : 0;
 }
@@ -255,11 +255,11 @@ typedef struct {
 } Entry_001DE740;
 
 u8 SzDuel_InqDestinyFlag(s32 arg0) {
-    return ((Entry_001DE740 *)(D_00317490.b + arg0 * 0x350))->field_344;
+    return ((Entry_001DE740 *)(gSzDuel_dl.b + arg0 * 0x350))->field_344;
 }
 
 void SzDuel_SetDestinyFlag(s32 arg0, s8 arg1) {
-    *(s8 *)(D_00317490.b + arg0 * 0x350 + 0x344) = arg1;
+    *(s8 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x344) = arg1;
 }
 
 typedef struct {
@@ -280,7 +280,7 @@ typedef struct {
 } Flags_001DE7A0;
 
 void SzDuel_SetWindowDisp(s32 arg0) {
-    Flags_001DE7A0 *flags = (Flags_001DE7A0 *) D_00317490.b;
+    Flags_001DE7A0 *flags = (Flags_001DE7A0 *) gSzDuel_dl.b;
 
     flags->enabled = (s8) (arg0 ? 1 : 0);
 }
@@ -292,7 +292,7 @@ typedef struct {
 } Flags_001DE7E0;
 
 void SzDuel_SetWindowDraw(s32 arg0) {
-    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)D_00317490.b;
+    Flags_001DE7E0 *flags = (Flags_001DE7E0 *)gSzDuel_dl.b;
 
     flags->enabled = (s8)(arg0 ? 1 : 0);
 }
@@ -309,7 +309,7 @@ typedef struct State_001DE820 {
 } State_001DE820;
 
 void SzDuel_SetWindowBusy(s32 arg0) {
-    State_001DE820 *state = (State_001DE820 *)D_00317490.b;
+    State_001DE820 *state = (State_001DE820 *)gSzDuel_dl.b;
 
     state->flags.enabled = (s8)(arg0 ? 1 : 0);
 }
@@ -319,7 +319,7 @@ s32 SzDuel_SetPlayerCur(s32 arg0, s32 arg1, s32 arg2) {
     f32 saved[4];
     f32 position[3];
 
-    entity = D_00317490.b + arg0 * 0x350;
+    entity = gSzDuel_dl.b + arg0 * 0x350;
     if (arg1 < 0 || arg1 >= 7 || arg2 < 0 || arg2 >= 7) {
         return 0;
     }
@@ -340,7 +340,7 @@ void SzDuel_InitDeck(s32 arg0) {
     s16 *var_a3;
 
     var_a2 = 0;
-    temp_a1 = (s16 *)(D_00317490.b + (arg0 * 0x350) + 0x1E0);
+    temp_a1 = (s16 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x1E0);
     var_a3 = temp_a1;
     do {
         var_a2 += 1;
@@ -356,11 +356,11 @@ typedef struct Record_001DE9C0 {
 } Record_001DE9C0;
 
 s32 SzDuel_GetDeckCount(s32 arg0) {
-    return ((Record_001DE9C0 *)(D_00317490.b + arg0 * 0x350))->field230;
+    return ((Record_001DE9C0 *)(gSzDuel_dl.b + arg0 * 0x350))->field230;
 }
 
 s32 SzDuel_InqDeck(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(D_00317490.b + arg0 * 0x350 + 0x1E0);
+    u16 *values = (u16 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x1E0);
 
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return -1;
@@ -378,7 +378,7 @@ s32 SzDuel_AddDeck(s32 player, s32 card) {
     CardSlots_001DEA30 *slots;
     s32 index;
 
-    slots = (CardSlots_001DEA30 *)(D_00317490.b + player * 0x350 + 0x1E0);
+    slots = (CardSlots_001DEA30 *)(gSzDuel_dl.b + player * 0x350 + 0x1E0);
     if (card == 0x29F) {
         card = 0x3E7;
     }
@@ -410,7 +410,7 @@ void SzDuel_PackDeck(s32 arg0) {
     u16 card;
     s32 count;
 
-    dest = (CardList_001DEB20 *)(D_00317490.b + arg0 * 0x350 + 0x1E0);
+    dest = (CardList_001DEB20 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x1E0);
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
@@ -443,7 +443,7 @@ s32 SzDuel_SetDeck(s32 arg0, s32 arg1, s32 arg2) {
     SlotList_001DEC00 *list;
     u16 *slot;
 
-    list = (SlotList_001DEC00 *)(D_00317490.b + (arg0 * 0x350) + 0x1E0);
+    list = (SlotList_001DEC00 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x1E0);
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return 0;
     }
@@ -469,7 +469,7 @@ s32 SzDuel_DelDeck(s32 arg0, s32 arg1) {
     u8 *temp_a0;
     u16 *temp_a1;
 
-    temp_a0 = D_00317490.b + (arg0 * 0x350) + 0x1E0;
+    temp_a0 = gSzDuel_dl.b + (arg0 * 0x350) + 0x1E0;
     if ((arg1 < 0) || (arg1 >= 0x28)) {
         return 0;
     }
@@ -487,7 +487,7 @@ s32 SzDuel_DrawDeck(s32 arg0) {
     u8 *field;
     u8 *entry;
 
-    entry = D_00317490.b + (arg0 * 0x350);
+    entry = gSzDuel_dl.b + (arg0 * 0x350);
     value = *(u16 *)(entry + 0x1E0);
     field = entry + 0x1E0;
     if (value < 0 || value >= 0x3E7) {
@@ -507,7 +507,7 @@ void SzDuel_InitGrave(s32 arg0) {
     s16 *cursor;
 
     count = 0;
-    base = D_00317490.b + (arg0 * 0x350) + 0x232;
+    base = gSzDuel_dl.b + (arg0 * 0x350) + 0x232;
     cursor = (s16 *)base;
     do {
         count += 1;
@@ -518,7 +518,7 @@ void SzDuel_InitGrave(s32 arg0) {
 }
 
 s32 SzDuel_InqGrave(s32 arg0, s32 arg1) {
-    u16 *entries = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x232);
+    u16 *entries = (u16 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x232);
     s32 ret;
 
     if ((arg1 < 0) || (arg1 >= 0x78)) {
@@ -530,7 +530,7 @@ s32 SzDuel_InqGrave(s32 arg0, s32 arg1) {
 }
 
 u8 SzDuel_GetGraveCount(s32 arg0) {
-    return *(u8 *)(D_00317490.b + (arg0 * 0x350) + 0x322);
+    return *(u8 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x322);
 }
 
 typedef struct {
@@ -542,7 +542,7 @@ typedef struct {
 s32 SzDuel_AddGrave(s32 arg0, s32 arg1) {
     CardList_001DEE70 *list;
 
-    list = (CardList_001DEE70 *)(D_00317490.b + arg0 * 0x350 + 0x232);
+    list = (CardList_001DEE70 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x232);
     if (arg1 == 0x29F) {
         arg1 = 0x3E7;
     }
@@ -572,7 +572,7 @@ void SzDuel_PackGrave(s32 arg0) {
     u16 entry;
     s32 fill;
 
-    dest = (s16 *)(D_00317490.b + arg0 * 0x350 + 0x232);
+    dest = (s16 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x232);
     list.count = 0;
     i = 0;
     src = (u16 *)dest;
@@ -608,7 +608,7 @@ s32 SzDuel_DelGrave(s32 arg0, s32 arg1) {
     u16 *temp_a1;
 
     offset = arg0 * 0x350;
-    temp_a0 = D_00317490.b + offset + 0x232;
+    temp_a0 = gSzDuel_dl.b + offset + 0x232;
     if ((arg1 < 0) || (arg1 >= 0x78)) {
         return 0;
     }
@@ -627,7 +627,7 @@ void SzDuel_InitHand(s32 arg0) {
     s16 *var_a3;
 
     var_a2 = 0;
-    temp_a1 = (s16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
+    temp_a1 = (s16 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x324);
     var_a3 = temp_a1;
     do {
         var_a2 += 1;
@@ -638,7 +638,7 @@ void SzDuel_InitHand(s32 arg0) {
 }
 
 s32 SzDuel_InqHand(s32 arg0, s32 arg1) {
-    u16 *values = (u16 *)(D_00317490.b + arg0 * 0x350 + 0x324);
+    u16 *values = (u16 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x324);
     s32 result;
 
     if ((arg1 < 0) || (arg1 >= 5)) {
@@ -656,7 +656,7 @@ typedef struct {
 } Entry_001DF110;
 
 s32 SzDuel_GetHandCount(s32 arg0) {
-    return ((Entry_001DF110 *)(D_00317490.b + arg0 * 0x350))->value;
+    return ((Entry_001DF110 *)(gSzDuel_dl.b + arg0 * 0x350))->value;
 }
 
 typedef struct {
@@ -667,7 +667,7 @@ typedef struct {
 s32 SzDuel_AddHand(s32 arg0, s32 arg1) {
     Hand_001DF130 *hand;
 
-    hand = (Hand_001DF130 *)(D_00317490.b + arg0 * 0x350 + 0x324);
+    hand = (Hand_001DF130 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x324);
     if (arg1 == 0x29F) {
         arg1 = 0x3E7;
     }
@@ -696,7 +696,7 @@ void SzDuel_PackHand(s32 index) {
     u16 *out;
     s32 count;
 
-    dest = (Hand_001DF1E0 *)(D_00317490.b + index * 0x350 + 0x324);
+    dest = (Hand_001DF1E0 *)(gSzDuel_dl.b + index * 0x350 + 0x324);
     hand.count = 0;
     i = 0;
     src = dest->entries;
@@ -725,7 +725,7 @@ s32 SzDuel_DelHand(s32 arg0, s32 arg1) {
     u8 *temp_a0;
     u16 *temp_a1;
 
-    temp_a0 = D_00317490.b + (arg0 * 0x350) + 0x324;
+    temp_a0 = gSzDuel_dl.b + (arg0 * 0x350) + 0x324;
     if ((arg1 < 0) || (arg1 >= 5)) {
         return 0;
     }
@@ -742,7 +742,7 @@ s32 SzDuel_ClearHandTag(s32 arg0) {
     s32 var_a0;
     u16 *var_a1;
 
-    var_a1 = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
+    var_a1 = (u16 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x324);
     var_a0 = 0;
     do {
         var_a0 += 1;
@@ -761,7 +761,7 @@ s32 SzDuel_SetHandTag(s32 arg0, s32 arg1, s32 arg2) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    var_t0 = (u16 *)(D_00317490.b + (arg0 * 0x350) + 0x324);
+    var_t0 = (u16 *)(gSzDuel_dl.b + (arg0 * 0x350) + 0x324);
     if ((arg1 < 0) || (arg1 >= 5)) {
         return 0;
     }
@@ -800,7 +800,7 @@ s32 SzDuel_SetHandTag(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 SzDuel_GetLP(s32 arg0) {
-    return *(u16 *)(D_00317490.b + arg0 * 0x350 + 0x33A);
+    return *(u16 *)(gSzDuel_dl.b + arg0 * 0x350 + 0x33A);
 }
 
 s32 SzDuel_CalcLP(s32 index, s32 operation, s32 value) {
@@ -808,7 +808,7 @@ s32 SzDuel_CalcLP(s32 index, s32 operation, s32 value) {
     s32 result;
     u8 *entry;
 
-    entry = D_00317490.b + index * 0x350;
+    entry = gSzDuel_dl.b + index * 0x350;
     current = *(u16 *)(entry + 0x33A);
     switch (operation) {
     case 0:

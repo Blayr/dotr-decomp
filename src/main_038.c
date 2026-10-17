@@ -41,7 +41,7 @@ extern Vec_001ADD00 D_002910D0;
 void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     Vec_001ADD00 spA0;
     Vec_001ADD00 spB0;
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 var_s1;
     u8 *temp_s1_2;
     u8 *var_t2;
@@ -276,7 +276,7 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void SzDuel_Term(void) {
-    u8 *data = D_00317490.b;
+    u8 *data = gSzDuel_dl.b;
     s32 var_a1;
     s32 var_s0;
 
@@ -343,8 +343,8 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
     f32 scale;
     s32 brightness;
 
-    state = D_00317490.b;
-    player = D_00317490.b + D_003181E4 * 0x350;
+    state = gSzDuel_dl.b;
+    player = gSzDuel_dl.b + D_003181E4 * 0x350;
     mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     own = D_002910E0;
@@ -588,7 +588,7 @@ s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     s32 length;
     s32 i;
 
-    base = D_00317490.b;
+    base = gSzDuel_dl.b;
     addr = RhBase_GetUserGsAddress();
     addr += SzText_InitClutManage(addr, 2);
     arg0 = SzMsg_Init_Pipe(arg0, arg1, addr, &length);
@@ -628,7 +628,7 @@ typedef struct {
 } Data_001AF140;
 
 s32 SzDuel_GetWindowTexture(s32 arg0) {
-    Data_001AF140 *data = (Data_001AF140 *)D_00317490.b;
+    Data_001AF140 *data = (Data_001AF140 *)gSzDuel_dl.b;
 
     if ((arg0 < 0) || (arg0 >= 8)) {
         return 0;
@@ -692,8 +692,8 @@ static inline f32 abs_001AF180(f32 value) {
 }
 
 s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
-    extern Palette_001AF180 D_002BE840[];
-    u8 *state = D_00317490.b;
+    extern Palette_001AF180 gSzDuel_aaicolRgba[];
+    u8 *state = gSzDuel_dl.b;
     s32 i;
     s32 id;
     Actor_001AF180 *actor;
@@ -718,7 +718,7 @@ s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
                 if (!object->flags83.bit6) {
                     if (id != 0) {
                         if (state[0xD47] == 0 && state[0xD4F] == id - 1) {
-                            object->color = D_002BE840[state[0xD3C]].color;
+                            object->color = gSzDuel_aaicolRgba[state[0xD3C]].color;
                             object->color.a = D_00318118 >> 8;
                         } else {
                             object->color.a = 0;
@@ -789,7 +789,7 @@ s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
     s32 y;
     s32 kind;
 
-    state = D_00317490.b;
+    state = gSzDuel_dl.b;
     mode = SzGame_GetMode(1);
     player = D_003181E4;
     count = SzDuel_GetHandCount(player);
@@ -855,7 +855,7 @@ typedef struct Card_001AF7E0 {
 } Card_001AF7E0;
 
 extern char *D_00291130[];
-extern u8 D_00290080[];
+extern u8 gSzDuel_Icon[];
 extern u8 D_00290828[];
 extern u8 D_00290832[];
 extern u8 D_00290AA8[];
@@ -902,7 +902,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
     Card_001AF7E0 card2;
     s32 mode2;
     u8 *entry;
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 mode4;
     char *text;
     s32 x_c7;
@@ -1118,13 +1118,13 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
             if (on != 0) {
                 w = y + 0x7BE;
                 if (page == 0) {
-                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowA + 0xB9) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowA + 0xB9) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
                 } else {
-                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowB + 0xBB) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowB + 0xBB) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
                 }
             } else {
                 dir = page == 0 ? 1 : -1;
-                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowA + 0xB9) * 10, 0x7B8, y + 0x7BE, 0, 1, 0, 0, (page == 0 ? 1 : 0), 0, dir);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowA + 0xB9) * 10, 0x7B8, y + 0x7BE, 0, 1, 0, 0, (page == 0 ? 1 : 0), 0, dir);
                 packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290B02, 0x7F1, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
                 packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AF8, 0x804, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
                 w = y + 0x7BE;
@@ -1133,7 +1133,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
                 } else {
                     dir = -1;
                 }
-                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290080 + (lowB + 0xBB) * 10, 0x818, w, 0, 1, 0, 0, (page == 1 ? 1 : 0), 0, dir);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowB + 0xBB) * 10, 0x818, w, 0, 1, 0, 0, (page == 1 ? 1 : 0), 0, dir);
             }
             packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290828, 0x867, y + 0x7C2, 0, 1, 0, 0, 1, 0, -1);
             packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AA8, 0x88B, y + 0x7C7, 0, 1, 0, 0, 1, 0, -1);
@@ -1147,9 +1147,9 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
                     msg = *entry >> 5;
                     value = *entry & 0x1F;
                     if (msg == 0) {
-                        pic = D_00290080 + value * 10;
+                        pic = gSzDuel_Icon + value * 10;
                     } else {
-                        pic = D_00290080 + (msg + 0x14) * 10;
+                        pic = gSzDuel_Icon + (msg + 0x14) * 10;
                     }
                     scale = 1.0f;
                     packet = SzMsg_LoadFont_Pipe(packet, 1, SzDuel_GetMsgName(id), 0, 0x16);
@@ -1280,7 +1280,7 @@ static inline s32 abs_001B0CE0(s32 value) {
 
 s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
                   s32 arg8, s32 arg9, s32 arg10) {
-    extern u8 D_00290080[];
+    extern u8 gSzDuel_Icon[];
     extern s32 func_001B3C80();
     extern s32 func_001B4780();
     extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
@@ -1298,7 +1298,7 @@ s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
     f32 scale;
     s32 nw;
 
-    state = D_00317490.b;
+    state = gSzDuel_dl.b;
     frame = (u32)func_001A8720() / 5;
     if (arg6 < 0) {
         flip = 1;
@@ -1378,7 +1378,7 @@ s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
         func_001FEAF0(1);
     }
     if (arg10 != 0) {
-        id = func_001B3C80(id, D_00290080 + (frame % 3 + 0xBE) * 10, arg4 + 0x6B8, arg5 + 0x704 + arg7,
+        id = func_001B3C80(id, gSzDuel_Icon + (frame % 3 + 0xBE) * 10, arg4 + 0x6B8, arg5 + 0x704 + arg7,
                            0, 1, 0, 0, 1, 0, -1);
     }
     return id;
@@ -1627,7 +1627,7 @@ int SzDuel_DrawWindow_Pipe(int cursor)
     return cursor;
 }
 
-extern u8 D_00290080[];
+extern u8 gSzDuel_Icon[];
 extern u8 D_00290882[];
 extern u8 D_002908E6[];
 extern u8 D_0029094A[];
@@ -1671,8 +1671,8 @@ s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s
     s32 hidden;
     s32 rowX2;
 
-    data = D_00317490.b;
-    playerData = D_00317490.b + arg1 * 0x350;
+    data = gSzDuel_dl.b;
+    playerData = gSzDuel_dl.b + arg1 * 0x350;
     baseY = arg3 + 3;
     baseX = arg2 + 3;
     screenY = baseY + 0x720;
@@ -1706,7 +1706,7 @@ s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s
     arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg1, numberX, numberY, 12, 1, -1);
     arg0 = SzDuel_DrawWindow_Digit_Pipe(arg0, numberX + 34, numberY + 2, 4, *(u16 *)(playerData + 0x33A), 0);
     iconX = screenX + (arg1 != 0 ? 1 : 127);
-    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32)(D_00290080 + (lowLevel + (arg1 * 2 + 185)) * 10), iconX, 48 + screenY, 0, 1, 0, 0, arg4, 0, -1);
+    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32)(gSzDuel_Icon + (lowLevel + (arg1 * 2 + 185)) * 10), iconX, 48 + screenY, 0, 1, 0, 0, arg4, 0, -1);
     screenRowX = screenX + playerOffset;
     valueX = screenRowX + 8;
     iconX = screenRowX + 8;
@@ -1766,7 +1766,7 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = D_00317490.b;
+    global = gSzDuel_dl.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -1817,7 +1817,7 @@ s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = D_00317490.b;
+    global = gSzDuel_dl.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -1883,8 +1883,8 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
     extern s32 SzDuel_DrawWindow_Digit_Pipe();
     extern s32 SzData_GetRank();
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void *);
-    extern u8 D_00290020[];
-    extern u8 D_00290080[];
+    extern u8 gSzDuel_Attr[];
+    extern u8 gSzDuel_Icon[];
     extern u8 D_002901D4[];
     extern u8 D_002901DE[];
     extern u8 D_002901E8[];
@@ -1952,8 +1952,8 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
     Card_001B22F0 *card;
     s32 iconX;
 
-    globalBase = D_00317490.b;
-    playerState = D_00317490.b + arg4 * 0x350;
+    globalBase = gSzDuel_dl.b;
+    playerState = gSzDuel_dl.b + arg4 * 0x350;
     x = arg5 + 3;
     y = arg6 + 4;
     labelX = x + 0x6C0;
@@ -1968,9 +1968,9 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
         typeIcon = card->type & 0x1F;
         attribute = SzDuel_Kind2Attr(cardType, card->attribute);
         if (cardType == 0) {
-            label = D_00290080 + typeIcon * 10;
+            label = gSzDuel_Icon + typeIcon * 10;
         } else {
-            label = D_00290080 + (cardType + 0x14) * 10;
+            label = gSzDuel_Icon + (cardType + 0x14) * 10;
         }
         cardIndex = SzData_GetRank(arg4, card->id);
         icon1 = SzDuel_GetMsgName(card->id);
@@ -2016,7 +2016,7 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
         } else {
             color = mode == 0 ? 2LL : -1LL;
         }
-        cur = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290020 + attribute * 10, iconX, iconY, 1, enabled, 1, 0, 1, 0, color);
+        cur = lSzDuel_DrawWindow_Icon_Pipe(arg0, gSzDuel_Attr + attribute * 10, iconX, iconY, 1, enabled, 1, 0, 1, 0, color);
         if (cardType == 0) {
             if (cardState == 0) {
                 arg0 = lSzDuel_DrawWindow_Emblem_Pipe(cur, x + 0xF1, y + 2, cardIndex, 1, 0);
@@ -2122,7 +2122,7 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
                 if (effect != 0) {
                     iconX = labelX + 0x16E;
                     iconY = labelY + 2;
-                    cur = lSzDuel_DrawWindow_Icon_Pipe(cur, D_00290080 + (effect + 0xED) * 10, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+                    cur = lSzDuel_DrawWindow_Icon_Pipe(cur, gSzDuel_Icon + (effect + 0xED) * 10, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
                 }
             }
             if (hidden == 0 && (GetMoveRev((s32)card, arg2, arg3) & 0xF) > 1U) {
@@ -2206,7 +2206,7 @@ typedef struct {
     s32 width;
 } Text_001B3100;
 
-extern u8 D_00290080[];
+extern u8 gSzDuel_Icon[];
 extern Entry_001B3100 D_00291180[];
 extern u8 D_003181E7;
 
@@ -2233,8 +2233,8 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
     s32 entryY;
     f32 scale;
 
-    state = (State_001B3100 *)D_00317490.b;
-    player = (State_001B3100 *)(D_00317490.b + D_003181CC * 0x350);
+    state = (State_001B3100 *)gSzDuel_dl.b;
+    player = (State_001B3100 *)(gSzDuel_dl.b + D_003181CC * 0x350);
     x = (s32)arg2 + 4;
     y = (s32)arg3 + 4;
     choice = -1;
@@ -2360,7 +2360,7 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
         entryY = entry->y;
         text = entry->text;
         if (graphic < 0x3FF) {
-            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290080 + graphic * 10,
+            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, gSzDuel_Icon + graphic * 10,
                                   renderX + 0x6C0 + entryX, y + 0x720 + entryY,
                                   0, 1, 0, 0, 1, 0, -1);
         }
@@ -2491,12 +2491,12 @@ static inline void set_uv_001B3790(UV_001B3790 *p, s32 u, s32 v) {
 }
 
 s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
-    extern Source_001B3790 D_002BE840[];
+    extern Source_001B3790 gSzDuel_aaicolRgba[];
     extern Params_001B3790 D_002912D0;
     extern s32 D_0031AB80;
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
-    u8 *state = D_00317490.b;
-    Source_001B3790 *color = &D_002BE840[colorIndex];
+    u8 *state = gSzDuel_dl.b;
+    Source_001B3790 *color = &gSzDuel_aaicolRgba[colorIndex];
     s32 left;
     s32 top;
     s32 width = 0x60;
@@ -2715,7 +2715,7 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     s32 width;
     s32 height;
 
-    graphics = (State_001B3CC0 *)D_00317490.b;
+    graphics = (State_001B3CC0 *)gSzDuel_dl.b;
     width = abs_001B3CC0(src[3] - src[1]);
     height = abs_001B3CC0(src[4] - src[2]);
     if (shrink != 0) {
@@ -2802,7 +2802,7 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     return packet;
 }
 
-extern u8 D_00290080[];
+extern u8 gSzDuel_Icon[];
 extern u16 D_00290864[];
 
 #pragma opt_propagation off
@@ -2829,7 +2829,7 @@ s32 lSzDuel_DrawWindow_Emblem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
         if (arg3 > 0) {
             quotient = (arg3 - 1) / 3;
         }
-        src = (u16 *)(D_00290080 + (quotient + 0xC6) * 10);
+        src = (u16 *)(gSzDuel_Icon + (quotient + 0xC6) * 10);
         result = func_001B3CC0(arg0, src, arg1 + 0x6C0, arg2 + 0x720,
                                0, 1, 0, arg4, (arg5 != 0) ? 1 : 0, 0, 1, 0, -1, 0x80);
         if (width & 1) {

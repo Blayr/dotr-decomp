@@ -19,9 +19,9 @@ typedef struct Item_0023B1F0 {
 } Item_0023B1F0;
 
 void TkCamp_Act2(s32 arg0) {
-    extern u8 D_00299F60[];
-    extern Item_0023B1F0 D_00298BA0[];
-    extern s32 D_0034F6F0;
+    extern u8 prim_data[];
+    extern Item_0023B1F0 model_data[];
+    extern s32 ACT2_Rock;
     extern void Taku_3D_2D_Set();
     Vec4_0023B1F0 top;
     u8 *work;
@@ -39,11 +39,11 @@ void TkCamp_Act2(s32 arg0) {
     s32 sy;
     s32 radius;
 
-    state = &D_00299E10;
+    state = &save_data;
     work = (u8 *)0x01ED0000;
     result = 0;
-    Taku_Coord_Set(D_00299F60);
-    item = D_00298BA0;
+    Taku_Coord_Set(prim_data);
+    item = model_data;
     for (i = 0, spot = (s32 *)work; i <= 21; i++) {
         show = 0;
         top.x = item->pos.x;
@@ -74,7 +74,7 @@ void TkCamp_Act2(s32 arg0) {
             Taku_3D_2D_Set(&spot[0x23], &spot[0x43], &top);
             Taku_3D_2D_Set(&sx, &sy, &side);
             radius = sx - spot[0x23];
-            if (D_0034F6F0 == 0) {
+            if (ACT2_Rock == 0) {
                 if (*(s8 *)(work + 0x5373) != 0) {
                     *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
                     *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
@@ -101,7 +101,7 @@ void TkCamp_Act2(s32 arg0) {
         item++;
         spot++;
     }
-    rect = D_00298260;
+    rect = camp_sys_icon;
     for (j = 0; j < 4; j++) {
         if (rect[0] - 2 <= *(s16 *)(work + 0x0) && *(s16 *)(work + 0x0) <= rect[2] + 2 &&
             rect[1] - 2 <= *(s16 *)(work + 0x2) && *(s16 *)(work + 0x2) <= rect[3] + 2) {
@@ -199,7 +199,7 @@ typedef struct Copy_0023B920 {
     s32 words[0x3FE8];
 } Copy_0023B920;
 
-extern s8 D_0034F6F8;
+extern s8 HELP_flg;
 
 void TkCamp_Term(void) {
     s32 a;
@@ -209,7 +209,7 @@ void TkCamp_Term(void) {
     s32 x;
     s32 y;
 
-    if (D_0034F6F8 != 0) {
+    if (HELP_flg != 0) {
         *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)SzData_GetData(0);
         a = SzData_GetOption(0, 0);
         b = SzData_GetOption(0, 1);
@@ -261,7 +261,7 @@ void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
     s32 var_s1;
     s32 var_s2;
 
-    switch (D_0034F700) {
+    switch (Rensyu_flg) {
     case 0:
         var_s0 = 0x20;
         var_s1 = 0x11;
@@ -294,11 +294,11 @@ void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
     SzGame_SetMenuNum(4, var_s0);
     SzData_SetupFromConstDeck(0, var_s1);
     SzData_SetupFromConstDeck(1, var_s2);
-    if (D_0034F700 < 3) {
-        D_0034F700 += 1;
-        if (D_0034F700 > 2) {
-            D_0034F700 = 0;
-            D_0034F708 = 1;
+    if (Rensyu_flg < 3) {
+        Rensyu_flg += 1;
+        if (Rensyu_flg > 2) {
+            Rensyu_flg = 0;
+            Rensyu_END = 1;
         }
     }
     if (arg0 != 0) {
@@ -312,10 +312,10 @@ typedef struct Copy_0023BC80 {
     s32 words[0x3FE8];
 } Copy_0023BC80;
 
-extern s8 D_0034F6F8;
+extern s8 HELP_flg;
 
 void Taku_Camp_Go_Help(void) {
-    D_0034F6F8 = 1;
+    HELP_flg = 1;
     *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)SzData_GetData(0);
     SzGame_Push(1, 0);
 }
@@ -540,9 +540,9 @@ typedef struct State_0023C170 {
 
 
 s32 TakuCard_inti(s32 arg0) {
-    extern void *D_0034FAE8;
+    extern void *p_kaban_data;
     extern void *D_0034FAEC;
-    extern s8 D_0034FAF0;
+    extern s8 Taku_card_info;
     extern State_0023C170 D_0034FB00;
     extern s32 func_00194248(s32, s32 *, s32 *);
     extern s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
@@ -551,9 +551,9 @@ s32 TakuCard_inti(s32 arg0) {
     s16 i;
     s32 *out;
 
-    D_0034FAE8 = SzData_GetData(0);
+    p_kaban_data = SzData_GetData(0);
     D_0034FAEC = SzData_GetData(1);
-    D_0034FAF0 = 1;
+    Taku_card_info = 1;
     func_00195108((s32)&D_0034FB00, 0x840);
     D_0034FB00.field30 = 0;
     D_0034FB00.field34 = 0;
@@ -1765,13 +1765,13 @@ typedef struct Tail_0023DE90 {
 
 s32 TakuSave_card_file_kakikomi(void) {
     extern struct State_0023E610 D_0034FB00;
-    extern s32 *D_0034FAE8;
-    extern Header_0023DE90 D_0034FAF0;
+    extern s32 *p_kaban_data;
+    extern Header_0023DE90 Taku_card_info;
     Data_0023DE90 *data = (Data_0023DE90 *)&D_0034FB00;
     Header_0023DE90 *header;
     s32 *var_v0;
 
-    var_v0 = (s32 *)&D_00299E10;
+    var_v0 = (s32 *)&save_data;
     switch (D_0034FB34) {
     case 0:
         data->ret = func_00193BA8(data->port, data->slot, D_0029B1BE, 2);
@@ -1864,7 +1864,7 @@ s32 TakuSave_card_file_kakikomi(void) {
         s32 *dst;
         s32 *src;
 
-        src = D_0034FAE8;
+        src = p_kaban_data;
         count = 0x1FF4;
         dst = (s32 *)((Buffer_0023DE90 *)0x01E10000)[data->port].pairs;
         do {
@@ -1876,7 +1876,7 @@ s32 TakuSave_card_file_kakikomi(void) {
             dst += 2;
         } while (count > 0);
         header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
-        *header = D_0034FAF0;
+        *header = Taku_card_info;
         *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)var_v0;
         LkCheckData((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
         FlushCache(0);
@@ -2101,11 +2101,11 @@ s32 card_icon_tukuru(void) {
     extern char D_0030F32B[];
     extern char D_0030F330[];
     extern u8 D_0029B200[];
-    extern u8 D_0029B240[];
-    extern u8 D_0029B270[];
+    extern u8 lightdir[];
+    extern u8 lightcol[];
     extern u8 D_0029B2A0[];
-    extern char *D_0029B068[];
-    extern u32 D_0029B050[];
+    extern char *iconName[];
+    extern u32 anOfs_ICON[];
     extern u32 D_0029B054[];
     State_0023E7A0 *s;
     char path[0x40];
@@ -2178,10 +2178,10 @@ s32 card_icon_tukuru(void) {
         D_0034F726 = 0x1E;
         D_0034F72C = 0x60;
         func_00198790(D_0034F730, D_0029B200, 0x40);
-        func_00198790(D_0034F770, D_0029B240, 0x30);
-        func_00198790(D_0034F7A0, D_0029B270, 0x30);
+        func_00198790(D_0034F770, lightdir, 0x30);
+        func_00198790(D_0034F7A0, lightcol, 0x30);
         func_00198790(D_0034F7D0, D_0029B2A0, 0x10);
-        func_0019BDD8(D_0034F824, D_0029B068[0]);
+        func_0019BDD8(D_0034F824, iconName[0]);
         func_0019BDD8(D_0034F864, D_0029B06C);
         func_0019BDD8(D_0034F8A4, D_0029B070);
         s->ret = func_00194058(s->handles[s->port], D_0034F720, 0x3C4);
@@ -2268,7 +2268,7 @@ s32 card_icon_tukuru(void) {
         break;
     case 3:
         *end = '/';
-        func_0019BDD8(end + 1, D_0029B068[s->index]);
+        func_0019BDD8(end + 1, iconName[s->index]);
         s->ret = func_00193BA8(s->port, s->slot, path, 0x203);
         s->sync = func_00194248(1, &s->command, &s->result);
         if (s->sync == 1) {
@@ -2325,8 +2325,8 @@ s32 card_icon_tukuru(void) {
         break;
     case 4:
         {
-            s32 size = D_0029B054[s->index] - D_0029B050[s->index];
-            s->ret = func_00194058(s->handles[s->port], (u8 *)0x1E301E0 + D_0029B050[s->index], size);
+            s32 size = D_0029B054[s->index] - anOfs_ICON[s->index];
+            s->ret = func_00194058(s->handles[s->port], (u8 *)0x1E301E0 + anOfs_ICON[s->index], size);
         }
         s->sync = func_00194248(1, &s->command, &s->result);
         if (s->sync == 1) {
@@ -2667,14 +2667,14 @@ typedef struct Tail_0023F5A0 {
 } Tail_0023F5A0;
 
 extern u8 D_0029B1BE[];
-extern s32 *D_0034FAE8;
-extern Header_0023F5A0 D_0034FAF0;
+extern s32 *p_kaban_data;
+extern Header_0023F5A0 Taku_card_info;
 extern s16 D_0034FB34;
 
 s32 TakuLoad_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
     State_0023F5A0 *state = (State_0023F5A0 *)&D_0034FB00;
-    s32 *destination = (s32 *)&D_00299E10;
+    s32 *destination = (s32 *)&save_data;
 
     switch (D_0034FB34) {
     case 0:
@@ -2813,7 +2813,7 @@ s32 TakuLoad_card_file_open(void) {
                     state->state = 0;
                     state->phase = 0;
                     state->retries = 0;
-                    dst = D_0034FAE8;
+                    dst = p_kaban_data;
                     count = 0x1FF4;
                     src = (s32 *)((Save_0023F5A0 *)0x1E10000)[state->index].pairs;
                     do {
@@ -2824,7 +2824,7 @@ s32 TakuLoad_card_file_open(void) {
                         dst[1] = second;
                         dst += 2;
                     } while (count > 0);
-                    D_0034FAF0 = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
+                    Taku_card_info = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((Save_0023F5A0 *)0x1E10000)[state->index].tail;
                     if (LkCheckData((u16 *)&((Save_0023F5A0 *)0x1E10000)[state->index]) != 0) {
                         TakuLoad_Name_Set(state->parameter);
@@ -2875,7 +2875,7 @@ void TakuLoad_Name_Set(s32 side) {
     u16 v;
     s32 off2;
 
-    src = (u8 *)&D_00299E10;
+    src = (u8 *)&save_data;
     if (side == 0) {
         i = 0;
         offset = 0;
@@ -3044,7 +3044,7 @@ s32 TakuCustom_card_file_open(void) {
     s32 *destination;
 
     state = (State_0023FF30 *)&D_0034FB00;
-    destination = (s32 *)&D_00299E10;
+    destination = (s32 *)&save_data;
     switch (D_0034FB34) {
     case 0:
         state->request = func_00193BA8(state->port, state->slot, D_0029B1BE, 1);
@@ -3184,7 +3184,7 @@ s32 TakuCustom_card_file_open(void) {
                             s32 *dst;
                             s32 *src;
 
-                            dst = (s32 *)D_0034FAE8;
+                            dst = (s32 *)p_kaban_data;
                             src = (s32 *)((u8 *)0x01E10004 + state->port * 0x100F0);
                             count = 0x1FF4;
                             do {
@@ -3196,7 +3196,7 @@ s32 TakuCustom_card_file_open(void) {
                                 dst += 2;
                             } while (count > 0);
                         }
-                        D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                        Taku_card_info = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                         *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                         if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                             TakuLoad_Name_Set(state->port);
@@ -3228,7 +3228,7 @@ s32 TakuCustom_card_file_open(void) {
                             dst += 2;
                         } while (count > 0);
                     }
-                    D_0034FAF0 = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                    Taku_card_info = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                     if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                         TakuLoad_Name_Set(state->port);
@@ -3456,7 +3456,7 @@ extern s16 D_0034FB34;
 
 s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
     extern s32 func_00193DD0();
-    extern s32 *D_0034FAE8;
+    extern s32 *p_kaban_data;
     extern struct State_0023E610 D_0034FB00;
     s32 second;
     s32 first;
@@ -3567,7 +3567,7 @@ s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
         }
         return 0;
     case 2:
-        source = (&D_0034FAE8)[io->slot];
+        source = (&p_kaban_data)[io->slot];
         count = 0x1FF4;
         dest = (s32 *)((u8 *)0x01E10004 + io->slot * 0x100F0);
         do {
@@ -4124,39 +4124,39 @@ void setImageTag(u64 arg0, u8 *arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 s32 vblankHandler(s32 val) {
-    extern volatile s32 D_00350348;
-    extern s32 D_00350360;
+    extern volatile s32 vblankCount;
+    extern s32 handler_error;
     extern u8 D_00350420[];
     extern u8 D_00350510[];
     void *dmaGif;
     s32 *tag;
 
     dmaGif = (void *)sceDmaGetChan(2);
-    (&D_00350340)[6] = (*(volatile u64 *)0x12001000 >> 13) & 1;
-    if (D_00350340) {
-        D_00350348++;
-        D_00350360 = sceGsSyncPath(1, 0);
-        if (!D_00350360) {
-            tag = (s32 *)voBufGetTag(D_00350600);
+    (&isCountVblank)[6] = (*(volatile u64 *)0x12001000 >> 13) & 1;
+    if (isCountVblank) {
+        vblankCount++;
+        handler_error = sceGsSyncPath(1, 0);
+        if (!handler_error) {
+            tag = (s32 *)voBufGetTag(voBuf);
             if (!tag) {
-                D_003505F8++;
+                frd++;
                 asm("sync"); asm("ei");
                 return 0;
             }
-            sceGsSetHalfOffset(((&D_00350340)[6] & 1) ? (u8 *)(((u32)D_00350510 & 0x0FFFFFFF) | 0x20000000)
+            sceGsSetHalfOffset(((&isCountVblank)[6] & 1) ? (u8 *)(((u32)D_00350510 & 0x0FFFFFFF) | 0x20000000)
                                                 : (u8 *)(((u32)D_00350420 & 0x0FFFFFFF) | 0x20000000),
-                               0x800, 0x800, (&D_00350340)[6] ^ 1);
-            if ((&D_00350340)[6] == 0 && *tag == 2) {
+                               0x800, 0x800, (&isCountVblank)[6] ^ 1);
+            if ((&isCountVblank)[6] == 0 && *tag == 2) {
                 sceGsSwapDBuff(D_003503C0, 0);
                 sceGsSyncPath(0, 0);
                 sceDmaSend(dmaGif, (u8 *)tag + 0x40);
                 *tag = 1;
-            } else if ((&D_00350340)[6] == 1 && *tag == 1) {
+            } else if ((&isCountVblank)[6] == 1 && *tag == 1) {
                 sceGsSwapDBuff(D_003503C0, 1);
                 sceGsSyncPath(0, 0);
                 sceDmaSend(dmaGif, (u8 *)tag + 0x26740);
                 *tag = 0;
-                D_00350350 = 1;
+                isFrameEnd = 1;
             }
         }
     }
@@ -4165,9 +4165,9 @@ s32 vblankHandler(s32 val) {
 }
 
 s32 handler_endimage(void) {
-    if (D_00350350 != 0) {
-        voBufDecCount(&D_00350600);
-        D_00350350 = 0;
+    if (isFrameEnd != 0) {
+        voBufDecCount(&voBuf);
+        isFrameEnd = 0;
     }
     asm("sync"); asm("ei");
     return 0;
@@ -4176,31 +4176,31 @@ s32 handler_endimage(void) {
 void startDisplay(s32 arg0) {
     do {
     } while (arg0 == sceGsSyncV(0));
-    D_003505F8 = 0;
-    D_00350340 = 1;
-    (&D_00350340)[2] = 0;
+    frd = 0;
+    isCountVblank = 1;
+    (&isCountVblank)[2] = 0;
 }
 
 void endDisplay(void) {
-    D_00350340 = 0;
-    D_003505F8 = 0;
+    isCountVblank = 0;
+    frd = 0;
 }
 
 void movie_play(s32 arg0, s32 arg1, s32 arg2) {
-    D_0029B2F0 = arg1;
-    D_003503B0 = arg2;
+    isWithAudio = arg1;
+    isWithInter = arg2;
     clearGsMem(0, 0, 0, 0x280, 0x1C0);
     sceGsSetDefDBuff(D_003503C0, 0, 0x280, 0xE0, 0, 0, 1);
     FlushCache(0);
-    D_00350368 = 0x01200000;
-    D_00350370 = 0x0152A000;
-    D_00350378 = 0x015C3C80;
-    D_00350380 = 0x015C4CC0;
-    D_00350388 = 0x0178DE40;
-    D_00350788 = 0x0178E640;
-    D_00350390 = 0x017DE680;
-    D_00350398 = 0x017EA680;
-    D_003503A0 = 0x0186A680;
-    D_003503A8 = 0x0186E680;
+    voBufData = 0x01200000;
+    voBufTag = 0x0152A000;
+    viBufTag = 0x015C3C80;
+    mpegWork = 0x015C4CC0;
+    defStack = 0x0178DE40;
+    readBuf = 0x0178E640;
+    audioBuff = 0x017DE680;
+    viBufData = 0x017EA680;
+    videoDecStack = 0x0186A680;
+    timeStamp = 0x0186E680;
     movie(arg0);
 }

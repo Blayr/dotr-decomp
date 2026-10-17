@@ -15,7 +15,7 @@ typedef struct {
     u8 pad8[4];
 } Entry_0031C050;
 
-extern Entry_0031C050 D_0031C050[];
+extern Entry_0031C050 gSzFade_fl[];
 
 typedef struct {
     f32 x, y, z, w;
@@ -31,7 +31,7 @@ typedef struct {
     ObjSlotInner_0031ABB0 *f14;
 } ObjSlot_0031ABB0;
 
-/* D_0031ABB0 holds 0x54 pointers to these (func_001F25D0, func_001F0830, func_001F1400). */
+/* gSzModel_ahModel holds 0x54 pointers to these (func_001F25D0, func_001F0830, func_001F1400). */
 typedef struct {
     u8 pad000[0x30];
     Vec4f v;                     /* 0x030 */
@@ -41,7 +41,7 @@ typedef struct {
     s8 lv[4];                    /* 0x1E0 */
 } Obj_0031ABB0;
 
-extern Obj_0031ABB0 *D_0031ABB0[];
+extern Obj_0031ABB0 *gSzModel_ahModel[];
 
 typedef struct PadSlot_00192A88 {
     u8 *buf;

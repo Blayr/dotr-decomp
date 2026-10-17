@@ -1192,16 +1192,16 @@ s32 VEC_POI_IN(void *arg0, void *arg1) {
 }
 
 void SD_InitializeDevice(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if (!(D_0030FF40[0] & 1)) {
+    if (!(g_SDValue[0] & 1)) {
         SDRPC_Init();
         SDRPC_SendCommand(0xF005);
-        if (!(D_0030FF40[0] & 0x20)) {
+        if (!(g_SDValue[0] & 0x20)) {
             SDRPC_SendCommand(0xF002, 0xC1800);
-            D_0030FF40[5] = D_0030FF40[0x60];
-            D_0030FF40[0] |= 0x20;
+            g_SDValue[5] = g_SDValue[0x60];
+            g_SDValue[0] |= 0x20;
         }
         SDRPC_SendCommand(0x5F10, 0, 0x5010);
         SDRPC_SendCommand(0x5F10, 1, 0x9F810);
@@ -1219,9 +1219,9 @@ void SD_InitializeDevice(void) {
         SD_vInitializeFileHandler();
         SD_vInitSDThread();
         SD_vInitializeAutoDMA();
-        D_0030FF40[0] |= 1;
-        D_0030FF40[1] |= 0xE;
-        D_0030FF40[0xA9B] = 0;
+        g_SDValue[0] |= 1;
+        g_SDValue[1] |= 0xE;
+        g_SDValue[0xA9B] = 0;
     }
-    D_0030FF40[0] |= 0x80;
+    g_SDValue[0] |= 0x80;
 }

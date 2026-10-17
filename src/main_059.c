@@ -12,7 +12,7 @@ typedef struct {
     u8 reserved5_4 : 4;
 } Flags_0020F780;
 
-extern u8 D_0032A610[];
+extern u8 gRhModel_mlsmSwapArea[];
 
 void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
     Flags_0020F780 *obj = arg0;
@@ -43,13 +43,13 @@ void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
         if (obj->flag5_3) {
             result = *(s32 *)0x700000D0;
         } else {
-            RhMem_CopyMemory16(D_0032A610, (void *)0x70000000, 0x11);
+            RhMem_CopyMemory16(gRhModel_mlsmSwapArea, (void *)0x70000000, 0x11);
             result = RhBase_SetZBufferMode((s32)RhModelCpu_DrawAlpha(
                 (u8 *)RhBase_SetZBufferMode(*(s32 *)0x700000D0, 0),
                 *(s32 *)0x700000CC,
                 *(s32 *)(*(u8 **)0x700000DC + 0x1C),
                 obj->flag4_1), 1);
-            RhMem_CopyMemory16((void *)0x70000000, D_0032A610, 0x11);
+            RhMem_CopyMemory16((void *)0x70000000, gRhModel_mlsmSwapArea, 0x11);
         }
         *(s32 *)0x700000D4 = result;
     } else {
@@ -259,9 +259,9 @@ typedef struct {
     V4_0020FF80 *dst;
 } Spr_0020FF80;
 
-extern void *D_0032A720;
+extern void *gRhModel_dwStack;
 extern u8 D_70004000[];
-extern u8 D_00295070[];
+extern u8 gRhModel_vecScale[];
 
 s32 lRhModel_SetupNoMotion(void *arg0) {
     Spr_0020FF80 *spr = (Spr_0020FF80 *)0x70000000;
@@ -272,14 +272,14 @@ s32 lRhModel_SetupNoMotion(void *arg0) {
     }
     spr->data = data;
     asm {
-        la v0, D_0032A720
+        la v0, gRhModel_dwStack
         sw sp, 0(v0)
         la at, D_70004000
         addiu sp, at, 0
     }
-    lRhModel_SetupNoMotionRecursive((void *)0x70000000, data, D_00295070);
+    lRhModel_SetupNoMotionRecursive((void *)0x70000000, data, gRhModel_vecScale);
     asm {
-        la v0, D_0032A720
+        la v0, gRhModel_dwStack
         lw sp, 0(v0)
     }
     return 1;
@@ -314,12 +314,12 @@ typedef struct Entry_00210010 {
 } Entry_00210010;
 
 extern Vec3_00210010 D_00295080;
-extern u32 D_0032A728;
-extern s32 D_0032A770;
+extern u32 require_coordinate_no;
+extern s32 require_coordinate_index;
 
 
 void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
-    extern Entry_00210010 D_0032A780[];
+    extern Entry_00210010 require_coordinate[];
     u8 buffer[0x20];
     Vec3_00210010 translation;
     Vec3_00210010 *scale;
@@ -358,15 +358,15 @@ void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
             RhGeomEx_GetMatrix(matrix);
             RhGeom_ScaleMatrix(matrix, scale);
         }
-        entry = D_0032A780;
-        for (i = 0; i < D_0032A728; entry++, i++) {
-            if (D_0032A770 == entry->id) {
-                D_0032A780[i].active = 1;
-                RhGeom_GetMatrix(D_0032A780[i].matrix);
+        entry = require_coordinate;
+        for (i = 0; i < require_coordinate_no; entry++, i++) {
+            if (require_coordinate_index == entry->id) {
+                require_coordinate[i].active = 1;
+                RhGeom_GetMatrix(require_coordinate[i].matrix);
                 break;
             }
         }
-        D_0032A770++;
+        require_coordinate_index++;
         offset = ((Node_00210010 *)arg1)->child;
         if (offset != 0) {
             lRhModel_SetupNoMotionRecursive(model, model->nodes + (offset & 0x0FFFFFFF), scale);
@@ -403,9 +403,9 @@ typedef struct {
     s32 *motion;
 } Motion_00210260;
 
-extern void *D_0032A720;
+extern void *gRhModel_dwStack;
 extern u8 D_70004000[];
-extern u8 D_00295070[];
+extern u8 gRhModel_vecScale[];
 
 s32 lRhModel_SetupMultiMotion(void *arg0, void *arg1, void *arg2, f32 frame, f32 frame2, f32 value, f32 value2) {
     Spr_00210260 *spr = (Spr_00210260 *)0x70000000;
@@ -427,16 +427,16 @@ s32 lRhModel_SetupMultiMotion(void *arg0, void *arg1, void *arg2, f32 frame, f32
     spr->valueAC = value2;
     spr->countE0 = ((u16 *)m1->motion)[4];
     {
-    register void **save = &D_0032A720;
+    register void **save = &gRhModel_dwStack;
     asm {
         sw sp, 0(save)
         la at, D_70004000
         addiu sp, at, 0
     }
     }
-    lRhModel_SetupMultiMotionRecursive(data, 0, D_00295070);
+    lRhModel_SetupMultiMotionRecursive(data, 0, gRhModel_vecScale);
     asm {
-        la v0, D_0032A720
+        la v0, gRhModel_dwStack
         lw sp, 0(v0)
     }
     return 1;
@@ -491,12 +491,12 @@ typedef struct {
     u8 data[0x40];
 } Slot_00210310;
 
-extern u32 D_0032A728;
-extern s32 D_0032A770;
+extern u32 require_coordinate_no;
+extern s32 require_coordinate_index;
 
 
 s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2) {
-    extern Slot_00210310 D_0032A780[];
+    extern Slot_00210310 require_coordinate[];
     Spr_00210310 *spr = (Spr_00210310 *)0x70000000;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
@@ -577,14 +577,14 @@ s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2) {
             spr->flagsB0 |= RhView_CheckViewVolume(spr->v20, f);
             RhGeomEx_PopMatrix();
         }
-        for (i = 0; i < D_0032A728; i++) {
-            if (D_0032A770 == D_0032A780[i].id) {
-                D_0032A780[i].used = 1;
-                RhGeom_GetMatrix(D_0032A780[i].data);
+        for (i = 0; i < require_coordinate_no; i++) {
+            if (require_coordinate_index == require_coordinate[i].id) {
+                require_coordinate[i].used = 1;
+                RhGeom_GetMatrix(require_coordinate[i].data);
                 break;
             }
         }
-        D_0032A770++;
+        require_coordinate_index++;
         if (node->child != 0) {
             depth = lRhModel_SetupMultiMotionRecursive(spr->base90 + (node->child & 0x0FFFFFFF), depth, vec);
         }
@@ -634,15 +634,15 @@ s32 lRhModel_SetupFloatMotion(u8 *model, u8 *motion, f32 time) {
     *(f32 *)(spr + 0x98) = time;
     *(s32 *)(spr + 0x9C) = *(u16 *)(motion + 4);
     *(u16 *)(spr + 0xE0) = *(u16 *)(*(u8 **)(motion + 8) + 8);
-    saved = &D_0032A720;
+    saved = &gRhModel_dwStack;
     asm {
         sw sp, 0x0(saved)
         la at, D_70004000
         addiu sp, at, 0x0
     }
-    lRhModel_SetupFloatMotionRecursive(model, 0, D_00295070);
+    lRhModel_SetupFloatMotionRecursive(model, 0, gRhModel_vecScale);
     {
-        register void **back = &D_0032A720;
+        register void **back = &gRhModel_dwStack;
         asm {
             lw sp, 0x0(back)
         }
@@ -696,13 +696,13 @@ typedef struct {
     u8 data[0x40];
 } Slot_00210940;
 
-extern u32 D_0032A728;
-extern s32 D_0032A770;
+extern u32 require_coordinate_no;
+extern s32 require_coordinate_index;
 
 
 s32 lRhModel_SetupFloatMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern s32 lRhModel_GetInterpolateMotionItem(void *, u16, f32, void *, void *, void *, f32);
-    extern Slot_00210940 D_0032A780[];
+    extern Slot_00210940 require_coordinate[];
     Spr_00210940 *spr = (Spr_00210940 *)0x70000000;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
@@ -773,14 +773,14 @@ s32 lRhModel_SetupFloatMotionRecursive(void *arg0, s32 depth, void *arg2) {
             spr->flagsB0 |= RhView_CheckViewVolume(spr->v20, f);
             RhGeomEx_PopMatrix();
         }
-        for (i = 0; i < D_0032A728; i++) {
-            if (D_0032A770 == D_0032A780[i].id) {
-                D_0032A780[i].used = 1;
-                RhGeom_GetMatrix(D_0032A780[i].data);
+        for (i = 0; i < require_coordinate_no; i++) {
+            if (require_coordinate_index == require_coordinate[i].id) {
+                require_coordinate[i].used = 1;
+                RhGeom_GetMatrix(require_coordinate[i].data);
                 break;
             }
         }
-        D_0032A770++;
+        require_coordinate_index++;
         if (node->child != 0) {
             depth = lRhModel_SetupFloatMotionRecursive(spr->base90 + (node->child & 0x0FFFFFFF), depth, vec);
         }
@@ -956,12 +956,12 @@ s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *posit
     return flags;
 }
 
-extern void *D_0032A720;  /* the stack pointer saved while the pulse walk runs on the scratchpad */
+extern void *gRhModel_dwStack;  /* the stack pointer saved while the pulse walk runs on the scratchpad */
 extern u8 D_70004000[];   /* the scratchpad stack top */
-extern u8 D_00295070[];
+extern u8 gRhModel_vecScale[];
 
 /* Fill the scratchpad header for a pulse-motion walk, then run lRhModel_SetupPulseMotionRecursive with the
-   stack on the scratchpad (0x70004000), the real stack pointer kept in D_0032A720. */
+   stack on the scratchpad (0x70004000), the real stack pointer kept in gRhModel_dwStack. */
 
 s32 lRhModel_SetupPulseMotion(u8 *model, u8 *motion, f32 time) {
     u8 *spr = (u8 *)0x70000000;
@@ -973,15 +973,15 @@ s32 lRhModel_SetupPulseMotion(u8 *model, u8 *motion, f32 time) {
     *(f32 *)(spr + 0x98) = time;
     *(s32 *)(spr + 0x9C) = *(u16 *)(motion + 4);
     *(u16 *)(spr + 0xE0) = *(u16 *)(*(u8 **)(motion + 8) + 8);
-    saved = &D_0032A720;
+    saved = &gRhModel_dwStack;
     asm {
         sw sp, 0x0(saved)
         la at, D_70004000
         addiu sp, at, 0x0
     }
-    lRhModel_SetupPulseMotionRecursive(model, 0, D_00295070);
+    lRhModel_SetupPulseMotionRecursive(model, 0, gRhModel_vecScale);
     {
-        register void **back = &D_0032A720;
+        register void **back = &gRhModel_dwStack;
         asm {
             lw sp, 0x0(back)
         }
@@ -1037,9 +1037,9 @@ typedef struct {
 
 #define PARENT ((f32 *)arg2)
 
-extern u32 D_0032A728;
-extern s32 D_0032A770;
-extern Slot_00211530 D_0032A780[];
+extern u32 require_coordinate_no;
+extern s32 require_coordinate_index;
+extern Slot_00211530 require_coordinate[];
 
 
 s32 lRhModel_SetupPulseMotionRecursive(void *arg0, s32 depth, void *arg2) {
@@ -1114,14 +1114,14 @@ s32 lRhModel_SetupPulseMotionRecursive(void *arg0, s32 depth, void *arg2) {
             spr->flagsB0 |= RhView_CheckViewVolume(spr->v20, f);
             RhGeomEx_PopMatrix();
         }
-        for (i = 0; i < D_0032A728; i++) {
-            if (D_0032A770 == D_0032A780[i].id) {
-                D_0032A780[i].used = 1;
-                RhGeom_GetMatrix(D_0032A780[i].data);
+        for (i = 0; i < require_coordinate_no; i++) {
+            if (require_coordinate_index == require_coordinate[i].id) {
+                require_coordinate[i].used = 1;
+                RhGeom_GetMatrix(require_coordinate[i].data);
                 break;
             }
         }
-        D_0032A770++;
+        require_coordinate_index++;
         if (node->child != 0) {
             depth = lRhModel_SetupPulseMotionRecursive(spr->base90 + (node->child & 0x0FFFFFFF), depth, vec);
         }
@@ -1723,18 +1723,18 @@ void lRhModel_ChangeL2VtoL2S(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void GetAnyCoordinateInit(void) {
-    extern u32 D_0032A728;
+    extern u32 require_coordinate_no;
 
-    D_0032A728 = 0;
+    require_coordinate_no = 0;
 }
 
 s32 BookingGetAnyCoordinate(s32 id) {
-    if (D_0032A728 >= 0x100) {
+    if (require_coordinate_no >= 0x100) {
         return 0;
     }
-    D_0032A780[D_0032A728].id = id;
-    D_0032A780[D_0032A728].used = -1;
-    D_0032A728++;
+    require_coordinate[require_coordinate_no].id = id;
+    require_coordinate[require_coordinate_no].used = -1;
+    require_coordinate_no++;
     return 1;
 }
 
@@ -1746,11 +1746,11 @@ s32 GetAnyCoordinate(s32 arg0, void *arg1) {
     Slot_00211530 *record;
     u8 temporary[0x40];
 
-    if ((D_0032A728 == 0) || (arg0 <= 0) || (arg1 == NULL)) {
+    if ((require_coordinate_no == 0) || (arg0 <= 0) || (arg1 == NULL)) {
         return 0;
     }
-    record = D_0032A780;
-    for (i = 0; i < D_0032A728; record++, i++) {
+    record = require_coordinate;
+    for (i = 0; i < require_coordinate_no; record++, i++) {
         if (arg0 == record->id) {
             offset = i * 0x50;
             state = (s32 *)(D_0032A784 + offset);
@@ -1759,18 +1759,18 @@ s32 GetAnyCoordinate(s32 arg0, void *arg1) {
             }
             if (*state == 1) {
                 *state = 0;
-                func_00198790(temporary, D_0032A730, 0x40);
-                payload = (u8 *)D_0032A780 + offset + 0x10;
+                func_00198790(temporary, InvertView, 0x40);
+                payload = (u8 *)require_coordinate + offset + 0x10;
                 RhGeom_MulMatrix((s32)temporary, payload);
                 func_00198790(payload, temporary, 0x40);
             }
             if (*state == 0) {
-                func_00198790(arg1, (u8 *)D_0032A780 + offset + 0x10, 0x40);
+                func_00198790(arg1, (u8 *)require_coordinate + offset + 0x10, 0x40);
             }
             break;
         }
     }
-    if (i == D_0032A728) {
+    if (i == require_coordinate_no) {
         return 0;
     }
     return 1;
@@ -2385,7 +2385,7 @@ void lRhModelCpu_CleanupPacket(u8 *start, u8 *end) {
 }
 
 void RhZSort_Start(s32 arg0, s32 arg1) {
-    D_0032F780 = arg0;
+    gRhZSort_zsl = arg0;
     D_0032F784 = arg1;
     D_0032F78C = arg1;
     D_0032F788 = 1;
@@ -2409,7 +2409,7 @@ typedef struct {
 
 
 s32 RhZSort_Finish_Pipe(s32 arg0) {
-    State_00213FC0 *state = (State_00213FC0 *)&D_0032F780;
+    State_00213FC0 *state = (State_00213FC0 *)&gRhZSort_zsl;
     s32 *output = (s32 *)arg0;
     Record_00213FC0 *record;
 
@@ -2588,7 +2588,7 @@ typedef struct Save_00214290 {
 } Save_00214290;
 
 void SzData_Initialize(void) {
-    extern Save_00214290 D_0032F790[2];
+    extern Save_00214290 gSzData_All[2];
     s32 card;
     s32 slot;
     s32 profile;
@@ -2611,8 +2611,8 @@ void SzData_Initialize(void) {
     s32 row;
     s32 column;
 
-    RhMem_FillMemory((s8 *)D_0032F790, 0, 0x1FF40);
-    save = D_0032F790;
+    RhMem_FillMemory((s8 *)gSzData_All, 0, 0x1FF40);
+    save = gSzData_All;
     profile = 0;
     do {
         card = 0;
@@ -2698,22 +2698,22 @@ void SzData_Initialize(void) {
 }
 
 void SzData_SetRoseFlag(s32 arg0) {
-    extern u8 D_0034F6D0;
+    extern u8 gSzData_bRoseFlag;
 
-    D_0034F6D0 = arg0;
+    gSzData_bRoseFlag = arg0;
 }
 
 void *SzData_GetData(s32 arg0) {
-    extern u8 D_0032F790[];
-    extern u8 D_0034F6D0;
+    extern u8 gSzData_All[];
+    extern u8 gSzData_bRoseFlag;
     s32 var_v1;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    return D_0032F790 + (var_v1 * 0xFFA0);
+    return gSzData_All + (var_v1 * 0xFFA0);
 }
 
 typedef struct {
@@ -2759,10 +2759,10 @@ typedef struct {
     u8 padding_ff9d[3];
 } State_00214620;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 void SzData_ClearData(s32 arg0) {
-    extern State_00214620 D_0032F790[2];
+    extern State_00214620 gSzData_All[2];
     s32 i;
     State_00214620 *state;
     Entry_00214620 *entry;
@@ -2784,7 +2784,7 @@ void SzData_ClearData(s32 arg0) {
     s32 n_rows;
     s32 n_cells;
 
-    state = &D_0032F790[D_0034F6D0 == arg0 ? 0 : 1];
+    state = &gSzData_All[gSzData_bRoseFlag == arg0 ? 0 : 1];
     i = 0;
     entry = state->entries;
     do {
@@ -2888,10 +2888,10 @@ typedef struct {
 
 extern s32 D_002D19D8;
 extern u16 D_002D49D4[];
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 void SzData_SetupFromConstDeck(s32 arg0, s32 arg1) {
-    extern State_00214990 D_0032F790[2];
+    extern State_00214990 gSzData_All[2];
     u16 *deck;
     s32 sum;
     s32 i;
@@ -2900,7 +2900,7 @@ void SzData_SetupFromConstDeck(s32 arg0, s32 arg1) {
     u16 value;
     State_00214990 *state;
 
-    state = &D_0032F790[D_0034F6D0 == arg0 ? 0 : 1];
+    state = &gSzData_All[gSzData_bRoseFlag == arg0 ? 0 : 1];
     deck = D_002D0970[arg1];
     if (!(arg1 >= 0 && arg1 < 51)) {
         return;
@@ -2957,19 +2957,19 @@ typedef struct State_00214BB0 {
     u8 tail[3];
 } State_00214BB0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetOption(s32 arg0, s32 arg1, s32 arg2) {
-    extern State_00214BB0 D_0032F790[];
+    extern State_00214BB0 gSzData_All[];
     s32 index;
     State_00214BB0 *state;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         index = 0;
     } else {
         index = 1;
     }
-    state = &D_0032F790[index];
+    state = &gSzData_All[index];
     switch (arg1) {
     case 0:
         state->flag2 = arg2 ? 1 : 0;
@@ -2997,19 +2997,19 @@ typedef struct {
     u8 pad2[3];
 } Side_00214D00;
 
-extern Side_00214D00 D_0032F790[];
-extern u8 D_0034F6D0;
+extern Side_00214D00 gSzData_All[];
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetOption(s32 arg0, s32 arg1) {
     Side_00214D00 *side;
     s32 idx;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         idx = 0;
     } else {
         idx = 1;
     }
-    side = &D_0032F790[idx];
+    side = &gSzData_All[idx];
     switch (arg1) {
     case 0:
         return side->flag2 ? 1 : 0;
@@ -3042,12 +3042,12 @@ void *SzData_CheckBag(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (arg1 < 0 || arg1 >= 0x356) {
         return NULL;
     }
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    entry = (Entry_00214DD0 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * 0x4C);
+    entry = (Entry_00214DD0 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * 0x4C);
     count = 9;
     while (count--) {
         if (entry->id != 0 && entry->type == arg2 &&
@@ -3063,12 +3063,12 @@ void *SzData_GetCardInfo(s32 arg0, s32 arg1, s32 arg2) {
     s32 bank;
     u8 *base;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         bank = 0;
     } else {
         bank = 1;
     }
-    base = (u8 *)D_0032F790 + bank * 0xFFA0;
+    base = (u8 *)gSzData_All + bank * 0xFFA0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return NULL;
     }

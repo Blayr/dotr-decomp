@@ -22,16 +22,16 @@ typedef struct State_001F3790 {
 } State_001F3790;
 
 void SzEffect_Clear(void) {
-    extern State_001F3790 D_0031BB50;
+    extern State_001F3790 gSzEffect_el;
     extern Slot_001F3790 D_0031BC50[];
     State_001F3790 *state;
     Entry_001F3790 *entry;
     Slot_001F3790 *slot;
     s32 i;
 
-    state = &D_0031BB50;
+    state = &gSzEffect_el;
     slot = D_0031BC50;
-    entry = D_0031BB50.entries;
+    entry = gSzEffect_el.entries;
     for (i = 0; i < 24; i++, slot++) {
         slot->state = 0;
     }
@@ -56,11 +56,11 @@ typedef struct Entry_001F3870 {
 } Entry_001F3870;
 
 void SzEffect_TrimModule(void) {
-    extern Entry_001F3870 D_0031BB50[];
+    extern Entry_001F3870 gSzEffect_el[];
     Entry_001F3870 *entry;
     s32 i;
 
-    entry = D_0031BB50;
+    entry = gSzEffect_el;
     for (i = 0; (s64)i < 32; i++, entry++) {
         if (entry->state == 2 && SzEffect_IsUse2(entry->source, entry->target) == 0) {
             entry->state = 3;
@@ -77,14 +77,14 @@ typedef struct {
 } Entry_001F3910;
 
 s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
-    extern Entry_001F3910 D_0031BB50[];
-    extern u8 D_0031BEA8;
+    extern Entry_001F3910 gSzEffect_el[];
+    extern u8 bCachePos;
     extern char D_002CFBB0[];
     extern char D_002CFBC6[];
     extern void lSzEffect_LoadOverlayCB();
     extern s32 func_0019B648();
     extern s32 SzFile_ReadRequestParam();
-    Entry_001F3910 *entries = D_0031BB50;
+    Entry_001F3910 *entries = gSzEffect_el;
     s32 count;
     s32 candidate;
     Entry_001F3910 *scan;
@@ -95,7 +95,7 @@ s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
     s8 letter;
     char path[128];
 
-    scan = D_0031BB50;
+    scan = gSzEffect_el;
     for (i = 0; i < 32L; i++, scan++) {
         if (scan->kind == kind && scan->card == card) {
             if (scan->state == 2) {
@@ -116,7 +116,7 @@ s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
     }
     if (index >= 32L) {
         count = 0;
-        candidate = D_0031BEA8 + count;
+        candidate = bCachePos + count;
         for (; count < 32L; candidate++, count++) {
             s32 slot = candidate % 32L;
             entry = &entries[slot];
@@ -125,7 +125,7 @@ s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
                 break;
             }
         }
-        D_0031BEA8 = (D_0031BEA8 + 1) % 32L;
+        bCachePos = (bCachePos + 1) % 32L;
     }
     if (index < 32L) {
         destination = (s64)(s32)(0x01EE0000 + (s64)index * 0x8000);
@@ -197,14 +197,14 @@ void lSzEffect_LoadOverlayCB(void *arg0, s32 arg1) {
     extern u8 D_002CFBC6[];
     extern u8 D_002CFBCB[];
     extern u8 D_002CFBCF[];
-    extern Entry_001F3CB0 D_0031BB50[];
+    extern Entry_001F3CB0 gSzEffect_el[];
     Obj_001F3CB0 *obj;
     Entry_001F3CB0 *entry;
     u8 sp50[0x80];
     s32 size;
 
     obj = arg0;
-    entry = &D_0031BB50[obj->f1C];
+    entry = &gSzEffect_el[obj->f1C];
     if (arg1 != 0) {
         if (func_0019C100(obj->f14, D_002CFBCB, 3) != 0) {
             if (obj->hi != 0) {
@@ -248,9 +248,9 @@ typedef struct Input_001F3E40 {
 } Input_001F3E40;
 
 void lSzEffect_LoadSECtlCB(void *arg0, s32 arg1) {
-    extern Entry_001F3E40 D_0031BB50[];
+    extern Entry_001F3E40 gSzEffect_el[];
     Input_001F3E40 *input = arg0;
-    Entry_001F3E40 *entry = &D_0031BB50[input->index];
+    Entry_001F3E40 *entry = &gSzEffect_el[input->index];
 
     if (entry->state == 1) {
         entry->state = 3;
@@ -271,11 +271,11 @@ typedef struct {
 } Id_001F3EA0;
 
 u8 *SzEffect_GetModuleInfo(s32 arg0, s32 arg1) {
-    extern u8 D_0031BB50[];
+    extern u8 gSzEffect_el[];
     u8 *entry;
     s32 i;
 
-    entry = D_0031BB50;
+    entry = gSzEffect_el;
     i = 0;
     while ((s64)i < 32) {
         if ((arg0 < 0 || ((Flags_001F3EA0 *)entry)->kind == arg0) &&
@@ -311,11 +311,11 @@ typedef struct Cue_001F3F20 {
 } Cue_001F3F20;
 
 static inline Link_001F3F20 *find_001F3F20(s32 source, s32 target) {
-    extern Link_001F3F20 D_0031BB50[];
+    extern Link_001F3F20 gSzEffect_el[];
     Link_001F3F20 *slot;
     s32 i;
 
-    slot = D_0031BB50;
+    slot = gSzEffect_el;
     for (i = 0; (s64)i < 32; i++, slot++) {
         if ((source < 0 || slot->from == source) && (target < 0 || slot->to == target)) {
             return slot;
@@ -404,11 +404,11 @@ typedef struct Table_001F40D0 {
 } Table_001F40D0;
 
 static inline Link_001F40D0 *find_001F40D0(s32 source, s32 target) {
-    extern State_001F40D0 D_0031BB50;
+    extern State_001F40D0 gSzEffect_el;
     Link_001F40D0 *link;
     s32 i;
 
-    link = D_0031BB50.links;
+    link = gSzEffect_el.links;
     for (i = 0; i < 32L; i++, link++) {
         if ((source < 0 || link->from == source) && (target < 0 || link->to == target)) {
             return link;
@@ -428,9 +428,9 @@ static inline void restart_001F40D0(s32 model, s32 loop) {
 }
 
 void SzEffect_Draw(s32 group) {
-    extern State_001F40D0 D_0031BB50;
+    extern State_001F40D0 gSzEffect_el;
     extern Entry_001F40D0 D_0031BC50[];
-    extern Table_001F40D0 D_00292FF0[];
+    extern Table_001F40D0 gSzEffect_aEffFuncTbl[];
     extern void iFlushCache(s32);
     extern s32 SzModel_GetAnim(s32);
     extern s32 SzModel_GetAnimParam(s32, s32);
@@ -460,7 +460,7 @@ void SzEffect_Draw(s32 group) {
     f32 frame;
     f32 start;
 
-    links = D_0031BB50.links;
+    links = gSzEffect_el.links;
     entry = D_0031BC50;
     SzGame_GetMode(1);
     RhGeom_PushMatrix(0);
@@ -495,7 +495,7 @@ void SzEffect_Draw(s32 group) {
             }
             data = (void *)(0x1EE0000 + (long)(link - links) * 0x8000);
         }
-        state = &D_0031BB50;
+        state = &gSzEffect_el;
         target = entry->target;
         source = entry->source;
         if (state->group != source || state->entry != target) {
@@ -510,7 +510,7 @@ void SzEffect_Draw(s32 group) {
         if (entry->source != 1) {
             addr = (void *)base;
         }
-        entry->result = result = D_00292FF0[entry->source].plays[entry->target](addr, flags);
+        entry->result = result = gSzEffect_aEffFuncTbl[entry->source].plays[entry->target](addr, flags);
         entry->time++;
         if (entry->source == 1) {
             lo = entry->model;
@@ -639,11 +639,11 @@ typedef struct Dispatch_001F4900 {
 } Dispatch_001F4900;
 
 extern s32 D_0031BE90;
-extern Dispatch_001F4900 D_00292FF0[];
+extern Dispatch_001F4900 gSzEffect_aEffFuncTbl[];
 extern s32 D_00292FF8[];
 
 s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    extern Cache_001F4900 D_0031BB50;
+    extern Cache_001F4900 gSzEffect_el;
     extern Slot_001F4900 D_0031BC50[];
     Slot_001F4900 *slot;
     void *source;
@@ -653,7 +653,7 @@ s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     s32 result;
     extern s32 SzEffect_LoadModule();
 
-    buffer = (u8 *)&D_0031BB50;
+    buffer = (u8 *)&gSzEffect_el;
     slot = D_0031BC50;
     source = 0;
     if (arg0 < 0 || arg0 >= 3) {
@@ -684,7 +684,7 @@ s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     do {
         destination = (void *)0x01ED0000;
         if (slot->state == 0) {
-            Cache_001F4900 *cache = &D_0031BB50;
+            Cache_001F4900 *cache = &gSzEffect_el;
             if (D_0031BE90 != arg0 || cache->entry != arg1) {
                 RhMem_CopyMemory16((void *)0x01E00000, (void *)source, 0x800);
                 iFlushCache(0);
@@ -698,7 +698,7 @@ s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
             if (arg0 != 1) {
                 destination = (void *)(((s64)index << 15) + 0x01E10000);
             }
-            result = D_00292FF0[arg0].handlers[arg1](destination, arg2);
+            result = gSzEffect_aEffFuncTbl[arg0].handlers[arg1](destination, arg2);
             RhGeom_PopMatrix();
             slot->state = 1;
             slot->group = arg0;
@@ -754,11 +754,11 @@ typedef struct {
 
 
 static inline void *find_001F4CB0(s32 source, s32 target) {
-    extern Data_001F4CB0 D_0031BB50;
+    extern Data_001F4CB0 gSzEffect_el;
     Entry_001F4CB0 *entry;
     s32 i;
 
-    entry = D_0031BB50.entries;
+    entry = gSzEffect_el.entries;
     for (i = 0; (s64)i < 32; i++, entry++) {
         if ((source < 0 || entry->source == source) && (target < 0 || entry->target == target)) {
             return entry;
@@ -768,8 +768,8 @@ static inline void *find_001F4CB0(s32 source, s32 target) {
 }
 
 s32 SzEffect_Destroy(s32 arg0) {
-    extern Data_001F4CB0 D_0031BB50;
-    Slot_001F4CB0 *slot = &D_0031BB50.slots[arg0];
+    extern Data_001F4CB0 gSzEffect_el;
+    Slot_001F4CB0 *slot = &gSzEffect_el.slots[arg0];
     Entry_001F4CB0 *entry;
 
     if (arg0 < 0 || arg0 >= 24) {
@@ -833,11 +833,11 @@ typedef struct Entry_001F4F10 {
 } Entry_001F4F10;
 
 s32 SzEffect_Sleep(s32 arg0, s32 arg1) {
-    extern u8 D_0031BB50[];
+    extern u8 gSzEffect_el[];
     Entry_001F4F10 *entry;
     s32 state;
 
-    entry = (Entry_001F4F10 *)(D_0031BB50 + arg0 * 0x18 + 0x100);
+    entry = (Entry_001F4F10 *)(gSzEffect_el + arg0 * 0x18 + 0x100);
     if ((arg0 < 0) || (arg0 >= 0x18)) {
         return 0;
     }
@@ -908,8 +908,8 @@ typedef struct {
 extern struct Entry_001F5240 D_0031BC50[];
 
 static inline s32 act_001F5090(s32 index) {
-    extern u8 D_0031BB50[];
-    Entry_001F5090 *entry = (Entry_001F5090 *)(D_0031BB50 + 0x100 + index * 0x18);
+    extern u8 gSzEffect_el[];
+    Entry_001F5090 *entry = (Entry_001F5090 *)(gSzEffect_el + 0x100 + index * 0x18);
 
     if (index < 0 || index >= 24) {
         return 0;
@@ -955,12 +955,12 @@ typedef struct State_001F51D0 {
 } State_001F51D0;
 
 s32 SzEffect_IsUse(s32 arg0) {
-    extern State_001F51D0 D_0031BB50;
+    extern State_001F51D0 gSzEffect_el;
     Entry_001F51D0 *entry;
     s32 temp_a0;
     s32 var_v0;
 
-    entry = &D_0031BB50.entries[arg0];
+    entry = &gSzEffect_el.entries[arg0];
     var_v0 = 0;
     if ((arg0 < 0) || (arg0 >= 0x18)) {
         return 0;
@@ -1025,10 +1025,10 @@ typedef struct {
     Entry_001F52D0 entries[0x18];
 } Data_001F52D0;
 
-extern Data_001F52D0 D_0031BB50;
+extern Data_001F52D0 gSzEffect_el;
 
 s32 SzEffect_GetStatus(s32 arg0) {
-    Entry_001F52D0 *entry = &D_0031BB50.entries[arg0];
+    Entry_001F52D0 *entry = &gSzEffect_el.entries[arg0];
     s32 ret;
 
     if ((arg0 < 0) || (arg0 >= 0x18)) {
@@ -1045,7 +1045,7 @@ typedef struct Bits_001F5320 {
 } Bits_001F5320;
 
 s32 SzEffect_GetCount(s32 arg0) {
-    Entry_001F52D0 *entry = &D_0031BB50.entries[arg0];
+    Entry_001F52D0 *entry = &gSzEffect_el.entries[arg0];
 
     if ((arg0 < 0) || (arg0 >= 0x18)) {
         return -1;
@@ -1127,7 +1127,7 @@ typedef struct {
 
 s32 SzEffect_SetRefID2(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 SzModel_SetRefID(s32, s32, s32);
-    State_001F5560 *state = (State_001F5560 *)&D_0031BB50;
+    State_001F5560 *state = (State_001F5560 *)&gSzEffect_el;
     s32 hi;
     s32 lo;
 

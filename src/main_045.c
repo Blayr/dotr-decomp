@@ -416,14 +416,14 @@ static inline u8 *cell_001DFBB0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 static inline u8 *slot_001DFBB0(s32 i) {
     if (i < 0 || i >= 6) {
         return NULL;
     }
-    return &D_0031A7C0[i * 0xA0];
+    return &gSzDuel_aCardControl[i * 0xA0];
 }
 
 s32 SzDuel_DelUnit(s32 arg0, s32 arg1) {
@@ -537,14 +537,14 @@ void *SzDuel_MoveUnit(s32 arg0, s32 arg1, s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         destination = NULL;
     } else {
-        destination = (Cell_001DFD50 *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+        destination = (Cell_001DFD50 *)(x * 0x1C + (gSzDuel_aaMapInfo + y * 0xC4));
     }
     oldY = piece->y;
     source = NULL;
     if (oldX < 0 || oldX >= 7 || oldY < 0 || oldY >= 7) {
         source = NULL;
     } else {
-        source = (Cell_001DFD50 *)(oldX * 0x1C + (D_00318E60 + oldY * 0xC4));
+        source = (Cell_001DFD50 *)(oldX * 0x1C + (gSzDuel_aaMapInfo + oldY * 0xC4));
     }
     if (destination == NULL || source == NULL) {
         return NULL;
@@ -574,14 +574,14 @@ void *SzDuel_MoveUnit(s32 arg0, s32 arg1, s32 x, s32 y) {
                 if (removedX < 0 || removedX >= 7 || removedY < 0 || removedY >= 7) {
                     removed = NULL;
                 } else {
-                    removed = (Cell_001DFD50 *)(removedX * 0x1C + (D_00318E60 + removedY * 0xC4));
+                    removed = (Cell_001DFD50 *)(removedX * 0x1C + (gSzDuel_aaMapInfo + removedY * 0xC4));
                 }
                 removed->piece = NULL;
             } else if (index > 0) {
                 if (index < 0 || index >= 6) {
                     entry = NULL;
                 } else {
-                    entry = (Entry_001DFD50 *)(D_0031A7C0 + index * 0xA0);
+                    entry = (Entry_001DFD50 *)(gSzDuel_aCardControl + index * 0xA0);
                 }
 
                 if (entry != NULL) {
@@ -1111,7 +1111,7 @@ void *SzDuel_GetUnitConstEffect2(void *arg0, s32 arg1) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         cell = NULL;
     } else {
-        cell = (void *)(x * 0x1C + (D_00318E60 + y * 0xC4));
+        cell = (void *)(x * 0x1C + (gSzDuel_aaMapInfo + y * 0xC4));
     }
     if (cell == NULL || *(void **)cell != object) {
         on_board = 0;
@@ -1427,7 +1427,7 @@ static inline u8 *cell_001E11B0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (D_00318E60 + (y * 0xC4));
+    return (x * 0x1C) + (gSzDuel_aaMapInfo + (y * 0xC4));
 }
 
 static inline void place_001E11B0(s32 arg0, s32 arg1, s32 arg2, void *arg3) {

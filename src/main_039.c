@@ -182,10 +182,10 @@ typedef struct {
 } Box_001B65F0;
 
 s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w, s32 h, s32 shadow, s32 style) {
-    extern Slice_001B65F0 D_00290080[];
-    extern Color_001B65F0 D_002BE840[];
-    u8 *state = D_00317490.b;
-    Slice_001B65F0 *slices = &D_00290080[style * 9 + 0x8C];
+    extern Slice_001B65F0 gSzDuel_Icon[];
+    extern Color_001B65F0 gSzDuel_aaicolRgba[];
+    u8 *state = gSzDuel_dl.b;
+    Slice_001B65F0 *slices = &gSzDuel_Icon[style * 9 + 0x8C];
     Color_001B65F0 *color;
     s32 originX;
     s32 originY;
@@ -204,7 +204,7 @@ s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s3
     if (colorIndex < 0) {
         colorIndex = 2;
     }
-    color = &D_002BE840[colorIndex];
+    color = &gSzDuel_aaicolRgba[colorIndex];
     ((Header_001B65F0 *)sprite.header)->flags = 0x26;
     ((Header_001B65F0 *)sprite.header)->count = 5;
     ((Header_001B65F0 *)sprite.header)->registers = 0x42421;
@@ -223,7 +223,7 @@ s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s3
     sprite.xyz1.z = *(s32 *)(state + 0xC58);
     sprite.xyz1.fog = 0;
     if (shadow >= 0) {
-        color = &D_002BE840[shadow];
+        color = &gSzDuel_aaicolRgba[shadow];
         if (w >= 0) {
             width = (slices[2].right - slices[2].left) +
                     ((slices[0].right - slices[0].left) + w * (slices[1].right - slices[1].left));
@@ -434,10 +434,10 @@ typedef struct {
 static s32 lSzDuel_GetFontIndex(s8 character);
 
 s32 SzDuel_DrawWindow_Font_Pipe(s32 packet, s32 x, s32 y, s32 font, s32 flags, s32 count, s8 *text, u8 *color) {
-    extern u8 D_002BE950[];
+    extern u8 gSzDuel_abFontSize[];
     extern u8 D_002BE951[];
-    extern Glyph_001B6F70 D_00290B70[];
-    extern u8 D_002BEA00[];
+    extern Glyph_001B6F70 gSzDuel_Font[];
+    extern u8 icolRgba[];
     u8 *state;
     s32 width;
     s32 lineHeight;
@@ -454,8 +454,8 @@ s32 SzDuel_DrawWindow_Font_Pipe(s32 packet, s32 x, s32 y, s32 font, s32 flags, s
     Sprite_001B6F70 sprite __attribute__((aligned(8)));
 
     originX = x + 0x6C0;
-    state = D_00317490.b;
-    width = D_002BE950[font * 2];
+    state = gSzDuel_dl.b;
+    width = gSzDuel_abFontSize[font * 2];
     cursorY = y + 0x720;
     lineHeight = D_002BE951[font * 2];
     proportional = 0;
@@ -479,7 +479,7 @@ s32 SzDuel_DrawWindow_Font_Pipe(s32 packet, s32 x, s32 y, s32 font, s32 flags, s
         subtractive = 1;
     }
     if (color == NULL) {
-        color = D_002BEA00;
+        color = icolRgba;
     }
     ((Header_001B6F70 *)sprite.header)->flags = 0x24;
     ((Header_001B6F70 *)sprite.header)->count = 9;
@@ -526,7 +526,7 @@ s32 SzDuel_DrawWindow_Font_Pipe(s32 packet, s32 x, s32 y, s32 font, s32 flags, s
                     lineWidth += proportional ? (width >> 1) : width;
                 }
             } else {
-                entry = &D_00290B70[glyph + font * 37];
+                entry = &gSzDuel_Font[glyph + font * 37];
                 if (proportional) {
                     lineWidth += entry->right - entry->left;
                 } else {
@@ -560,7 +560,7 @@ s32 SzDuel_DrawWindow_Font_Pipe(s32 packet, s32 x, s32 y, s32 font, s32 flags, s
                 cursorX += proportional ? (width >> 1) : width;
             }
         } else {
-            entry = &D_00290B70[glyph + font * 37];
+            entry = &gSzDuel_Font[glyph + font * 37];
             ExAssignTexture(&sprite, *(void **)(state + 0x6A0 + entry->texture * 4), 0);
             ((UV_001B6F70 *)&sprite.corners[0].uv)->u = entry->left * 16 + 8;
             ((UV_001B6F70 *)&sprite.corners[0].uv)->v = entry->top * 16 + 8;
@@ -619,9 +619,9 @@ typedef struct Glyph_001B76E0 {
     u16 unk8;
 } Glyph_001B76E0;
 
-extern u8 D_002BE950[];
+extern u8 gSzDuel_abFontSize[];
 extern u8 D_002BE951[];
-extern Glyph_001B76E0 D_00290B70[];
+extern Glyph_001B76E0 gSzDuel_Font[];
 
 void lSzDuel_GetFontSize(s32 arg0, s32 arg1, s32 arg2, s8 *arg3, s32 *arg4, s32 *arg5) {
     s32 width;
@@ -637,7 +637,7 @@ void lSzDuel_GetFontSize(s32 arg0, s32 arg1, s32 arg2, s8 *arg3, s32 *arg4, s32 
     s32 glyph;
     Glyph_001B76E0 *entry;
 
-    width = D_002BE950[arg0 * 2];
+    width = gSzDuel_abFontSize[arg0 * 2];
     lineHeight = D_002BE951[arg0 * 2];
     proportional = 0;
     maxWidth = 0;
@@ -662,7 +662,7 @@ void lSzDuel_GetFontSize(s32 arg0, s32 arg1, s32 arg2, s8 *arg3, s32 *arg4, s32 
                 lineWidth += proportional ? halfWidth : width;
             }
         } else {
-            entry = &D_00290B70[glyph + glyphBase];
+            entry = &gSzDuel_Font[glyph + glyphBase];
             if (proportional) {
                 lineWidth += entry->right - entry->left;
             } else {
@@ -762,8 +762,8 @@ s32 lSzDuel_DrawWindow_DualShock2_Pipe(s32 packet, s32 x, s32 y, s32 alpha) {
     Matrix_001B7820 matrix;
     Packet_001B7820 sprite __attribute__((aligned(8)));
 
-    state = (State_001B7820 *)D_00317490.b;
-    player = D_00317490.b + D_003181CC * 0x350;
+    state = (State_001B7820 *)gSzDuel_dl.b;
+    player = gSzDuel_dl.b + D_003181CC * 0x350;
     texture = (Texture_001B7820 *)D_0029080A;
     originX = x + 0x6C0;
     originY = y + 0x720;
@@ -873,7 +873,7 @@ static inline void set_uv_001B7D60(UV_001B7D60 *p, s32 u, s32 v) {
 s32 lSzDuel_DrawWindow_PicItem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
                   s64 arg6) {
     extern s32 SzText_InitClutManage();
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 x = arg2 + 0x6C0;
     s32 y = arg3 + 0x720;
     void **image;
@@ -962,7 +962,7 @@ static inline void set_uv_001B7F90(UV_001B7F90 *p, s32 u, s32 v) {
 s32 lSzDuel_DrawWindow_PicMini_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
                   s64 arg6, s32 arg7) {
     extern s32 SzText_InitClutManage();
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 x = arg2 + 0x6C0;
     s32 y = arg3 + 0x720;
     void **image;
@@ -1009,7 +1009,7 @@ void SzDuel_DrawJoinFade(void) {
 }
 
 s32 SzDuel_DrawJoinFade_Pipe(s32 arg0) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
 
     if (D_003181CA == 0) {
         return arg0;
@@ -1095,7 +1095,7 @@ typedef struct Draw_001B83F0 {
 s32 SzDuel_DrawJoinCard_Pipe(s32 arg0) {
     extern void SzDuel_ClearDrawCard();
     extern s32 D_00317B58;
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     Draw_001B83F0 draw;
 
     if (D_00317B58 == 0) {
@@ -1133,7 +1133,7 @@ void SzDuel_InitBuildDeck(s32 arg0) {
     s32 var_v1;
     u8 *var_v0;
 
-    state = D_00317490.b;
+    state = gSzDuel_dl.b;
     temp_s1 = SzData_GetCurrentDeck(arg0);
     var_s2 = (s16 *)0x01ED0000;
     var_s3 = (s16 *)0x01ED06AC;
@@ -1220,11 +1220,11 @@ void lSzDuel_ReBuildBag(void) {
     s32 limit;
     s32 offset;
 
-    player = D_00317490.s.player;
-    state = &D_00317490.s;
+    player = gSzDuel_dl.s.player;
+    state = &gSzDuel_dl.s;
     card = 0;
-    entry = D_00317490.s.list;
-    D_00317490.s.count = 0;
+    entry = gSzDuel_dl.s.list;
+    gSzDuel_dl.s.count = 0;
     do {
         if (SzData_GetBagCount(player, card, -1) > 0) {
             *entry = card;

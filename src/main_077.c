@@ -389,7 +389,7 @@ s32 Ta_SetDestinyEffect(s32 arg0, s32 *arg1) {
 }
 
 s32 Ta_GetDestinyDraw(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3) {
-    extern u16 D_002B8700[];
+    extern u16 Destiny_Tab[];
     extern u16 D_002B8702[];
     extern u16 D_002B8704[];
     extern void SzDuel_SetDestinyFlag(s32, u8);
@@ -516,7 +516,7 @@ s32 Ta_GetDestinyDraw(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3) {
     }
     if (!(flags & 0x80)) {
         index = (flags & 0xF) * 3;
-        arg1[0] = D_002B8700[index];
+        arg1[0] = Destiny_Tab[index];
         arg1[1] = D_002B8702[index];
         arg1[2] = D_002B8704[index];
         arg2[0] += bonus;

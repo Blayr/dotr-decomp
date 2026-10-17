@@ -570,7 +570,7 @@ s32 func_00190A90(void (*arg0)(void)) {
     return old;
 }
 
-#define cbfunc_num_00190AE8 (*(volatile s32 *)&D_0028DD14)
+#define cbfunc_num_00190AE8 (*(volatile s32 *)&sceCdCbfunc_num)
 
 /* _sceCd_cd_callback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
@@ -581,14 +581,14 @@ void cd_callback(void *data) {
     *(volatile s32 *)&D_0028DD18 = cbfunc_num_00190AE8;
     if (cbfunc_num_00190AE8 == 11) {
         cbfunc_num_00190AE8 = 0;
-        *(volatile s32 *)&D_0028DCF0 = 0;
+        *(volatile s32 *)&c_cb_sem = 0;
         return;
     }
-    ((s32 (*)(s32))iSignalSema)(*(volatile s32 *)&D_0028DCE8);
-    if (D_0028DCD4 != 0 && D_003156C0 != 0) {
-        ((s32 (*)(s32))iSignalSema)(*(volatile s32 *)&D_0028DCE0);
+    ((s32 (*)(s32))iSignalSema)(*(volatile s32 *)&ncmd_semid);
+    if (cb_thid != 0 && D_003156C0 != 0) {
+        ((s32 (*)(s32))iSignalSema)(*(volatile s32 *)&cb_semid);
     } else {
-        D_0028DCF0 = 0;
+        c_cb_sem = 0;
     }
     cbfunc_num_00190AE8 = 0;
 }
@@ -597,21 +597,21 @@ void cd_callback(void *data) {
 
 void _Cdvd_cbLoop(void) {
     while (1) {
-        WaitSema(D_0028DCE0);
-        if (D_0028DD14 == -1) {
-            D_0028DCF0 = 0;
-            D_0028DD14 = 0;
-            D_0028DCD4 = 0;
+        WaitSema(cb_semid);
+        if (sceCdCbfunc_num == -1) {
+            c_cb_sem = 0;
+            sceCdCbfunc_num = 0;
+            cb_thid = 0;
             D_003156CC = 0;
             ExitDeleteThread();
         }
-        if (D_0028DCD0 > 0) {
+        if (SCE_CD_debug > 0) {
             ((s32 (*)(char *, ...))scePrintf)(D_002BCBE8, D_003156C0, D_0028DD18);
         }
         if (D_003156C0 != NULL && D_0028DD18 != 0) {
             D_003156C0(D_0028DD18);
         }
-        D_0028DCF0 = 0;
+        c_cb_sem = 0;
     }
 }
 
@@ -624,7 +624,7 @@ typedef struct {
     s32 initPriority;
 } ThParam_00190C48;
 
-extern s32 D_0028DCD4;
+extern s32 cb_thid;
 extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern ThParam_00190C48 D_00315708;
@@ -633,7 +633,7 @@ extern s32 D_00317EF0;
 s32 sceCdInitEeCB(s32 arg0, void *arg1, s32 arg2) {
     s32 ret = 1;
 
-    if (D_0028DCD4 == 0) {
+    if (cb_thid == 0) {
         D_003156D0 = GetThreadId();
         ReferThreadStatus(D_003156D0, &D_003156D8);
         D_00315708.stackSize = arg2;
@@ -641,10 +641,10 @@ s32 sceCdInitEeCB(s32 arg0, void *arg1, s32 arg2) {
         D_00315708.entry = _Cdvd_cbLoop;
         D_00315708.stack = arg1;
         D_00315708.initPriority = arg0;
-        D_0028DCD4 = CreateThread(&D_00315708);
-        StartThread(D_0028DCD4, 0);
+        cb_thid = CreateThread(&D_00315708);
+        StartThread(cb_thid, 0);
     } else {
-        ChangeThreadPriority(D_0028DCD4, arg0);
+        ChangeThreadPriority(cb_thid, arg0);
         ret = 0;
     }
     return ret;
@@ -678,32 +678,32 @@ void cd_read_intr(void *arg0) {
             d[i] = p->b2[i];
         }
     }
-    cd_callback(&D_0028DD14);
+    cd_callback(&sceCdCbfunc_num);
 }
 
 void cmd_sem_init(void) {
     s32 sp0[8];
 
-    if (D_0028DCE8 == -1 || D_0028DCEC == -1) {
+    if (ncmd_semid == -1 || scmd_semid == -1) {
         sp0[5] = 0;
         sp0[2] = 1;
         sp0[1] = 1;
-        (*(volatile s32 *)&D_0028DCE8) = CreateSema(sp0);
-        D_0028DCEC = CreateSema(sp0);
+        (*(volatile s32 *)&ncmd_semid) = CreateSema(sp0);
+        scmd_semid = CreateSema(sp0);
         sp0[2] = 0;
-        (*(volatile s32 *)&D_0028DCE0) = CreateSema(sp0);
-        D_0028DCF0 = 0;
+        (*(volatile s32 *)&cb_semid) = CreateSema(sp0);
+        c_cb_sem = 0;
     }
 }
 
 void cdvd_exit(void) {
-    if (D_0028DCD4 != 0) {
-        *(volatile s32 *)&D_0028DD14 = -1;
-        SignalSema(*(volatile s32 *)&D_0028DCE0);
+    if (cb_thid != 0) {
+        *(volatile s32 *)&sceCdCbfunc_num = -1;
+        SignalSema(*(volatile s32 *)&cb_semid);
     }
-    DeleteSema(D_0028DCE8);
-    DeleteSema(D_0028DCEC);
-    DeleteSema(D_0028DCE0);
+    DeleteSema(ncmd_semid);
+    DeleteSema(scmd_semid);
+    DeleteSema(cb_semid);
     func_001843E0();
     sceSifRemoveCmdHandler(0x80000012);
     func_00184428();
@@ -764,7 +764,7 @@ typedef struct {
     unsigned char b[0x24];
 } CdlFILE_00190FF0;
 
-extern int D_0028DCDC;
+extern int ncmd_sema_keep_cmd;
 extern s32 D_003156D0;
 extern s32 D_003156D8;
 extern int D_0028DD00;
@@ -788,20 +788,20 @@ s32 sceCdSearchFile(void *arg0, const char *name) {
     int v;
 
     cmd_sem_init();
-    if (D_0028DCE8 != PollSema(*(volatile int *)&D_0028DCE8)) {
+    if (ncmd_semid != PollSema(*(volatile int *)&ncmd_semid)) {
         return 0;
     }
-    D_0028DCDC = 1;
+    ncmd_sema_keep_cmd = 1;
     ReferThreadStatus(D_003156D0, &D_003156D8);
     if (sceCdSync(1) != 0) {
-        SignalSema(*(volatile int *)&D_0028DCE8);
+        SignalSema(*(volatile int *)&ncmd_semid);
         return 0;
     }
     ((void (*)(s32))func_0017E240)(0);
     if (D_0028DD00 < 0) {
         while (1) {
             if (sceSifBindRpc(&D_003158C0, 0x80000597, 0) < 0) {
-                if (D_0028DCD0 > 0) {
+                if (SCE_CD_debug > 0) {
                     scePrintf_00190FF0(D_002BCC10);
                 }
                 w = 0x100000;
@@ -826,26 +826,26 @@ s32 sceCdSearchFile(void *arg0, const char *name) {
     }
     req = (char *)&D_00315740;
     *(char **)(req + 0x124) = req;
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00190FF0(D_002BCC30, req + 0x24);
     }
     func_0017E190((s32 *)req, 0x128);
     if (sceSifCallRpc((s32 *)&D_003158C0, 0, 0, (s32 *)req, 0x128, D_00315880, 4, 0, 0) < 0) {
-        SignalSema(*(volatile int *)&D_0028DCE8);
+        SignalSema(*(volatile int *)&ncmd_semid);
         return 0;
     }
     *(CdlFILE_00190FF0 *)arg0 = *(CdlFILE_00190FF0 *)((int)req | 0x20000000);
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00190FF0(D_002BCC48, (char *)arg0 + 8);
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00190FF0(D_002BCC58, ((int *)arg0)[1]);
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00190FF0(D_002BCC68, ((int *)arg0)[0]);
     }
     v = *(int *)((int)D_00315880 | 0x20000000);
-    SignalSema(D_0028DCE8);
+    SignalSema(ncmd_semid);
     return v;
 }
 
@@ -864,8 +864,8 @@ typedef struct CdClient_001912F0 {
     unsigned int serve;
 } CdClient_001912F0;
 
-extern int D_0028DCDC;
-extern int D_0028DCF8;
+extern int ncmd_sema_keep_cmd;
+extern int _rd_bind;
 #define cd_001912F0 (*(CdClient_001912F0 *)&D_0028EE90)
 extern s32 D_003156D0;
 extern s32 D_003156D8;
@@ -880,23 +880,23 @@ s32 ncmd_prechk(int cmd) {
     int w;
 
     cmd_sem_init();
-    if (D_0028DCE8 != PollSema(*(volatile int *)&D_0028DCE8)) {
-        if (D_0028DCD0 > 0) {
-            scePrintf_001912F0(D_002BCC80, cmd, D_0028DCDC);
+    if (ncmd_semid != PollSema(*(volatile int *)&ncmd_semid)) {
+        if (SCE_CD_debug > 0) {
+            scePrintf_001912F0(D_002BCC80, cmd, ncmd_sema_keep_cmd);
         }
         return 0;
     }
-    D_0028DCDC = cmd;
+    ncmd_sema_keep_cmd = cmd;
     ReferThreadStatus(D_003156D0, &D_003156D8);
     if (sceCdSync(1) != 0) {
-        SignalSema(*(volatile int *)&D_0028DCE8);
+        SignalSema(*(volatile int *)&ncmd_semid);
         return 0;
     }
     ((void (*)(s32))func_0017E240)(0);
-    if (D_0028DCF8 < 0) {
+    if (_rd_bind < 0) {
         while (1) {
             if (sceSifBindRpc(&cd_001912F0, 0x80000595, 0) < 0) {
-                if (D_0028DCD0 > 0) {
+                if (SCE_CD_debug > 0) {
                     scePrintf_001912F0(D_002BCCA8);
                 }
                 w = 0x100000;
@@ -904,7 +904,7 @@ s32 ncmd_prechk(int cmd) {
                 continue;
             }
             if (cd_001912F0.serve != 0) {
-                D_0028DCF8 = 0;
+                _rd_bind = 0;
                 break;
             }
             w = 0x100000;
@@ -924,25 +924,25 @@ s32 func_00191460(void) {
         return 0;
     }
     if (sceSifCallRpc(&D_0028EE90, 0xE, 0, 0, 0, &D_0028DD40, 4, 0, 0) < 0) {
-        SignalSema(D_0028DCE8);
+        SignalSema(ncmd_semid);
         return 0;
     }
     temp_s0 = *(s32 *)((s32) &D_0028DD40 | 0x20000000);
-    SignalSema(D_0028DCE8);
+    SignalSema(ncmd_semid);
     return temp_s0;
 }
 
 s32 sceCdSync(s32 arg0) {
     if (arg0 == 0) {
-        if (D_0028DCD0 > 0) {
+        if (SCE_CD_debug > 0) {
             scePrintf(&D_002BCCC0);
         }
-        while (D_0028DCF0 != 0 || sceSifCheckStatRpc(&D_0028EE90) != 0) {
+        while (c_cb_sem != 0 || sceSifCheckStatRpc(&D_0028EE90) != 0) {
             sceCdDelayThread(0x3C);
         }
         return 0;
     }
-    if (D_0028DCF0 != 0 || sceSifCheckStatRpc(&D_0028EE90) != 0) {
+    if (c_cb_sem != 0 || sceSifCheckStatRpc(&D_0028EE90) != 0) {
         return 1;
     }
     return 0;
@@ -950,7 +950,7 @@ s32 sceCdSync(s32 arg0) {
 
 s32 sceCdSyncS(s32 arg0) {
     if (arg0 == 0) {
-        if (D_0028DCD0 > 0) {
+        if (SCE_CD_debug > 0) {
             scePrintf(&D_002BCCD0);
         }
         while (sceSifCheckStatRpc(&D_0028F708) != 0) {
@@ -974,8 +974,8 @@ typedef struct CdClient_00191608 {
     unsigned int serve;
 } CdClient_00191608;
 
-extern int D_0028DCD8;
-extern int D_0028DD08;
+extern int scmd_sema_keep_cmd;
+extern int _scmd_bind;
 #define cd_00191608 (*(CdClient_00191608 *)&D_0028F708)
 extern s32 D_003156D0;
 extern s32 D_003156D8;
@@ -990,23 +990,23 @@ s32 scmd_prechk(int cmd) {
     int w;
 
     cmd_sem_init();
-    if (D_0028DCEC != PollSema(*(volatile int *)&D_0028DCEC)) {
-        if (D_0028DCD0 > 0) {
-            scePrintf_00191608(D_002BCCE0, cmd, D_0028DCD8);
+    if (scmd_semid != PollSema(*(volatile int *)&scmd_semid)) {
+        if (SCE_CD_debug > 0) {
+            scePrintf_00191608(D_002BCCE0, cmd, scmd_sema_keep_cmd);
         }
         return 0;
     }
-    D_0028DCD8 = cmd;
+    scmd_sema_keep_cmd = cmd;
     ReferThreadStatus(D_003156D0, &D_003156D8);
     if (sceCdSyncS(1) != 0) {
-        SignalSema(*(volatile int *)&D_0028DCEC);
+        SignalSema(*(volatile int *)&scmd_semid);
         return 0;
     }
     ((void (*)(s32))func_0017E240)(0);
-    if (D_0028DD08 < 0) {
+    if (_scmd_bind < 0) {
         while (1) {
             if (sceSifBindRpc(&cd_00191608, 0x80000593, 0) < 0) {
-                if (D_0028DCD0 > 0) {
+                if (SCE_CD_debug > 0) {
                     scePrintf_00191608(D_002BCD08);
                 }
                 w = 0x100000;
@@ -1014,7 +1014,7 @@ s32 scmd_prechk(int cmd) {
                 continue;
             }
             if (cd_00191608.serve != 0) {
-                D_0028DD08 = 0;
+                _scmd_bind = 0;
                 break;
             }
             w = 0x100000;
@@ -1043,10 +1043,10 @@ typedef struct CdClient_00191778 {
 extern volatile int D_0028DCF4;
 extern char D_002BCD20[];
 extern char D_002BCD40[];
-extern int D_0028DCF8;
+extern int _rd_bind;
 extern int D_0028DD00;
 extern int D_0028DD04;
-extern int D_0028DD08;
+extern int _scmd_bind;
 extern int D_0028DD0C;
 extern int D_0028DD10;
 extern int D_003156D0;
@@ -1071,8 +1071,8 @@ s32 func_00191778(s32 mode) {
     D_003156D0 = GetThreadId();
     *(volatile int *)&D_0028DCE4 = 1;
     D_0028DD00 = -1;
-    D_0028DCF8 = -1;
-    D_0028DD08 = -1;
+    _rd_bind = -1;
+    _scmd_bind = -1;
     D_0028DD04 = -1;
     D_0028DD0C = -1;
     D_0028DCFC = -1;
@@ -1081,7 +1081,7 @@ s32 func_00191778(s32 mode) {
     while (1) {
         r = sceSifBindRpc(&D_003158E8, 0x80000592, 0);
         if (r < 0) {
-            if (D_0028DCD0 > 0) {
+            if (SCE_CD_debug > 0) {
                 ((void (*)(const char *, ...))scePrintf)(D_002BCD20, r, D_0028DD10);
             }
             w = 0x100000;
@@ -1108,20 +1108,20 @@ s32 func_00191778(s32 mode) {
     ver = 1;
     if (type == 0xFF) {
     } else if (type == 0xFE) {
-        D_0028DCD0 = 1;
+        SCE_CD_debug = 1;
     } else if (v1 / 256 < 2 || v2 / 256 < 2) {
         ver = 2;
     }
     *(volatile int *)&D_0028DCE4 = 0;
     switch (mode) {
     case 5:
-        if (D_0028DCD0 > 0) {
+        if (SCE_CD_debug > 0) {
             ((void (*)(const char *, ...))scePrintf)(D_002BCD40);
         }
         cdvd_exit();
-        *(volatile int *)&D_0028DCE8 = -1;
-        *(volatile int *)&D_0028DCEC = -1;
-        *(volatile int *)&D_0028DCE0 = -1;
+        *(volatile int *)&ncmd_semid = -1;
+        *(volatile int *)&scmd_semid = -1;
+        *(volatile int *)&cb_semid = -1;
         break;
     case 0:
     case 1:
@@ -1161,22 +1161,22 @@ s32 func_00191A58(int mode) {
     int v;
     int w;
 
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00191A58(D_002BCD50);
     }
     cmd_sem_init();
-    if (D_0028DCEC != PollSema(*(volatile int *)&D_0028DCEC)) {
+    if (scmd_semid != PollSema(*(volatile int *)&scmd_semid)) {
         return 6;
     }
     if (sceCdSyncS(1) != 0) {
-        SignalSema(*(volatile int *)&D_0028DCEC);
+        SignalSema(*(volatile int *)&scmd_semid);
         return (mode != 8) ? 6 : -1;
     }
     ((void (*)(s32))func_0017E240)(0);
     if (D_0028DD04 < 0) {
         while (1) {
             if (sceSifBindRpc(&D_00315910, 0x8000059A, 0) < 0) {
-                if (D_0028DCD0 > 0) {
+                if (SCE_CD_debug > 0) {
                     scePrintf_00191A58(D_002BCD60);
                 }
                 w = 0x100000;
@@ -1194,14 +1194,14 @@ s32 func_00191A58(int mode) {
     D_00315950 = mode;
     func_0017E190(&D_00315950, 4);
     if (sceSifCallRpc((s32 *)&D_00315910, 0, 0, &D_00315950, 4, &D_0028EEC0, 4, 0, 0) < 0) {
-        SignalSema(*(volatile int *)&D_0028DCEC);
+        SignalSema(*(volatile int *)&scmd_semid);
         return (mode != 8) ? 6 : -1;
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00191A58(D_002BCD80);
     }
     v = *(int *)((int)&D_0028EEC0 | 0x20000000);
-    SignalSema(D_0028DCEC);
+    SignalSema(scmd_semid);
     return v;
 }
 

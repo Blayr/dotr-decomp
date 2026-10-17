@@ -7,9 +7,9 @@ s32 movie(s32 arg0) {
     D_003503B8 = temp_a1 + 1;
     func_00199B50(D_0030F354, temp_a1);
     initAll(arg0);
-    readMpeg((void *)D_00350680, (void *)D_00350788, (void *)D_00350740);
+    readMpeg((void *)videoDec, (void *)readBuf, (void *)infile);
     termAll();
-    return D_003505F0;
+    return controller_val;
 }
 
 struct DotrMpegDecoder {
@@ -65,12 +65,12 @@ int readMpeg(void *vd_v, void *rb_v, void *file_v)
         func_00203320_b();
         SzPad_VSync();
         func_00203840_b();
-        D_003505F0 = SzPad_Check(0, 1, 0xffff) & 0xffff;
-        pushed = D_003505F0 & (button_old ^ D_003505F0) & 0x8e0;
-        button_old = D_003505F0;
-        if (D_003503B0 && pushed && vd->unknown_08 > 10 && !isPaused) {
+        controller_val = SzPad_Check(0, 1, 0xffff) & 0xffff;
+        pushed = controller_val & (button_old ^ controller_val) & 0x8e0;
+        button_old = controller_val;
+        if (isWithInter && pushed && vd->unknown_08 > 10 && !isPaused) {
             endDisplay();
-            if (D_0029B2F0) {
+            if (isWithAudio) {
                 audioDecPause(&D_00350620_b);
             }
             videoDecAbort(&D_00350680_b);
@@ -94,7 +94,7 @@ int readMpeg(void *vd_v, void *rb_v, void *file_v)
         func_00242D00_b();
         if (!isStarted && voBufIsFull(&D_00350600_b) && isAudioOK()) {
             startDisplay(1);
-            if (D_0029B2F0) {
+            if (isWithAudio) {
                 audioDecStart(&D_00350620_b);
             }
             isStarted = 1;
@@ -107,7 +107,7 @@ int readMpeg(void *vd_v, void *rb_v, void *file_v)
         switchThread();
     }
     endDisplay();
-    if (D_0029B2F0) {
+    if (isWithAudio) {
         audioDecReset(&D_00350620_b);
     }
     return 1;
@@ -118,8 +118,8 @@ void switchThread(void) {
 }
 
 s32 isAudioOK(void) {
-    if (D_0029B2F0 != 0) {
-        return audioDecIsPreset(D_00350620);
+    if (isWithAudio != 0) {
+        return audioDecIsPreset(audioDec);
     }
     return 1;
 }
@@ -140,8 +140,8 @@ extern char D_0030F39A[];
 extern u8 D_00317EF0[];
 extern s32 D_00350730;
 extern s32 D_00350734;
-extern s32 D_00350778;
-extern s32 D_00350780;
+extern s32 defaultTh;
+extern s32 videoDecTh;
 
 void initAll(s32 arg0) {
     ThreadParams_00242950 thread;
@@ -152,40 +152,40 @@ void initAll(s32 arg0) {
 
     *(s32 *)0x1000E000 |= 3;
     *(s32 *)0x1000E010 = 4;
-    readBufCreate((void *)D_00350788);
+    readBufCreate((void *)readBuf);
     sceMpegInit();
-    videoDecCreate(D_00350680, D_00350380, 0x1C9168, D_00350398,
-                 D_00350378, 0x100, D_003503A8, 0x200);
+    videoDecCreate(videoDec, mpegWork, 0x1C9168, viBufData,
+                 viBufTag, 0x100, timeStamp, 0x200);
     func_001906D0();
     func_00190810(1, 0x8000, 0);
-    audioDecCreate(D_00350620, D_00350390, 0xC000, 0x6000);
-    videoDecSetStream(D_00350680, 0, 0, (void (*)())videoCallback, D_00350788);
-    if (D_0029B2F0 != 0) {
-        videoDecSetStream(D_00350680, 2, 0, (void (*)())pcmCallback, D_00350788);
+    audioDecCreate(audioDec, audioBuff, 0xC000, 0x6000);
+    videoDecSetStream(videoDec, 0, 0, (void (*)())videoCallback, readBuf);
+    if (isWithAudio != 0) {
+        videoDecSetStream(videoDec, 2, 0, (void (*)())pcmCallback, readBuf);
     }
-    voBufCreate(D_00350600,
-                 ((u64)((s64)D_00350368 << 36) >> 36) | 0x20000000,
-                 (void *)D_00350370, 2);
+    voBufCreate(voBuf,
+                 ((u64)((s64)voBufData << 36) >> 36) | 0x20000000,
+                 (void *)voBufTag, 2);
     thread.entry = defMain;
-    thread.stack = D_00350388;
+    thread.stack = defStack;
     thread.stack_size = 0x800;
     thread.priority = 0x20;
     thread.gp = D_00317EF0;
     thread.option = 0;
-    D_00350778 = CreateThread(&thread);
-    StartThread(D_00350778, NULL);
+    defaultTh = CreateThread(&thread);
+    StartThread(defaultTh, NULL);
     thread.entry = (void (*)())videoDecMain;
-    thread.stack = D_003503A0;
+    thread.stack = videoDecStack;
     thread.stack_size = 0x4000;
     thread.priority = 0x20;
     thread.gp = D_00317EF0;
     thread.option = 0;
-    D_00350780 = CreateThread(&thread);
-    StartThread(D_00350780, D_00350680);
-    if (strFileOpen(D_00350740, arg0) == 0) {
+    videoDecTh = CreateThread(&thread);
+    StartThread(videoDecTh, videoDec);
+    if (strFileOpen(infile, arg0) == 0) {
         do {
             func_00199B50(D_0030F39A, arg0);
-        } while (strFileOpen(D_00350740, arg0) == 0);
+        } while (strFileOpen(infile, arg0) == 0);
     }
     D_00350734 = AddIntcHandler(2, vblankHandler, 0);
     func_0017C428(2);
@@ -204,22 +204,22 @@ void termAll(void) {
     extern s32 RemoveIntcHandler(s32, s32);
     extern s32 D_00350730;
     extern s32 D_00350734;
-    extern s32 D_00350778;
-    extern s32 D_00350780;
+    extern s32 defaultTh;
+    extern s32 videoDecTh;
 
-    readBufDelete(D_00350788);
-    voBufDelete(D_00350600);
-    TerminateThread(D_00350780);
-    DeleteThread(D_00350780);
-    TerminateThread(D_00350778);
-    DeleteThread(D_00350778);
+    readBufDelete(readBuf);
+    voBufDelete(voBuf);
+    TerminateThread(videoDecTh);
+    DeleteThread(videoDecTh);
+    TerminateThread(defaultTh);
+    DeleteThread(defaultTh);
     func_0017C490(2);
     RemoveDmacHandler(2, D_00350730);
     func_0017C3C0(2);
     RemoveIntcHandler(2, D_00350734);
-    videoDecDelete(D_00350680);
-    audioDecDelete(D_00350620);
-    strFileClose(D_00350740);
+    videoDecDelete(videoDec);
+    audioDecDelete(audioDec);
+    strFileClose(infile);
 }
 
 void defMain(void) {
@@ -233,7 +233,7 @@ void ErrMessage(s8 *arg0) {
 }
 
 void proceedAudio(void) {
-    audioDecSendToIOP(D_00350620);
+    audioDecSendToIOP(audioDec);
 }
 
 typedef struct Buffer_00242D10 {
@@ -272,15 +272,15 @@ s32 videoCallback(s32 arg0, void *arg1, u8 *arg2) {
     first = buffer->size;
     first = (first < avail) ? first : avail;
     rest = ((Buffer_00242D10 *)arg1)->size - first;
-    videoDecBeginPut(D_00350680, &dst1, &dstSize1, &dst2, &dstSize2);
+    videoDecBeginPut(videoDec, &dst1, &dstSize1, &dst2, &dstSize2);
     result = copy2area((void *)((dst1 & 0x0FFFFFFF) | 0x20000000), dstSize1,
                            (void *)((dst2 & 0x0FFFFFFF) | 0x20000000), dstSize2,
                            data, first, ring, rest);
-    if (result > 0 && videoDecPutTs(D_00350680, ((Buffer_00242D10 *)arg1)->unk10,
+    if (result > 0 && videoDecPutTs(videoDec, ((Buffer_00242D10 *)arg1)->unk10,
                                     ((Buffer_00242D10 *)arg1)->unk18, dst1, result) == 0) {
         ErrMessage(D_0030F5E0);
     }
-    videoDecEndPut(D_00350680, result);
+    videoDecEndPut(videoDec, result);
     return (result > 0) ? 1 : 0;
 }
 
@@ -320,10 +320,10 @@ s32 pcmCallback(s32 arg0, void *arg1, u8 *arg2) {
     if (size < firstSize) {
         firstSize = size;
     }
-    audioDecBeginPut(D_00350620, &dst1, &dstSize1, &dst2, &dstSize2);
+    audioDecBeginPut(audioDec, &dst1, &dstSize1, &dst2, &dstSize2);
     result = copy2area(dst1, dstSize1, dst2, dstSize2,
                           data, firstSize, arg2, size - firstSize);
-    audioDecEndPut(D_00350620, result);
+    audioDecEndPut(audioDec, result);
     if (result > 0) {
         return 1;
     }
@@ -374,7 +374,7 @@ typedef struct {
 
 extern char D_0030F600[];
 extern char D_0030F61C[];
-extern u8 D_003507C0[];
+extern u8 _0_buf[];
 
 s32 audioDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     State_00243060 *state = arg0;
@@ -406,8 +406,8 @@ s32 audioDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
     func_00199B50(D_0030F61C, temp_a1_2, 0x800);
-    func_00198948(D_003507C0, 0, 0x800U);
-    sendToIOP(state->unk58, (s32) D_003507C0, 0x800);
+    func_00198948(_0_buf, 0, 0x800U);
+    sendToIOP(state->unk58, (s32) _0_buf, 0x800);
     changeMasterVolume(0x3FFF);
     return 1;
 }
@@ -850,14 +850,14 @@ s32 strFileRead(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
             if (sp4C == 0) {
                 break;
             }
-            if (D_0029B2F0 != 0) {
-                audioDecPause(D_00350620);
+            if (isWithAudio != 0) {
+                audioDecPause(audioDec);
             }
             sceCdStStop();
             while (func_00191A58(0) != 2 || sceCdStStart(arg3, (u8 *)&sp48) == 0) {
             }
-            if (D_0029B2F0 != 0) {
-                audioDecResume(D_00350620);
+            if (isWithAudio != 0) {
+                audioDecResume(audioDec);
             }
         }
         result <<= 11;

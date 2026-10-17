@@ -9,7 +9,7 @@ extern State_0022F1C0 D_0029ABC0;
 
 s32 Taku_Camp_BOTAN_MATI(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
-    s8 *slide = &D_00299E10;
+    s8 *slide = &save_data;
     State_0022F1C0 local;
     s32 flag;
     s32 step;

@@ -15,7 +15,7 @@ s32 sceMcClose(s32 arg0) {
     D_00315CC0 = arg0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 3, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 3;
+        mcRunCmdNo = 3;
     } else {
         SignalSema(D_0028F794);
     }
@@ -39,7 +39,7 @@ s32 func_00193DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)((u8 *)(&D_00315CC0) + 0x14)) = arg2;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 4, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 4;
+        mcRunCmdNo = 4;
     } else {
         SignalSema(D_0028F794);
     }
@@ -95,7 +95,7 @@ s32 func_00193F38(s32 arg0, s32 *arg1, s32 arg2) {
     func_0017E190(&D_00316140, 0xC0);
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 5, 1, &D_00315CC0, 0x30, &D_00317200, 4, (s32) &mceIntrReadFixAlign, (s32) &D_00316140);
     if (temp_v0 == 0) {
-        D_0028F790 = 5;
+        mcRunCmdNo = 5;
     } else {
         SignalSema(D_0028F794);
     }
@@ -147,7 +147,7 @@ s32 func_00194058(s32 arg0, void *arg1, s32 arg2) {
     FlushCache(0);
     ret = sceSifCallRpc(&D_00315C40, 6, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (ret == 0) {
-        D_0028F790 = 6;
+        mcRunCmdNo = 6;
     } else {
         SignalSema(D_0028F794);
     }
@@ -168,7 +168,7 @@ void func_00194200(s32 arg0) {
 s32 func_00194248(s32 arg0, s32 *arg1, s32 *arg2) {
     s32 ret;
 
-    if (D_0028F790 == 0) {
+    if (mcRunCmdNo == 0) {
         return -1;
     }
     ret = sceSifCheckStatRpc(&D_00315C40);
@@ -180,10 +180,10 @@ s32 func_00194248(s32 arg0, s32 *arg1, s32 *arg2) {
     }
     ret = ret == 0;
     if (arg1 != NULL) {
-        *arg1 = D_0028F790;
+        *arg1 = mcRunCmdNo;
     }
     if (ret != 0) {
-        D_0028F790 = 0;
+        mcRunCmdNo = 0;
         if (arg2 != NULL) {
             *arg2 = D_00317200;
         }
@@ -254,7 +254,7 @@ s32 func_00194380(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
     func_0017E190(&D_00316140, 0xC0);
     ret = sceSifCallRpc(&D_00315C40, 1, 1, &D_00315CC0, 0x30, &D_00317200, 4, (s32)mceGetInfoApdx, (s32)&D_00316140);
     if (ret == 0) {
-        D_0028F790 = 1;
+        mcRunCmdNo = 1;
     } else {
         SignalSema(D_0028F794);
     }
@@ -297,7 +297,7 @@ s32 func_00194578(s32 arg0, s32 arg1, void *arg2, u32 arg3, s32 arg4, void *arg5
     }
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xD, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0xD;
+        mcRunCmdNo = 0xD;
     } else {
         SignalSema(D_0028F794);
     }
@@ -344,7 +344,7 @@ s32 func_00194758(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     func_0017E190(&D_00316200, 0x400);
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xC, 1, &D_00315CF0, 0x414, &D_00317200, 4, (s32) mceStorePwd, (s32) arg3);
     if (temp_v0 == 0) {
-        D_0028F790 = 0xC;
+        mcRunCmdNo = 0xC;
     } else {
         SignalSema(D_0028F794);
     }
@@ -369,7 +369,7 @@ s32 func_001948A8(s32 arg0, s32 arg1) {
     (*(s32 *)(b_D_00315CC0 + 4)) = arg0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x10, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0x10;
+        mcRunCmdNo = 0x10;
     } else {
         SignalSema(D_0028F794);
     }
@@ -403,7 +403,7 @@ s32 func_00194970(s32 arg0, s32 arg1, s8 *arg2) {
     (*(s32 *)((u8 *)temp_v1 + 8)) = 0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xF, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0xF;
+        mcRunCmdNo = 0xF;
     } else {
         SignalSema(D_0028F794);
     }
@@ -425,7 +425,7 @@ s32 sceMcFlush(s32 arg0) {
     D_00315CC0 = arg0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xA, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0xA;
+        mcRunCmdNo = 0xA;
     } else {
         SignalSema(D_0028F794);
     }
@@ -472,7 +472,7 @@ s32 func_00194B50(s32 arg0, s32 arg1, s8 *arg2, void *arg3, s32 arg4) {
     FlushCache(0);
     ret = sceSifCallRpc(p, 0xE, 1, (s32 *)d, 0x414, &D_00317200, 4, 0, 0);
     if (ret == 0) {
-        D_0028F790 = 0xE;
+        mcRunCmdNo = 0xE;
     } else {
         SignalSema(D_0028F794);
     }
@@ -508,7 +508,7 @@ s32 func_00194D28(s32 arg0, s32 arg1, s8 *arg2, void *arg3) {
     FlushCache(0);
     temp_v0 = sceSifCallRpc(p, 0xE, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0x13;
+        mcRunCmdNo = 0x13;
     } else {
         SignalSema(D_0028F794);
     }
@@ -533,7 +533,7 @@ s32 func_00194E90(s32 arg0, s32 arg1) {
     (*(s32 *)(b_D_00315CC0 + 4)) = arg0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x11, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0x11;
+        mcRunCmdNo = 0x11;
     } else {
         SignalSema(D_0028F794);
     }
@@ -562,7 +562,7 @@ s32 func_00194F58(s32 arg0, s32 arg1, s8 *arg2) {
     (*(s8 *)((u8 *)(&D_00315CF0) + 0x413)) = 0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x12, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0x12;
+        mcRunCmdNo = 0x12;
     } else {
         SignalSema(D_0028F794);
     }

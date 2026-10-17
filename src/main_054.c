@@ -94,9 +94,9 @@ typedef struct Flags_001FF420 {
 
 
 s32 SzFile_DoRequestS(void) {
-    extern State_001FF420 D_0031C2F0;
+    extern State_001FF420 gSzFile_fl;
     extern Flags_001FF420 D_00322980;
-    State_001FF420 *state = &D_0031C2F0;
+    State_001FF420 *state = &gSzFile_fl;
     s32 temp_v0;
 
     if (D_00322980.active == 0) {
@@ -148,7 +148,7 @@ extern char D_002D0648[];
 extern char D_002D064D[];
 
 s32 lSzFile_DoRequestMain(s32 arg0) {
-    extern State_001FF480 D_0031C2F0;
+    extern State_001FF480 gSzFile_fl;
     extern s32 func_0019B648();
     char path[0x88];
     s32 status;
@@ -158,7 +158,7 @@ s32 lSzFile_DoRequestMain(s32 arg0) {
     s32 sector;
     s32 count;
 
-    state = &D_0031C2F0;
+    state = &gSzFile_fl;
     if (arg0 < 0) {
         return 0;
     }
@@ -273,8 +273,8 @@ typedef struct {
 } Queue_001FF9C0;
 
 static s32 lSzFile_NextRequest(void) {
-    extern Queue_001FF9C0 D_0031C2F0;
-    Queue_001FF9C0 *queue = &D_0031C2F0;
+    extern Queue_001FF9C0 gSzFile_fl;
+    Queue_001FF9C0 *queue = &gSzFile_fl;
     s32 bestIndex = -1;
     s32 bestPriority = -1;
     s32 i;
@@ -354,15 +354,15 @@ typedef struct State_001FFAC0 {
 
 
 void lSzFile_TermRequest(s32 arg0, s32 arg1) {
-    extern State_001FFAC0 D_0031C2F0;
+    extern State_001FFAC0 gSzFile_fl;
     extern void *SzFile_InqGroup();
     extern void SzMem_Free();
     State_001FFAC0 *state;
     Entry_001FFAC0 *entry;
     Callback_001FFAC0 *callback;
 
-    state = &D_0031C2F0;
-    entry = &D_0031C2F0.entries[arg0];
+    state = &gSzFile_fl;
+    entry = &gSzFile_fl.entries[arg0];
     if (entry->callback != NULL) {
         entry->callback(entry, arg1);
     }
@@ -463,9 +463,9 @@ typedef struct {
 } Queue_001FFD30;
 
 static inline s32 poll_001FFD30(void) {
-    extern Queue_001FFD30 D_0031C2F0;
+    extern Queue_001FFD30 gSzFile_fl;
     extern Flags_001FFD30 D_00322980;
-    Queue_001FFD30 *queue = &D_0031C2F0;
+    Queue_001FFD30 *queue = &gSzFile_fl;
     s32 handle;
 
     if (D_00322980.running == 0) {
@@ -479,10 +479,10 @@ static inline s32 poll_001FFD30(void) {
 }
 
 s32 SzFile_Read(s32 arg0, s32 arg1, s32 arg2) {
-    extern Queue_001FFD30 D_0031C2F0;
+    extern Queue_001FFD30 gSzFile_fl;
     extern s32 SzFile_ReadRequestParam();
     s32 result;
-    Queue_001FFD30 *queue = &D_0031C2F0;
+    Queue_001FFD30 *queue = &gSzFile_fl;
 
     result = SzFile_ReadRequestParam(0x1400, 0, arg0, arg1, arg2, 0, -1, lSzFile_ReadCB, (s64)0);
     if (result == 0) {
@@ -520,8 +520,8 @@ typedef struct {
 
 static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
                                      s32 arg3, s32 arg4, s32 arg5) {
-    extern Queue_001FFE00 D_0031C2F0;
-    Queue_001FFE00 *queue = &D_0031C2F0;
+    extern Queue_001FFE00 gSzFile_fl;
+    Queue_001FFE00 *queue = &gSzFile_fl;
     Request_001FFE00 *request;
 
     if (arg1 == 0) {
@@ -540,9 +540,9 @@ static inline void *enqueue_001FFE00(s32 arg0, s32 arg1, s32 arg2,
 }
 
 static inline s32 poll_001FFE00(void) {
-    extern Queue_001FFE00 D_0031C2F0;
+    extern Queue_001FFE00 gSzFile_fl;
     extern Flags_001FFE00 D_00322980;
-    Queue_001FFE00 *queue = &D_0031C2F0;
+    Queue_001FFE00 *queue = &gSzFile_fl;
     s32 handle;
 
     if (D_00322980.running == 0) {
@@ -557,8 +557,8 @@ static inline s32 poll_001FFE00(void) {
 
 void *SzFile_ReadParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
                     s32 arg4, s32 arg5) {
-    extern Queue_001FFE00 D_0031C2F0;
-    Queue_001FFE00 *queue = &D_0031C2F0;
+    extern Queue_001FFE00 gSzFile_fl;
+    Queue_001FFE00 *queue = &gSzFile_fl;
     void *request;
 
     request = enqueue_001FFE00(arg0, arg1, arg2, arg3, arg4, arg5);
@@ -617,17 +617,17 @@ typedef struct Stat_001FFFC0 {
 } Stat_001FFFC0;
 
 extern char D_002D0657[];
-extern Module_001FFFC0 D_002CFCE0[];
+extern Module_001FFFC0 gSzFile_aIopList[];
 extern char D_002D0638[];
-extern File_001FFFC0 D_00293090[];
+extern File_001FFFC0 mapFile[];
 extern char D_002D066F[];
 
 
 s32 RhFile_Init(void) {
     extern s32 RhFile_LoadIopModuleWrapper(s32, s32);
     extern s32 sceCdSearchFile(Stat_001FFFC0 *, s32);
-    extern u8 D_0031C2F0[];
-    u8 *buf = D_0031C2F0;
+    extern u8 gSzFile_fl[];
+    u8 *buf = gSzFile_fl;
     s32 i;
     Module_001FFFC0 *mod;
     File_001FFFC0 *file;
@@ -648,14 +648,14 @@ s32 RhFile_Init(void) {
     sceFsReset();
     while (func_00191A58(0) != 2) {
     }
-    for (i = 0, mod = D_002CFCE0; mod->name != 0; i++) {
+    for (i = 0, mod = gSzFile_aIopList; mod->name != 0; i++) {
         if (RhFile_LoadIopModuleWrapper(mod->name, mod->arg) == 0) {
             return 0;
         }
         mod++;
     }
     if (getenv((s32)D_002D0638) != NULL) {
-        file = D_00293090;
+        file = mapFile;
         for (j = 0; j < 0x61; j++) {
             while (func_00191A58(0) != 2) {
             }
@@ -687,8 +687,8 @@ typedef struct State_00200170 {
 } State_00200170;
 
 void lRhFile_CdCallback(s32 arg0) {
-    extern State_00200170 D_0031C2F0;
-    State_00200170 *state = &D_0031C2F0;
+    extern State_00200170 gSzFile_fl;
+    State_00200170 *state = &gSzFile_fl;
 
     if (arg0 == 1) {
         if (state->flags.active) {
@@ -713,12 +713,12 @@ void RhFile_LoadIopModuleWrapper(s32 arg0, s32 arg1) {
 }
 
 s32 RhFile_LoadIopModuleWrapperEx(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern char D_0031C2F0[];
+    extern char gSzFile_fl[];
     extern char D_002D0670[];
     extern char D_002D067D[];
     extern s32 func_00183538(char *, s32, s32);
     extern char *func_0019B9D0(char *, const char *);
-    char *path = D_0031C2F0;
+    char *path = gSzFile_fl;
 
     lRhFile_StrUpper((s8 *)arg0);
     if (arg3 != 0) {
@@ -757,12 +757,12 @@ typedef struct State_00200360 {
 } State_00200360;
 
 s32 RhFile_OpenFile(s32 arg0) {
-    extern State_00200360 D_0031C2F0;
+    extern State_00200360 gSzFile_fl;
     extern char D_002D0680[];
     extern char D_002D0686[];
     extern u8 *getenv();
     extern void func_0019B648(void *, void *, ...);
-    State_00200360 *state = &D_0031C2F0;
+    State_00200360 *state = &gSzFile_fl;
     char path[128];
     u8 *directory;
 
@@ -785,9 +785,9 @@ typedef struct {
 } Queue_002003E0;
 
 static inline s32 wait_002003E0(s32 file, s32 arg1, s32 arg2, s32 arg3) {
-    extern Queue_002003E0 D_0031C2F0;
+    extern Queue_002003E0 gSzFile_fl;
     extern s32 SzFile_ReadRequestParam();
-    Queue_002003E0 *queue = &D_0031C2F0;
+    Queue_002003E0 *queue = &gSzFile_fl;
     s32 result;
 
     result = SzFile_ReadRequestParam(0x1400, 2, file, arg3, arg2, arg1, arg2, lSzFile_ReadCB, (s64)0);
@@ -805,8 +805,8 @@ check:
 }
 
 s32 RhFile_ReadAndBlock(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    extern Queue_002003E0 D_0031C2F0;
-    Queue_002003E0 *queue = &D_0031C2F0;
+    extern Queue_002003E0 gSzFile_fl;
+    Queue_002003E0 *queue = &gSzFile_fl;
 
     if (arg0 < 0) {
         return 0;
@@ -820,8 +820,8 @@ typedef struct State_002004C0 {
 } State_002004C0;
 
 s32 RhFile_CloseFile(s32 arg0) {
-    extern State_002004C0 D_0031C2F0;
-    State_002004C0 *state = &D_0031C2F0;
+    extern State_002004C0 gSzFile_fl;
+    State_002004C0 *state = &gSzFile_fl;
 
     if (arg0 < 0) {
         return 0;
@@ -848,8 +848,8 @@ typedef struct {
 } Queue_00200510;
 
 static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u8 *buf, s32 arg5, s32 arg6) {
-    extern u8 D_0031C2F0[];
-    Queue_00200510 *queue = (Queue_00200510 *)D_0031C2F0;
+    extern u8 gSzFile_fl[];
+    Queue_00200510 *queue = (Queue_00200510 *)gSzFile_fl;
     Request_00200510 *slot;
     s32 count;
     s32 idx;
@@ -876,12 +876,12 @@ static inline Request_00200510 *enqueue_00200510(s32 arg1, s32 arg2, s32 arg3, u
 }
 
 s32 RhFile_ReadAndCallbackByFileName(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void (*arg4)(void), s32 arg5, s32 arg6) {
-    extern Queue_00200510 D_0031C2F0;
+    extern Queue_00200510 gSzFile_fl;
     extern u8 D_002D0680[];
     extern u8 D_002D0686[];
     extern u8 D_002D0655[];
     extern void func_0019B648();
-    Queue_00200510 *queue = &D_0031C2F0;
+    Queue_00200510 *queue = &gSzFile_fl;
     u8 buf[0x80];
     u8 *text;
     Request_00200510 *slot;
@@ -904,11 +904,11 @@ typedef struct CallbackTable_00200680 {
     void (*callback)(s32, void *);
 } CallbackTable_00200680;
 
-extern CallbackTable_00200680 D_0031C2F0;
+extern CallbackTable_00200680 gSzFile_fl;
 extern s32 D_00322970;
 
 void lRhFile_ReadCB(void *arg0) {
-    CallbackTable_00200680 *table = &D_0031C2F0;
+    CallbackTable_00200680 *table = &gSzFile_fl;
 
     if (D_00322970 != 0) {
         table->callback(*(s32 *)((u8 *)arg0 + 0x1C), table);
@@ -960,14 +960,14 @@ typedef struct Record_002007D0 {
     s16 valueA;
 } Record_002007D0;
 
-extern struct Entry_002008A0 D_003229A0[];
+extern struct Entry_002008A0 gSzText_aItem[];
 
 void SzText_Init(void) {
     Record_002007D0 *record;
     s32 i;
 
-    record = (Record_002007D0 *)D_003229A0;
-    RhMem_FillMemory((s8 *)&D_00322990, 0, 6);
+    record = (Record_002007D0 *)gSzText_aItem;
+    RhMem_FillMemory((s8 *)&gSzText_tl, 0, 6);
     i = 0;
     do {
         record->value0 = 0;
@@ -989,13 +989,13 @@ typedef struct Entry_002008A0 {
     s16 id;
 } Entry_002008A0;
 
-extern Entry_002008A0 D_003229A0[];
+extern Entry_002008A0 gSzText_aItem[];
 
 void *SzText_GetItem(s32 arg0, s32 arg1) {
     Entry_002008A0 *entry;
     s32 i;
 
-    entry = D_003229A0;
+    entry = gSzText_aItem;
     if ((arg0 < 0) || (arg0 >= 10)) {
         return NULL;
     }
@@ -1017,7 +1017,7 @@ static inline Entry_002008A0 *find_00200930(s32 arg0, s32 arg1) {
     Entry_002008A0 *entry;
     s32 i;
 
-    entry = D_003229A0;
+    entry = gSzText_aItem;
     if ((arg0 < 0) || (arg0 >= 10)) {
         return NULL;
     }

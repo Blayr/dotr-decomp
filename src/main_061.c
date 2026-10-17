@@ -28,10 +28,10 @@ typedef struct {
     Flags_00217A70 flags;
 } State_00217A70;
 
-extern State_00217A70 D_0034F6E0;
+extern State_00217A70 gSzSound_sl;
 
 s32 SzSound_SetOutput(s32 arg0) {
-    State_00217A70 *state = &D_0034F6E0;
+    State_00217A70 *state = &gSzSound_sl;
 
     if (D_0034F6E8.enabled == 0) {
         return 0;
@@ -87,11 +87,11 @@ typedef struct {
 void Taku_Prim_Set_SP1(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 struct Sprite_00217CB0;
-extern struct Sprite_00217CB0 D_002950A0[];
+extern struct Sprite_00217CB0 tex_uv_data[];
 
 void Taku_Obj_Set(s32 arg0, void *src, s16 dx, s16 dy) {
     Sprite_00217BD0 *sprite = src;
-    Entry_00217BD0 *entry = &((Entry_00217BD0 *)D_002950A0)[sprite->index];
+    Entry_00217BD0 *entry = &((Entry_00217BD0 *)tex_uv_data)[sprite->index];
 
     Taku_Prim_Set_SP1(arg0, (s16)(sprite->x0 + dx), (s16)(sprite->y0 + dy),
                    (s16)(sprite->x1 + dx), (s16)(sprite->y1 + dy),
@@ -124,14 +124,14 @@ typedef struct Source_00217CB0 {
     u16 sprite;
 } Source_00217CB0;
 
-extern Sprite_00217CB0 D_002950A0[];
+extern Sprite_00217CB0 tex_uv_data[];
 
 void Taku_Prim_Set_SP1(s32, s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 
 void Taku_Te_Set(s32 arg0, void *arg1, s16 x, s16 y) {
     Source_00217CB0 *src = arg1;
-    Sprite_00217CB0 *sprite = &D_002950A0[src->sprite];
+    Sprite_00217CB0 *sprite = &tex_uv_data[src->sprite];
 
     Taku_Prim_Set_SP1(arg0, x, y, (s16)(x + sprite->width),
                    (s16)(y + sprite->height), sprite->u, sprite->v,
@@ -166,7 +166,7 @@ void Taku_Prim_Set_SP1(s32 arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                    s16 u, s16 v, s16 width, s16 height,
                    u8 r, u8 g, u8 b, u8 a, u8 mode,
                    u16 texture, u8 flag, s16 depth) {
-    extern void *D_00299DD0[];
+    extern void *tex_data[];
     extern void TAKU_SP_XYWH(void *, s16, s16, s16, s16, s32, s32);
     Packet_00217D70 packet __attribute__((aligned(8)));
 
@@ -186,7 +186,7 @@ void Taku_Prim_Set_SP1(s32 arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     ((Vertex_00217D70 *)packet.vertices)->v = (v * 16) + 8;
     ((Vertex_00217D70 *)(packet.vertices + 0x10))->u = ((u + width) * 16) + 8;
     ((Vertex_00217D70 *)(packet.vertices + 0x10))->v = ((v + height) * 16) + 8;
-    ExAssignTexture(packet.tag, D_00299DD0[texture], 0);
+    ExAssignTexture(packet.tag, tex_data[texture], 0);
     ExAssignAlpha(packet.tag, 0x0000008000000044ULL);
     ExSortPrim_Pipe(arg0, (s32)packet.tag, 0, 0);
 }
@@ -241,9 +241,9 @@ void *Taku_Prim_Set_FT4_ST(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                    u8, u8, u8, u8, u8, u16, u8, s16);
 
 void *Taku_FT4_Set(void *packet, void *src, s16 x, s16 y, u16 flip) {
-    extern struct Sprite_00217CB0 D_002950A0[];
+    extern struct Sprite_00217CB0 tex_uv_data[];
     Sprite_00218020 *sprite = src;
-    Texture_00218020 *texture = &((Texture_00218020 *)D_002950A0)[sprite->texture];
+    Texture_00218020 *texture = &((Texture_00218020 *)tex_uv_data)[sprite->texture];
     s32 flip_u = 0;
     s32 flip_v = 0;
 
@@ -312,7 +312,7 @@ void *Taku_Prim_Set_FT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                     u16 texture, u8 flag, s16 depth) {
     extern void TAKU_FT4_XYWH(void *, s16, s16, s32, u8, s16, s16, s32, u8,
                               s16, s16, s32, u8, s16, s16, s32, u8);
-    extern void *D_00299DD0[];
+    extern void *tex_data[];
     Packet_00218340 packet __attribute__((aligned(8)));
     s32 z;
 
@@ -338,7 +338,7 @@ void *Taku_Prim_Set_FT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     ((Vertex_00218340 *)(packet.vertices + 0x20))->v = (v2 * 16) + 8;
     ((Vertex_00218340 *)(packet.vertices + 0x30))->u = (u3 * 16) + 8;
     ((Vertex_00218340 *)(packet.vertices + 0x30))->v = (v3 * 16) + 8;
-    ExAssignTexture(packet.tag, D_00299DD0[texture], 0);
+    ExAssignTexture(packet.tag, tex_data[texture], 0);
     ExAssignAlpha(packet.tag, 0x0000008000000088ULL);
     return (void *)ExSortPrim_Pipe((s32)arg0, (s32) packet.tag, 0, 0);
 }
@@ -376,14 +376,14 @@ void *Taku_Prim_Set_FT4_ST(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                     s16 u2, s16 v2, s16 u3, s16 v3,
                     u8 r, u8 g, u8 b, u8 a,
                     u8 unused0, u16 texture, u8 unused1, s16 z) {
-    extern void *D_00299DD0[];
+    extern void *tex_data[];
     extern void TAKU_FT4_XYWH(void *, s16, s16, s32, u8, s16, s16, s32, u8,
                               s16, s16, s32, u8, s16, s16, s32, u8);
     void **textures;
     Packet_002185E0 packet __attribute__((aligned(8)));
     s32 depth;
 
-    textures = D_00299DD0;
+    textures = tex_data;
     ExGetMyOT();
     init_002185E0(&packet);
     packet.color.r = r;
@@ -652,11 +652,11 @@ void Taku_Prim_Set_GT4(void *, s16, s16, s16, s16, s16, s16, s16, s16,
                    u16, u8, s16);
 
 struct Sprite_00217CB0;
-extern struct Sprite_00217CB0 D_002950A0[];
+extern struct Sprite_00217CB0 tex_uv_data[];
 
 void Taku_GT4_Set(void *arg0, void *src, s16 x, s16 y, s16 dx, s16 dy) {
     Quad_00218FB0 *quad = (Quad_00218FB0 *)src;
-    Entry_00218FB0 *entry = &((Entry_00218FB0 *)D_002950A0)[quad->index];
+    Entry_00218FB0 *entry = &((Entry_00218FB0 *)tex_uv_data)[quad->index];
 
     Taku_Prim_Set_GT4(arg0,
         quad->x0 + x, quad->y0 + y,
@@ -704,7 +704,7 @@ void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
                    u8 r2, u8 g2, u8 b2, u8 a2,
                    u8 r3, u8 g3, u8 b3, u8 a3,
                    u8 unused0, u16 texture, u8 unused1, s16 z) {
-    extern void *D_00299DD0[];
+    extern void *tex_data[];
     extern s32 SzDuel_TrimUnitDir2();
     void **textures;
     Packet_00219180 packet;
@@ -712,7 +712,7 @@ void Taku_Prim_Set_GT4(void *arg0, s16 x0, s16 y0, s16 x1, s16 y1,
     f32 height;
     s32 depth;
 
-    textures = D_00299DD0;
+    textures = tex_data;
     ExGetMyOT();
     init_00219180(&packet);
     packet.vertex[0].r = r0;

@@ -24,7 +24,7 @@ struct DotrGlideSpot_228150 {
 };
 extern struct DotrGlideBoard D_00299E10_228150;
 extern struct DotrGlideSpot_228150 D_00298BA0_228150[];
-extern int D_0034F6F0;
+extern int ACT2_Rock;
 static inline short may_score(struct DotrGlideBoard *board)
 {
     if (board->unknown_01[0] != 0 && board->unknown_01[1] != 0) {
@@ -109,7 +109,7 @@ void Taku_Camp_What_KATIMAKE(int side)
             }
         }
     }
-    D_0034F6F0 = 1;
+    ACT2_Rock = 1;
 }
 
 /* Taku_Nagare2_set at optimisation level 3: the shape from the dotr_decomp project's near-miss drop
@@ -135,7 +135,7 @@ typedef struct {
 #pragma optimization_level 3
 
 void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
-    extern Side_00228460 D_00298BA0[];
+    extern Side_00228460 model_data[];
     Work_00228460 *work;
     s16 i;
 
@@ -151,7 +151,7 @@ void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
                 work = (Work_00228460 *)0x01ED0000;
                 for (i = 0; i < count; i++) {
                     if (work->paths[player][items[i]].value != 3) {
-                        work->paths[player][items[i]].value = D_00298BA0[side].slots[i];
+                        work->paths[player][items[i]].value = model_data[side].slots[i];
                     } else {
                         work->paths[player][items[i]].value = 3;
                     }
@@ -203,14 +203,14 @@ typedef struct {
     s16 saved;
 } Work_00228660;
 
-extern Card_00228660 D_00299020[][16];
+extern Card_00228660 root_no[][16];
 extern s8 D_00299E13[];
 extern s8 D_00299ED7;
 
 void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
-    extern Side_00228660 D_00298BA0[];
+    extern Side_00228660 model_data[];
     Work_00228660 *work = (Work_00228660 *)0x01ED0000;
-    s8 *status = &D_00299E10;
+    s8 *status = &save_data;
     s16 i;
     s16 item;
     s16 id;
@@ -230,10 +230,10 @@ void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count)
 
     for (i = 0; i < count; i++) {
         item = items[i];
-        if (player == 0 && D_00298BA0[side].slots[i] == 2) {
-            id = D_00299020[player][item].special;
+        if (player == 0 && model_data[side].slots[i] == 2) {
+            id = root_no[player][item].special;
         } else {
-            id = D_00299020[player][item].normal;
+            id = root_no[player][item].normal;
         }
         if (status[id + 3] == 0) {
             s16 j;
@@ -301,7 +301,7 @@ s32 Taku_Tyumoku_ido(void) {
 }
 
 s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
-    extern f32 D_00298BA0[];
+    extern f32 model_data[];
     extern f32 D_00298BA8[];
     s16 *state;
     f32 divisor;
@@ -318,7 +318,7 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
     u8 *point;
     Side_00228660 *pt;
 
-    state = (s16 *)&D_00299E10;
+    state = (s16 *)&save_data;
     switch (*(s8 *)0x01ED5372) {
     case 1:
         if (*(s16 *)0x01ED0060 == 0) {
@@ -332,7 +332,7 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
         progress = *(s16 *)0x01ED0060;
         *(f32 *)0x01ED0040 =
             (*(f32 *)0x01ED0050 * (f32)(0x100 - progress)) / 256.0f +
-            ((f32)progress * D_00298BA0[arg1 * 13]) / 256.0f;
+            ((f32)progress * model_data[arg1 * 13]) / 256.0f;
         progress = *(s16 *)0x01ED0060;
         *(f32 *)0x01ED0048 =
             (*(f32 *)0x01ED0058 * (f32)(0x100 - progress)) / 256.0f +
@@ -352,18 +352,18 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
             *(f32 *)0x01ED0050 = *(f32 *)0x01ED0040;
             skipped = 0;
             i = 0;
-            pt = &((Side_00228660 *)D_00298BA0)[(s16)arg1];
+            pt = &((Side_00228660 *)model_data)[(s16)arg1];
             *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
             for (; i < arg3; i++) {
                 entry = *arg2;
                 if (side == 0 && pt->slots[i] == 2) {
-                    location = D_00299020[side][(s16)entry].special;
+                    location = root_no[side][(s16)entry].special;
                 } else {
-                    location = D_00299020[side][(s16)entry].normal;
+                    location = root_no[side][(s16)entry].normal;
                 }
                 selected = (s16)location;
                 if (selected != 7) {
-                    point = (u8 *)D_00298BA0 + selected * 0x34;
+                    point = (u8 *)model_data + selected * 0x34;
                     sum_x += *(f32 *)point;
                     sum_z += *(f32 *)(point + 8);
                 } else {
@@ -402,7 +402,7 @@ s32 Taku_Tyumoku_ido0(s16 arg0, s16 arg1, s16 *arg2, s16 arg3) {
 }
 
 s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1) {
-    extern f32 D_00298BA0[];
+    extern f32 model_data[];
     extern f32 D_00298BA8[];
     s16 sp1E;
     s8 mode;
@@ -422,7 +422,7 @@ s32 Taku_Tyumoku_ido1(s16 arg0, s16 arg1) {
             *(f32 *)0x01ED0058 = *(f32 *)0x01ED0048;
         }
         *(f32 *)0x01ED0040 = (*(f32 *)0x01ED0050 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
-                             ((f32)*(s16 *)0x01ED0060 * D_00298BA0[arg1 * 13] / 256.0f);
+                             ((f32)*(s16 *)0x01ED0060 * model_data[arg1 * 13] / 256.0f);
         *(f32 *)0x01ED0048 = (*(f32 *)0x01ED0058 * (f32)(0x100 - *(s16 *)0x01ED0060) / 256.0f) +
                              ((f32)*(s16 *)0x01ED0060 * D_00298BA8[arg1 * 13] / 256.0f);
         *(s16 *)0x01ED0060 += 0x10;
@@ -454,11 +454,11 @@ typedef struct State_00229140 {
     s8 snapshot;
 } State_00229140;
 
-extern f32 D_00298BA0[];
+extern f32 model_data[];
 extern f32 D_00298BA8[];
 
 s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
-    State_00229140 *state = (State_00229140 *)&D_00299E10;
+    State_00229140 *state = (State_00229140 *)&save_data;
     f32 startX;
     f32 startZ;
     s32 index;
@@ -487,20 +487,20 @@ s32 Taku_Tyumoku_ido_kettei(s16 arg0, s16 arg1, s16 arg2) {
             startX = *(f32 *)0x01ED0050;
             *(f32 *)0x01ED0040 = startX +
                 ((f32)*(s16 *)0x01ED0060 *
-                 (D_00298BA0[state->selection * 13] - startX)) / 256.0f;
+                 (model_data[state->selection * 13] - startX)) / 256.0f;
             startZ = *(f32 *)0x01ED0058;
             *(f32 *)0x01ED0048 = startZ +
                 ((f32)*(s16 *)0x01ED0060 *
                  (D_00298BA8[state->selection * 13] - startZ)) / 256.0f;
             index = state->selection * 13;
-            if (*(f32 *)0x01ED0040 == D_00298BA0[index]) {
+            if (*(f32 *)0x01ED0040 == model_data[index]) {
                 if (*(f32 *)0x01ED0048 == D_00298BA8[index]) {
                     *(s16 *)0x01ED0060 = 256;
                 }
             }
             if (*(s16 *)0x01ED0060 >= 256) {
                 *(s16 *)0x01ED0060 = 0;
-                *(f32 *)0x01ED0040 = D_00298BA0[state->selection * 13];
+                *(f32 *)0x01ED0040 = model_data[state->selection * 13];
                 *(f32 *)0x01ED0048 = D_00298BA8[state->selection * 13];
                 *(s8 *)0x01ED5373 = 3;
                 if (state->selection == 15 && state->levels[16] == 0) {
@@ -557,7 +557,7 @@ static inline s16 isSpecial_002294B0(State_00229140 *state) {
 }
 
 s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
-    State_00229140 *state = (State_00229140 *)&D_00299E10;
+    State_00229140 *state = (State_00229140 *)&save_data;
 
     *(s8 *)0x01ED53C0 = arg1;
     switch (*(s8 *)0x01ED537A) {
@@ -566,7 +566,7 @@ s32 Taku_Tyumoku_ido_katimake(s32 arg0, s16 arg1) {
             state->levels[arg1] = 1;
         }
         *(s8 *)0x01ED5375 = 1;
-        *(f32 *)0x01ED0040 = D_00298BA0[arg1 * 13];
+        *(f32 *)0x01ED0040 = model_data[arg1 * 13];
         *(f32 *)0x01ED0048 = D_00298BA8[arg1 * 13];
         *(s16 *)0x01ED0000 = 0x140;
         *(s16 *)0x01ED0002 = 0xBE;
@@ -624,14 +624,14 @@ void *Taku_Camp_2D(s32 arg0) {
     extern u8 D_002964A0[];
     extern u8 D_002964C6[];
     extern u8 D_002964EC[];
-    extern s32 D_00299DD0[];
+    extern s32 tex_data[];
     extern s32 D_00299DD4;
     extern s16 D_00299ED2;
     extern s32 func_00202BF0();
     extern s32 func_00202E00();
     extern s32 func_00217CB0();
-    s32 *cards = D_00299DD0;
-    u8 *state = (u8 *)&D_00299E10;
+    s32 *cards = tex_data;
+    u8 *state = (u8 *)&save_data;
     s32 sp7C;
     s32 temp_s2;
     s16 var_s3;
@@ -645,7 +645,7 @@ void *Taku_Camp_2D(s32 arg0) {
     sp7C = func_00209E50();
     var_s3 = 0;
     temp_s4 = func_001AEFC0(arg0);
-    D_00299DD0[0] = func_001AF140(7);
+    tex_data[0] = func_001AF140(7);
     D_00299DD4 = func_001AF140(6);
     switch (D_00299ED2) {                           /* irregular */
     case 0x2B0C:
@@ -865,7 +865,7 @@ s32 Taku_DECK_CARD_DISP(s32 arg0) {
     s16 id;
     s16 offset;
     s16 slot;
-    s8 *context = &D_00299E10;
+    s8 *context = &save_data;
 
     extern s32 SzDuel_StartCardSession_Pipe();
     extern void SzDuel_ClearDrawCard();
@@ -1030,13 +1030,13 @@ extern Item_0022A710 D_00298E10;
 
 void Taku_Camp_3D(s32 packet) {
     extern s32 SzModel_Draw_Pipe();
-    extern f32 D_00298BA0[];
+    extern f32 model_data[];
     s16 side;
     s16 choice;
     s16 kind;
     s16 animating;
     Vector_0022A710 positions[32];
-    s8 *control = &D_00299E10;
+    s8 *control = &save_data;
     s16 i;
     Item_0022A710 *src;
     Vector_0022A710 *dst;
@@ -1054,7 +1054,7 @@ void Taku_Camp_3D(s32 packet) {
     packet = SzModel_Draw_Pipe(packet, 0x27, 0, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, D_00298DEC + 0x22, &D_00298DDC, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, D_00298DEE + 0x22, &D_00298DDC, 0, 0, 0, 0);
-    src = (Item_0022A710 *)D_00298BA0;
+    src = (Item_0022A710 *)model_data;
     dst = positions;
     i = 0;
     row = state;
@@ -1311,7 +1311,7 @@ struct DotrLeaderModelBoard {
 extern struct DotrLeaderModelBoard D_00299E10_b;
 #define DOTR_LEADER_FROM w[199]
 #define DOTR_LEADER_TO w[200]
-extern signed char D_00299A30[];
+extern signed char Taku_Model_Y[];
 struct DotrLeaderModelVec {
     float x, y, z, w;
 };
@@ -1353,7 +1353,7 @@ int Taku_Camp_3D_LeaderModel(int cursor)
     b = 5;
     fwd = 0;
     rev = 0;
-    lv = D_00299A30[SzData_GetLeader(0, (short)SzData_GetCurrentDeck(0))];
+    lv = Taku_Model_Y[SzData_GetLeader(0, (short)SzData_GetCurrentDeck(0))];
     scale.x = 0.5f;
     scale.y = 0.5f;
     scale.z = 0.5f;
@@ -1668,7 +1668,7 @@ void Taku_spline_init(void) {
     f32 *position;
     f32 *weight;
 
-    bankLists = (PointList_0022C450 *)D_00299020;
+    bankLists = (PointList_0022C450 *)root_no;
     bank = 0;
     bankOutput = (u8 *)0x1ED0000;
     do {

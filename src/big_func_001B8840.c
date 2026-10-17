@@ -12,7 +12,7 @@ static inline s32 nonnegative_001B8840(s32 value) {
 }
 
 void SzDuel_ActBuildDeck(void) {
-    Duel_00317490_s *d = &D_00317490.s;
+    Duel_00317490_s *d = &gSzDuel_dl.s;
     s32 player;
     s32 dx;
     s32 dy;
@@ -68,7 +68,7 @@ void SzDuel_ActBuildDeck(void) {
         d->dirty = 0U;
     }
     {
-        Duel_00317490_s *p = &D_00317490.s;
+        Duel_00317490_s *p = &gSzDuel_dl.s;
         if (p->hold != 0) {
             p->dirs.dir1 = 1;
         }
@@ -78,7 +78,7 @@ void SzDuel_ActBuildDeck(void) {
         }
     }
     {
-        Duel_00317490_s *p = &D_00317490.s;
+        Duel_00317490_s *p = &gSzDuel_dl.s;
         s32 step = p->dirs.dir2 << 0xB;
         p->wave2 = MIN(MAX(p->wave2 + step, 0), 0x8000);
         if ((p->wave2 == 0) || ((s32) p->wave2 >= 0x8000)) {
@@ -405,14 +405,14 @@ void SzDuel_ActBuildDeck(void) {
                     s32 player2;
                     Duel_00317490_s *state;
 
-                    player2 = D_00317490.s.player;
-                    state = &D_00317490.s;
+                    player2 = gSzDuel_dl.s.player;
+                    state = &gSzDuel_dl.s;
                     r2 = SzData_GetCurrentDeck(player2);
-                    entry = D_00317490.s.list2;
-                    D_00317490.s.count2 = 0;
+                    entry = gSzDuel_dl.s.list2;
+                    gSzDuel_dl.s.count2 = 0;
                     *entry = SzData_GetLeader(player2, r2);
                     entry++;
-                    D_00317490.s.count2++;
+                    gSzDuel_dl.s.count2++;
                     i = 0;
                     do {
                         *entry = SzData_GetCardNo(player2, r2, i);

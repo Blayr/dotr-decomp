@@ -175,7 +175,7 @@ s32 SzView_Create(s32 arg0) {
     if (temp_v0 == 0) {
         return 0;
     }
-    D_0031BEB0[arg0] = temp_v0;
+    gSzView_hView[arg0] = temp_v0;
     RhMem_FillMemory4((void *) temp_v0, 0, 0x230);
     lSzView_InitVars(arg0);
     return 1;
@@ -314,7 +314,7 @@ s32 SzView_Destroy(s32 arg0) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    slot = &D_0031BEB0[arg0];
+    slot = &gSzView_hView[arg0];
     if (*slot == 0) {
         return 0;
     }
@@ -359,7 +359,7 @@ typedef struct Reset_001F7790 {
 } Reset_001F7790;
 
 extern Reset_001F7790 D_00293050;
-extern s32 D_0031C040;
+extern s32 nCurLight;
 
 #pragma conditional_move off
 
@@ -391,7 +391,7 @@ s32 SzView_Act(s32 arg0) {
         s32 var_v0;
         s32 temp_s2_2;
 
-        temp_s0 = (State_001F7790 *) D_0031BEB0[arg0];
+        temp_s0 = (State_001F7790 *) gSzView_hView[arg0];
         if (temp_s0 == 0) {
             return 0;
         }
@@ -412,59 +412,59 @@ s32 SzView_Act(s32 arg0) {
             if (temp_fp == 0xC) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     spF0 = D_00293050;
-                    SzView_SetStraightLightDirection(0, spC0, D_0031C040, &spF0);
+                    SzView_SetStraightLightDirection(0, spC0, nCurLight, &spF0);
                 }
                 if (SzPad_Check(0, 2, 0xA000) != 0) {
                     if (SzPad_Check(0, 2, 0x8000) != 0) {
-                        D_0031C040 = (D_0031C040 + 2) % 3;
+                        nCurLight = (nCurLight + 2) % 3;
                     } else {
-                        D_0031C040 = (D_0031C040 + 4) % 3;
+                        nCurLight = (nCurLight + 4) % 3;
                     }
                     }
                 if (SzPad_Check(0, 2, 0x80) != 0) {
-                    temp_s2[D_0031C040].y -= 0x100;
+                    temp_s2[nCurLight].y -= 0x100;
                 }
                 if (SzPad_Check(0, 2, 0x20) != 0) {
-                    temp_s2[D_0031C040].y += 0x100;
+                    temp_s2[nCurLight].y += 0x100;
                 }
                 if (SzPad_Check(0, 2, 0x40) != 0) {
-                    temp_s2[D_0031C040].x -= 0x100;
+                    temp_s2[nCurLight].x -= 0x100;
                 }
                 if (SzPad_Check(0, 2, 0x10) != 0) {
-                    temp_s2[D_0031C040].x += 0x100;
+                    temp_s2[nCurLight].x += 0x100;
                 }
                 if (SzPad_Check(0, 2, 0xFFFF) != 0) {
-                    SzView_SetStraightLightDirection(0, spC0, D_0031C040, NULL);
+                    SzView_SetStraightLightDirection(0, spC0, nCurLight, NULL);
                 }
             }
             if (temp_fp == 0xD) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
-                    SzView_SetStraightLightColor(arg0, spC0, D_0031C040, NULL);
+                    SzView_SetStraightLightColor(arg0, spC0, nCurLight, NULL);
                 }
                 if (SzPad_Check(0, 2, 0xA000) != 0) {
                     if (SzPad_Check(0, 2, 0x8000) != 0) {
-                        D_0031C040 = (D_0031C040 + 2) % 3;
+                        nCurLight = (nCurLight + 2) % 3;
                     } else {
-                        D_0031C040 = (D_0031C040 + 4) % 3;
+                        nCurLight = (nCurLight + 4) % 3;
                     }
                     }
                 if (SzPad_Check(0, 2, 0x81) != 0) {
-                    temp_s2[D_0031C040].rotation[0] -= 0.01f;
+                    temp_s2[nCurLight].rotation[0] -= 0.01f;
                 }
                 if (SzPad_Check(0, 2, 0x22) != 0) {
-                    temp_s2[D_0031C040].rotation[0] += 0.01f;
+                    temp_s2[nCurLight].rotation[0] += 0.01f;
                 }
                 if (SzPad_Check(0, 2, 0x41) != 0) {
-                    temp_s2[D_0031C040].rotation[1] -= 0.01f;
+                    temp_s2[nCurLight].rotation[1] -= 0.01f;
                 }
                 if (SzPad_Check(0, 2, 0x12) != 0) {
-                    temp_s2[D_0031C040].rotation[1] += 0.01f;
+                    temp_s2[nCurLight].rotation[1] += 0.01f;
                 }
                 if (SzPad_Check(0, 2, 5) != 0) {
-                    temp_s2[D_0031C040].rotation[2] -= 0.01f;
+                    temp_s2[nCurLight].rotation[2] -= 0.01f;
                 }
                 if (SzPad_Check(0, 2, 0xA) != 0) {
-                    temp_s2[D_0031C040].rotation[2] += 0.01f;
+                    temp_s2[nCurLight].rotation[2] += 0.01f;
                 }
             }
             if (temp_fp == 0xE) {
@@ -697,7 +697,7 @@ s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
     if ((arg1 < 0) || (arg1 > 0)) {
         return arg0;
     }
-    object = (Object_001F8A30 *)D_0031BEB0[arg1];
+    object = (Object_001F8A30 *)gSzView_hView[arg1];
     if (object == 0) {
         return arg0;
     }
@@ -740,7 +740,7 @@ void *SzView_SetFog_Pipe(void *arg0, s32 arg1, s32 arg2, f32 arg3) {
     if ((arg1 < 0) || (arg1 > 0)) {
         return arg0;
     }
-    obj = (Object_001F8B50 *) D_0031BEB0[arg1];
+    obj = (Object_001F8B50 *) gSzView_hView[arg1];
     if (obj == NULL) {
         return arg0;
     }
@@ -787,7 +787,7 @@ s32 SzView_SetLight_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     if ((arg1 < 0) || (arg1 > 0)) {
         return arg0;
     }
-    temp_s4 = (u8 *)D_0031BEB0[arg1];
+    temp_s4 = (u8 *)gSzView_hView[arg1];
     if (temp_s4 == NULL) {
         return arg0;
     }
@@ -857,7 +857,7 @@ s32 lSzView_CalcLook(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F8F80 *) D_0031BEB0[arg0];
+    camera = (Camera_001F8F80 *) gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -890,7 +890,7 @@ s32 lSzView_CalcRel(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    entry = (Direction_001F90E0 *)D_0031BEB0[arg0];
+    entry = (Direction_001F90E0 *)gSzView_hView[arg0];
     if (entry == 0) {
         return 0;
     }
@@ -920,7 +920,7 @@ s32 SzView_SetFogColor(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    palette = (Palette_001F9170 *)D_0031BEB0[arg0];
+    palette = (Palette_001F9170 *)gSzView_hView[arg0];
     if (palette == 0) {
         return 0;
     }
@@ -955,7 +955,7 @@ s32 SzView_SetFogParamZ(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    state = (State_001F9230 *)D_0031BEB0[arg0];
+    state = (State_001F9230 *)gSzView_hView[arg0];
     if (state == 0) {
         return 0;
     }
@@ -993,7 +993,7 @@ s32 SzView_SetFogParamY(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    object = (Object_001F9310 *)D_0031BEB0[arg0];
+    object = (Object_001F9310 *)gSzView_hView[arg0];
     if (object == 0) {
         return 0;
     }
@@ -1027,7 +1027,7 @@ s32 SzView_SetStraightLightColor(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    base = (u8 *)D_0031BEB0[arg0];
+    base = (u8 *)gSzView_hView[arg0];
     if (base == NULL) {
         return 0;
     }
@@ -1072,7 +1072,7 @@ s32 SzView_GetStraightLightVector(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    base = (u8 *)D_0031BEB0[arg0];
+    base = (u8 *)gSzView_hView[arg0];
     if (base == NULL) {
         return 0;
     }
@@ -1099,7 +1099,7 @@ typedef struct {
     Vec4_001F95E0 result;
 } Entry_001F95E0;
 
-extern f32 D_00293040[4][4];
+extern f32 gSzView_vecUnit[4][4];
 
 s32 SzView_SetStraightLightDirection(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     f32 matrix[4][4];
@@ -1110,7 +1110,7 @@ s32 SzView_SetStraightLightDirection(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    base = (u8 *)D_0031BEB0[arg0];
+    base = (u8 *)gSzView_hView[arg0];
     if (base == NULL) {
         return 0;
     }
@@ -1126,7 +1126,7 @@ s32 SzView_SetStraightLightDirection(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     }
     entry = &row[arg2];
     RhGeom_GetRotXYZMatrix(matrix, &entry->rotation);
-    RhGeom_MulMatrixVector(&entry->result, matrix, D_00293040);
+    RhGeom_MulMatrixVector(&entry->result, matrix, gSzView_vecUnit);
     return 1;
 }
 
@@ -1136,7 +1136,7 @@ s32 SzView_InqStraightLight(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    data = (u8 *)D_0031BEB0[arg0];
+    data = (u8 *)gSzView_hView[arg0];
     if (data == NULL) {
         return 0;
     }
@@ -1158,7 +1158,7 @@ s32 SzView_SetStraightLight(s32 arg0, s32 arg1, s32 arg2) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    state = (u8 *)D_0031BEB0[arg0];
+    state = (u8 *)gSzView_hView[arg0];
     if (state == NULL) {
         return 0;
     }
@@ -1187,7 +1187,7 @@ s32 SzView_InqPointLight(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v1 = D_0031BEB0[arg0];
+    temp_v1 = gSzView_hView[arg0];
     if (temp_v1 == 0) {
         return 0;
     }
@@ -1214,7 +1214,7 @@ s32 SzView_SetPointLight(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    object = (Object_001F9940 *)D_0031BEB0[arg0];
+    object = (Object_001F9940 *)gSzView_hView[arg0];
     if (object == 0) {
         return 0;
     }
@@ -1239,7 +1239,7 @@ f32 SzView_GetScreenDistance(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0.0f;
     }
-    temp_v0 = D_0031BEB0[arg0];
+    temp_v0 = gSzView_hView[arg0];
     if (temp_v0 == 0) {
         return 0.0f;
     }
@@ -1257,7 +1257,7 @@ s32 SzView_SetScreenDistance(s32 arg0, f32 fparg0) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    object = (Object_001F9A80 *)D_0031BEB0[arg0];
+    object = (Object_001F9A80 *)gSzView_hView[arg0];
     if (object == NULL) {
         return 0;
     }
@@ -1271,7 +1271,7 @@ s32 SzView_GetSP(s32 arg0) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v0 = D_0031BEB0[arg0];
+    temp_v0 = gSzView_hView[arg0];
     if (temp_v0 == 0) {
         return 0;
     }
@@ -1289,7 +1289,7 @@ typedef struct Camera_001F9B20 {
     Vec4_001F9B20 target;
 } Camera_001F9B20;
 
-extern Vec4_001F9B20 D_00293020;
+extern Vec4_001F9B20 gSzView_pntSPDef;
 
 
 static inline s32 direction_001F9B20(s32 arg0) {
@@ -1298,7 +1298,7 @@ static inline s32 direction_001F9B20(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1319,7 +1319,7 @@ static inline s32 polar_001F9B20(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1346,12 +1346,12 @@ s32 SzView_SetSP(s32 arg0, void *arg1) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
     if (position == NULL) {
-        position = &D_00293020;
+        position = &gSzView_pntSPDef;
     }
     camera->position = *position;
     direction_001F9B20(arg0);
@@ -1365,7 +1365,7 @@ s32 SzView_GetCP(s32 arg0) {
     if (arg0 < 0 || arg0 >= 1) {
         return 0;
     }
-    data = D_0031BEB0[arg0];
+    data = gSzView_hView[arg0];
     if (data == 0) {
         return 0;
     }
@@ -1383,7 +1383,7 @@ typedef struct Camera_001F9D80 {
     Vec4_001F9D80 target;
 } Camera_001F9D80;
 
-extern Vec4_001F9D80 D_00293030;
+extern Vec4_001F9D80 gSzView_pntCPDef;
 
 
 static inline s32 direction_001F9D80(s32 arg0) {
@@ -1392,7 +1392,7 @@ static inline s32 direction_001F9D80(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1413,7 +1413,7 @@ static inline s32 polar_001F9D80(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1440,12 +1440,12 @@ s32 SzView_SetCP(s32 arg0, void *arg1) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
     if (target == NULL) {
-        target = &D_00293030;
+        target = &gSzView_pntCPDef;
     }
     camera->target = *target;
     direction_001F9D80(arg0);
@@ -1459,7 +1459,7 @@ s32 SzView_SetRoll(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v0 = (void *)D_0031BEB0[arg0];
+    temp_v0 = (void *)gSzView_hView[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -1485,7 +1485,7 @@ static inline s32 direction_001F9FE0(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1506,7 +1506,7 @@ static inline s32 polar_001F9FE0(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1527,8 +1527,8 @@ static inline s32 polar_001F9FE0(s32 arg0) {
 }
 
 s32 SzView_SetCamera(s32 arg0, void *arg1, void *arg2) {
-    extern struct Vec4_001F9B20 D_00293020;
-    extern struct Vec4_001F9D80 D_00293030;
+    extern struct Vec4_001F9B20 gSzView_pntSPDef;
+    extern struct Vec4_001F9D80 gSzView_pntCPDef;
     Vec4_001F9FE0 *position = arg1;
     Vec4_001F9FE0 *target = arg2;
     Camera_001F9FE0 *camera;
@@ -1536,15 +1536,15 @@ s32 SzView_SetCamera(s32 arg0, void *arg1, void *arg2) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)D_0031BEB0[arg0];
+    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
     if (camera == 0) {
         return 0;
     }
     if (position == NULL) {
-        position = (Vec4_001F9FE0 *)&D_00293020;
+        position = (Vec4_001F9FE0 *)&gSzView_pntSPDef;
     }
     if (target == NULL) {
-        target = (Vec4_001F9FE0 *)&D_00293030;
+        target = (Vec4_001F9FE0 *)&gSzView_pntCPDef;
     }
     camera->position = *position;
     camera->target = *target;
@@ -1594,7 +1594,7 @@ static inline s32 setFov_001FA220(s32 index, s32 fov) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    camera = (Camera_001FA220 *)gSzView_hView[index];
     if (camera == NULL) {
         return 0;
     }
@@ -1608,7 +1608,7 @@ static inline s32 setRoll_001FA220(s32 index, s32 roll) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    camera = (Camera_001FA220 *)gSzView_hView[index];
     if (camera == NULL) {
         return 0;
     }
@@ -1622,12 +1622,12 @@ static inline s32 setPosition_001FA220(s32 index, Vec4_001F9B20 *position) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    camera = (Camera_001FA220 *)gSzView_hView[index];
     if (camera == NULL) {
         return 0;
     }
     if (position == NULL) {
-        position = &D_00293020;
+        position = &gSzView_pntSPDef;
     }
     camera->position = *position;
     lSzView_CalcRel(index);
@@ -1641,12 +1641,12 @@ static inline s32 setTarget_001FA220(s32 index, Vec4_001F9B20 *target) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)D_0031BEB0[index];
+    camera = (Camera_001FA220 *)gSzView_hView[index];
     if (camera == NULL) {
         return 0;
     }
     if (target == NULL) {
-        target = (Vec4_001F9B20 *)&D_00293030;
+        target = (Vec4_001F9B20 *)&gSzView_pntCPDef;
     }
     camera->target = *target;
     lSzView_CalcRel(index);
@@ -1655,7 +1655,7 @@ static inline s32 setTarget_001FA220(s32 index, Vec4_001F9B20 *target) {
 }
 
 void SzView_DoRequest(s32 owner, s32 target) {
-    extern Slot_001FA220 D_0031BEC0[];
+    extern Slot_001FA220 gSzView_CameraReq[];
     extern s32 SzGame_GetFrameSpeed();
     Slot_001FA220 *slot;
     s32 delta;
@@ -1668,7 +1668,7 @@ void SzView_DoRequest(s32 owner, s32 target) {
     Vec4_001F9B20 pos;
     Vec4_001F9B20 polar;
 
-    slot = D_0031BEC0;
+    slot = gSzView_CameraReq;
     delta = SzGame_GetFrameSpeed();
     i = 0;
     do {
@@ -1746,13 +1746,13 @@ typedef struct Entry_001FA6F0 {
     u8 pad_04[0x2C];
 } Entry_001FA6F0;
 
-extern Entry_001FA6F0 D_0031BEC0[];
+extern Entry_001FA6F0 gSzView_CameraReq[];
 
 void *SzView_InqRequest(s32 arg0, s32 arg1) {
     Entry_001FA6F0 *entry;
     s32 i;
 
-    entry = D_0031BEC0;
+    entry = gSzView_CameraReq;
     i = 0;
     do {
         if (entry->active && (arg0 < 0 || entry->field_02 == arg0) &&
@@ -1775,14 +1775,14 @@ typedef struct Entry_001FA770 {
     u8 padding[0x2C];
 } Entry_001FA770;
 
-extern struct Entry_001FA6F0 D_0031BEC0[];
+extern struct Entry_001FA6F0 gSzView_CameraReq[];
 
 s32 SzView_PauseRequest(s32 arg0, s32 arg1, s32 arg2) {
     Entry_001FA770 *var_t1;
     s32 var_t2;
     s32 var_v0;
 
-    var_t1 = (Entry_001FA770 *) D_0031BEC0;
+    var_t1 = (Entry_001FA770 *) gSzView_CameraReq;
     var_v0 = 0;
     var_t2 = 0;
     do {
@@ -1809,14 +1809,14 @@ typedef struct Entry_001FA810 {
     u8 padding[0x2C];
 } Entry_001FA810;
 
-extern struct Entry_001FA6F0 D_0031BEC0[];
+extern struct Entry_001FA6F0 gSzView_CameraReq[];
 
 s32 SzView_FreeRequest(s32 arg0, s32 arg1) {
     Entry_001FA810 *entry;
     s32 found;
     s32 i;
 
-    entry = (Entry_001FA810 *)D_0031BEC0;
+    entry = (Entry_001FA810 *)gSzView_CameraReq;
     found = 0;
     i = 0;
     do {
@@ -1875,7 +1875,7 @@ typedef struct Track_001FA8A0 {
 #define ROUND_001FA8A0(x) (((x) + (((x) > 0 ? 0x1000 : -0x1000) >> 1)) >> 12)
 
 static inline Slot_001FA8A0 *findFree_001FA8A0(void) {
-    Slot_001FA8A0 *slot = (Slot_001FA8A0 *)D_0031BEC0;
+    Slot_001FA8A0 *slot = (Slot_001FA8A0 *)gSzView_CameraReq;
     s32 i = 0;
 
     do {
@@ -1904,7 +1904,7 @@ s32 SzView_ReqCamera(s32 owner, s32 target, s32 type, s32 count, s32 value, void
     if (owner < 0 || owner > 0) {
         return 0;
     }
-    camera = (Camera_001FA8A0 *)D_0031BEB0[owner];
+    camera = (Camera_001FA8A0 *)gSzView_hView[owner];
     if (camera == NULL) {
         return 0;
     }
@@ -1987,7 +1987,7 @@ s32 SzView_GetRel(s32 arg0) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v0 = D_0031BEB0[arg0];
+    temp_v0 = gSzView_hView[arg0];
     if (temp_v0 == 0) {
         return 0;
     }
@@ -2020,7 +2020,7 @@ s32 SzView_SetRelSP(s32 arg0, void *arg1) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    entry = &D_0031BEB0[arg0];
+    entry = &gSzView_hView[arg0];
     camera = (Camera_001FAD60 *)*entry;
     if (camera == NULL) {
         return 0;
@@ -2060,7 +2060,7 @@ f32 *SzView_GetLook(s32 arg0) {
     if (arg0 < 0 || arg0 > 0) {
         return NULL;
     }
-    var_v0 = (f32 *)D_0031BEB0[arg0];
+    var_v0 = (f32 *)gSzView_hView[arg0];
     if (var_v0 == NULL) {
         var_v0 = NULL;
     }
@@ -2079,7 +2079,7 @@ s32 SzView_GetLookVector(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    angles = (f32 *)D_0031BEB0[arg0];
+    angles = (f32 *)gSzView_hView[arg0];
     if (angles == 0) {
         return 0;
     }
@@ -2111,7 +2111,7 @@ static inline s32 angles_001FB0B0(s32 index, s32 *angles) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    source = (Vector_001FB0B0 *)D_0031BEB0[index];
+    source = (Vector_001FB0B0 *)gSzView_hView[index];
     if (source == 0) {
         return 0;
     }
@@ -2147,7 +2147,7 @@ static inline s32 depth_001FB1D0(s32 index) {
     if (index < 0 || index > 0) {
         return 0;
     }
-    object = (void *)D_0031BEB0[index];
+    object = (void *)gSzView_hView[index];
     if (object == NULL) {
         return 0;
     }
@@ -2173,7 +2173,7 @@ s32 SzView_GetLookMatrixWithRoll(s32 arg0, s32 arg1) {
     return 1;
 }
 
-extern f32 D_00293040[4][4];
+extern f32 gSzView_vecUnit[4][4];
 
 typedef struct Vec4_001FB360 {
     f32 x, y, z, w;
@@ -2192,7 +2192,7 @@ static inline s32 aim_001FB360(s32 index) {
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB360 *)D_0031BEB0[index];
+    entry = (Camera_001FB360 *)gSzView_hView[index];
     if (entry == 0) {
         return 0;
     }
@@ -2212,7 +2212,7 @@ s32 SzView_SetLookSP(s32 index, f32 *src) {
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB360 *)D_0031BEB0[index];
+    entry = (Camera_001FB360 *)gSzView_hView[index];
     if (entry == 0) {
         return 0;
     }
@@ -2224,7 +2224,7 @@ s32 SzView_SetLookSP(s32 index, f32 *src) {
     if (SzView_GetLookVector(index, (s32)angles) != 0) {
         RhGeom_GetRotXYZMatrix(matrix, angles);
     }
-    RhGeom_MulMatrixVector(entry->direction, matrix, D_00293040);
+    RhGeom_MulMatrixVector(entry->direction, matrix, gSzView_vecUnit);
     entry->origin[0] = entry->target[0] + entry->direction[0] * entry->param.x;
     entry->origin[1] = entry->target[1] + entry->direction[1] * entry->param.x;
     entry->origin[2] = entry->target[2] + entry->direction[2] * entry->param.x;

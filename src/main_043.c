@@ -3,7 +3,7 @@
 void lSzDuel_InitHandUp(s32 arg0, s32 arg1) {
     u16 ids[4];
     s16 w[4];
-    u8 *g = D_00317490.b;
+    u8 *g = gSzDuel_dl.b;
     u8 *p;
     s32 i;
     s32 x;
@@ -17,7 +17,7 @@ void lSzDuel_InitHandUp(s32 arg0, s32 arg1) {
     s16 r;
     s32 idx;
 
-    p = D_00317490.b + arg0 * 0x350;
+    p = gSzDuel_dl.b + arg0 * 0x350;
     SzDuel_PackHand(arg0);
     lSzDuel_InitHandInfo(arg0, 0, 999, 0, 0, 0, 0);
     x = -250;
@@ -100,7 +100,7 @@ static inline u8 *lookup_001D8080(s32 index) {
     if (index < 0 || index >= 6) {
         return NULL;
     }
-    return D_0031A7C0 + index * 0xA0;
+    return gSzDuel_aCardControl + index * 0xA0;
 }
 
 static inline void releaseModel_001D8080(u8 *model) {
@@ -129,9 +129,9 @@ s32 lSzDuel_InitHandCancel(s32 arg0) {
     s32 result;
     u8 *candidate;
 
-    base = D_00317490.b;
+    base = gSzDuel_dl.b;
     if (D_00317B5C != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
-        if ((slot = D_0031A7C0) != NULL && *(u8 **)slot != NULL) {
+        if ((slot = gSzDuel_aCardControl) != NULL && *(u8 **)slot != NULL) {
             freeSlot_001D8080(slot);
         }
         ((Flags_001D8080 *)(*(u8 **)(base + 0x6CC) + 0x57))->bit7 = 0;
@@ -246,7 +246,7 @@ typedef struct State_001D82C0 {
 
 static inline Model_001D82C0 *get_model_001D82C0(void) {
     extern void SzDuel_ClearDrawCard();
-    Model_001D82C0 *model = (Model_001D82C0 *)D_003193C0;
+    Model_001D82C0 *model = (Model_001D82C0 *)gSzDuel_aCardRequest;
     s32 count = 0;
     do {
         if (model->owner == NULL) {
@@ -262,7 +262,7 @@ static inline Model_001D82C0 *get_model_001D82C0(void) {
 s32 lSzDuel_InitHandCombo(s32 arg0) {
     extern void *SzDuel_GetCardInfo();
     extern void SzDuel_ClearDrawCard();
-    State_001D82C0 *state = (State_001D82C0 *)D_00317490.b;
+    State_001D82C0 *state = (State_001D82C0 *)gSzDuel_dl.b;
     s32 next;
     Item_001D82C0 *copy;
     Node_001D82C0 *primary;
@@ -284,7 +284,7 @@ s32 lSzDuel_InitHandCombo(s32 arg0) {
     state->slots[0] = 6;
     if (state->selected != NULL) {
         if (state->selected->model != NULL) {
-            primary = (Node_001D82C0 *)D_0031A7C0;
+            primary = (Node_001D82C0 *)gSzDuel_aCardControl;
             copy = SzDuel_GetCardInfo(2, 0);
             if (primary != NULL && copy != NULL) {
                 *copy = *state->selected;
@@ -341,7 +341,7 @@ s32 lSzDuel_InitHandCombo(s32 arg0) {
         if (index < 0 || index >= 6) {
             node = NULL;
         } else {
-            node = (Node_001D82C0 *)(index * 0xA0 + D_0031A7C0);
+            node = (Node_001D82C0 *)(index * 0xA0 + gSzDuel_aCardControl);
         }
         if (node != NULL && node->model != NULL) {
             s32 result = SzDuel_InqHand(arg0, i);
@@ -420,7 +420,7 @@ static inline Slot_001D8880 *lookup_001D8880(s32 index) {
     if (index < 0 || index >= 6) {
         return NULL;
     }
-    return (Slot_001D8880 *) (D_0031A7C0 + index * 0xA0);
+    return (Slot_001D8880 *) (gSzDuel_aCardControl + index * 0xA0);
 }
 
 s32 lSzDuel_InitHandDark(s32 arg0, s32 arg1) {
@@ -541,7 +541,7 @@ static inline Slot_001D89F0 *lookupSlot_001D89F0(s32 index) {
     if (index < 0 || index >= 6) {
         return NULL;
     }
-    return (Slot_001D89F0 *)(D_0031A7C0 + index * 0xA0);
+    return (Slot_001D89F0 *)(gSzDuel_aCardControl + index * 0xA0);
 }
 
 static inline Model_001D89F0 *allocateModel_001D89F0(void) {
@@ -549,7 +549,7 @@ static inline Model_001D89F0 *allocateModel_001D89F0(void) {
     Model_001D89F0 *candidate;
     s32 i;
 
-    candidate = (Model_001D89F0 *)D_003193C0;
+    candidate = (Model_001D89F0 *)gSzDuel_aCardRequest;
     i = 0;
     do {
         if (candidate->owner == NULL) {
@@ -569,7 +569,7 @@ s32 lSzDuel_InitHandInfo(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     Slot_001D89F0 *slot;
     Model_001D89F0 *model;
 
-    player = D_00317490.b + arg0 * 0x350;
+    player = gSzDuel_dl.b + arg0 * 0x350;
     entry = SzDuel_GetCardInfo(2, arg1);
     if (entry == NULL) {
         return 0;
@@ -634,7 +634,7 @@ typedef struct Index_001D8CD0 {
 
 static inline u8 *allocate_001D8CD0(void) {
     extern void SzDuel_ClearDrawCard();
-    u8 *p = D_003193C0;
+    u8 *p = gSzDuel_aCardRequest;
     s32 i = 0;
 
     do {
@@ -655,7 +655,7 @@ s32 lSzDuel_InitHandInfo2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     u8 *entry;
     u8 *resource;
 
-    player = D_00317490.b + arg0 * 0x350;
+    player = gSzDuel_dl.b + arg0 * 0x350;
     object = SzDuel_GetCardInfo(2, arg1);
     if (object == NULL) {
         return 0;
@@ -669,7 +669,7 @@ s32 lSzDuel_InitHandInfo2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         if (arg1 < 0 || arg1 >= 6) {
             entry = NULL;
         } else {
-            entry = D_0031A7C0 + arg1 * 0xA0;
+            entry = gSzDuel_aCardControl + arg1 * 0xA0;
         }
         if (entry != NULL) {
             if (*(u8 **)entry == NULL) {
@@ -742,7 +742,7 @@ void lSzDuel_LockCamera(s32 arg0, s32 arg1, s32 arg2) {
     f32 sp60[4];
     u8 *temp_s3;
 
-    temp_s3 = D_00317490.b + (D_003181E4 * 0x350);
+    temp_s3 = gSzDuel_dl.b + (D_003181E4 * 0x350);
     SzView_IV2V(temp_s3 + 0x1D0, sp50);
     sp60[0] = (f32) arg1;
     sp60[2] = (f32) arg2;
@@ -770,7 +770,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 angle;
     u8 *cur;
 
-    p = D_00317490.b + D_003181E4 * 0x350;
+    p = gSzDuel_dl.b + D_003181E4 * 0x350;
     saved = *(Vec4_001D91B0 *)(p + 0x1D0);
     x0 = (s32)(f32)((arg1 - 3) * 50);
     z0 = (s32)(f32)((arg2 - 3) * 50);
@@ -780,7 +780,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *(s32 *)(p + 0x1D0) = 0x96;
     *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
     *(s32 *)(p + 0x1D8) = 0x4000;
-    cur = D_00317490.b + D_003181E4 * 0x350;
+    cur = gSzDuel_dl.b + D_003181E4 * 0x350;
     SzView_IV2V(cur + 0x1D0, camera);
     pos[0] = (f32)((x0 + x1) >> 1);
     pos[2] = (f32)((z0 + z1) >> 1);
@@ -804,7 +804,7 @@ typedef struct {
 } Card_001D9420;
 
 s32 lSzDuel_IsUnitHide(void *arg0) {
-    u8 *duel = D_00317490.b;
+    u8 *duel = gSzDuel_dl.b;
     s32 result;
     void **cell;
     s32 me;
@@ -855,7 +855,7 @@ s32 lSzDuel_IsUnitHide(void *arg0) {
 }
 
 void SzDuel_ActCardTest(void) {
-    u8 *p = D_00318200;
+    u8 *p = gSzDuel_dt;
     if (SzPad_Check(0, 2, 0x1000) != 0) {
         *(s32 *)(p + 0x5C) = (*(s32 *)(p + 0x5C) + 0x10400) % 0x10000;
     }
@@ -906,7 +906,7 @@ typedef struct {
 
 void SzDuel_InitTurn(s32 arg0, s32 arg1) {
     extern s32 func_001A22C0(f32);
-    State_001D9820 *state = (State_001D9820 *)D_00317490.b;
+    State_001D9820 *state = (State_001D9820 *)gSzDuel_dl.b;
     Player_001D9820 *p;
     s32 x;
     s32 z;
@@ -915,10 +915,10 @@ void SzDuel_InitTurn(s32 arg0, s32 arg1) {
     f32 saved[4];
 
     D_003181E4 = arg1;
-    p = (Player_001D9820 *)(D_00317490.b + arg1 * 0x350);
+    p = (Player_001D9820 *)(gSzDuel_dl.b + arg1 * 0x350);
     z = func_001A22C0((f32)((p->z - 3) * 50));
     x = func_001A22C0((f32)((p->x - 3) * 50));
-    cur = (Player_001D9820 *)(D_00317490.b + D_003181E4 * 0x350);
+    cur = (Player_001D9820 *)(gSzDuel_dl.b + D_003181E4 * 0x350);
     SzView_IV2V(cur->f1D0, saved);
     pos[0] = (f32)x;
     pos[2] = (f32)z;
@@ -956,7 +956,7 @@ s32 SzDuel_StartCardSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     extern s32 RhBase_EnableRenderFrame();
     extern s32 RhBase_ClearRenderFrame();
     extern s32 RhBase_DisableRenderFrame();
-    u8 *base = D_00317490.b;
+    u8 *base = gSzDuel_dl.b;
     s32 sprite;
     s32 length;
     s32 i;
@@ -1017,7 +1017,7 @@ s32 lSzDuel_SetupCardTexture(s32 arg0, s32 arg1) {
     s32 value;
     s32 i;
 
-    state = (State_001D9C40 *)D_00317490.b;
+    state = (State_001D9C40 *)gSzDuel_dl.b;
     value = D_00318110;
     if (D_00317B30[arg1] != 0) {
         return arg0;
@@ -1157,7 +1157,7 @@ s32 SzDuel_GetCardNode(void *arg0, s32 arg1) {
     Vec_001D9F00 transformed;
     __int128 matrix[4];
     __int128 projection[4];
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 mode;
     Object_001D9F00 *object = arg0;
     s32 i;
@@ -1277,7 +1277,7 @@ s32 SzDuel_GetCardNodeOnScreen(void *arg0, s32 arg1, f32 fparg0, f32 fparg1) {
     u8 *global;
 
     object = arg0;
-    global = D_00317490.b;
+    global = gSzDuel_dl.b;
     temp_s1 = (object->field80.bytes.flags.flag6 == 0) ? NULL : ((u8 *) object + 0x30);
     object->field4A = 0x35;
     object->field48 = 0;
@@ -1578,8 +1578,8 @@ typedef struct {
 } Card_001DA7F0;
 
 extern Entry_001DA7F0 D_0028FF30[2][10];
-extern Entry_001DA7F0 D_00290020[];
-extern Entry_001DA7F0 D_00290080[];
+extern Entry_001DA7F0 gSzDuel_Attr[];
+extern Entry_001DA7F0 gSzDuel_Icon[];
 extern Layout_001DA7F0 D_002BED50[];
 extern u16 D_002BED52[][16];
 extern u16 D_002BED54[][16];
@@ -1665,7 +1665,7 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
     Sprite_001DA7F0 sprite __attribute__((aligned(8)));
     Solid_001DA7F0 solid __attribute__((aligned(8)));
 
-    game = (Game_001DA7F0 *)D_00317490.b;
+    game = (Game_001DA7F0 *)gSzDuel_dl.b;
     sx = 0x6C0;
     sy = 0x720;
     mode = SzGame_GetMode(1);
@@ -1746,8 +1746,8 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
         kind = ((Card_001DA7F0 *)arg1)->kind >> 5;
         attr = SzDuel_Kind2Attr(kind, ((Card_001DA7F0 *)arg1)->attr);
         entry = &D_0028FF30[large][kind];
-        frameEntry = &D_00290080[frame];
-        attrEntry = &D_00290020[attr];
+        frameEntry = &gSzDuel_Icon[frame];
+        attrEntry = &gSzDuel_Attr[attr];
         level = SzDuel_GetUnitLevel2((void *)arg1, 0);
         altw = ((Card_001DA7F0 *)arg1)->flags.alt;
         alt = altw;
@@ -2282,7 +2282,7 @@ typedef struct {
 } Gfx_001DC790;
 
 extern Points_001DC790 D_00291590;
-extern u8 D_00290000[];
+extern u8 gSzDuel_Base[];
 extern u8 D_003181C4;
 
 s32 SzDuel_DrawLeaderBase_Pipe(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4) {
@@ -2293,7 +2293,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4
     f32 rotation[4];
     Points_001DC790 matrix;
     Packet_001DC790 packet;
-    Gfx_001DC790 *textures = (Gfx_001DC790 *)D_00317490.b;
+    Gfx_001DC790 *textures = (Gfx_001DC790 *)gSzDuel_dl.b;
     f32 u;
     u8 *entry;
     f32 scale;
@@ -2319,7 +2319,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4
     } else {
         u = 0.0f;
     }
-    entry = &D_00290000[arg1 * 10];
+    entry = &gSzDuel_Base[arg1 * 10];
     intensity = 0x80;
     if (card == NULL) {
         return arg0;
@@ -2434,7 +2434,7 @@ void *SzDuel_GetMapInfo(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 7) || (arg1 < 0) || (arg1 >= 7)) {
         return NULL;
     }
-    return (arg0 * 0x1C) + (D_00318E60 + (arg1 * 0xC4));
+    return (arg0 * 0x1C) + (gSzDuel_aaMapInfo + (arg1 * 0xC4));
 }
 
 typedef struct Pair_001DCD70 {
@@ -2639,10 +2639,10 @@ void *SzDuel_GetCardInfo(s32 group, s32 index) {
     if (group < 0 || group >= 3 || index < 0 || index >= 11) {
         return NULL;
     }
-    return group * 0x3F4 + D_00318280 + index * 0x5C;
+    return group * 0x3F4 + gSzDuel_aaVarInfo + index * 0x5C;
 }
 
-extern u8 D_00318E60[];
+extern u8 gSzDuel_aaMapInfo[];
 
 static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
@@ -2658,7 +2658,7 @@ void SzDuel_DoUnitRequest(void) {
     u8 *var_s2;
     u8 *var_s3;
 
-    var_s3 = D_00318E60;
+    var_s3 = gSzDuel_aaMapInfo;
     var_s1 = 0;
     do {
         var_s0 = 0;

@@ -13,7 +13,7 @@ extern s16 D_00299ED2;
 extern s8 D_0033F72C;
 
 void Taku_Camp_Ivent(void) {
-    u8 *ctx = (u8 *)&D_00299E10;
+    u8 *ctx = (u8 *)&save_data;
     s16 temp_a0;
     s16 temp_a0_2;
     s16 temp_a1;
@@ -1773,7 +1773,7 @@ dflt_3:
                 if (0 > func_001AB1D0()) {
                     *(s8 *)0x01ED543C = 0;
                     func_001A8360(2, 1, 0);
-                    D_0034F710 = 1;
+                    Move_END_flg = 1;
                     func_001A8320(0xA, 1);
                     func_001A8920();
                     goto block_534;
@@ -2401,7 +2401,7 @@ block_534:
                 if (0 > func_001AB1D0()) {
                     *(s8 *)0x01ED543C = 0;
                     func_001A8360(3, 1, 0);
-                    D_0034F710 = 1;
+                    Move_END_flg = 1;
                     func_001A8320(0xA, 1);
                     func_001A8920();
                     (*(s16 *)(ctx + 0xC2)) = 0;

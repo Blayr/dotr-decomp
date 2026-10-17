@@ -26,7 +26,7 @@ extern void SzDuel_OpenOptionPopup_b(s32 arg0, s32 arg1, s32 arg2);
 #pragma conditional_move off
 #pragma opt_dead_assignments off
 void TkCamp_Act(void) {
-    s32 ctx = (s32) &D_00299E10;
+    s32 ctx = (s32) &save_data;
     s16 temp_s1;
     s16 temp_s2;
     s32 var_s3;
@@ -174,7 +174,7 @@ void TkCamp_Act(void) {
     if (*(s8 *)0x01ED5376 != 0) {
         if ((*(s8 *)0x01ED5482 == 0) && (SzEffect_IsUse2(-1, -1) == 0) && (*(s8 *)0x01ED5374 == 0) && (*(s8 *)0x01ED5375 == 0) && ((*(s16 *)(ctx + 0xC2)) < 0xC8)) {
             for (var_a2 = 0; var_a2 < 4; var_a2++) {
-                var_a3 = &D_00298260[var_a2 * 0x13];
+                var_a3 = &camp_sys_icon[var_a2 * 0x13];
                 temp_a1 = *(s16 *)(base + 0);
                 if (((M2C_FIELD(var_a3, s16 *, 0) - 2) <= temp_a1) && (temp_a1 <= (M2C_FIELD(var_a3, s16 *, 4) + 2))) {
                     temp_a1_2 = *(s16 *)(base + 2);
@@ -942,8 +942,8 @@ block_314:
             if (*(s16 *)0x01ED0074 >= 0x100) {
                 *(s16 *)0x01ED0074 = 0x100;
             }
-            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((D_00298260[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
-            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((D_00298260[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
+            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
+            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
         } else if (temp_v1_7 == 2) {
             *(s16 *)0x01ED0074 = (s16) (*(s16 *)0x01ED0074 - 0x20);
             if (*(s16 *)0x01ED0074 <= 0) {
@@ -952,8 +952,8 @@ block_314:
                 *(s16 *)0x01ED007A = 0;
                 *(s16 *)0x01ED007C = 0;
             }
-            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((D_00298260[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
-            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((D_00298260[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
+            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
+            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
         }
         Taku_Camp_System();
         if (*(s8 *)0x01ED537B == 1) {

@@ -119,7 +119,7 @@ s32 func_0017F748(s32 arg0, s32 arg1) {
     s32 temp_s0;
 
     ((s32 (*)(s32))func_0017F708)(0x1B);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     func_001843E0();
@@ -186,7 +186,7 @@ s32 func_0017F808(void) {
         return 0xFFFEFFFF;
     }
     *(SceFsVersion *)&D_00313BA8 = *(SceFsVersion *)((s32)&D_00313500 | 0x20000000);
-    D_0028CAA0 = 1;
+    _fs_init = 1;
     return 0;
 }
 
@@ -203,7 +203,7 @@ s32 func_0017F9D0(void) {
 }
 
 s32 sceFsReset(void) {
-    D_0028CAA0 = 0;
+    _fs_init = 0;
     func_00198948(&D_00313BA8, 0, 4U);
     return 0;
 }
@@ -222,7 +222,7 @@ s32 func_0017FA98(void *name, s32 flags, ...) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0);
-    if (D_0028CAA0 == 0)
+    if (_fs_init == 0)
         func_0017F808();
     if (func_0017F9D0() != 0) {
         _cleanup();
@@ -295,7 +295,7 @@ s32 func_0017FD20(u32 fd) {
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(1);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -348,7 +348,7 @@ s32 func_0017FEA0(u32 fd, s32 offset, s32 whence) {
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(4);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -413,7 +413,7 @@ s32 func_001800D8(s32 fd, s32 buf, s32 nbyte) {
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(2);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -486,7 +486,7 @@ s32 func_00180348(s32 fd, void *buf, s32 nbyte) {
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(3);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -570,7 +570,7 @@ s32 func_00180608(u32 fd, s32 request, void *argp) {
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(5);
     D_00312884 = argp;
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     if (iob == 0 || iob->inuse == 0) {
@@ -650,7 +650,7 @@ s32 func_00180958(u32 fd, s32 request, void *argp, u32 arglen, void *bufp, u32 b
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(0x1A);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     if (iob == 0 || iob->inuse == 0) {
@@ -708,7 +708,7 @@ s32 func_00180B38(s32 name, s32 code) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(code);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -760,7 +760,7 @@ s32 func_00180D00(char *name, s32 mode) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(7);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -813,7 +813,7 @@ s32 func_00180ED0(u8 *dev, u8 *blockdev, u8 *arg, s32 arglen) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0xE);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -884,7 +884,7 @@ s32 func_00181140(s32 arg0) {
 
     ((s32 (*)(s32))func_0017F708)(0xF);
     p = &D_003128C0;
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     p->arg = arg0;
@@ -923,7 +923,7 @@ s32 func_00181280(s32 arg0) {
     s32 r;
 
     ((s32 (*)(s32))func_0017F708)(9);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     _cleanup();
@@ -959,7 +959,7 @@ s32 func_00181348(u32 fd) {
 
     obj = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(0xA);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -1007,7 +1007,7 @@ s32 func_001814B0(s32 arg0, s32 arg1) {
     p = &D_003128C0;
     slot = func_0017F288(arg0);
     ((s32 (*)(s32))func_0017F708)(0xB);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -1052,7 +1052,7 @@ s32 func_00181608(u8 *name, void *stat) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0xC);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1101,7 +1101,7 @@ s32 func_001817A8(u8 *name, void *stat, s32 mask) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0xD);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1152,7 +1152,7 @@ s32 func_001819E8(u8 *oldname, u8 *newname) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0x11);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1214,7 +1214,7 @@ s32 func_00181BF8(u8 *name, s32 flag) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0x13);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1262,7 +1262,7 @@ s32 func_00181D90(u8 *fsname, u8 *devname, s32 flag, u8 *arg, s32 arglen) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0x14);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1337,7 +1337,7 @@ s64 func_00182020(s32 fd, s64 offset, s32 whence) {
 
     iob = func_0017F288(fd);
     ((s32 (*)(s32))func_0017F708)(0x16);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         _cleanup();
         return -1;
     }
@@ -1400,7 +1400,7 @@ s32 func_00182258(u8 *name, s32 cmd, u8 *arg, u32 arglen, void *bufp, u32 buflen
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0x17);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1461,7 +1461,7 @@ s32 func_00182490(u8 *existing, u8 *newpath) {
     struct SemaParam buf;
 
     ((s32 (*)(s32))func_0017F708)(0x11);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1518,7 +1518,7 @@ s32 func_00182670(u8 *name, void *buf, u32 len) {
     struct SemaParam sema;
 
     ((s32 (*)(s32))func_0017F708)(0x11);
-    if (D_0028CAA0 == 0) {
+    if (_fs_init == 0) {
         func_0017F808();
     }
     for (i = 0; i < 0x400; i++) {
@@ -1572,7 +1572,7 @@ s32 sceSifInitIopHeap(void) {
             return -1;
         val = ((sceSifRpcClientData *)&D_00313C40)->serve;
         if (val != 0) {
-            D_0028CAB8 = 0;
+            _bind = 0;
             break;
         }
         i = 0x100000;
@@ -1584,7 +1584,7 @@ s32 sceSifInitIopHeap(void) {
 }
 
 s32 sceSifAllocIopHeap(s32 arg0) {
-    if (D_0028CAB8 < 0) {
+    if (_bind < 0) {
         return 0;
     }
     D_00313CC0 = arg0;
@@ -1597,7 +1597,7 @@ s32 sceSifAllocIopHeap(s32 arg0) {
 s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
     s32 *p;
 
-    if (D_0028CAB8 < 0) {
+    if (_bind < 0) {
         return 0;
     }
     p = &D_00313CC0;
@@ -1611,7 +1611,7 @@ s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 sceSifFreeIopHeap(s32 arg0) {
-    if (D_0028CAB8 < 0) {
+    if (_bind < 0) {
         return 0;
     }
     D_00313CC0 = arg0;
@@ -1635,7 +1635,7 @@ extern IopLoadHeap_00182A48 D_00313D00;
 s32 sceSifLoadIopHeap(const char *name, void *addr) {
     s32 i;
 
-    if (D_0028CAB8 < 0) {
+    if (_bind < 0) {
         return 0;
     }
     for (i = 0; i < 252; i++) {
@@ -1655,7 +1655,7 @@ s32 sceSifLoadIopHeap(const char *name, void *addr) {
     return D_00313C80;
 }
 
-extern s32 D_0028CAC0;
+extern s32 _bind_check;
 extern s32 D_00314028;
 
 typedef struct IopCd_00182B38 {
@@ -1670,13 +1670,13 @@ typedef struct IopVer_00182B38 {
 s32 _lf_bind(void) {
     s32 i;
 
-    if (D_0028CAC0 < 0) {
+    if (_bind_check < 0) {
         while (1) {
             if (sceSifBindRpc(&D_00314000, 0x80000006, 0) < 0) {
                 return -1;
             }
             if ((*(IopCd_00182B38 *)&D_00314000).serve != 0) {
-                D_0028CAC0 = 0;
+                _bind_check = 0;
                 if (sceSifCallRpc(&D_00314000, 0xFF, 0, 0, 0, &D_00313E00, 4, 0, 0) < 0) {
                     return 0xFFFEFFFF;
                 }
@@ -1702,7 +1702,7 @@ s32 func_00182C38(void) {
 }
 
 s32 sceSifLoadFileReset(void) {
-    D_0028CAC0 = -1;
+    _bind_check = -1;
     func_00198948(&D_00314028, 0, 4U);
     return 0;
 }

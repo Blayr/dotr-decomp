@@ -6,7 +6,7 @@ void lSzModel_EffectCB(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj != NULL) {
         *(s32 *)((u8 *)obj + 0x1EC) = -1;
     }
@@ -66,7 +66,7 @@ s32 SzModel_Motion(s32 index)
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -391,7 +391,7 @@ s32 SzModel_ReqMotionBlur(s32 index, s16 duration, s32 mode, void *color0, void 
     s32 i;
     s32 j;
 
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -514,9 +514,9 @@ typedef struct View_001EDFD0 {
 } View_001EDFD0;
 
 s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
-    extern Slot_001EDFD0 D_0031AD00;
+    extern Slot_001EDFD0 gSzModel_aBlur;
     extern Slot_001EDFD0 D_0031BA90;
-    extern s32 D_0031BB00;
+    extern s32 gSzModel_nBlurMode;
     extern s32 SzModel_ExSort_Pipe();
     Slot_001EDFD0 *scratch;
     s32 ready;
@@ -525,9 +525,9 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
     Slot_001EDFD0 *slot;
     s32 i;
 
-    scratch = &D_0031AD00;
+    scratch = &gSzModel_aBlur;
     ready = 0;
-    D_0031BB00 = (arg1 < 0) ? 2 : 1;
+    gSzModel_nBlurMode = (arg1 < 0) ? 2 : 1;
     remaining = 31;
     slot = &D_0031BA90;
     do {
@@ -535,7 +535,7 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
             if (SzModel_IsModelDisp(slot->index) == 0) {
                 slot->index = -1;
             } else {
-                obj = (View_001EDFD0 *)D_0031ABB0[slot->index];
+                obj = (View_001EDFD0 *)gSzModel_ahModel[slot->index];
                 if (obj == NULL) {
                     goto next;
                 }
@@ -597,12 +597,12 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
     if (ready) {
         SzModel_SetDrawCache(0);
     }
-    D_0031BB00 = 0;
+    gSzModel_nBlurMode = 0;
     return arg0;
 }
 
 void SzModel_SetDrawCache(s32 arg0) {
-    D_0031BB10 = arg0;
+    gSzModel_pfhCache = arg0;
 }
 
 s32 SzModel_Draw_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
@@ -614,7 +614,7 @@ s32 SzModel_Draw_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5
     if ((arg1 < 0) || (arg1 >= 0x54)) {
         return arg0;
     }
-    temp_v1 = D_0031ABB0[arg1];
+    temp_v1 = gSzModel_ahModel[arg1];
     if (temp_v1 == NULL) {
         return arg0;
     }
@@ -763,32 +763,32 @@ typedef struct {
 
 extern Vector_001EE6C0 D_00292FD0;
 extern Vector_001EE6C0 D_00292FE0;
-extern s32 D_0031BB00;
+extern s32 gSzModel_nBlurMode;
 
 /* Missing fields in the shared Obj_0031ABB0 declaration, accessed by casts:
- * needs shared field: D_0031ABB0 +0x080 f32[4]
- * needs shared field: D_0031ABB0 +0x090 f32[4]
- * needs shared field: D_0031ABB0 +0x0A0 f32[8][4]
- * needs shared field: D_0031ABB0 +0x120 f32
- * needs shared field: D_0031ABB0 +0x124 f32
- * needs shared field: D_0031ABB0 +0x128 f32
- * needs shared field: D_0031ABB0 +0x134 u8*
- * needs shared field: D_0031ABB0 +0x138 s32
- * needs shared field: D_0031ABB0 +0x13C u8*
- * needs shared field: D_0031ABB0 +0x19C f32
- * needs shared field: D_0031ABB0 +0x1A0 f32
- * needs shared field: D_0031ABB0 +0x1A8 f32
- * needs shared field: D_0031ABB0 +0x1AC f32
- * needs shared field: D_0031ABB0 +0x1B0 u16[8]
- * needs shared field: D_0031ABB0 +0x1E4 f32
- * needs shared field: D_0031ABB0 +0x1E8 f32
- * needs shared field: D_0031ABB0 +0x1F0 u16
- * needs shared field: D_0031ABB0 +0x1F2 s8
- * needs shared field: D_0031ABB0 +0x1F3 s8
- * needs shared field: D_0031ABB0 +0x1F8 TextureFlags_001EE6C0
- * needs shared field: D_0031ABB0 +0x1FE u8
- * needs shared field: D_0031ABB0 +0x1FF u8
- * needs shared field: D_0031ABB0 +0x20C ObjectFlags_001EE6C0
+ * needs shared field: gSzModel_ahModel +0x080 f32[4]
+ * needs shared field: gSzModel_ahModel +0x090 f32[4]
+ * needs shared field: gSzModel_ahModel +0x0A0 f32[8][4]
+ * needs shared field: gSzModel_ahModel +0x120 f32
+ * needs shared field: gSzModel_ahModel +0x124 f32
+ * needs shared field: gSzModel_ahModel +0x128 f32
+ * needs shared field: gSzModel_ahModel +0x134 u8*
+ * needs shared field: gSzModel_ahModel +0x138 s32
+ * needs shared field: gSzModel_ahModel +0x13C u8*
+ * needs shared field: gSzModel_ahModel +0x19C f32
+ * needs shared field: gSzModel_ahModel +0x1A0 f32
+ * needs shared field: gSzModel_ahModel +0x1A8 f32
+ * needs shared field: gSzModel_ahModel +0x1AC f32
+ * needs shared field: gSzModel_ahModel +0x1B0 u16[8]
+ * needs shared field: gSzModel_ahModel +0x1E4 f32
+ * needs shared field: gSzModel_ahModel +0x1E8 f32
+ * needs shared field: gSzModel_ahModel +0x1F0 u16
+ * needs shared field: gSzModel_ahModel +0x1F2 s8
+ * needs shared field: gSzModel_ahModel +0x1F3 s8
+ * needs shared field: gSzModel_ahModel +0x1F8 TextureFlags_001EE6C0
+ * needs shared field: gSzModel_ahModel +0x1FE u8
+ * needs shared field: gSzModel_ahModel +0x1FF u8
+ * needs shared field: gSzModel_ahModel +0x20C ObjectFlags_001EE6C0
  */
 
 static inline f32 abs_001EE6C0(f32 x) {
@@ -850,7 +850,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     if (arg1 < 0 || arg1 >= 0x54) {
         return arg0;
     }
-    obj = D_0031ABB0[arg1];
+    obj = gSzModel_ahModel[arg1];
     if (obj == NULL) {
         return arg0;
     }
@@ -913,7 +913,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     if (((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->overlay && obj->pad040[0xF3]) {
         overlay = 1;
     }
-    if (arg5 || overlay || D_0031BB00 || ((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base ||
+    if (arg5 || overlay || gSzModel_nBlurMode || ((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base ||
         obj->pad040[0xEE] != 0x80 || obj->pad040[0xED] != 0x80 ||
         obj->pad040[0xEC] != 0x80 || obj->pad040[0xEF] != 0x80) {
         if (enabled) {
@@ -923,8 +923,8 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         }
     }
     if (draw) {
-        if (D_0031BB00 != 1) {
-            D_0031BB10 = 0;
+        if (gSzModel_nBlurMode != 1) {
+            gSzModel_pfhCache = 0;
         }
         arg0 = (s32)RhBase_EnableRenderFrame((void *)arg0);
         arg0 = (s32)RhBase_ClearRenderFrame((u8 *)arg0, 0);
@@ -940,10 +940,10 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     }
     arg0 = SzView_SetLight_Pipe((s32)SzView_SetFog_Pipe((void *)arg0, 0, *(s8 *)((u8 *)obj + 0x1F3),
                         *(f32 *)((u8 *)obj + 0x128)), 0, *(s8 *)((u8 *)obj + 0x1F3));
-    if (D_0031BB10 != *(s32 *)((u8 *)obj + 0x138)) {
+    if (gSzModel_pfhCache != *(s32 *)((u8 *)obj + 0x138)) {
         s32 result;
         arg0 = SzModel_LoadTexture_Pipe(arg0, arg1, *(void **)((u8 *)obj + 0x138), &result);
-        D_0031BB10 = *(s32 *)((u8 *)obj + 0x138);
+        gSzModel_pfhCache = *(s32 *)((u8 *)obj + 0x138);
     }
     {
         s8 *lv = &obj->lv[0];
@@ -986,7 +986,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         if (*(u8 *)((u8 *)obj + 0x1FE) &&
             ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
             BookingGetAnyCoordinate(1);
-            if (0 == D_0031BB00) {
+            if (0 == gSzModel_nBlurMode) {
                 if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF) {
                     BookingGetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0));
                 }
@@ -1065,7 +1065,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                 RhGeom_MulMatrixRev(0, (s32)&matrix);
                 RhGeom_MulMatrixVector(&obj->pad040[0x40], NULL, &obj->pad040[0x50]);
             }
-            if (!D_0031BB00 && f0->b2) {
+            if (!gSzModel_nBlurMode && f0->b2) {
                 if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF &&
                     GetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0), obj->pad040)) {
                     *(u16 *)((u8 *)obj + 0x1F0) |= 0x8000;
@@ -1176,8 +1176,8 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         } else {
             packet = ExDitherMode_Pipe((void *)RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode((s32)ExDitherMode_Pipe(packet, 0), 0), (s32)&primitive, 0, 0), 1), 1);
         }
-        if (1 != D_0031BB00) {
-            D_0031BB10 = 0;
+        if (1 != gSzModel_nBlurMode) {
+            gSzModel_pfhCache = 0;
         }
     }
     return (s32)packet;
@@ -1203,7 +1203,7 @@ int SzModel_ExSort_Pipe(int cursor, int index, int c, int d, int e, int f, int g
     float z;
     int result;
 
-    D_0031BB10 = 0;
+    gSzModel_pfhCache = 0;
     out = ExDitherMatrixEz_Pipe(ExSetAnchor_Pipe(cursor), 2);
     if (D_0031BB00_1ef8a0 == 0) {
         out = SzModel_DrawMotionBlur_Pipe(RhBase_SetZBufferMode(out, 0), index);
@@ -1249,7 +1249,7 @@ s32 lSzModel_GetGNode(s32 arg0, s32 arg1, s32 *arg2) {
     if ((arg0 < 0) || (arg0 >= 0x54)) {
         return 0;
     }
-    temp_v1 = D_0031ABB0[arg0];
+    temp_v1 = gSzModel_ahModel[arg0];
     if (temp_v1 == NULL) {
         return 0;
     }
@@ -1338,7 +1338,7 @@ s32 SzModel_ShotTextureWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32
     s32 ret;
 
     saved = SzModel_GetCalcFlag(arg1);
-    D_0031BB10 = 0;
+    gSzModel_pfhCache = 0;
     arg0 = ExDitherMatrixEz_Pipe(arg0, 2);
     arg0 = RhBase_SetZBufferMode(arg0, 1);
     SzModel_SetCalcFlag(arg1, 0);
@@ -1371,7 +1371,7 @@ s32 lSzModel_LoadModel(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -1402,7 +1402,7 @@ s32 lSzModel_LoadModelPack(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = (Obj_001F0060 *)D_0031ABB0[arg0];
+    obj = (Obj_001F0060 *)gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -1441,7 +1441,7 @@ typedef struct Request_001F01A0 {
 void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
     extern void func_0019B648();
     extern void lSzModel_LoadCB(s32);
-    extern s32 D_00292480[];
+    extern s32 gSzModel_apchBase[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFB94[];
     s32 index;
@@ -1451,7 +1451,7 @@ void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
     if (index < 0 || index >= 0x54) {
         return;
     }
-    obj = (Fields_001F01A0 *)D_0031ABB0[index];
+    obj = (Fields_001F01A0 *)gSzModel_ahModel[index];
     if (obj != NULL) {
         if (arg1 == 0) {
             obj->busy = 0;
@@ -1474,7 +1474,7 @@ void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
             s32 i;
 
             value = obj->value;
-            base = D_00292480[obj->kind];
+            base = gSzModel_apchBase[obj->kind];
             func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             for (i = 0; i < 8; i++) {
                 func_0019B648(path, format, value, value, i + 0x61);
@@ -1492,7 +1492,7 @@ void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
             s32 base;
 
             value = obj->value;
-            base = D_00292480[obj->kind];
+            base = gSzModel_apchBase[obj->kind];
             func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, value, value, 0x61);
             lSzModel_LoadMotion(index, 0, (s32)path);
@@ -1525,7 +1525,7 @@ void lSzModel_LoadModelPackCB(s32 arg0, s32 arg1) {
     extern void func_0019B648();
     extern void lSzModel_LoadModelCB();
     extern s32 SzFile_ReadRequest();
-    extern s32 D_00292480[];
+    extern s32 gSzModel_apchBase[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFA1D[];
     u8 format[128];
@@ -1538,13 +1538,13 @@ void lSzModel_LoadModelPackCB(s32 arg0, s32 arg1) {
     if (index < 0 || index >= 0x54) {
         return;
     }
-    obj = (Fields_001F0390 *)D_0031ABB0[index];
+    obj = (Fields_001F0390 *)gSzModel_ahModel[index];
     if (obj != NULL) {
         if (arg1 != 0 && *((Request_001F0390 *)arg0)->header != 0x304852) {
             arg1 = 0;
         }
         if (arg1 == 0) {
-            base = D_00292480[obj->kind];
+            base = gSzModel_apchBase[obj->kind];
             func_0019B648(format, D_002CFA1D, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, obj->value, obj->value);
             obj->loaded = 1;
@@ -1572,7 +1572,7 @@ s32 lSzModel_BindModelByAddr(s32 arg0, void *arg1) {
     s32 var_s3_2;
     u8 *temp_v1;
 
-    temp_s0 = D_0031ABB0[arg0];
+    temp_s0 = gSzModel_ahModel[arg0];
     if (temp_s0 == NULL) {
         return 0;
     }
@@ -1657,7 +1657,7 @@ s32 lSzModel_LoadMotion(s32 arg0, s32 arg1, s32 arg2) {
     if (arg1 < 0 || arg1 >= 8) {
         return 0;
     }
-    if (D_0031ABB0[arg0] == NULL) {
+    if (gSzModel_ahModel[arg0] == NULL) {
         return 0;
     }
     lSzModel_FreeMotion(arg0, arg1);
@@ -1686,7 +1686,7 @@ void lSzModel_LoadMotionCB(void *arg0, s32 arg1) {
     if (idx < 0 || idx >= 0x54) {
         return;
     }
-    base = D_0031ABB0[idx];
+    base = gSzModel_ahModel[idx];
     if (base != NULL && arg1 != 0) {
         base->slots[sub] = a->f14;
         NjaReloc_Adjust_M3DMOT(base->slots[sub]);
@@ -1726,7 +1726,7 @@ s32 lSzModel_FreeModel(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -1878,7 +1878,7 @@ s32 lSzModel_FreeMotion(s32 arg0, s32 arg1) {
     if ((arg1 < 0) || (arg1 >= 8)) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -1907,7 +1907,7 @@ s32 SzModel_BattleSeq(s32 arg0, s32 arg1, s32 arg2) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -1942,7 +1942,7 @@ s32 SzModel_BattleSeq2(s32 arg0, s32 arg1, s32 arg2) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -1962,7 +1962,7 @@ f32 SzModel_GetRadius(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1.0f;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return -1.0f;
     }
@@ -1975,7 +1975,7 @@ u8 *SzModel_GetEffTextureB(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return NULL;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return NULL;
     }
@@ -1990,7 +1990,7 @@ s32 SzModel_GetOverlayM(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         ret = 0;
     } else {
-        obj = D_0031ABB0[arg0];
+        obj = gSzModel_ahModel[arg0];
         if (obj == NULL) {
             ret = 0;
         } else {
@@ -2015,7 +2015,7 @@ s32 SzModel_LoadOverlayB(s32 arg0) {
     if ((arg0 < 0) || (arg0 >= 0x54)) {
         return 0;
     }
-    temp_a1 = D_0031ABB0[arg0];
+    temp_a1 = gSzModel_ahModel[arg0];
     if (temp_a1 == NULL) {
         return 0;
     }
@@ -2038,7 +2038,7 @@ s32 SzModel_GetOverlayB(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2059,7 +2059,7 @@ s32 SzModel_GetCamera(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 0x54)) {
         return 0;
     }
-    temp_a0 = D_0031ABB0[arg0];
+    temp_a0 = gSzModel_ahModel[arg0];
     if (temp_a0 == NULL) {
         return ret;
     }
@@ -2088,7 +2088,7 @@ s32 SzModel_IsModelReady(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2107,7 +2107,7 @@ s32 SzModel_IsModelLoading(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         ret = 0;
     } else {
-        temp_v0 = D_0031ABB0[arg0];
+        temp_v0 = gSzModel_ahModel[arg0];
         if (temp_v0 == NULL) {
             ret = 0;
         } else {
@@ -2124,7 +2124,7 @@ s32 SzModel_IsModelStandby(s32 arg0) {
         return 0;
     }
 
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -2145,7 +2145,7 @@ s32 SzModel_IsModelDisp(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2168,7 +2168,7 @@ s8 SzModel_GetAnimParam(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 4) {
         return -1;
     }
-    base = D_0031ABB0[arg0];
+    base = gSzModel_ahModel[arg0];
     if (base == NULL) {
         return -1;
     }
@@ -2192,7 +2192,7 @@ s32 SzModel_SetAnimParam(s32 arg0, s32 arg1, s32 arg2) {
         return 0;
     }
 
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2231,7 +2231,7 @@ s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
     if (arg1 < 0 || arg1 >= 8) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2280,7 +2280,7 @@ s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1) {
     if ((arg0 < 0) || (arg0 >= 0x54)) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2324,7 +2324,7 @@ s32 SzModel_SetAnimDirect(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 8) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2355,7 +2355,7 @@ s32 SzModel_SetMotionDelay(s32 arg0, s8 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -2374,7 +2374,7 @@ s64 SzModel_GetAnimDir(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return -1;
     }
@@ -2392,7 +2392,7 @@ s32 SzModel_SetAnimDir(s32 arg0, s64 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     } else {
-        temp_a2 = D_0031ABB0[arg0];
+        temp_a2 = gSzModel_ahModel[arg0];
         if (temp_a2 == NULL) {
             return 0;
         }

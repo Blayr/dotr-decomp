@@ -9,7 +9,7 @@ struct DotrCampSystemSpot {
     short n;                    
     unsigned char unknown_26[14];
 };
-extern struct DotrCampSystemSpot D_00298BA0[];
+extern struct DotrCampSystemSpot model_data[];
 struct DotrCampSystemBoard {
     signed char b0;             
     signed char b1;
@@ -40,8 +40,8 @@ struct DotrCampSystemList {
     short cell;                 
     short unknown_48[2];
 };
-extern struct DotrCampSystemList D_00299020[2][16];
-extern int D_0034F6F0;
+extern struct DotrCampSystemList root_no[2][16];
+extern int ACT2_Rock;
 #define DOTR_CAMP_SYSTEM_BASE 0x1ed0000
 #define DOTR_CAMP_SYSTEM_BANK ((struct DotrCampSystemBank *)0x1ed0000)
 extern int func_00229140_b(int a, int b, int limit);
@@ -59,7 +59,7 @@ extern int func_00228F50_b(int side, int row);
 #define NAG(C, K, F) case C: COPY(K) Taku_Nagare2_set(side, K, buf, n, F); break;
 #define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; Taku_Nagare2_set(side, K, buf, 1, 0); break;
 #define KM(C, K) case C: func_002294B0_b(side, K); break;
-#define spot D_00298BA0
+#define spot model_data
 
 void Taku_Camp_System(void)
 {
@@ -89,12 +89,12 @@ void Taku_Camp_System(void)
             func_00217980_b(4, 1);
             WB(0x546c) = 1;
         }
-        D_0034F6F0 = 0;
+        ACT2_Rock = 0;
         return;
     }
     if (b->h194 >= 100 && b->h194 < 200) {
         WB(0x537a) = 0;
-        D_0034F6F0 = 0;
+        ACT2_Rock = 0;
     }
     if (b->h194 < 10000) {
         switch (b->h194) {
@@ -115,7 +115,7 @@ void Taku_Camp_System(void)
         case 0:
             WB(0x537a) = 0;
             func_00229140_b(side, 0, 0);
-            D_0034F6F0 = 0;
+            ACT2_Rock = 0;
             break;
         case 100:
             COPY(11)
@@ -235,7 +235,7 @@ void Taku_Camp_System(void)
         case 0:
             WB(0x537a) = 0;
             func_00229140_b(side, 0, 0);
-            D_0034F6F0 = 0;
+            ACT2_Rock = 0;
             break;
         case 100:
             buf[0] = spot[11].list[sd][0];
@@ -333,7 +333,7 @@ void Taku_Camp_System(void)
                 return;
             case 4:
                 FLOATS
-                if (b->lv[D_00299020[sd][buf[0]].cell] != 0) {
+                if (b->lv[root_no[sd][buf[0]].cell] != 0) {
                     if (My_LedarModel_a_set(1)) {
                         WH(0x1c) = 1;
                         WH(0x1a) = 0;

@@ -44,8 +44,8 @@ typedef struct {
 } Player_00215060;
 
 s32 SzData_CheckDup(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
-    extern u8 D_0034F6D0;
-    extern Player_00215060 D_0032F790[2];
+    extern u8 gSzData_bRoseFlag;
+    extern Player_00215060 gSzData_All[2];
     Entry_00215060 *entry;
     s32 n;
 
@@ -56,8 +56,8 @@ s32 SzData_CheckDup(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
         Player_00215060 *player;
         s32 side;
 
-        side = (D_0034F6D0 == arg0) ? 0 : 1;
-        player = &D_0032F790[side];
+        side = (gSzData_bRoseFlag == arg0) ? 0 : 1;
+        player = &gSzData_All[side];
         arg1 = player->defaultCard;
     }
     if (arg1 == 0) {
@@ -72,8 +72,8 @@ s32 SzData_CheckDup(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
     {
         s32 side;
 
-        side = (D_0034F6D0 == arg0) ? 0 : 1;
-        entry = (Entry_00215060 *)((u8 *)&D_0032F790[side] + arg3 * 0x4C);
+        side = (gSzData_bRoseFlag == arg0) ? 0 : 1;
+        entry = (Entry_00215060 *)((u8 *)&gSzData_All[side] + arg3 * 0x4C);
     }
     n = 9;
     while (n-- != 0) {
@@ -98,20 +98,20 @@ typedef struct {
     u8 pad_FF8C[0x14];
 } SideData_002151D0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_CheckDeck(s32 arg0, s32 arg1, s32 arg2) {
-    extern SideData_002151D0 D_0032F790[];
+    extern SideData_002151D0 gSzData_All[];
     s32 i;
     s32 side;
     u16 *entries;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    entries = (u16 *)(arg1 * 0x54 + (u8 *)&D_0032F790[side] + 0xFD94);
+    entries = (u16 *)(arg1 * 0x54 + (u8 *)&gSzData_All[side] + 0xFD94);
     if (arg0 < 0 || arg0 >= 2) {
         return -1;
     }
@@ -137,20 +137,20 @@ typedef struct {
 
 typedef u8 Slot_00215280[0x54];
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_PushDeckLeader(s32 arg0, s32 arg1, s32 arg2) {
-    extern u8 D_0032F790[];
+    extern u8 gSzData_All[];
     s32 var_v1;
     u8 *temp_s2;
     Card_00215280 *temp_v0;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_s2 = ((Slot_00215280 *)(D_0032F790 + (var_v1 * 0xFFA0)))[arg1] + 0x7D9C + 0x7FF8;
+    temp_s2 = ((Slot_00215280 *)(gSzData_All + (var_v1 * 0xFFA0)))[arg1] + 0x7D9C + 0x7FF8;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -194,21 +194,21 @@ typedef struct Card_002153D0 {
     u8 state : 2;
 } Card_002153D0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_PullDeckLeader(s32 arg0, s32 arg1) {
-    extern Side_002153D0 D_0032F790[];
+    extern Side_002153D0 gSzData_All[];
     s32 side;
     u16 card;
     Slot_002153D0 *slot;
     Card_002153D0 *entry;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    slot = (Slot_002153D0 *)((u8 *)&D_0032F790[side] + arg1 * 0x54 + 0xFD94);
+    slot = (Slot_002153D0 *)((u8 *)&gSzData_All[side] + arg1 * 0x54 + 0xFD94);
     if (arg0 < 0 || arg0 >= 2) {
         return 0;
     }
@@ -244,21 +244,21 @@ typedef struct {
     u8 deck : 2;
 } Entry_002154E0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 static inline s32 count_002154E0(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 D_0032F790[];
+    extern Side_002154E0 gSzData_All[];
     s32 side;
     u16 *cards;
     s32 count;
     s32 i;
 
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (u16 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    cards = (u16 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
     count = 0;
     if (player < 0 || player >= 2) {
         return -1;
@@ -272,17 +272,17 @@ static inline s32 count_002154E0(s32 player, s32 deck_index, s32 card_id) {
 }
 
 static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 D_0032F790[];
+    extern Side_002154E0 gSzData_All[];
     s32 side;
     u16 *cards;
     s32 i;
 
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (u16 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    cards = (u16 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
     if (player < 0 || player >= 2) {
         return -1;
     }
@@ -295,19 +295,19 @@ static inline s32 find_002154E0(s32 player, s32 deck_index, s32 card_id) {
 }
 
 s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
-    extern Side_002154E0 D_0032F790[];
+    extern Side_002154E0 gSzData_All[];
     s32 side;
     Deck_002154E0 *deck;
     Entry_002154E0 *entry;
     u8 *card;
     s32 slot;
 
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         side = 0;
     } else {
         side = 1;
     }
-    deck = (Deck_002154E0 *)((u8 *)&D_0032F790[side] + deck_index * 0x54 + 0xFD94);
+    deck = (Deck_002154E0 *)((u8 *)&gSzData_All[side] + deck_index * 0x54 + 0xFD94);
     if (player < 0 || player >= 2) {
         return 0;
     }
@@ -337,7 +337,7 @@ s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
     return 1;
 }
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 typedef struct {
     u8 pad[7];
@@ -346,7 +346,7 @@ typedef struct {
 } Card_00215770;
 
 s32 SzData_PullDeck(s32 arg0, s32 arg1, s32 arg2) {
-    extern u8 D_0032F790[];
+    extern u8 gSzData_All[];
     u8 *hand;
     Card_00215770 *card;
     u16 *slot;
@@ -354,12 +354,12 @@ s32 SzData_PullDeck(s32 arg0, s32 arg1, s32 arg2) {
     s32 side;
     u8 *info;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    hand = (u8 *)((u32)D_0032F790 + side * 0xFFA0 + arg1 * 0x54) + 0x7D9C + 0x7FF8;
+    hand = (u8 *)((u32)gSzData_All + side * 0xFFA0 + arg1 * 0x54) + 0x7D9C + 0x7FF8;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -387,26 +387,26 @@ typedef struct {
     u8 tail[3];
 } State_002158B0;
 
-extern State_002158B0 D_0032F790[];
-extern u8 D_0034F6D0;
+extern State_002158B0 gSzData_All[];
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetCurrentDeck(s32 arg0) {
     s32 var_v1;
     State_002158B0 *state;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    state = &D_0032F790[var_v1];
+    state = &gSzData_All[var_v1];
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
     }
     return state->flags & 3;
 }
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 typedef struct {
     u8 padding[0xFF9C];
@@ -418,12 +418,12 @@ s32 SzData_SetCurrentDeck(s32 arg0, s32 arg1) {
     s32 var_v1;
     u8 *temp_a2;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_a2 = (u8 *)D_0032F790 + (var_v1 * 0xFFA0);
+    temp_a2 = (u8 *)gSzData_All + (var_v1 * 0xFFA0);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -440,10 +440,10 @@ typedef struct {
     u8 padding_52[2];
 } Entry_002159D0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 static inline s32 side_002159D0(s32 player) {
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         return 0;
     }
     return 1;
@@ -453,7 +453,7 @@ s32 SzData_GetLeader(s32 arg0, s32 arg1) {
     u8 *side;
     Entry_002159D0 *entry;
 
-    side = (u8 *)D_0032F790 + side_002159D0(arg0) * 0xFFA0;
+    side = (u8 *)gSzData_All + side_002159D0(arg0) * 0xFFA0;
     entry = (Entry_002159D0 *)(side + arg1 * sizeof(Entry_002159D0) + 0xFD94);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
@@ -463,7 +463,7 @@ s32 SzData_GetLeader(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -478,18 +478,18 @@ typedef struct Side_00215A60 {
     u8 tail[0x14];
 } Side_00215A60;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetCardNo(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_v1;
     u16 *values;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    values = ((Side_00215A60 *)D_0032F790)[var_v1].rows[arg1].values;
+    values = ((Side_00215A60 *)gSzData_All)[var_v1].rows[arg1].values;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
     }
@@ -512,10 +512,10 @@ s32 SzData_CalcExp(s32 arg0, s32 arg1, s32 operation, s32 value) {
     s32 result;
 
     side = 1;
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     }
-    player = (u8 *)&D_0032F790[side];
+    player = (u8 *)&gSzData_All[side];
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -565,12 +565,12 @@ s32 SzData_CalcDeckCost(s32 arg0, s32 arg1) {
     s32 side;
     u8 *data;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    deck = (Deck_00215C40 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * sizeof(Deck_00215C40) + 0xFD94);
+    deck = (Deck_00215C40 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * sizeof(Deck_00215C40) + 0xFD94);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
     }
@@ -599,12 +599,12 @@ s64 SzData_GetRank(s32 arg0, s32 arg1) {
     s32 side;
     u8 *base;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (u8 *)D_0032F790 + side * 0xFFA0;
+    base = (u8 *)gSzData_All + side * 0xFFA0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
     }
@@ -625,7 +625,7 @@ typedef struct Card_00215DE0 {
 } Card_00215DE0;
 
 extern u16 D_002D0868;
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetRank(s32 player, s32 index) {
     s32 side;
@@ -634,12 +634,12 @@ s32 SzData_SetRank(s32 player, s32 index) {
     s32 rank;
     u16 *threshold;
 
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (u8 *)D_0032F790 + side * 0xFFA0;
+    base = (u8 *)gSzData_All + side * 0xFFA0;
     if (player < 0 || player >= 2) {
         return -1;
     }
@@ -669,10 +669,10 @@ typedef struct {
     u16 value;
 } Entry_00215F00;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 static inline s32 side_00215F00(s32 player) {
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         return 0;
     }
     return 1;
@@ -682,7 +682,7 @@ s32 SzData_GetDeckCost(s32 arg0, s32 arg1) {
     u8 *side;
     Entry_00215F00 *entry;
 
-    side = (u8 *)D_0032F790 + side_00215F00(arg0) * 0xFFA0;
+    side = (u8 *)gSzData_All + side_00215F00(arg0) * 0xFFA0;
     entry = (Entry_00215F00 *)(side + arg1 * sizeof(Entry_00215F00) + 0xFD94);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
@@ -696,12 +696,12 @@ s32 SzData_GetDeckCount(s32 arg0, s32 arg1) {
     s32 side;
     u16 *card;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    card = (u16 *)((u8 *)D_0032F790 + side * 0xFFA0 + arg1 * 0x54 + 0xFD94);
+    card = (u16 *)((u8 *)gSzData_All + side * 0xFFA0 + arg1 * 0x54 + 0xFD94);
     count = 0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
@@ -742,8 +742,8 @@ typedef struct {
 
 
 static inline s32 side_00216040(s32 player) {
-    extern u8 D_0034F6D0;
-    if (D_0034F6D0 == player) {
+    extern u8 gSzData_bRoseFlag;
+    if (gSzData_bRoseFlag == player) {
         return 0;
     }
     return 1;
@@ -767,7 +767,7 @@ s32 SzData_AddBag(s32 arg0, s32 arg1, s32 arg2) {
         return 0;
     }
     if (arg1 == 0) {
-        arg1 = data_00216040(arg0, D_0032F790)->defaultCard;
+        arg1 = data_00216040(arg0, gSzData_All)->defaultCard;
     }
     if (arg1 == 0) {
         return 0;
@@ -779,7 +779,7 @@ s32 SzData_AddBag(s32 arg0, s32 arg1, s32 arg2) {
         return 0;
     }
 
-    card = (Card_00216040 *)data_00216040(arg0, D_0032F790) + arg2;
+    card = (Card_00216040 *)data_00216040(arg0, gSzData_All) + arg2;
     entry = card->entries;
     for (count = 9; count-- != 0; entry++) {
         if (entry->card == 0) {
@@ -820,8 +820,8 @@ typedef struct {
 
 
 static inline s32 side_00216280(s32 player) {
-    extern u8 D_0034F6D0;
-    if (D_0034F6D0 == player) {
+    extern u8 gSzData_bRoseFlag;
+    if (gSzData_bRoseFlag == player) {
         return 0;
     }
     return 1;
@@ -840,7 +840,7 @@ s32 SzData_AddBag2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
     if (arg1 == 0) {
-        arg1 = data_00216280(arg0, D_0032F790)->defaultCard;
+        arg1 = data_00216280(arg0, gSzData_All)->defaultCard;
     }
     if (arg1 == 0) {
         return 0;
@@ -855,7 +855,7 @@ s32 SzData_AddBag2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 0;
     }
 
-    card = (Card_00216280 *)data_00216280(arg0, D_0032F790) + arg3;
+    card = (Card_00216280 *)data_00216280(arg0, gSzData_All) + arg3;
     entry = card->entries;
     for (count = 9; count-- != 0; entry++) {
         if (entry->card == 0) {
@@ -915,7 +915,7 @@ typedef struct {
     unsigned char flags;
     unsigned char tail[3];
 } State_002158B0;
-extern State_002158B0 D_0032F790[];
+extern State_002158B0 gSzData_All[];
 #endif
 
 
@@ -930,8 +930,8 @@ typedef struct {
     u8 count : 2;
 } Flags_00216580;
 
-extern Entry_00216580 D_002D0870[];
-extern u8 D_0034F6D0;
+extern Entry_00216580 aSpecialCard[];
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_RollSpecial(s32 arg0, s32 arg1) {
     s32 i;
@@ -950,19 +950,19 @@ s32 SzData_RollSpecial(s32 arg0, s32 arg1) {
     if ((arg1 < 0) || (arg1 >= 0x356)) {
         return 0;
     }
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    player = &D_0032F790[side];
-    entry = D_002D0870;
+    player = &gSzData_All[side];
+    entry = aSpecialCard;
     i = 0;
     do {
         decodedCard = SzDuel_Xax2New(entry->card & 0x3FFF);
         if (decodedCard == arg1) {
             count = (u8 *)(i + (u32)player) + 0xFE90;
-            *count = (*count + 1) % (((Flags_00216580 *)&D_002D0870[i])[1].count + 1);
+            *count = (*count + 1) % (((Flags_00216580 *)&aSpecialCard[i])[1].count + 1);
             return 1;
         }
         i++;
@@ -985,8 +985,8 @@ typedef struct {
     unsigned short field_4;
 } Entry_00216580;
 
-extern State_002158B0 D_0032F790[];
-extern Entry_00216580 D_002D0870[];
+extern State_002158B0 gSzData_All[];
+extern Entry_00216580 aSpecialCard[];
 #endif
 
 
@@ -996,7 +996,7 @@ typedef struct State_002166D0 {
     u8 unk_FEA0[0x100];
 } State_002166D0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
     State_002166D0 *state;
@@ -1014,7 +1014,7 @@ s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
     if ((arg1 < 0) || (arg1 >= 0x356)) {
         return arg1;
     }
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
@@ -1022,15 +1022,15 @@ s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
     {
         s32 i;
 
-        state = (State_002166D0 *)D_0032F790 + side;
-        entry = D_002D0870;
+        state = (State_002166D0 *)gSzData_All + side;
+        entry = aSpecialCard;
         i = 0;
         do {
             resolved = SzDuel_Xax2New(entry->card & 0x3FFF);
             if (resolved == arg1) {
                 replacement = state->replacements[i];
                 if (replacement != 0) {
-                    arg1 = (&D_002D0870[i].card)[replacement];
+                    arg1 = (&aSpecialCard[i].card)[replacement];
                 }
                 break;
             }
@@ -1043,7 +1043,7 @@ s32 SzData_ExchSpecial(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1053,19 +1053,19 @@ typedef struct Record_00216800 {
     u8 pad_end[0x20E];
 } Record_00216800;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_PushBagNew(s32 arg0, s32 arg1) {
     s32 record_index;
     s32 i;
     Record_00216800 *record;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         record_index = 0;
     } else {
         record_index = 1;
     }
-    record = &((Record_00216800 *)D_0032F790)[record_index];
+    record = &((Record_00216800 *)gSzData_All)[record_index];
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1090,7 +1090,7 @@ s32 SzData_PushBagNew(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1099,7 +1099,7 @@ typedef struct {
     u16 card;
 } Entry_00216920;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
     s32 side;
@@ -1115,12 +1115,12 @@ s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 0x356) {
         return 0;
     }
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    data = (u8 *)D_0032F790 + side * 0xFFA0;
+    data = (u8 *)gSzData_All + side * 0xFFA0;
     i = 0;
     do {
         if (((Entry_00216920 *)data)->card == arg1) {
@@ -1134,7 +1134,7 @@ s32 SzData_IsBagNew(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1146,7 +1146,7 @@ typedef struct {
     u8 type : 2;
 } Entry_002169F0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetBagCountAll(s32 arg0) {
     s32 rowIndex;
@@ -1156,8 +1156,8 @@ s32 SzData_GetBagCountAll(s32 arg0) {
     s32 side;
     u8 *row;
 
-    side = D_0034F6D0 == arg0 ? 0 : 1;
-    row = (u8 *)D_0032F790 + (side * 0xFFA0);
+    side = gSzData_bRoseFlag == arg0 ? 0 : 1;
+    row = (u8 *)gSzData_All + (side * 0xFFA0);
     count = 0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
@@ -1182,7 +1182,7 @@ s32 SzData_GetBagCountAll(s32 arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1194,7 +1194,7 @@ typedef struct {
     u8 category : 2;
 } Entry_00216AC0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
     Entry_00216AC0 *entry;
@@ -1211,12 +1211,12 @@ s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
     if ((card < 0) || (card >= 0x356)) {
         return -1;
     }
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         player = 0;
     } else {
         player = 1;
     }
-    entry = (Entry_00216AC0 *)((u8 *)D_0032F790 + (player * 0xFFA0));
+    entry = (Entry_00216AC0 *)((u8 *)gSzData_All + (player * 0xFFA0));
     entry = (Entry_00216AC0 *)((u8 *)entry + (card * 0x4C));
     remaining = 9;
     while (remaining--) {
@@ -1232,7 +1232,7 @@ s32 SzData_GetBagCount(s32 player, s32 card, s32 category) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1242,19 +1242,19 @@ typedef struct Flags_00216BC0 {
     u8 unused2 : 1;
 } Flags_00216BC0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetLookFlag(s32 arg0, s32 arg1) {
     extern s32 SD_iPreparePreBlockOnIOP();
     s32 var_v1;
     u8 *cards;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    cards = (u8 *)D_0032F790 + var_v1 * 0xFFA0;
+    cards = (u8 *)gSzData_All + var_v1 * 0xFFA0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1266,7 +1266,7 @@ s32 SzData_GetLookFlag(s32 arg0, s32 arg1) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1278,15 +1278,15 @@ typedef struct Card_00216C70 {
     u8 padding4A[2];
 } Card_00216C70;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetLookFlag(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_v1;
     Card_00216C70 *cards;
     Card_00216C70 *card;
 
-    var_v1 = (D_0034F6D0 == arg0) ? 0 : 1;
-    cards = (Card_00216C70 *)((u8 *)D_0032F790 + var_v1 * 0xFFA0);
+    var_v1 = (gSzData_bRoseFlag == arg0) ? 0 : 1;
+    cards = (Card_00216C70 *)((u8 *)gSzData_All + var_v1 * 0xFFA0);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1308,12 +1308,12 @@ s32 SzData_GetPassFlag(s32 arg0, s32 arg1) {
     s32 side;
     Card_00216D30 *cards;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    cards = (Card_00216D30 *)&D_0032F790[side];
+    cards = (Card_00216D30 *)&gSzData_All[side];
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1333,19 +1333,19 @@ typedef struct {
     u8 pad_4A[2];
 } Card_00216DF0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetPassFlag(s32 arg0, s32 arg1, s32 arg2) {
     s32 side;
     u8 *table;
     Card_00216DF0 *card;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    table = (u8 *)D_0032F790 + side * 0xFFA0;
+    table = (u8 *)gSzData_All + side * 0xFFA0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1365,8 +1365,8 @@ s32 SzData_GetTreasureFlag(s32 arg0, s32 arg1) {
     u8 *data;
     s32 flags;
 
-    index = (D_0034F6D0 == arg0) ? 0 : 1;
-    data = (u8 *)D_0032F790 + index * 0xFFA0;
+    index = (gSzData_bRoseFlag == arg0) ? 0 : 1;
+    data = (u8 *)gSzData_All + index * 0xFFA0;
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1378,7 +1378,7 @@ s32 SzData_GetTreasureFlag(s32 arg0, s32 arg1) {
 }
 
 #ifndef GAME_H
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1387,10 +1387,10 @@ typedef struct PlayerState_00216F80 {
     u8 flags[0x100];
 } PlayerState_00216F80;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 static inline s32 player_index_00216F80(s32 player) {
-    if (D_0034F6D0 == player) {
+    if (gSzData_bRoseFlag == player) {
         return 0;
     }
     return 1;
@@ -1399,7 +1399,7 @@ static inline s32 player_index_00216F80(s32 player) {
 s32 SzData_SetTreasureFlag(s32 player, s32 flag, s32 enabled) {
     PlayerState_00216F80 *state;
 
-    state = &((PlayerState_00216F80 *)D_0032F790)[player_index_00216F80(player)];
+    state = &((PlayerState_00216F80 *)gSzData_All)[player_index_00216F80(player)];
     if (player < 0 || player >= 2) {
         return 0;
     }
@@ -1421,7 +1421,7 @@ typedef struct Entry_002170A0 {
     u16 value;
 } Entry_002170A0;
 
-extern Entry_002170A0 D_002D08D0[];
+extern Entry_002170A0 aTreasureData[];
 extern u16 D_002D08D2[];
 
 u16 SzData_SearchTreasure(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -1440,7 +1440,7 @@ u16 SzData_SearchTreasure(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return 999;
     }
 
-    entry = D_002D08D0;
+    entry = aTreasureData;
     i = 0;
     do {
         if (arg0 == entry->id) {
@@ -1468,7 +1468,7 @@ typedef struct {
     unsigned char flags;
     unsigned char tail[3];
 } State_002158B0;
-extern State_002158B0 D_0032F790[];
+extern State_002158B0 gSzData_All[];
 #endif
 
 
@@ -1479,18 +1479,18 @@ typedef struct Flags_002171B0 {
     u8 : 2;
 } Flags_002171B0;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_GetMapEditFlag(s32 arg0) {
     s32 index;
     State_002158B0 *state;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         index = 0;
     } else {
         index = 1;
     }
-    state = &D_0032F790[index];
+    state = &gSzData_All[index];
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1499,7 +1499,7 @@ s32 SzData_GetMapEditFlag(s32 arg0) {
 
 #ifndef GAME_H
 /* The game translation unit already declares this array with its local type. */
-extern unsigned char D_0032F790[];
+extern unsigned char gSzData_All[];
 #endif
 
 
@@ -1510,18 +1510,18 @@ typedef struct Flags_00217230 {
     u8 : 2;
 } Flags_00217230;
 
-extern u8 D_0034F6D0;
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetMapEditFlag(s32 arg0, s32 arg1) {
     s32 var_v1;
     u8 *temp_a2;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         var_v1 = 0;
     } else {
         var_v1 = 1;
     }
-    temp_a2 = (u8 *)D_0032F790 + (var_v1 * 0xFFA0);
+    temp_a2 = (u8 *)gSzData_All + (var_v1 * 0xFFA0);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
@@ -1549,21 +1549,21 @@ typedef struct {
 } State_002158B0;
 #endif
 
-extern u16 D_002D0850[];
-extern u8 D_0034F6D0;
+extern u16 gSzData_awExpTable[];
+extern u8 gSzData_bRoseFlag;
 
 s32 SzData_SetRankDirect(s32 arg0, s32 arg1, s32 arg2) {
-    extern State_002158B0 D_0032F790[];
+    extern State_002158B0 gSzData_All[];
     s32 side;
     Card_002172D0 *base;
     Card_002172D0 *card;
 
-    if (D_0034F6D0 == arg0) {
+    if (gSzData_bRoseFlag == arg0) {
         side = 0;
     } else {
         side = 1;
     }
-    base = (Card_002172D0 *)((u8 *)D_0032F790 + side * 0xFFA0);
+    base = (Card_002172D0 *)((u8 *)gSzData_All + side * 0xFFA0);
     if ((arg0 < 0) || (arg0 >= 2)) {
         return -1;
     }
@@ -1578,7 +1578,7 @@ s32 SzData_SetRankDirect(s32 arg0, s32 arg1, s32 arg2) {
     }
     card = &base[arg1];
     card->flags = arg2;
-    card->value = D_002D0850[arg2];
+    card->value = gSzData_awExpTable[arg2];
     return card->flags;
 }
 
@@ -1602,16 +1602,16 @@ typedef struct State_00217410 {
     u8 padding[3];
 } State_00217410;
 
-extern State_00217410 D_0034F6E0;
+extern State_00217410 gSzSound_sl;
 extern u8 D_002D0930[];
 
 void SzSound_Init(void) {
     extern u8 *getenv();
-    State_00217410 *state = &D_0034F6E0;
+    State_00217410 *state = &gSzSound_sl;
     s16 *slot;
     s32 i;
 
-    RhMem_FillMemory((s8 *)&D_0034F6E0, 0, 0xC);
+    RhMem_FillMemory((s8 *)&gSzSound_sl, 0, 0xC);
     state->enabled = getenv(D_002D0930) ? 1 : 0;
     if (state->enabled) {
         SD_Init(0x400000);
@@ -1639,9 +1639,9 @@ struct State_00217410;
 
 
 void SzSound_Term(void) {
-    extern struct State_00217410 D_0034F6E0;
+    extern struct State_00217410 gSzSound_sl;
     extern Flags_002174D0 D_0034F6E8;
-    State_002174D0 *state = (State_002174D0 *)&D_0034F6E0;
+    State_002174D0 *state = (State_002174D0 *)&gSzSound_sl;
 
     if (D_0034F6E8.active) {
         SD_Term();
@@ -1675,10 +1675,10 @@ void SzSound_VSync(void) {
 }
 
 s32 SzSound_TransferSEGrp(s32 arg0, s32 arg1, s32 arg2) {
-    extern char *D_00295090[];
+    extern char *apchSEGrp[];
     extern void func_0019B648();
     extern s32 SD_iTransferSEGrpToIop();
-    State_00217410 *state = &D_0034F6E0;
+    State_00217410 *state = &gSzSound_sl;
     char text[0x80];
 
     if (!D_0034F6E8.active) {
@@ -1695,10 +1695,10 @@ s32 SzSound_TransferSEGrp(s32 arg0, s32 arg1, s32 arg2) {
     switch (arg0) {
     case 0:
     case 1:
-        func_0019B648(text, D_00295090[arg0], arg1);
+        func_0019B648(text, apchSEGrp[arg0], arg1);
         break;
     default:
-        func_0019B648(text, D_00295090[arg0], arg1, arg1);
+        func_0019B648(text, apchSEGrp[arg0], arg1, arg1);
         break;
     }
     return SD_iTransferSEGrpToIop(arg0, text);
@@ -1722,7 +1722,7 @@ s32 SzSound_IsPlaySE(void) {
 
 s32 SzSound_PlaySE(s32 arg0, s32 arg1) {
     extern s64 SD_iGetSDStatus();
-    State_00217410 *state = &D_0034F6E0;
+    State_00217410 *state = &gSzSound_sl;
 
     if (!D_0034F6E8.active) {
         return 0;
@@ -1742,7 +1742,7 @@ s32 SzSound_PlaySE(s32 arg0, s32 arg1) {
 
 s32 SzSound_StereoPlaySE(s32 arg0, s32 arg1, s32 arg2) {
     extern s64 SD_iGetSDStatus();
-    State_00217410 *state = &D_0034F6E0;
+    State_00217410 *state = &gSzSound_sl;
 
     if (!D_0034F6E8.active) {
         return 0;
@@ -1763,7 +1763,7 @@ s32 SzSound_StereoPlaySE(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 SzSound_StopSE(s32 arg0, s32 arg1) {
-    State_00217410 *state = &D_0034F6E0;
+    State_00217410 *state = &gSzSound_sl;
 
     if (!D_0034F6E8.active) {
         return 0;

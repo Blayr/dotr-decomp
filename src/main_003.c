@@ -1,24 +1,24 @@
 #include "common.h"
 
 s32 SD_Init(s32 arg0) {
-    D_0030FF40 = (s32 *)arg0;
-    D_0030FF48 = arg0 + 0x2A80;
-    func_00198948(D_0030FF40, 0, 0x2A80);
-    *(s32 *)((u8 *)D_0030FF40 + 0x1DC) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x1F4) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x2248) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x2254) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x224C) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x2258) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x2250) = -1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x225C) = -1;
+    g_SDValue = (s32 *)arg0;
+    g_SDBuffer = arg0 + 0x2A80;
+    func_00198948(g_SDValue, 0, 0x2A80);
+    *(s32 *)((u8 *)g_SDValue + 0x1DC) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x1F4) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x2248) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x2254) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x224C) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x2258) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x2250) = -1;
+    *(s32 *)((u8 *)g_SDValue + 0x225C) = -1;
     SD_ClearXferQueue();
     SD_InitializeDevice();
     return 1;
 }
 
 void SD_Term(void) {
-    SDRPC_SendCommand(0xF004, D_0030FF40[5]);
+    SDRPC_SendCommand(0xF004, g_SDValue[5]);
 }
 
 void SD_SuspendSoundSystem(s32 arg0) {
@@ -32,16 +32,16 @@ void SD_SuspendSoundSystem(s32 arg0) {
 void SD_CallEveryVSync(void) {
     s32 temp_v0;
 
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if (D_0030FF40[0] & 1) {
+    if (g_SDValue[0] & 1) {
         if (SDRPC_SendCommand(0x5002) == 0) {
-            func_00198790((u8 *)D_0030FF40 + 0x54, (u8 *)D_0030FF40 + 0x180, 0x10);
-            D_0030FF40[0x1EC / 4] = D_0030FF40[0x60 / 4];
-            temp_v0 = D_0030FF40[0x5C / 4];
+            func_00198790((u8 *)g_SDValue + 0x54, (u8 *)g_SDValue + 0x180, 0x10);
+            g_SDValue[0x1EC / 4] = g_SDValue[0x60 / 4];
+            temp_v0 = g_SDValue[0x5C / 4];
             if (temp_v0 != 0) {
-                D_0030FF40[0x18 / 4] = temp_v0;
+                g_SDValue[0x18 / 4] = temp_v0;
             }
         }
         SD_vDoFsCommandQueue();
@@ -52,13 +52,13 @@ void SD_CallEveryVSync(void) {
 }
 
 s32 SD_BGMPreLoad(s32 arg0, s32 arg1) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
     }
-    if (!(D_0030FF40[1] & 2)) {
+    if (!(g_SDValue[1] & 2)) {
         return 1;
     }
-    if (D_0030FF40[0] & 1) {
+    if (g_SDValue[0] & 1) {
         if (arg1 != 0) {
             SD_iPlayBGMByAutoDMA(arg0);
         } else {
@@ -69,22 +69,22 @@ s32 SD_BGMPreLoad(s32 arg0, s32 arg1) {
 }
 
 s32 SD_IsLoadingNow(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
     }
-    return (*D_0030FF40 & 0x2000) ? 1 : 0;
+    return (*g_SDValue & 0x2000) ? 1 : 0;
 }
 
 void SD_SetOutputType(s32 arg0) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     SDRPC_SendCommand(0xF003, arg0);
-    *(s32 *)((u8 *)D_0030FF40 + 0x2A6C) = arg0;
+    *(s32 *)((u8 *)g_SDValue + 0x2A6C) = arg0;
 }
 
 void SD_StopAll(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     SD_BGMStop();
@@ -92,48 +92,48 @@ void SD_StopAll(void) {
 }
 
 void SD_BGMStop(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if (D_0030FF40[1] & 2) {
-        if (D_0030FF40[0] & 1) {
+    if (g_SDValue[1] & 2) {
+        if (g_SDValue[0] & 1) {
             SD_iStopAutoDMA();
         }
-        D_0030FF40[0] &= ~0x200;
+        g_SDValue[0] &= ~0x200;
     }
 }
 
 void SD_BGMFadeOut(s16 arg0) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if (D_0030FF40[1] & 2) {
+    if (g_SDValue[1] & 2) {
         SDRPC_SendCommand(0x5003, arg0);
     }
 }
 
 static inline u32 flags_0010A0F0(void) {
-    if (D_0030FF40 == NULL) {
+    if (g_SDValue == NULL) {
         return 0;
     }
-    return *(u32 *)D_0030FF40;
+    return *(u32 *)g_SDValue;
 }
 
 s32 SD_BGMGetVolume(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
     }
     if ((u64)flags_0010A0F0() & 0x100) {
-        return D_0030FF40[0x1EC / sizeof(s32)];
+        return g_SDValue[0x1EC / sizeof(s32)];
     }
     return 0;
 }
 
 void SD_BGMSetSourceLevel(s32 arg0, s32 arg1) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if ((D_0030FF40[1] & 2) && (D_0030FF40[0] & 1)) {
+    if ((g_SDValue[1] & 2) && (g_SDValue[0] & 1)) {
         if (arg1 < 0) {
             arg1 = -arg1;
         }
@@ -142,10 +142,10 @@ void SD_BGMSetSourceLevel(s32 arg0, s32 arg1) {
 }
 
 void SD_SEPlay2(s32 arg0, s32 arg1, s32 arg2) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
+    if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         SDRPC_SendCommand(0x5210, arg0, arg1, arg2, 0);
     }
 }
@@ -155,10 +155,10 @@ void SD_SEPlayWithParam6(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     s32 sp7C;
     u8 *bytes;
 
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
+    if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         bytes = (u8 *)&sp78;
         bytes[0] = arg0;
         bytes[1] = arg1;
@@ -178,19 +178,19 @@ void SD_SEPlayOnlyOnce(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void SD_SEStop(s32 arg0, s32 arg1) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
+    if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         SDRPC_SendCommand(0x5201, arg0, arg1);
     }
 }
 
 void SD_SEStopAll(void) {
-    if (D_0030FF40 == NULL || D_0030FF48 == 0) {
+    if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    if ((D_0030FF40[1] & 4) && (D_0030FF40[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
+    if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         SDRPC_SendCommand(0x5202);
     }
 }
@@ -216,7 +216,7 @@ typedef struct State_0010A4D0 {
 extern u8 D_002B9090[];
 
 static inline void set_result_0010A4D0(s32 index, s32 value) {
-    State_0010A4D0 *state = (State_0010A4D0 *)D_0030FF40;
+    State_0010A4D0 *state = (State_0010A4D0 *)g_SDValue;
     ((State_0010A4D0 *)((index << 2) + (s32)state))->results[0] = value;
 }
 
@@ -224,59 +224,59 @@ void SD_vRunAmbienceOnIopProc(void) {
     s32 i;
     State_0010A4D0 *slot;
 
-    if (D_0030FF40 != NULL && (((State_0010A4D0 *)D_0030FF40)->flags4 & 8)) {
+    if (g_SDValue != NULL && (((State_0010A4D0 *)g_SDValue)->flags4 & 8)) {
         i = 0;
         do {
-            switch (((State_0010A4D0 *)D_0030FF40)->states[i]) {
+            switch (((State_0010A4D0 *)g_SDValue)->states[i]) {
             case 1:
-                if (SD_DoesExistAnyCDReq() == 0 && ((State_0010A4D0 *)D_0030FF40)->busy == 0 && ((State_0010A4D0 *)D_0030FF40)->pending == 0) {
-                    func_0019B648(((State_0010A4D0 *)D_0030FF40)->buffer, D_002B9090, ((State_0010A4D0 *)D_0030FF40)->values[i]);
-                    if (RhFile_ExistFile((s32)((State_0010A4D0 *)D_0030FF40)->buffer) == 0) {
-                        ((State_0010A4D0 *)D_0030FF40)->states[i] = 0;
+                if (SD_DoesExistAnyCDReq() == 0 && ((State_0010A4D0 *)g_SDValue)->busy == 0 && ((State_0010A4D0 *)g_SDValue)->pending == 0) {
+                    func_0019B648(((State_0010A4D0 *)g_SDValue)->buffer, D_002B9090, ((State_0010A4D0 *)g_SDValue)->values[i]);
+                    if (RhFile_ExistFile((s32)((State_0010A4D0 *)g_SDValue)->buffer) == 0) {
+                        ((State_0010A4D0 *)g_SDValue)->states[i] = 0;
                         break;
                     }
-                    SD_AddReadToEeReq(((State_0010A4D0 *)D_0030FF40)->buffer, (u8 *)(D_0030FF48 + (i << 12)) + 0x101800, 0, 0x1000);
-                    slot = (State_0010A4D0 *)D_0030FF40;
+                    SD_AddReadToEeReq(((State_0010A4D0 *)g_SDValue)->buffer, (u8 *)(g_SDBuffer + (i << 12)) + 0x101800, 0, 0x1000);
+                    slot = (State_0010A4D0 *)g_SDValue;
                     slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
                     slot->states[0]++;
                 }
                 return;
             case 2:
                 if (SD_DoesExistAnyCDReq() == 0) {
-                    slot = (State_0010A4D0 *)D_0030FF40;
+                    slot = (State_0010A4D0 *)g_SDValue;
                     slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
                     slot->states[0]++;
                 }
                 return;
             case 3:
                 if (SD_DoesExistAnySIFReq() == 0) {
-                    SD_AddEeToIopReq((s32)((u8 *)(D_0030FF48 + (i << 12)) + 0x101800), ((State_0010A4D0 *)D_0030FF40)->source + 0xC0800, 0x1000);
-                    slot = (State_0010A4D0 *)D_0030FF40;
+                    SD_AddEeToIopReq((s32)((u8 *)(g_SDBuffer + (i << 12)) + 0x101800), ((State_0010A4D0 *)g_SDValue)->source + 0xC0800, 0x1000);
+                    slot = (State_0010A4D0 *)g_SDValue;
                     slot = (State_0010A4D0 *)((i << 2) + (s32)slot);
                     slot->states[0]++;
                 }
                 return;
             case 4:
                 if (SD_DoesExistAnySIFReq() == 0) {
-                    SDRPC_SendCommand(0x5401, ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->indexes[0], ((State_0010A4D0 *)D_0030FF40)->source + 0xC0800);
-                    ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->states[0]++;
+                    SDRPC_SendCommand(0x5401, ((State_0010A4D0 *)((i << 2) + (s32)g_SDValue))->indexes[0], ((State_0010A4D0 *)g_SDValue)->source + 0xC0800);
+                    ((State_0010A4D0 *)((i << 2) + (s32)g_SDValue))->states[0]++;
                 }
                 return;
             case 5:
-                if (!(((State_0010A4D0 *)D_0030FF40)->busy & 8)) {
-                    ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40))->states[0] = 0;
-                    slot = ((State_0010A4D0 *)((i << 2) + (s32)D_0030FF40));
+                if (!(((State_0010A4D0 *)g_SDValue)->busy & 8)) {
+                    ((State_0010A4D0 *)((i << 2) + (s32)g_SDValue))->states[0] = 0;
+                    slot = ((State_0010A4D0 *)((i << 2) + (s32)g_SDValue));
                     set_result_0010A4D0(slot->indexes[0], slot->values[0]);
                 }
                 return;
             default:
-                ((State_0010A4D0 *)D_0030FF40)->states[i] = 0;
+                ((State_0010A4D0 *)g_SDValue)->states[i] = 0;
                 break;
             }
             i++;
         } while (i < 2);
-        if (!(((State_0010A4D0 *)D_0030FF40)->flags & 0x200000)) {
-            ((State_0010A4D0 *)D_0030FF40)->flags &= ~0x8000;
+        if (!(((State_0010A4D0 *)g_SDValue)->flags & 0x200000)) {
+            ((State_0010A4D0 *)g_SDValue)->flags &= ~0x8000;
         }
     }
 }
@@ -292,9 +292,9 @@ s32 _iDecodeLPCM(s32 arg0) {
 
     FlushCache(0);
     row = 0;
-    src = (s16 *)(D_0030FF48 + 0x800);
+    src = (s16 *)(g_SDBuffer + 0x800);
     src += arg0 >> 1;
-    dst = (s16 *)((u8 *)D_0030FF48 + 0x181800);
+    dst = (s16 *)((u8 *)g_SDBuffer + 0x181800);
     do {
         dst2 = dst + 0x100;
         column = 0;
@@ -304,7 +304,7 @@ s32 _iDecodeLPCM(s32 arg0) {
             left = src[0];
             right = src[1];
             src += 2;
-            if (D_0030FF40[0x2A6C / 4] != 0) {
+            if (g_SDValue[0x2A6C / 4] != 0) {
                 right = (left + right) >> 1;
                 left = right;
             }
@@ -314,7 +314,7 @@ s32 _iDecodeLPCM(s32 arg0) {
             dst2[1] = right;
             dst += 2;
             dst2 += 2;
-            end = (s16 *)(D_0030FF48 + 0x800);
+            end = (s16 *)(g_SDBuffer + 0x800);
             end = (s16 *)((s32)end + 0x100000);
             if ((s32)src >= (s32)end) {
                 src = (s16 *)((s32)src - 0x100000);
@@ -330,13 +330,13 @@ s32 _iDecodeLPCM(s32 arg0) {
 }
 
 s32 SD_iGetSDStatus(void) {
-    return *D_0030FF40;
+    return *g_SDValue;
 }
 
 void SD_vInitializeFileHandler(void) {
     extern s32 SDFS_ReadToEEBlock();
 
-    SDFS_ReadToEEBlock(D_0028C230, D_0030FF40 + 0x84, 0, 0x1000);
+    SDFS_ReadToEEBlock(s_szReadPCMListAtFirst, g_SDValue + 0x84, 0, 0x1000);
 }
 
 extern u8 D_002B90A0[];
@@ -356,7 +356,7 @@ typedef struct Table_0010A8D0 {
 static inline s32 find_0010A8D0(s32 id) {
     s32 i = 0;
     do {
-        if (((Table_0010A8D0 *) D_0030FF40)->entries[i].id == id) {
+        if (((Table_0010A8D0 *) g_SDValue)->entries[i].id == id) {
             return i;
         }
         i++;
@@ -370,14 +370,14 @@ static inline void clear_0010A8D0(s32 count, s32 offset) {
     if (count > 0x20000) {
         count = 0x20000;
     }
-    ptr = (__int128 *) ((u8 *) D_0030FF48 + 0x800);
+    ptr = (__int128 *) ((u8 *) g_SDBuffer + 0x800);
     count >>= 4;
-    ptr = (__int128 *) ((u8 *) ptr + (*(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + offset));
+    ptr = (__int128 *) ((u8 *) ptr + (*(s32 *) ((u8 *) g_SDValue + 0x1D0) + offset));
     if (count != 0) {
         do {
             *ptr = 0;
             ptr++;
-            if ((u8 *) ptr >= (u8 *) D_0030FF48 + 0x100800) {
+            if ((u8 *) ptr >= (u8 *) g_SDBuffer + 0x100800) {
                 ptr = (__int128 *) ((u8 *) ptr - 0x100000);
             }
             count--;
@@ -406,30 +406,30 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
     var_s1 = arg1;
     var_a0 = find_0010A8D0(arg0);
     if (var_a0 >= 0) {
-        temp_s3 = D_0030FF40[var_a0 * 4 + 0x84];
-        temp_s4 = D_0030FF40[var_a0 * 4 + 0x86] * 4;
-        temp_s5 = D_0030FF40[var_a0 * 4 + 0x87] * 4;
+        temp_s3 = g_SDValue[var_a0 * 4 + 0x84];
+        temp_s4 = g_SDValue[var_a0 * 4 + 0x86] * 4;
+        temp_s5 = g_SDValue[var_a0 * 4 + 0x87] * 4;
         temp_s3 &= ~0xF;
         temp_s4 &= ~0xF;
         temp_s5 &= ~0xF;
         if (var_s1 < temp_s3) {
-            func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
+            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
             if (temp_s5 != 0) {
                 while (var_s1 + var_s0 > temp_s5) {
                     temp_s3_2 = temp_s5 - var_s1;
                     var_s7 = temp_s3_2;
-                    func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
-                    temp_a1 = *(s32 *) ((u8 *) D_0030FF40 + 0x1D0);
+                    func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
+                    temp_a1 = *(s32 *) ((u8 *) g_SDValue + 0x1D0);
                     if ((temp_a1 + temp_s3_2) >= 0x100000) {
                         temp_s6 = 0x100000 - temp_a1;
-                        SD_AddReadToEeReq((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + temp_a1 + 0x800), var_s1 + 0x800, temp_s6);
+                        SD_AddReadToEeReq((u8 *) g_SDValue + 0x1210, (void *) (g_SDBuffer + temp_a1 + 0x800), var_s1 + 0x800, temp_s6);
                         var_s1 += temp_s6;
                         var_s7 -= temp_s6;
-                        *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) = 0;
+                        *(s32 *) ((u8 *) g_SDValue + 0x1D0) = 0;
                     }
                     if (var_s7 != 0) {
-                        SD_AddReadToEeReq((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + 0x800), var_s1 + 0x800, var_s7);
-                        *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) += var_s7;
+                        SD_AddReadToEeReq((u8 *) g_SDValue + 0x1210, (void *) (g_SDBuffer + *(s32 *) ((u8 *) g_SDValue + 0x1D0) + 0x800), var_s1 + 0x800, var_s7);
+                        *(s32 *) ((u8 *) g_SDValue + 0x1D0) += var_s7;
                     }
                     var_s0 -= temp_s3_2;
                     var_s1 = temp_s4;
@@ -441,21 +441,21 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
             }
             var_s3 = var_s0;
             var_s2 = var_s1;
-            func_0019B648((u8 *) D_0030FF40 + 0x1210, D_002B90A0, arg0);
-            temp_a1_2 = *(s32 *) ((u8 *) D_0030FF40 + 0x1D0);
+            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
+            temp_a1_2 = *(s32 *) ((u8 *) g_SDValue + 0x1D0);
             if ((temp_a1_2 + var_s0) >= 0x100000) {
                 temp_s2 = 0x100000 - temp_a1_2;
-                SD_AddReadToEeReq((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + temp_a1_2 + 0x800), var_s1 + 0x800, temp_s2);
+                SD_AddReadToEeReq((u8 *) g_SDValue + 0x1210, (void *) (g_SDBuffer + temp_a1_2 + 0x800), var_s1 + 0x800, temp_s2);
                 var_s3 = var_s0 - temp_s2;
                 var_s2 = var_s1 + temp_s2;
-                *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) = 0;
+                *(s32 *) ((u8 *) g_SDValue + 0x1D0) = 0;
             }
             if (var_s3 != 0) {
-                SD_AddReadToEeReq((u8 *) D_0030FF40 + 0x1210, (void *) (D_0030FF48 + *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) + 0x800), var_s2 + 0x800, var_s3);
-                *(s32 *) ((u8 *) D_0030FF40 + 0x1D0) += var_s3;
+                SD_AddReadToEeReq((u8 *) g_SDValue + 0x1210, (void *) (g_SDBuffer + *(s32 *) ((u8 *) g_SDValue + 0x1D0) + 0x800), var_s2 + 0x800, var_s3);
+                *(s32 *) ((u8 *) g_SDValue + 0x1D0) += var_s3;
             }
             var_s1 += var_s0;
-            *(s32 *) ((u8 *) D_0030FF40 + 0x1CC) = var_s1;
+            *(s32 *) ((u8 *) g_SDValue + 0x1CC) = var_s1;
         }
     }
 }
@@ -477,29 +477,29 @@ void _vDecodeLPCMThenSendToIOP(s32 arg0) {
     s32 end;
 
     FlushCache(0);
-    if (D_0030FF40[0x1DC / 4] == 0x23A7) {
+    if (g_SDValue[0x1DC / 4] == 0x23A7) {
         SD_BGMFadeOut(0x100);
-        D_0030FF40[0x2248 / 4] = 0x23A7;
+        g_SDValue[0x2248 / 4] = 0x23A7;
         return;
     }
-    index = find_0010AC20(D_0030FF40, D_0030FF40[0x1DC / 4]);
+    index = find_0010AC20(g_SDValue, g_SDValue[0x1DC / 4]);
     if (index == -1) {
         return;
     }
-    D_0030FF40[0x1C8 / 4] = _iDecodeLPCM(D_0030FF40[0x1C8 / 4]);
-    D_0030FF40[0x1D4 / 4] += 0x4000;
-    end = D_0030FF40[index * 4 + 0x87];
+    g_SDValue[0x1C8 / 4] = _iDecodeLPCM(g_SDValue[0x1C8 / 4]);
+    g_SDValue[0x1D4 / 4] += 0x4000;
+    end = g_SDValue[index * 4 + 0x87];
     if (end != 0) {
-        if (end < D_0030FF40[0x1D4 / 4]) {
-            D_0030FF40[0x1D4 / 4] -= end;
-            D_0030FF40[0x1D4 / 4] += D_0030FF40[index * 4 + 0x86];
+        if (end < g_SDValue[0x1D4 / 4]) {
+            g_SDValue[0x1D4 / 4] -= end;
+            g_SDValue[0x1D4 / 4] += g_SDValue[index * 4 + 0x86];
         }
-    } else if (D_0030FF40[0x1D4 / 4] > (D_0030FF40[index * 4 + 0x84] >> 2)) {
+    } else if (g_SDValue[0x1D4 / 4] > (g_SDValue[index * 4 + 0x84] >> 2)) {
         SD_iStopAutoDMA();
         return;
     }
-    SD_AddEeToIopReq((s32)((u8 *)D_0030FF48 + 0x181800), D_0030FF40[5] + (D_0030FF40[0x1D8 / 4] << 17), 0x20000);
-    D_0030FF40[0x1D8 / 4] = 1 - D_0030FF40[0x1D8 / 4];
+    SD_AddEeToIopReq((s32)((u8 *)g_SDBuffer + 0x181800), g_SDValue[5] + (g_SDValue[0x1D8 / 4] << 17), 0x20000);
+    g_SDValue[0x1D8 / 4] = 1 - g_SDValue[0x1D8 / 4];
 }
 
 void SD_vAutoDMASequentialWatchDog(void) {
@@ -507,134 +507,134 @@ void SD_vAutoDMASequentialWatchDog(void) {
     s32 input;
     s32 mode;
 
-    if ((D_0030FF40[1] & 2) &&
-        ((flags = D_0030FF40[0]) & 0x10) &&
+    if ((g_SDValue[1] & 2) &&
+        ((flags = g_SDValue[0]) & 0x10) &&
         (flags & 0x20) && (flags & 0x40)) {
-        if (D_0030FF40[0x7B] == 0) {
+        if (g_SDValue[0x7B] == 0) {
             SD_iStopAutoDMA();
         }
-        switch (D_0030FF40[0x79]) {
+        switch (g_SDValue[0x79]) {
         default:
-            D_0030FF40[0x79] = 0;
+            g_SDValue[0x79] = 0;
             break;
         case 100:
             if (SD_BGMGetVolume() == 0) {
                 SD_iStopAutoDMA();
-                D_0030FF40[0x72] = 0;
-                D_0030FF40[0x73] = 0;
-                D_0030FF40[0x74] = 0;
-                D_0030FF40[0x79]++;
+                g_SDValue[0x72] = 0;
+                g_SDValue[0x73] = 0;
+                g_SDValue[0x74] = 0;
+                g_SDValue[0x79]++;
             }
             break;
         case 101:
         case 102:
         case 103:
-            D_0030FF40[0x79]++;
+            g_SDValue[0x79]++;
             break;
         case 104:
-            if (D_0030FF40[0x892] == 0x23A7) {
-                D_0030FF40[0] &= ~0x100;
-                D_0030FF40[0] &= ~0x2000;
-                D_0030FF40[0] &= ~0x200;
-                D_0030FF40[0x77] = 0x23A7;
-                D_0030FF40[0x79] = 0;
+            if (g_SDValue[0x892] == 0x23A7) {
+                g_SDValue[0] &= ~0x100;
+                g_SDValue[0] &= ~0x2000;
+                g_SDValue[0] &= ~0x200;
+                g_SDValue[0x77] = 0x23A7;
+                g_SDValue[0x79] = 0;
             } else {
-                D_0030FF40[0x79] = 1;
-                D_0030FF40[0x77] = D_0030FF40[0x892];
+                g_SDValue[0x79] = 1;
+                g_SDValue[0x77] = g_SDValue[0x892];
             }
             break;
         case 1:
-            if (D_0030FF40[0x7F] & 2) {
-                _vLoadBGMFileToEE(D_0030FF40[0x77], 0, 0x90000);
+            if (g_SDValue[0x7F] & 2) {
+                _vLoadBGMFileToEE(g_SDValue[0x77], 0, 0x90000);
             } else {
-                _vLoadBGMFileToEE(D_0030FF40[0x77], 0, 0x100000);
+                _vLoadBGMFileToEE(g_SDValue[0x77], 0, 0x100000);
             }
-            D_0030FF40[0x79]++;
+            g_SDValue[0x79]++;
             return;
         case 2:
             if (SD_DoesExistAnyCDReq() == 0) {
-                D_0030FF40[6] = 0;
-                D_0030FF40[0x71] = 0;
-                D_0030FF40[0x70] = 0;
-                D_0030FF40[0x76] = 0;
+                g_SDValue[6] = 0;
+                g_SDValue[0x71] = 0;
+                g_SDValue[0x70] = 0;
+                g_SDValue[0x76] = 0;
                 _vDecodeLPCMThenSendToIOP(0);
-                D_0030FF40[0x79]++;
+                g_SDValue[0x79]++;
             }
             return;
         case 3:
             if (SD_DoesExistAnySIFReq() == 0) {
                 _vDecodeLPCMThenSendToIOP(0);
-                D_0030FF40[0x79]++;
+                g_SDValue[0x79]++;
             }
             return;
         case 4:
             if (SD_DoesExistAnySIFReq() == 0) {
-                if (D_0030FF40[0x7F] & 2) {
-                    D_0030FF40[0x7F] &= ~2;
-                    D_0030FF40[0x79]++;
+                if (g_SDValue[0x7F] & 2) {
+                    g_SDValue[0x7F] &= ~2;
+                    g_SDValue[0x79]++;
                 } else {
-                    D_0030FF40[0x7F] = 4;
-                    D_0030FF40[0x79] = 0;
-                    D_0030FF40[0] &= ~0x2000;
+                    g_SDValue[0x7F] = 4;
+                    g_SDValue[0x79] = 0;
+                    g_SDValue[0] &= ~0x2000;
                 }
             }
             break;
         case 5:
-            _vLoadBGMFileToEE(D_0030FF40[0x77], 0x90000, 0x70000);
+            _vLoadBGMFileToEE(g_SDValue[0x77], 0x90000, 0x70000);
             SD_iStopAutoDMA();
             SD_iStartAutoDMA();
-            D_0030FF40[0x79]++;
+            g_SDValue[0x79]++;
             return;
         case 6:
             if (SD_DoesExistAnyCDReq() == 0) {
-                D_0030FF40[0x79] = 0;
-                D_0030FF40[0] &= ~0x2000;
+                g_SDValue[0x79] = 0;
+                g_SDValue[0] &= ~0x2000;
             }
             break;
         }
-        if (D_0030FF40[0] & 0x100) {
-            if ((D_0030FF40[0x71] & 0x01000000) !=
-                ((input = D_0030FF40[6]) & 0x01000000)) {
-                D_0030FF40[0x71] = input;
-                D_0030FF40[0x70] = D_0030FF40[0x71];
-                D_0030FF40[0x76] = (D_0030FF40[0x70] & 0x01000000) ? 0 : 1;
+        if (g_SDValue[0] & 0x100) {
+            if ((g_SDValue[0x71] & 0x01000000) !=
+                ((input = g_SDValue[6]) & 0x01000000)) {
+                g_SDValue[0x71] = input;
+                g_SDValue[0x70] = g_SDValue[0x71];
+                g_SDValue[0x76] = (g_SDValue[0x70] & 0x01000000) ? 0 : 1;
                 _vDecodeLPCMThenSendToIOP(0);
-                if ((D_0030FF40[0] & 0x100) &&
-                    ((mode = D_0030FF40[0x72]) == 0 || mode == 0xA0000)) {
-                    _vLoadBGMFileToEE(D_0030FF40[0x77], D_0030FF40[0x73], 0x80000);
+                if ((g_SDValue[0] & 0x100) &&
+                    ((mode = g_SDValue[0x72]) == 0 || mode == 0xA0000)) {
+                    _vLoadBGMFileToEE(g_SDValue[0x77], g_SDValue[0x73], 0x80000);
                 }
-                D_0030FF40[0x70] = 0;
+                g_SDValue[0x70] = 0;
             }
         }
     }
 }
 
 s32 SD_iStartAutoDMA(void) {
-    D_0030FF40[0] |= 0x100;
-    D_0030FF40[0x1FC / 4] &= ~4;
-    D_0030FF40[0x1D4 / 4] = 0;
-    D_0030FF40[0x2254 / 4] = D_0030FF40[0x1DC / 4];
-    SDRPC_SendCommand(0x1020, D_0030FF40[0x14 / 4], 0x40000, 1);
+    g_SDValue[0] |= 0x100;
+    g_SDValue[0x1FC / 4] &= ~4;
+    g_SDValue[0x1D4 / 4] = 0;
+    g_SDValue[0x2254 / 4] = g_SDValue[0x1DC / 4];
+    SDRPC_SendCommand(0x1020, g_SDValue[0x14 / 4], 0x40000, 1);
     return 1;
 }
 
 s32 SD_iStopAutoDMA(void) {
     s32 temp_v1;
 
-    if (!(D_0030FF40[1] & 2)) {
+    if (!(g_SDValue[1] & 2)) {
         return 0;
     }
-    temp_v1 = D_0030FF40[0];
+    temp_v1 = g_SDValue[0];
     if (temp_v1 & 0x100) {
-        D_0030FF40[0] = temp_v1 & ~0x100;
-        D_0030FF40[0] &= ~0x200;
-        *(s32 *)((u8 *)D_0030FF40 + 0x18) = 0;
-        *(s32 *)((u8 *)D_0030FF40 + 0x1C4) = 0;
-        *(s32 *)((u8 *)D_0030FF40 + 0x1C0) = 0;
+        g_SDValue[0] = temp_v1 & ~0x100;
+        g_SDValue[0] &= ~0x200;
+        *(s32 *)((u8 *)g_SDValue + 0x18) = 0;
+        *(s32 *)((u8 *)g_SDValue + 0x1C4) = 0;
+        *(s32 *)((u8 *)g_SDValue + 0x1C0) = 0;
         SDRPC_SendCommand(0x1021);
-        *(s32 *)((u8 *)D_0030FF40 + 0x1D4) = 0;
-        *(s32 *)((u8 *)D_0030FF40 + 0x1D8) = 0;
-        *(s32 *)((u8 *)D_0030FF40 + 0x2254) = -1;
+        *(s32 *)((u8 *)g_SDValue + 0x1D4) = 0;
+        *(s32 *)((u8 *)g_SDValue + 0x1D8) = 0;
+        *(s32 *)((u8 *)g_SDValue + 0x2254) = -1;
     }
     return 1;
 }
@@ -642,17 +642,17 @@ s32 SD_iStopAutoDMA(void) {
 void SD_vInitSDThread(void) {
     s32 temp_a0;
 
-    temp_a0 = *D_0030FF40;
+    temp_a0 = *g_SDValue;
     if (!(temp_a0 & 0x10)) {
-        *D_0030FF40 = temp_a0 | 0x10;
+        *g_SDValue = temp_a0 | 0x10;
     }
 }
 
 void SD_vInitializeAutoDMA(void) {
-    if (!(D_0030FF40[0] & 0x40)) {
+    if (!(g_SDValue[0] & 0x40)) {
         SDRPC_SendCommand(0x5000);
-        D_0030FF40[0] |= 0x40;
-        D_0030FF40[0x7A] = -1;
+        g_SDValue[0] |= 0x40;
+        g_SDValue[0x7A] = -1;
     }
 }
 
@@ -669,22 +669,22 @@ static inline s32 find_0010B3C0(s32 *base, s32 value) {
 }
 
 s32 SD_iPreparePreBlockOnIOP(s32 value) {
-    if (!(D_0030FF40[1] & 2)) {
+    if (!(g_SDValue[1] & 2)) {
         return 0;
     }
 
     SD_BGMFadeOut(0x100);
-    *(s32 *)((u8 *)D_0030FF40 + 0x2248) = value;
+    *(s32 *)((u8 *)g_SDValue + 0x2248) = value;
 
-    if (find_0010B3C0(D_0030FF40, value) < 0) {
+    if (find_0010B3C0(g_SDValue, value) < 0) {
         if (value != 0x23A7) {
             return 0;
         }
     }
 
-    *(s32 *)((u8 *)D_0030FF40 + 0x1FC) = 1;
-    *(s32 *)((u8 *)D_0030FF40 + 0x1E4) = 0x64;
-    D_0030FF40[0] |= 0x2000;
+    *(s32 *)((u8 *)g_SDValue + 0x1FC) = 1;
+    *(s32 *)((u8 *)g_SDValue + 0x1E4) = 0x64;
+    g_SDValue[0] |= 0x2000;
     return 1;
 }
 
@@ -693,7 +693,7 @@ static inline s32 find_0010B490(s32 id) {
     s32 i;
 
     i = 0;
-    entry = &D_0030FF40[i * 4];
+    entry = &g_SDValue[i * 4];
 
     do {
         if (entry[0x85] == id) {
@@ -709,7 +709,7 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
     s32 i;
     s32 current;
 
-    if ((D_0030FF40[1] & 2) == 0) {
+    if ((g_SDValue[1] & 2) == 0) {
         return 0;
     }
 
@@ -718,41 +718,41 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
         return 0;
     }
 
-    D_0030FF40[0x892] = id;
-    current = D_0030FF40[0x77];
-    if (current == id && (D_0030FF40[0] & 0x100) != 0) {
-        if (D_0030FF40[0x7B] < 0x7FFF) {
+    g_SDValue[0x892] = id;
+    current = g_SDValue[0x77];
+    if (current == id && (g_SDValue[0] & 0x100) != 0) {
+        if (g_SDValue[0x7B] < 0x7FFF) {
             SDRPC_SendCommand(0x5004, 0x100);
         }
-        if ((D_0030FF40[0] & 0x2000) != 0) {
-            D_0030FF40[0] &= ~0x2000;
+        if ((g_SDValue[0] & 0x2000) != 0) {
+            g_SDValue[0] &= ~0x2000;
         }
         return 1;
     }
 
-    if (D_0030FF40[0x7F] == 4 && current == id) {
-        D_0030FF40[0] |= 0x100;
-        D_0030FF40[0x7F] &= ~4;
-        D_0030FF40[0x75] = 0;
-        D_0030FF40[0x895] = D_0030FF40[0x77];
-        SDRPC_SendCommand(0x1020, D_0030FF40[5], 0x40000, 1);
+    if (g_SDValue[0x7F] == 4 && current == id) {
+        g_SDValue[0] |= 0x100;
+        g_SDValue[0x7F] &= ~4;
+        g_SDValue[0x75] = 0;
+        g_SDValue[0x895] = g_SDValue[0x77];
+        SDRPC_SendCommand(0x1020, g_SDValue[5], 0x40000, 1);
         return 1;
     }
 
-    if ((D_0030FF40[1] & 2) != 0) {
+    if ((g_SDValue[1] & 2) != 0) {
         s32 j;
 
         SD_BGMFadeOut(0x100);
-        D_0030FF40[0x892] = id;
+        g_SDValue[0x892] = id;
         j = find_0010B490(id);
         if (j >= 0 || id == 0x23A7) {
-            D_0030FF40[0x7F] = 1;
-            D_0030FF40[0x79] = 0x64;
-            D_0030FF40[0] |= 0x2000;
+            g_SDValue[0x7F] = 1;
+            g_SDValue[0x79] = 0x64;
+            g_SDValue[0] |= 0x2000;
         }
     }
 
-    D_0030FF40[0x7F] |= 2;
+    g_SDValue[0x7F] |= 2;
     return 1;
 }
 
@@ -760,106 +760,106 @@ void SD_vTransferSEGrpToIopProc(void) {
     u8 request[0x1C];
     s32 command;
 
-    if (D_0030FF40 != NULL && (D_0030FF40[1] & 4)) {
-        switch (D_0030FF40[0x82C]) {
+    if (g_SDValue != NULL && (g_SDValue[1] & 4)) {
+        switch (g_SDValue[0x82C]) {
         case 1:
             if (SDFS_IsUsingNow() == 0) {
-                SD_AddEeToIopReq((s32)((u8 *)D_0030FF48 + 0x101800),
-                             D_0030FF40[5] + 0x40000, 0x80800);
-                D_0030FF40[0x82C]++;
+                SD_AddEeToIopReq((s32)((u8 *)g_SDBuffer + 0x101800),
+                             g_SDValue[5] + 0x40000, 0x80800);
+                g_SDValue[0x82C]++;
             }
             break;
         case 2:
             if (SD_DoesExistAnySIFReq() == 0) {
-                SDRPC_SendCommand(0x5100, D_0030FF40[0x82D],
-                             D_0030FF40[5] + 0x40000);
-                D_0030FF40[0x82C]++;
+                SDRPC_SendCommand(0x5100, g_SDValue[0x82D],
+                             g_SDValue[5] + 0x40000);
+                g_SDValue[0x82C]++;
             }
             break;
         case 3:
-            if (((u8 *)D_0030FF40)[0x5A] == 0) {
-                D_0030FF40[0x82C] = 0;
-                D_0030FF40[0] &= ~0x4000;
+            if (((u8 *)g_SDValue)[0x5A] == 0) {
+                g_SDValue[0x82C] = 0;
+                g_SDValue[0] &= ~0x4000;
             }
             break;
         case 20:
             if (SD_IsAnyJobOnCD() == 0) {
-                D_0030FF40[0x82C] = 1;
+                g_SDValue[0x82C] = 1;
             }
             break;
         case 30:
             if (SD_IsAnyJobOnCD() == 0) {
-                D_0030FF40[0x82C]++;
+                g_SDValue[0x82C]++;
             }
             break;
         case 31:
             if (SDFS_IsUsingNow() == 0) {
-                D_0030FF40[0x82E] = *(s32 *)((u8 *)D_0030FF48 + 0x101804) + 0x800;
-                D_0030FF40[0x82F] = 0;
-                if (D_0030FF40[0x82E] <= 0x80800) {
-                    D_0030FF40[0x830] = D_0030FF40[0x82E];
+                g_SDValue[0x82E] = *(s32 *)((u8 *)g_SDBuffer + 0x101804) + 0x800;
+                g_SDValue[0x82F] = 0;
+                if (g_SDValue[0x82E] <= 0x80800) {
+                    g_SDValue[0x830] = g_SDValue[0x82E];
                 } else {
-                    D_0030FF40[0x830] = 0x80800;
+                    g_SDValue[0x830] = 0x80800;
                 }
-                SD_AddEeToIopReq((s32)((u8 *)D_0030FF48 + 0x101800),
-                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830]);
-                D_0030FF40[0x82E] -= D_0030FF40[0x830];
-                *(u32 *)&D_0030FF40[0x82F] += D_0030FF40[0x830];
-                D_0030FF40[0x82C]++;
+                SD_AddEeToIopReq((s32)((u8 *)g_SDBuffer + 0x101800),
+                             g_SDValue[5] + 0x40000, g_SDValue[0x830]);
+                g_SDValue[0x82E] -= g_SDValue[0x830];
+                *(u32 *)&g_SDValue[0x82F] += g_SDValue[0x830];
+                g_SDValue[0x82C]++;
             }
             break;
         case 32:
             if (SD_DoesExistAnySIFReq() == 0) {
-                SDRPC_SendCommand(0x5102, D_0030FF40[0x82D],
-                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830], 0);
-                if (D_0030FF40[0x82E] > 0) {
-                    D_0030FF40[0x82C]++;
+                SDRPC_SendCommand(0x5102, g_SDValue[0x82D],
+                             g_SDValue[5] + 0x40000, g_SDValue[0x830], 0);
+                if (g_SDValue[0x82E] > 0) {
+                    g_SDValue[0x82C]++;
                 } else {
-                    D_0030FF40[0x82C] = 3;
+                    g_SDValue[0x82C] = 3;
                 }
             }
             break;
         case 33:
-            if (((u8 *)D_0030FF40)[0x5A] == 0) {
-                if (D_0030FF40[0x82E] <= 0x80800) {
-                    D_0030FF40[0x830] = D_0030FF40[0x82E];
+            if (((u8 *)g_SDValue)[0x5A] == 0) {
+                if (g_SDValue[0x82E] <= 0x80800) {
+                    g_SDValue[0x830] = g_SDValue[0x82E];
                 } else {
-                    D_0030FF40[0x830] = 0x80800;
+                    g_SDValue[0x830] = 0x80800;
                 }
-                SD_AddReadToEeReq(D_0030FF40 + 0x81C,
-                             (u8 *)D_0030FF48 + 0x101800,
-                             D_0030FF40[0x82F], D_0030FF40[0x830]);
-                D_0030FF40[0x82C]++;
+                SD_AddReadToEeReq(g_SDValue + 0x81C,
+                             (u8 *)g_SDBuffer + 0x101800,
+                             g_SDValue[0x82F], g_SDValue[0x830]);
+                g_SDValue[0x82C]++;
             }
             break;
         case 34:
             if (SD_IsAnyJobOnCD() == 0) {
-                D_0030FF40[0x82C]++;
+                g_SDValue[0x82C]++;
             }
             break;
         case 35:
             if (SDFS_IsUsingNow() == 0) {
-                SD_AddEeToIopReq((s32)((u8 *)D_0030FF48 + 0x101800),
-                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830]);
-                D_0030FF40[0x82E] -= D_0030FF40[0x830];
-                *(u32 *)&D_0030FF40[0x82F] += D_0030FF40[0x830];
-                D_0030FF40[0x82C]++;
+                SD_AddEeToIopReq((s32)((u8 *)g_SDBuffer + 0x101800),
+                             g_SDValue[5] + 0x40000, g_SDValue[0x830]);
+                g_SDValue[0x82E] -= g_SDValue[0x830];
+                *(u32 *)&g_SDValue[0x82F] += g_SDValue[0x830];
+                g_SDValue[0x82C]++;
             }
             break;
         case 36:
             if (SD_DoesExistAnySIFReq() == 0) {
-                SDRPC_SendCommand(0x5102, D_0030FF40[0x82D],
-                             D_0030FF40[5] + 0x40000, D_0030FF40[0x830],
-                             D_0030FF40[0x82F] - D_0030FF40[0x830] - 0x800);
-                if (D_0030FF40[0x82E] > 0) {
-                    D_0030FF40[0x82C] = 33;
+                SDRPC_SendCommand(0x5102, g_SDValue[0x82D],
+                             g_SDValue[5] + 0x40000, g_SDValue[0x830],
+                             g_SDValue[0x82F] - g_SDValue[0x830] - 0x800);
+                if (g_SDValue[0x82E] > 0) {
+                    g_SDValue[0x82C] = 33;
                 } else {
-                    D_0030FF40[0x82C] = 3;
+                    g_SDValue[0x82C] = 3;
                 }
             }
             break;
         default:
-            D_0030FF40[0x82C] = 0;
+            g_SDValue[0x82C] = 0;
             if (SD_FetchFromXferQueue(&command, request) != 0) {
                 SD_KickSEGroupReadSequence(command, (s32)request);
             }
@@ -871,24 +871,24 @@ void SD_vTransferSEGrpToIopProc(void) {
 s32 SD_iTransferSEGrpToIop(void) {
     extern s32 SD_AddToXferQueue();
 
-    if (D_0030FF40 == NULL) {
+    if (g_SDValue == NULL) {
         return 0;
     }
-    if (!(D_0030FF40[1] & 4)) {
+    if (!(g_SDValue[1] & 4)) {
         return 0;
     }
-    if (D_0030FF40[0] & 1) {
+    if (g_SDValue[0] & 1) {
         return SD_AddToXferQueue();
     }
     return 0;
 }
 
 void SD_KickSEGroupReadSequence(s32 arg0, s32 arg1) {
-    *(s32 *)((u8 *)D_0030FF40 + 0x20B4) = arg0;
-    func_0019B648((u8 *)D_0030FF40 + 0x2070, D_002B90B0, arg1);
-    SD_AddReadToEeReq((u8 *)D_0030FF40 + 0x2070, (u8 *)D_0030FF48 + 0x101800, 0, 0x80800);
-    *D_0030FF40 |= 0x4000;
-    *(s32 *)((u8 *)D_0030FF40 + 0x20B0) = 0x1E;
+    *(s32 *)((u8 *)g_SDValue + 0x20B4) = arg0;
+    func_0019B648((u8 *)g_SDValue + 0x2070, D_002B90B0, arg1);
+    SD_AddReadToEeReq((u8 *)g_SDValue + 0x2070, (u8 *)g_SDBuffer + 0x101800, 0, 0x80800);
+    *g_SDValue |= 0x4000;
+    *(s32 *)((u8 *)g_SDValue + 0x20B0) = 0x1E;
 }
 
 s32 SD_AddToXferQueue(s32 value, void *src) {
@@ -896,15 +896,15 @@ s32 SD_AddToXferQueue(s32 value, void *src) {
     s32 offset;
     s8 index;
 
-    index = *(s8 *)((u8 *)D_0030FF40 + 0x20C4);
+    index = *(s8 *)((u8 *)g_SDValue + 0x20C4);
     next = (index + 1) & 7;
-    if (next == *(s8 *)((u8 *)D_0030FF40 + 0x20C5)) {
+    if (next == *(s8 *)((u8 *)g_SDValue + 0x20C5)) {
         return 0;
     }
     offset = index << 5;
-    *(s32 *)(offset + (u32)D_0030FF40 + 0x20C8) = value;
-    func_0019C2B8((u8 *)D_0030FF40 + offset + 0x20CC, src, 0x1C);
-    *(s8 *)((u8 *)D_0030FF40 + 0x20C4) = next;
+    *(s32 *)(offset + (u32)g_SDValue + 0x20C8) = value;
+    func_0019C2B8((u8 *)g_SDValue + offset + 0x20CC, src, 0x1C);
+    *(s8 *)((u8 *)g_SDValue + 0x20C4) = next;
     return 1;
 }
 
@@ -912,31 +912,31 @@ s32 SD_FetchFromXferQueue(s32 *arg0, void *arg1) {
     s32 temp_v1_2;
     s8 temp_v1;
 
-    temp_v1 = *(s8 *)((u8 *)D_0030FF40 + 0x20C5);
-    if (temp_v1 == *(s8 *)((u8 *)D_0030FF40 + 0x20C4)) {
+    temp_v1 = *(s8 *)((u8 *)g_SDValue + 0x20C5);
+    if (temp_v1 == *(s8 *)((u8 *)g_SDValue + 0x20C4)) {
         return 0;
     }
-    *(s8 *)((u8 *)D_0030FF40 + 0x20C5) = (s8)((temp_v1 + 1) & 7);
+    *(s8 *)((u8 *)g_SDValue + 0x20C5) = (s8)((temp_v1 + 1) & 7);
     temp_v1_2 = temp_v1 << 5;
-    *arg0 = *(s32 *)(temp_v1_2 + (u32)D_0030FF40 + 0x20C8);
-    func_0019C2B8(arg1, (u8 *)D_0030FF40 + temp_v1_2 + 0x20CC, 0x1C);
+    *arg0 = *(s32 *)(temp_v1_2 + (u32)g_SDValue + 0x20C8);
+    func_0019C2B8(arg1, (u8 *)g_SDValue + temp_v1_2 + 0x20CC, 0x1C);
     return 1;
 }
 
 void SD_ClearXferQueue(void) {
-    *((s8 *)D_0030FF40 + 0x20C5) = 0;
-    *((s8 *)D_0030FF40 + 0x20C4) = 0;
+    *((s8 *)g_SDValue + 0x20C5) = 0;
+    *((s8 *)g_SDValue + 0x20C4) = 0;
 }
 
 s32 SD_DoesExistAnyCDReq(void) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    temp_v0_2 = D_0030FF40[0x1710 / sizeof(s32)];
+    temp_v0_2 = g_SDValue[0x1710 / sizeof(s32)];
     if (temp_v0_2 != 0) {
         return temp_v0_2;
     }
-    temp_v0 = D_0030FF40[0x171C / sizeof(s32)];
+    temp_v0 = g_SDValue[0x171C / sizeof(s32)];
     if (temp_v0 != 0) {
         return temp_v0;
     }
@@ -947,11 +947,11 @@ s32 SD_DoesExistAnySIFReq(void) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    temp_v0_2 = *(s32 *)((u8 *)D_0030FF40 + 0x1820);
+    temp_v0_2 = *(s32 *)((u8 *)g_SDValue + 0x1820);
     if (temp_v0_2 != 0) {
         return temp_v0_2;
     }
-    temp_v0 = *(s32 *)((u8 *)D_0030FF40 + 0x182C);
+    temp_v0 = *(s32 *)((u8 *)g_SDValue + 0x182C);
     if (temp_v0 != 0) {
         return temp_v0;
     }
@@ -988,7 +988,7 @@ typedef struct {
 } Queues_0010BE60;
 
 void SD_vDoFsCommandQueue(void) {
-    extern s32 D_0030FF50;
+    extern s32 s_iHowManyTimesCDAreUsed;
     Queues_0010BE60 *queues;
     Queues_0010BE60 *queues2;
     s32 state2;
@@ -998,7 +998,7 @@ void SD_vDoFsCommandQueue(void) {
     s32 *stateField;
     s32 *state2Field;
 
-    queues = (Queues_0010BE60 *)D_0030FF40;
+    queues = (Queues_0010BE60 *)g_SDValue;
     stateField = &queues->state;
     state = *stateField;
     if (state != 0) {
@@ -1007,16 +1007,16 @@ void SD_vDoFsCommandQueue(void) {
         case 1:
             if (SDFS_IsUsingNow() == 0) {
                 SDFS_ReadToEE((s32)request, request->arg1, request->arg2, request->arg3);
-                ((Queues_0010BE60 *)D_0030FF40)->state++;
-                ((Queues_0010BE60 *)D_0030FF40)->flags |= 0x800000;
+                ((Queues_0010BE60 *)g_SDValue)->state++;
+                ((Queues_0010BE60 *)g_SDValue)->flags |= 0x800000;
             }
             break;
         case 2:
             if (SDFS_IsUsingNow() == 0) {
-                D_0030FF50++;
-                ((Queues_0010BE60 *)D_0030FF40)->flags &= 0xFF7FFFFF;
-                ((Queues_0010BE60 *)D_0030FF40)->read = (((Queues_0010BE60 *)D_0030FF40)->read + 1) % 16;
-                ((Queues_0010BE60 *)D_0030FF40)->state++;
+                s_iHowManyTimesCDAreUsed++;
+                ((Queues_0010BE60 *)g_SDValue)->flags &= 0xFF7FFFFF;
+                ((Queues_0010BE60 *)g_SDValue)->read = (((Queues_0010BE60 *)g_SDValue)->read + 1) % 16;
+                ((Queues_0010BE60 *)g_SDValue)->state++;
             }
             break;
         default:
@@ -1025,9 +1025,9 @@ void SD_vDoFsCommandQueue(void) {
         }
     } else if (queues->pending != 0) {
         *stateField = 1;
-        ((Queues_0010BE60 *)D_0030FF40)->pending--;
+        ((Queues_0010BE60 *)g_SDValue)->pending--;
     }
-    queues2 = (Queues_0010BE60 *)D_0030FF40;
+    queues2 = (Queues_0010BE60 *)g_SDValue;
     state2Field = &queues2->state2;
     state2 = *state2Field;
     if (state2 != 0) {
@@ -1036,16 +1036,16 @@ void SD_vDoFsCommandQueue(void) {
         case 1:
             if (SDRPC_TranserToIopStatus() < 0) {
                 SDRPC_StartTransferToIop(request2->arg0, request2->arg1, request2->arg2);
-                ((Queues_0010BE60 *)D_0030FF40)->state2++;
-                ((Queues_0010BE60 *)D_0030FF40)->flags |= 0x08000000;
+                ((Queues_0010BE60 *)g_SDValue)->state2++;
+                ((Queues_0010BE60 *)g_SDValue)->flags |= 0x08000000;
                 return;
             }
             break;
         case 2:
             if (SDRPC_TranserToIopStatus() < 0) {
-                ((Queues_0010BE60 *)D_0030FF40)->flags &= 0xF7FFFFFF;
-                ((Queues_0010BE60 *)D_0030FF40)->read2 = (((Queues_0010BE60 *)D_0030FF40)->read2 + 1) % 16;
-                ((Queues_0010BE60 *)D_0030FF40)->state2++;
+                ((Queues_0010BE60 *)g_SDValue)->flags &= 0xF7FFFFFF;
+                ((Queues_0010BE60 *)g_SDValue)->read2 = (((Queues_0010BE60 *)g_SDValue)->read2 + 1) % 16;
+                ((Queues_0010BE60 *)g_SDValue)->state2++;
                 return;
             }
             break;
@@ -1055,7 +1055,7 @@ void SD_vDoFsCommandQueue(void) {
         }
     } else if (queues2->pending2 != 0) {
         *state2Field = 1;
-        ((Queues_0010BE60 *)D_0030FF40)->pending2--;
+        ((Queues_0010BE60 *)g_SDValue)->pending2--;
     }
 }
 
@@ -1076,7 +1076,7 @@ typedef struct {
 void SD_AddReadToEeReq(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     Request_0010C110 *request;
 
-    request = &((Queue_0010C110 *)D_0030FF40)->requests[((Queue_0010C110 *)D_0030FF40)->index];
+    request = &((Queue_0010C110 *)g_SDValue)->requests[((Queue_0010C110 *)g_SDValue)->index];
     func_0019BDD8(request->name, (const char *)arg0);
     request->data = arg1;
     request->offset = arg2;
@@ -1086,8 +1086,8 @@ void SD_AddReadToEeReq(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     request->size += arg2 - request->offset;
     request->size += 0x7FF;
     request->size &= ~0x7FF;
-    ((Queue_0010C110 *)D_0030FF40)->index = (((Queue_0010C110 *)D_0030FF40)->index + 1) % 16;
-    ((Queue_0010C110 *)D_0030FF40)->count++;
+    ((Queue_0010C110 *)g_SDValue)->index = (((Queue_0010C110 *)g_SDValue)->index + 1) % 16;
+    ((Queue_0010C110 *)g_SDValue)->count++;
 }
 
 typedef struct QueueEntry_0010C220 {
@@ -1107,26 +1107,26 @@ typedef struct Queue_0010C220 {
 void SD_AddEeToIopReq(s32 arg0, s32 arg1, s32 arg2) {
     QueueEntry_0010C220 *entry;
 
-    entry = &((Queue_0010C220 *)D_0030FF40)->entries[((Queue_0010C220 *)D_0030FF40)->write_index];
+    entry = &((Queue_0010C220 *)g_SDValue)->entries[((Queue_0010C220 *)g_SDValue)->write_index];
     entry->value0 = arg0;
     entry->value1 = arg1;
     entry->value2 = arg2;
-    ((Queue_0010C220 *)D_0030FF40)->write_index = (((Queue_0010C220 *)D_0030FF40)->write_index + 1) % 16;
-    ((Queue_0010C220 *)D_0030FF40)->count++;
+    ((Queue_0010C220 *)g_SDValue)->write_index = (((Queue_0010C220 *)g_SDValue)->write_index + 1) % 16;
+    ((Queue_0010C220 *)g_SDValue)->count++;
 }
 
 s32 SD_IsAnyJobOnCD(void) {
     s32 var_v0;
 
     var_v0 = 1;
-    if ((D_0030FF40[0x5C4] == 0) && (D_0030FF40[0x5C7] == 0)) {
+    if ((g_SDValue[0x5C4] == 0) && (g_SDValue[0x5C7] == 0)) {
         var_v0 = 0;
     }
     return var_v0;
 }
 
 s32 SDFS_IsUsingNow(void) {
-    return D_0030FF58;
+    return s_iUsingNow;
 }
 
 s32 SDFS_ReadToEE(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -1145,7 +1145,7 @@ s32 SDFS_ReadToEE(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             }
         }
     }
-    D_0030FF58 = 1;
+    s_iUsingNow = 1;
     return 1;
 }
 
@@ -1191,7 +1191,7 @@ void lSDFS_FinishCallback(void) {
     s32 size;
 
     func_00199B50(D_002B9141);
-    if (D_0030FF58 != 0) {
+    if (s_iUsingNow != 0) {
         if (D_0030FFA0.src != 0) {
             func_00198790((void *)D_0030FFA0.src, (u8 *)0x04000000 + D_0030FFA0.offset, D_0030FFA0.size);
         }
@@ -1212,10 +1212,10 @@ void lSDFS_FinishCallback(void) {
                 D_0030FFA0.left = 0;
             }
             size = ((D_0030FFA0.size + 0x7FF) >> 11) << 11;
-            func_00199B50(D_002B9168, D_0030FF60, 0x04000000);
-            RhFile_ReadAndCallbackByFileName((s32)D_0030FF60, position, size, 0x04000000, lSDFS_FinishCallback, 0, 0x20);
+            func_00199B50(D_002B9168, gSdfs_sa, 0x04000000);
+            RhFile_ReadAndCallbackByFileName((s32)gSdfs_sa, position, size, 0x04000000, lSDFS_FinishCallback, 0, 0x20);
         } else {
-            D_0030FF58 = 0;
+            s_iUsingNow = 0;
         }
     }
 }
@@ -1231,44 +1231,44 @@ s32 SDRPC_SendCommand(s32 cmd, ...) {
     s32 i;
     VaList_0010C720 ap;
 
-    if (D_0030FF40 == NULL) {
+    if (g_SDValue == NULL) {
         return 0;
     }
     id = cmd;
     VA_START_0010C720(ap, cmd);
-    D_0030FF40[0x20] = (s32)&D_0030FF40[0x20];
+    g_SDValue[0x20] = (s32)&g_SDValue[0x20];
     for (i = 1; i < 7; i++) {
-        D_0030FF40[0x20 + i] = VA_ARG_0010C720(ap, s32);
+        g_SDValue[0x20 + i] = VA_ARG_0010C720(ap, s32);
     }
-    return sceSifCallRpc(&D_0030FF40[7], id, 0, &D_0030FF40[0x20], 0x40, &D_0030FF40[0x60], 0x10, 0, 0);
+    return sceSifCallRpc(&g_SDValue[7], id, 0, &g_SDValue[0x20], 0x40, &g_SDValue[0x60], 0x10, 0, 0);
 }
 
 s32 SDRPC_StartTransferToIop(s32 arg0, s32 arg1, s32 arg2) {
     FlushCache(0);
-    D_0030FF40[0x11] = arg0;
-    D_0030FF40[0x12] = arg1;
-    D_0030FF40[0x13] = arg2;
-    D_0030FF40[0x14] = 0;
-    D_0030FF40[0x19] = sceSifSetDma(&D_0030FF40[0x11], 1);
-    return D_0030FF40[0x19];
+    g_SDValue[0x11] = arg0;
+    g_SDValue[0x12] = arg1;
+    g_SDValue[0x13] = arg2;
+    g_SDValue[0x14] = 0;
+    g_SDValue[0x19] = sceSifSetDma(&g_SDValue[0x11], 1);
+    return g_SDValue[0x19];
 }
 
 s32 SDRPC_TranserToIopStatus(void) {
-    return sceSifDmaStat(D_0030FF40[0x64 / sizeof(s32)]);
+    return sceSifDmaStat(g_SDValue[0x64 / sizeof(s32)]);
 }
 
 s32 SDRPC_Init(void) {
     s32 count;
 
     do {
-        if (sceSifBindRpc((u8 *)D_0030FF40 + 0x1C, 0x05730601, 0) < 0) {
+        if (sceSifBindRpc((u8 *)g_SDValue + 0x1C, 0x05730601, 0) < 0) {
             for (;;) {
             }
         }
         count = 1000000;
         while (count-- != 0) {
         }
-    } while (D_0030FF40[0x10] == 0);
+    } while (g_SDValue[0x10] == 0);
     FlushCache(0);
     return 1;
 }

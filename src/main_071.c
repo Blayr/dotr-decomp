@@ -40,13 +40,13 @@ u32 Fusion(s32 arg0, s32 arg1) {
         arg0 = arg1;
         arg1 = temp;
     }
-    entry = D_0029E830;
+    entry = FusionDat;
     i = 0;
     do {
         packed = *entry;
         if ((arg0 == (packed & 0x3FF)) &&
             (arg1 == ((packed & 0xFFC00) >> 10))) {
-            return (D_0029E830[i] & 0x3FF00000) >> 20;
+            return (FusionDat[i] & 0x3FF00000) >> 20;
         }
         i++;
         entry++;

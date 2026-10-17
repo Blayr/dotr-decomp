@@ -21,7 +21,7 @@ s32 _setlocale_r(s32 p, s32 category, s32 locale) {
 }
 
 s32 *_localeconv_r(void) {
-    return &D_002BD230;
+    return &lconv;
 }
 
 void setlocale(s32 arg0, s32 arg1) {

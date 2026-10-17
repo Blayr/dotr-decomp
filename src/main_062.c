@@ -314,7 +314,7 @@ void TkCamp_Init(int mode)
     int flag;
     short m;
 
-    D_0034F710 = 0;
+    Move_END_flg = 0;
     Taku_Camp_Data_Init();
     Taku_spline_init();
     Taku_Camp_3D_Poly_Init();
@@ -348,7 +348,7 @@ void TkCamp_Init(int mode)
         func_00233F50_b(3);
         DOTR_CAMP_ENTRY_WORK->byte_53b3 = 1;
         D_0034F6F8_21c510 = 0;
-        D_0034F700 = 0;
+        Rensyu_flg = 0;
         func_00217980_b(24, 0);
         break;
     case 1:
@@ -397,8 +397,8 @@ void TkCamp_Init(int mode)
             break;
         }
         flag = 0;
-        if (D_0034F708 != 0) {
-            D_0034F708 = 0;
+        if (Rensyu_END != 0) {
+            Rensyu_END = 0;
             SzModel_LoadMerge(3, 4, 0);
             SzText_LoadMerge(10, 0);
             if (board->done0 != 0) {
@@ -621,13 +621,13 @@ typedef struct Entry_0021D480 {
     u16 other[5];
 } Entry_0021D480;
 
-extern u16 D_00299CE0[];
-extern Entry_0021D480 D_00299D00[];
-extern s8 D_0034F6F8;
+extern u16 DeckTab[];
+extern Entry_0021D480 DeckDat[];
+extern s8 HELP_flg;
 
 void Taku_Camp_Data_Init(void) {
     u8 *base = (u8 *)0x01ED0000;
-    u8 *record = (u8 *)&D_00299E10;
+    u8 *record = (u8 *)&save_data;
     f32 eye[4];
     f32 target[4];
     f32 up[4];
@@ -744,9 +744,9 @@ void Taku_Camp_Data_Init(void) {
         } while (clear_count < 32);
     }
 
-    if (D_0034F6F8 != 0) {
+    if (HELP_flg != 0) {
         *(Buffer_0021D480 *)SzData_GetData(0) = *(Buffer_0021D480 *)0x01E301E0;
-        D_0034F6F8 = 0;
+        HELP_flg = 0;
     }
     n = 0;
     total = 0;
@@ -759,9 +759,9 @@ void Taku_Camp_Data_Init(void) {
     shift = 0;
     halves = (u16 *)0x01ED0000;
     for (; j < 3; j++) {
-        halves[0x53F8 / 2] = ((s32)D_00299CE0[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
+        halves[0x53F8 / 2] = ((s32)DeckTab[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
         shift += 5;
-        halves[0x53FE / 2] = D_00299D00[halves[0x53F8 / 2]].value & 0x3FF;
+        halves[0x53FE / 2] = DeckDat[halves[0x53F8 / 2]].value & 0x3FF;
         halves++;
     }
 }
@@ -772,11 +772,11 @@ typedef struct Coord_0021D850 {
     f32 z;
 } Coord_0021D850;
 
-extern u8 D_00298BA0[];
+extern u8 model_data[];
 extern u8 D_00298BA8[];
 extern s8 D_00299ED6;
 extern s8 D_00299ED7;
-extern u8 D_00299F60;
+extern u8 prim_data;
 
 void Taku_Screen_Init(void) {
     s16 var_s0;
@@ -784,11 +784,11 @@ void Taku_Screen_Init(void) {
     s32 *var_s2;
     Coord_0021D850 pos;
 
-    Taku_Coord_Set(&D_00299F60);
-    *(f32 *)0x01ED0040 = *(f32 *)(D_00298BA0 + D_00299ED6 * 0x34);
+    Taku_Coord_Set(&prim_data);
+    *(f32 *)0x01ED0040 = *(f32 *)(model_data + D_00299ED6 * 0x34);
     *(f32 *)0x01ED0044 = 0.0f;
     *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
-    *(f32 *)0x01ED0040 = *(f32 *)(D_00298BA0 + D_00299ED7 * 0x34);
+    *(f32 *)0x01ED0040 = *(f32 *)(model_data + D_00299ED7 * 0x34);
     *(f32 *)0x01ED0044 = 0.0f;
     *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
     *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
@@ -796,7 +796,7 @@ void Taku_Screen_Init(void) {
     *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
     *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
     SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
-    var_s1 = D_00298BA0;
+    var_s1 = model_data;
     var_s0 = 0;
     var_s2 = (s32 *)0x01ED0000;
     while (var_s0 <= 0x15) {
@@ -813,7 +813,7 @@ void Taku_Screen_Init(void) {
 }
 
 void TkCamp_Draw(void) {
-    if (D_0034F710 == 0) {
+    if (Move_END_flg == 0) {
         RhBase_SetVifPacketArea(TkCamp_Draw_Pipe(RhBase_GetVifPacketArea()));
     }
 }
@@ -822,7 +822,7 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_0021DAA0;
 
-extern s16 D_00298AD0;
+extern s16 teki_a_seru;
 extern s16 D_00298AD2;
 extern s16 D_00298AD4;
 extern s16 D_00298ADA;
@@ -848,9 +848,9 @@ void TkCamp_Draw_After(void) {
     s8 temp_a1;
     void *var_s6;
 
-    state = &D_00299E10;
+    state = &save_data;
     angle = ((*(s16 *)0x01ED5478 << 10) >> 12) - 0x200;
-    if (D_0034F710 == 0) {
+    if (Move_END_flg == 0) {
         var_s6 = Taku_Camp_2D(RhBase_GetVifPacketArea());
         temp_v0 = *(s16 *)0x01ED006C;
         if (temp_v0 != 0) {
@@ -858,7 +858,7 @@ void TkCamp_Draw_After(void) {
             y_offset = offset_y_0021DAA0(temp_v0);
             x_offset = (temp_a1 * -0x280) / 100;
             if (*(s8 *)0x01ED5488 != 0) {
-                var_s6 = Taku_G4_Set(var_s6, &D_00298AD0, x_offset, y_offset);
+                var_s6 = Taku_G4_Set(var_s6, &teki_a_seru, x_offset, y_offset);
                 *(s8 *)0x01ED5488 = 0;
             }
             if (SzModel_IsModelLoading(0x1F) == 0) {
@@ -882,7 +882,7 @@ void TkCamp_Draw_After(void) {
                     *(s16 *)0x01ED543A = 0x80;
                 }
                 temp_s4 = D_00298AD2;
-                temp_s5 = D_00298AD0;
+                temp_s5 = teki_a_seru;
                 var_s6 = Taku_Camp_Teki_Model_Disp(var_s6, 0x1F, temp_s5 + x_offset,
                     temp_s4 + y_offset, (f32)SzDuel_GetCamDist(*(s16 *)0x01ED5404),
                     D_00298AD4 - temp_s5, D_00298ADA - temp_s4, *(s16 *)0x01ED543A);
@@ -903,7 +903,7 @@ s32 TkCamp_Draw_Pipe(s32 arg0) {
     u8 *rec;
     s32 v;
 
-    rec = (u8 *)&D_00299E10;
+    rec = (u8 *)&save_data;
     if (D_00299ED2 >= 0x2710) {
         v = *(s16 *)(rec + 0xC2);
         switch (v) {

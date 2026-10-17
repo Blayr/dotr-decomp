@@ -7,7 +7,7 @@ asm void func_00100000(void) {
 
 /* Sony crt0.s _start (the Japanese build has the same code, from an older crt0 that orders the
    bss-clear loop's nops differently). Linker names: _fbss, _end, _gp, _stack, _stack_size, _args, _root. */
-extern f32 D_0030FF00[];
+extern f32 g_vec_temp[];
 extern s32 D_00317EF0;
 extern s32 D_0030FFC0;
 extern s32 D_12000;
@@ -16,7 +16,7 @@ extern s32 _stack;
 
 asm void func_00100008(void) {
     .set noreorder
-    la v0, D_0030FF00
+    la v0, g_vec_temp
     la v1, D_1FE0000
 L_00100018:
     sq zero, 0x0(v0)
@@ -131,7 +131,7 @@ typedef struct {
     u8 rotation[0x10];
 } Entry_00100350;
 
-extern Entry_00100350 D_0028A880[];
+extern Entry_00100350 gMain_ModelData[];
 
 s32 lMain_InitModel2(void) {
     s32 index;
@@ -141,22 +141,22 @@ s32 lMain_InitModel2(void) {
         if (SzModel_Create(index) == 0) {
             return 0;
         }
-        SzModel_SetPos(index, D_0028A880[index].position);
-        SzModel_SetRot(index, D_0028A880[index].rotation);
-        SzModel_Preset(index, D_0028A880[index].type, D_0028A880[index].data);
-        if (D_0028A880[index].type == 5) {
-            SzDuel_AddUnit(index - 0x1E, D_0028A880[index].arg1, D_0028A880[index].arg2,
-                         SzDuel_Xax2New(D_0028A880[index].data), 1);
+        SzModel_SetPos(index, gMain_ModelData[index].position);
+        SzModel_SetRot(index, gMain_ModelData[index].rotation);
+        SzModel_Preset(index, gMain_ModelData[index].type, gMain_ModelData[index].data);
+        if (gMain_ModelData[index].type == 5) {
+            SzDuel_AddUnit(index - 0x1E, gMain_ModelData[index].arg1, gMain_ModelData[index].arg2,
+                         SzDuel_Xax2New(gMain_ModelData[index].data), 1);
             SzDuel_SetUnitStatus(-1, index, 4, 1);
             SzDuel_SetUnitOpenRate(-1, index, 0, 0xFF);
             SzDuel_SetUnitCtlRateM(-1, index, 1, 0);
-        } else if (D_0028A880[index].type == 4) {
+        } else if (gMain_ModelData[index].type == 4) {
             s32 mode;
             s32 handle;
 
             mode = (index - 0x14 < 5) ? 0 : 1;
-            handle = SzDuel_Xax2New(D_0028A880[index].data);
-            SzDuel_AddUnit(mode, D_0028A880[index].arg1, D_0028A880[index].arg2, handle, 0);
+            handle = SzDuel_Xax2New(gMain_ModelData[index].data);
+            SzDuel_AddUnit(mode, gMain_ModelData[index].arg1, gMain_ModelData[index].arg2, handle, 0);
             SzDuel_SetUnitStatus(-1, index, 4, 1);
             SzDuel_SetUnitOpenRate(-1, index, 0, 0xFF);
             SzDuel_SetUnitCtlRateM(-1, index, 1, 0);
@@ -337,7 +337,7 @@ typedef struct Vec4_00100B00 {
     f32 w;
 } Vec4_00100B00;
 
-extern f32 D_0030FF00[];
+extern f32 g_vec_temp[];
 
 void GRotTransPers_3(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5) {
     Vec4_00100B00 vertices[3];
@@ -345,14 +345,14 @@ void GRotTransPers_3(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32
     vertices[0] = *(Vec4_00100B00 *)arg0;
     vertices[1] = *(Vec4_00100B00 *)arg1;
     vertices[2] = *(Vec4_00100B00 *)arg2;
-    Ex3d_RotTransPersAutoCalcQ(vertices, D_0030FF00, arg3, arg4, arg5);
+    Ex3d_RotTransPersAutoCalcQ(vertices, g_vec_temp, arg3, arg4, arg5);
 }
 
 typedef struct Vec4_00100BA0 {
     f32 x, y, z, w;
 } Vec4_00100BA0;
 
-extern f32 D_0030FF00[];
+extern f32 g_vec_temp[];
 
 void GRotTransPers_4(void *arg0, void *arg1, void *arg2, void *arg3,
                    s32 arg4, s32 arg5, s32 arg6) {
@@ -362,7 +362,7 @@ void GRotTransPers_4(void *arg0, void *arg1, void *arg2, void *arg3,
     vectors[1] = *(Vec4_00100BA0 *)arg1;
     vectors[2] = *(Vec4_00100BA0 *)arg2;
     vectors[3] = *(Vec4_00100BA0 *)arg3;
-    Ex3d_RotTransPersAutoCalcQ(vectors, D_0030FF00, arg4, arg5, arg6);
+    Ex3d_RotTransPersAutoCalcQ(vectors, g_vec_temp, arg4, arg5, arg6);
 }
 
 typedef struct {
@@ -504,7 +504,7 @@ s32 GWithin_LimitsI(s32 arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-extern f32 D_0028BC10[4][32][3];
+extern f32 g_rand_f[4][32][3];
 
 static inline void rotate_00101080(void *matrix, s32 angle, s32 axis) {
     Config_00100E00 values;
@@ -521,15 +521,15 @@ void GSet_RandVector(f32 *vector, f32 scale) {
     f32 *value;
     f32 sign;
 
-    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    value = &g_rand_f[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
     sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
     vector[0] = sign * *value;
 
-    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    value = &g_rand_f[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
     sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
     vector[1] = sign * *value;
 
-    value = &D_0028BC10[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
+    value = &g_rand_f[(func_0019A5C8() >> 23) % 4][(func_0019A5C8() >> 23) % 32][(func_0019A5C8() >> 23) % 3];
     sign = 2.0f * (f32)((func_0019A5C8() >> 23) % 2) - 1.0f;
     vector[2] = sign * *value;
     vector[3] = 1.0f;

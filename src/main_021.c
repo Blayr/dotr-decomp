@@ -257,7 +257,7 @@ int func_0017BD50(void) {
 /* sceResetttyinit (JP symbol beside it): the tty-init done flag back to 0 */
 
 void func_0017BD60(void) {
-    D_0028C250 = 0;
+    ttyinit = 0;
 }
 
 void func_0017BD70(void) {
@@ -311,10 +311,10 @@ s32 write(s32 mode, s32 a, s32 b) {
     extern s32 sceTtyWrite(const char *, s32);
 
     if (mode == 1 || mode == 2) {
-        if (D_0028C250 == 0) {
+        if (ttyinit == 0) {
             if (sceTtyInit() == 0)
                 return -1;
-            D_0028C250 = 1;
+            ttyinit = 1;
         }
         return sceTtyWrite((const char *)a, b);
     }
@@ -323,11 +323,11 @@ s32 write(s32 mode, s32 a, s32 b) {
 
 s32 read(s32 fd, char *buf, s32 n) {
     if (fd == 0) {
-        if (D_0028C250 == 0) {
+        if (ttyinit == 0) {
             if (sceTtyInit() == 0) {
                 return -1;
             }
-            D_0028C250 = 1;
+            ttyinit = 1;
         }
         return sceTtyRead(buf, n);
     }

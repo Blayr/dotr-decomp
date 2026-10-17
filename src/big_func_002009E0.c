@@ -8,10 +8,10 @@ typedef struct Slot_002009E0 {
     s16 type;
 } Slot_002009E0;
 
-extern Slot_002009E0 D_003229A0[0x400];
+extern Slot_002009E0 gSzText_aItem[0x400];
 extern char D_002D074B[];
 extern char D_002D0750[];
-extern char *D_00293CD0;
+extern char *gSzText_apchMerge;
 extern char *D_00293CD4;
 extern char *D_00293CD8;
 extern char *D_00293CDC;
@@ -21,7 +21,7 @@ extern char *D_00293CE8;
 extern char *D_00293CEC;
 extern char *D_00293CF0;
 extern char *D_00293CF4;
-extern s32 D_00293CC0;
+extern s32 anOfs_TEXETC;
 extern s32 D_00293CC4;
 extern s32 D_00293CC8;
 extern s32 D_00293CCC;
@@ -30,7 +30,7 @@ static inline Slot_002009E0 *find_002009E0(s32 cat, s32 type) {
     Slot_002009E0 *p;
     s32 i;
 
-    p = D_003229A0;
+    p = gSzText_aItem;
     if (type < 0) {
         return NULL;
     }
@@ -71,7 +71,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
     }
     switch (arg0) {
     case 0:
-        func_0019B648(name, D_002D0750, dir, D_00293CD0);
+        func_0019B648(name, D_002D0750, dir, gSzText_apchMerge);
         if (find_002009E0(0, 0) == NULL) {
             arg1 = 1;
         }
@@ -172,7 +172,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         idx = arg0 - 2;
         got = SzData_GetLeader(idx, SzData_GetCurrentDeck(idx));
         base = idx * 41 + 0xDF;
-        func_0019B648(name, D_002D0750, dir, D_00293CD0);
+        func_0019B648(name, D_002D0750, dir, gSzText_apchMerge);
         ids[40] = got;
         for (i = 0; i < 40; i++) {
             ids[i] = SzDuel_InqDeck(idx, i);
@@ -198,7 +198,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         break;
     case 10:
         n = 0;
-        func_0019B648(name, D_002D0750, dir, D_00293CD0);
+        func_0019B648(name, D_002D0750, dir, gSzText_apchMerge);
         for (i = 0; i < 17; i++) {
             list[i] = SzData_GetConstDeck(i, 0);
         }
@@ -368,7 +368,7 @@ s32 SzText_LoadMerge(s32 arg0, s32 arg1) {
         result = SzText_LoadFileEx(0, 6, name, 0xCCDD40, 0x47F000, 0, -1);
         break;
     case 15:
-        off = D_00293CC0;
+        off = anOfs_TEXETC;
         len = D_00293CC4 - off;
         func_0019B648(name, D_002D0750, dir, D_00293CEC);
         if (find_002009E0(0, 7) == NULL) {

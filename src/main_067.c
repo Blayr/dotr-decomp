@@ -5,13 +5,13 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
     extern s32 Taku_Camp_TIKEI_Map_Hyouji(s32, u16, u16, s32);
     extern s32 Taku_Obj_Set();
     extern s32 Taku_FT4_Set();
-    extern u8 D_00297B90[];
+    extern u8 camp_window_Map_data[];
     extern u8 D_00297B9A[];
     extern u8 D_00297BA4[];
-    extern u8 D_00298490[];
-    extern u8 D_002984E0[];
-    extern u8 D_00298530[];
-    extern u8 D_00298A00[];
+    extern u8 camp_window_tikei_iro_ue[];
+    extern u8 camp_window_tikei_iro_sita[];
+    extern u8 camp_window_tikei_partu[];
+    extern u8 camp_window_tikei_partu_gejiwaku[];
     extern u8 D_00298BB0[];
     s8 *state;
     s16 baseX;
@@ -26,7 +26,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
     s16 fade;
 
     baseX = D_00299ED4;
-    state = &D_00299E10;
+    state = &save_data;
     if (*(s8 *)0x01ED0066 != 0) {
         *(s16 *)0x01ED0068 += 2;
         if (*(s16 *)0x01ED0068 > 16) {
@@ -52,14 +52,14 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
         }
     }
     if (fade != 0) {
-        arg0 = Taku_Window_Set(arg0, D_00297B90, (u16)(s8)side & 0xFFFF, 0,
+        arg0 = Taku_Window_Set(arg0, camp_window_Map_data, (u16)(s8)side & 0xFFFF, 0,
                               alpha, 0, 0, 128, *(s16 *)0x01ED0228);
         arg0 = Taku_Camp_TIKEI_Map_Hyouji(arg0, baseX, alpha, 0);
         arg0 = Taku_Window_Set(arg0, D_00297B9A, (u16)(s8)side, 0,
                               alpha, 0, 0, 128, 128);
         arg0 = Taku_Window_Set(arg0, D_00297BA4, (u16)(state[0] ^ 1), 0,
                               alpha, 0, 0, 128, 128);
-        p = D_00298530;
+        p = camp_window_tikei_partu;
         i = 0;
         do {
             arg0 = Taku_Obj_Set(arg0, p, alpha, 0);
@@ -69,7 +69,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
         row = 0;
         y = 0;
         do {
-            q = D_00298A00;
+            q = camp_window_tikei_partu_gejiwaku;
             j = 0;
             do {
                 arg0 = Taku_Obj_Set(arg0, q, alpha, y);
@@ -79,8 +79,8 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 arg0) {
             y = (s16)(y + 16);
             row++;
         } while (row < 10);
-        arg0 = Taku_FT4_Set(arg0, D_00298490 + (s8)side * 0x26, alpha, 0, 0);
-        arg0 = Taku_FT4_Set(arg0, D_002984E0 + state[0] * 0x26, alpha, 0, 2);
+        arg0 = Taku_FT4_Set(arg0, camp_window_tikei_iro_ue + (s8)side * 0x26, alpha, 0, 0);
+        arg0 = Taku_FT4_Set(arg0, camp_window_tikei_iro_sita + state[0] * 0x26, alpha, 0, 2);
     }
     return arg0;
 }
@@ -104,7 +104,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     extern Sprite_00236F90 D_0029AFA0;
     extern Sprite_00236F90 D_0029AFD0;
     extern u8 D_002CEE5C[];
-    extern Sprite_00236F90 D_002986B0[][2];
+    extern Sprite_00236F90 camp_window_tikei_partu_geji[][2];
     extern s16 D_00297BAE;
     extern s16 D_00297BB0;
     extern s16 D_00297BB2;
@@ -126,7 +126,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     u8 *cell;
     s32 k;
 
-    mode = &D_00299E10;
+    mode = &save_data;
     work = (Work_00236F90 *)0x01ED0000;
     card = D_0029AFA0;
     bar = D_0029AFD0;
@@ -216,19 +216,19 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
         }
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 8; j++) {
-                D_002986B0[i][k].xy[j] = D_002986B0[0][k].xy[j];
+                camp_window_tikei_partu_geji[i][k].xy[j] = camp_window_tikei_partu_geji[0][k].xy[j];
             }
-            gp = Taku_G4_Set2(gp, &D_002986B0[i][k], x, y + dy, scale, 0);
+            gp = Taku_G4_Set2(gp, &camp_window_tikei_partu_geji[i][k], x, y + dy, scale, 0);
         }
         gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((D_00297BAE + D_00297BB2) >> 1),
-                                              y + (dy + D_002986B0[i][0].xy[1]), 1, 2,
+                                              y + (dy + camp_window_tikei_partu_geji[i][0].xy[1]), 1, 2,
                                               (u16)((work->counts[i] < 10) ? 1 : 2), work->counts[i]);
     }
     return gp;
 }
 
-extern u8 D_00298BA0[];
-extern u8 D_00299F60[];
+extern u8 model_data[];
+extern u8 prim_data[];
 extern s32 D_0029A000;
 extern u8 D_0029A44C[];
 
@@ -251,7 +251,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     u8 *var_s6;
     s16 var_s0_2;
 
-    spC0 = D_00299F60;
+    spC0 = prim_data;
     var_s6 = D_0029A44C;
     var_s1 = 0;
     Taku_Coord_Init(spC0);
@@ -300,7 +300,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     }
     var_s0_2 = 0;
     for (; var_s0_2 < 16; var_s0_2++) {
-        Taku_Vector_Set(var_s6, D_00298BA0);
+        Taku_Vector_Set(var_s6, model_data);
         *(s32 *)(var_s6 + 0x20) = 0;
         var_s6[0x26] = 0;
         var_s6[0x2A] = 0;

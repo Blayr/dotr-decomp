@@ -20,7 +20,7 @@ s32 SzModel_SetAnimSpeedParam(s32 arg0, s32 arg1, f32 value) {
     if (arg1 < 0 || arg1 >= 4) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     view = (View_001F1A90 *)obj;
     if (obj == NULL) {
         return 0;
@@ -56,7 +56,7 @@ f32 SzModel_GetAnimFrameParam(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 4) {
         return -1.0f;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     view = (View_001F1B60 *)obj;
     if (obj == NULL) {
         return -1.0f;
@@ -89,7 +89,7 @@ s32 SzModel_SetAnimFrameParam(s32 arg0, s32 arg1, f32 value) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     view = (View_001F1C50 *)obj;
     if (obj == NULL) {
         return 0;
@@ -125,7 +125,7 @@ s32 SzModel_GetAnimFrameMax(s32 arg0, s32 arg1) {
     if (arg1 < 0 || arg1 >= 8) {
         return -1;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return -1;
     }
@@ -147,7 +147,7 @@ s32 SzModel_GetIntensity(s32 arg0, f32 *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -161,7 +161,7 @@ s32 SzModel_GetIntensityOnly(s32 arg0, f32 *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -179,7 +179,7 @@ s32 SzModel_SetIntensity(s32 arg0, f32 *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -199,7 +199,7 @@ s32 SzModel_SetIntensityOnly(s32 arg0, f32 fparg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -213,7 +213,7 @@ s32 SzModel_GetPos(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -235,7 +235,7 @@ static inline s32 check_001F2050(s32 index) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -251,7 +251,7 @@ s32 SzModel_GetCenter(s32 index, void *out) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -276,7 +276,7 @@ static inline s32 ready_001F2150(s32 index) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -297,7 +297,7 @@ s32 SzModel_GetCenterOfs(s32 arg0, f32 *arg1) {
     if ((arg0 < 0) || (temp_a1 = arg0 < 0x54, (temp_a1 == 0))) {
         return 0;
     }
-    temp_s1 = D_0031ABB0[arg0];
+    temp_s1 = gSzModel_ahModel[arg0];
     if (temp_s1 == NULL) {
         return 0;
     }
@@ -332,7 +332,7 @@ s32 SzModel_SetPos(s32 index, void *src) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    dst = D_0031ABB0[index];
+    dst = gSzModel_ahModel[index];
     if (dst == NULL) {
         return 0;
     }
@@ -349,7 +349,7 @@ s32 SzModel_GetRot(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         result = 0;
     } else {
-        temp_v0 = D_0031ABB0[arg0];
+        temp_v0 = gSzModel_ahModel[arg0];
         if (temp_v0 == NULL) {
             result = 0;
         } else {
@@ -368,7 +368,7 @@ s32 SzModel_GetRotC(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -382,7 +382,7 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001F2430;
 
-/* needs shared field: D_0031ABB0 +0x10 f32[4] */
+/* needs shared field: gSzModel_ahModel +0x10 f32[4] */
 
 s32 SzModel_SetRot(s32 arg0, void *arg1) {
     Obj_0031ABB0 *obj;
@@ -390,7 +390,7 @@ s32 SzModel_SetRot(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -411,7 +411,7 @@ s32 SzModel_SetRotC(s32 index, void *src) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -432,7 +432,7 @@ s32 SzModel_GetScale(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -448,7 +448,7 @@ s32 SzModel_SetScale(s32 idx, void *src) {
     if (idx < 0 || idx >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[idx];
+    obj = gSzModel_ahModel[idx];
     if (obj == NULL) {
         return 0;
     }
@@ -476,7 +476,7 @@ s32 SzModel_GetRgba(s32 arg0, void *arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return -1;
     }
@@ -504,7 +504,7 @@ s32 SzModel_SetRgba(s32 arg0, s32 arg1, void *arg2) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -526,7 +526,7 @@ s32 SzModel_GetAlpha(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return -1;
     }
@@ -539,7 +539,7 @@ s32 SzModel_SetAlpha(s32 arg0, u8 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -563,7 +563,7 @@ s32 SzModel_SetFilter(s32 arg0, s32 arg1, void *arg2) {
     if ((arg0 < 0) || (arg0 >= 0x54)) {
         return 0;
     }
-    temp_a3 = D_0031ABB0[arg0];
+    temp_a3 = gSzModel_ahModel[arg0];
     if (temp_a3 == NULL) {
         return 0;
     }
@@ -585,7 +585,7 @@ s16 SzModel_GetModelNo(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return -1;
     }
@@ -599,7 +599,7 @@ s8 SzModel_GetModelType(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         ret = -1;
     } else {
-        obj = D_0031ABB0[arg0];
+        obj = gSzModel_ahModel[arg0];
         if (obj == NULL) {
             ret = -1;
         } else {
@@ -622,7 +622,7 @@ s32 SzModel_SetDeform(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = (ObjView_001F29E0 *) D_0031ABB0[arg0];
+    obj = (ObjView_001F29E0 *) gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -644,7 +644,7 @@ s32 SzModel_GetDeform(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -658,7 +658,7 @@ s32 SzModel_SetDeformRatio(s32 arg0, s8 arg1) {
         return 0;
     }
 
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -671,10 +671,10 @@ static inline s32 check_001F2B30(s32 index) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (D_0031ABB0[index] == NULL) {
+    if (gSzModel_ahModel[index] == NULL) {
         return 0;
     }
-    if (*(s8 *)((u8 *)D_0031ABB0[index] + 0x1F2) >= 0) {
+    if (*(s8 *)((u8 *)gSzModel_ahModel[index] + 0x1F2) >= 0) {
         return 1;
     }
     return 0;
@@ -684,11 +684,11 @@ s32 SzModel_GetRefNum(s32 index) {
     if (index < 0 || index >= 0x54) {
         return -1;
     }
-    if (D_0031ABB0[index] == NULL) {
+    if (gSzModel_ahModel[index] == NULL) {
         return -1;
     }
     if (check_001F2B30(index)) {
-        return *(u8 *)((u8 *)D_0031ABB0[index] + 0x1FE);
+        return *(u8 *)((u8 *)gSzModel_ahModel[index] + 0x1FE);
     }
     return -1;
 }
@@ -699,7 +699,7 @@ s32 SzModel_InqRefID(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return -1;
     }
@@ -728,7 +728,7 @@ s32 SzModel_SetRefID(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    obj = (View_001F2C60 *) D_0031ABB0[arg0];
+    obj = (View_001F2C60 *) gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return -1;
     }
@@ -772,7 +772,7 @@ s32 SzModel_SetRefID_RefNo(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -809,7 +809,7 @@ static inline s32 active_001F2EC0(s32 index) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[index];
+    obj = gSzModel_ahModel[index];
     if (obj == NULL) {
         return 0;
     }
@@ -825,7 +825,7 @@ s32 SzModel_GetRef(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -851,7 +851,7 @@ s32 SzModel_SetMaxOT(s32 arg0, s16 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -865,7 +865,7 @@ s32 SzModel_GetMaxOT(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return -1;
     }
@@ -884,7 +884,7 @@ s32 SzModel_SetDrawFlag(s32 arg0, s32 arg1) {
         return 0;
     }
 
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -904,7 +904,7 @@ s32 SzModel_GetDrawFlag(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -923,7 +923,7 @@ s32 SzModel_SetCalcFlag(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -943,7 +943,7 @@ s32 SzModel_GetCalcFlag(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -961,7 +961,7 @@ s32 SzModel_SetFogFlag(s32 arg0, s64 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    obj = D_0031ABB0[arg0];
+    obj = gSzModel_ahModel[arg0];
     if (obj == NULL) {
         return 0;
     }
@@ -979,7 +979,7 @@ s32 SzModel_SetPauseFlag(s32 arg0, s64 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_a2 = D_0031ABB0[arg0];
+    temp_a2 = gSzModel_ahModel[arg0];
     if (temp_a2 == NULL) {
         return 0;
     }
@@ -997,7 +997,7 @@ s32 SzModel_GetPauseFlag(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -1015,7 +1015,7 @@ s32 SzModel_SetStoneFlag(s32 arg0, s64 arg1) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_a2 = D_0031ABB0[arg0];
+    temp_a2 = gSzModel_ahModel[arg0];
     if (temp_a2 == NULL) {
         return 0;
     }
@@ -1034,7 +1034,7 @@ s32 SzModel_GetStoneFlag(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return 0;
     }
-    temp_v0 = D_0031ABB0[arg0];
+    temp_v0 = gSzModel_ahModel[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -1228,7 +1228,7 @@ s32 SzModel_GetStoneRatio(s32 arg0) {
     if (arg0 < 0 || arg0 >= 0x54) {
         return -1;
     }
-    temp_v1 = D_0031ABB0[arg0];
+    temp_v1 = gSzModel_ahModel[arg0];
     if (temp_v1 == NULL) {
         return -1;
     }
@@ -1244,8 +1244,8 @@ typedef struct Table_001F3700 {
     s32 count;
 } Table_001F3700;
 
-extern Table_001F3700 D_00292FF0[3];
-extern s8 D_0031BB50;
+extern Table_001F3700 gSzEffect_aEffFuncTbl[3];
+extern s8 gSzEffect_el;
 
 void SzEffect_Init(void) {
     s32 i;
@@ -1253,7 +1253,7 @@ void SzEffect_Init(void) {
     s32 *count;
     Table_001F3700 *table;
 
-    table = D_00292FF0;
+    table = gSzEffect_aEffFuncTbl;
     i = 0;
     do {
         values = table->values;
@@ -1265,7 +1265,7 @@ void SzEffect_Init(void) {
         i++;
         table++;
     } while (i < 3);
-    RhMem_FillMemory(&D_0031BB50, 0, 0x354);
+    RhMem_FillMemory(&gSzEffect_el, 0, 0x354);
     SzEffect_Clear();
     SzEffect_SetBlackOutForMonster(0x80);
     SzEffect_SetBlackOutForDuel(0x80);

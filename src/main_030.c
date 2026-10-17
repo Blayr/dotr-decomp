@@ -79,7 +79,7 @@ s64 _type2id(s32 type, s32 ch) {
     s32 sh = 0;
 
     if ((u32)type < 10) {
-        switch (D_0028DAB8[type].mask) {
+        switch (_strmap[type].mask) {
         case 0xFFFFFFFFFFULL:
             sh = 0;
             break;
@@ -90,7 +90,7 @@ s64 _type2id(s32 type, s32 ch) {
             sh = 32;
             break;
         }
-        id = D_0028DAB8[type].id | ((s64)ch << sh);
+        id = _strmap[type].id | ((s64)ch << sh);
     }
     return id;
 }
@@ -98,7 +98,7 @@ s64 _type2id(s32 type, s32 ch) {
 /* _id2type: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
 s32 _id2type(s32 *type, s32 *num, u64 id) {
-    StrDesc *p = D_0028DAB8;
+    StrDesc *p = _strmap;
     u32 i;
     s32 found = 0;
 
@@ -304,7 +304,7 @@ s32 sceMpegAddStrCallback(void *arg0, s32 type, s32 ch, void *func, void *data) 
         tbl[i].id = id;
         tbl[i].arg = data;
         tbl[i].func = (sceMpegCallback)func;
-        tbl[i].mask = D_0028DAB8[type].mask;
+        tbl[i].mask = _strmap[type].mask;
     }
     return ret;
 }

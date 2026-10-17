@@ -323,7 +323,7 @@ typedef struct Particle_00280060 {
 } Particle_00280060;
 
 extern Constants_00280060 D_002B8760;
-extern s32 D_00351228;
+extern s32 gSh_pbVif1_Slot;
 
 #pragma optimization_level 0
 
@@ -401,7 +401,7 @@ s32 ShSlot_Flear(void *arg0, s32 arg1) {
                 packet.vertex[1].position.coordinates.y = (u16)(func_001A22C0(particle->y + previousY) << 4);
                 packet.vertex[2].position.coordinates.x = (u16)(func_001A22C0(particle->x + offsetX) << 4);
                 packet.vertex[2].position.coordinates.y = (u16)(func_001A22C0(particle->y + offsetY) << 4);
-                D_00351228 = ExSortPrim_Pipe(D_00351228, &packet, 0, func_001A23B0(depth));
+                gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet, 0, func_001A23B0(depth));
             }
         }
     }
@@ -446,8 +446,8 @@ typedef struct {
     u8 padding28[8];
 } Object_00280670;
 
-extern Object_00280670 D_00351180[];
-extern Flags_00280670 D_00351240[];
+extern Object_00280670 gSh_Flear[];
+extern Flags_00280670 gSh_SlotInfo[];
 extern u8 D_00351241;
 extern u8 D_00351242;
 extern u16 D_00351246;
@@ -459,22 +459,22 @@ void ShSlot_Start(void) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        D_00351240[i].enabled = 1;
+        gSh_SlotInfo[i].enabled = 1;
     }
-    D_00351240[0].state = 1;
+    gSh_SlotInfo[0].state = 1;
     SzSound_PlaySE(0, 0x1E);
     for (i = 0; i < 3; i++) {
-        ShFx_initTimer(&D_00351180[i], 0x28, 0, 0xFF);
-        D_00351180[i].intensity = 0x80;
-        D_00351180[i].mode = 9;
-        D_00351180[i].width = 40.0f;
-        D_00351180[i].height = 0.0f;
-        D_00351180[i].blue = D_00351180[i].green = D_00351180[i].red = D_00351180[i].alpha = 0xF0;
-        D_00351180[i].field0A = 0x40;
-        D_00351180[i].field09 = 0x10;
-        D_00351180[i].field08 = 0x80;
-        D_00351180[i].x = (f32) (i * 0x70 + 0x78E);
-        D_00351180[i].y = 2249.0f;
+        ShFx_initTimer(&gSh_Flear[i], 0x28, 0, 0xFF);
+        gSh_Flear[i].intensity = 0x80;
+        gSh_Flear[i].mode = 9;
+        gSh_Flear[i].width = 40.0f;
+        gSh_Flear[i].height = 0.0f;
+        gSh_Flear[i].blue = gSh_Flear[i].green = gSh_Flear[i].red = gSh_Flear[i].alpha = 0xF0;
+        gSh_Flear[i].field0A = 0x40;
+        gSh_Flear[i].field09 = 0x10;
+        gSh_Flear[i].field08 = 0x80;
+        gSh_Flear[i].x = (f32) (i * 0x70 + 0x78E);
+        gSh_Flear[i].y = 2249.0f;
     }
     D_00351242 = D_00351241;
     D_00351246 = 0;
@@ -496,8 +496,8 @@ typedef struct Board_00280920 {
 #pragma optimization_level 0
 
 void ShSlot_HitCardRequest(void) {
-    extern Board_00280920 D_00351210;
-    extern Reel_00280920 *D_00351230;
+    extern Board_00280920 gSh_Flash;
+    extern Reel_00280920 *gSh_SlotOrderPT;
     extern s32 D_002B8780[];
     extern s16 D_00351252;
     extern u16 D_00351258;
@@ -511,25 +511,25 @@ void ShSlot_HitCardRequest(void) {
 
     D_0035117C = 0xFFFF;
     while (D_0035117A < 8) {
-        id = D_00351240[D_0035117A].center;
+        id = gSh_SlotInfo[D_0035117A].center;
         switch (D_0035117A) {
         case 0:
             if (id != 0xFFFF) {
-                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117C = gSh_SlotInfo[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
             break;
         case 1:
             if (id != 0xFFFF && id != D_00351258) {
-                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117C = gSh_SlotInfo[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
             break;
         case 2:
             if (id != 0xFFFF && id != D_00351258 && id != D_00351292) {
-                D_0035117C = D_00351240[D_0035117A].center;
+                D_0035117C = gSh_SlotInfo[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
@@ -540,12 +540,12 @@ void ShSlot_HitCardRequest(void) {
         case 6:
         case 7:
             slot = D_0035117A - 3;
-            if (D_00351210.slots[slot]) {
-                if (D_00351230->stops[slot] == 0xFFFE) {
+            if (gSh_Flash.slots[slot]) {
+                if (gSh_SlotOrderPT->stops[slot] == 0xFFFE) {
                     base = D_00351252 / 0x70;
-                    D_0035117C = TaSlot_GetFeverGain(D_00351240[0].symbols[(base + D_002B8780[slot]) % D_00351230->count], slot);
+                    D_0035117C = TaSlot_GetFeverGain(gSh_SlotInfo[0].symbols[(base + D_002B8780[slot]) % gSh_SlotOrderPT->count], slot);
                 } else {
-                    D_0035117C = D_00351230->stops[D_0035117A - 3];
+                    D_0035117C = gSh_SlotOrderPT->stops[D_0035117A - 3];
                 }
                 D_0035117A++;
                 return;
@@ -561,7 +561,7 @@ void ShSlot_HitCardRequest(void) {
 #pragma optimization_level 0
 
 void ShSlot_CheckLine(s32 arg0) {
-    extern u8 *D_00351230;
+    extern u8 *gSh_SlotOrderPT;
     u16 symbols[3][3];
     s32 row;
     s32 column;
@@ -569,12 +569,12 @@ void ShSlot_CheckLine(s32 arg0) {
     s32 clear;
 
     for (row = 0; row < 3; row++) {
-        if (D_00351240[row].enabled != 4) {
+        if (gSh_SlotInfo[row].enabled != 4) {
             symbols[row][0] = symbols[row][1] = symbols[row][2] = 0xFFFF;
         } else {
-            offset = D_00351240[row].position / 0x70;
+            offset = gSh_SlotInfo[row].position / 0x70;
             for (column = 0; column < 3; column++) {
-                symbols[row][column] = D_00351240[row].symbols[(offset + column) % *D_00351230];
+                symbols[row][column] = gSh_SlotInfo[row].symbols[(offset + column) % *gSh_SlotOrderPT];
             }
         }
     }
@@ -743,7 +743,7 @@ void ShSlot_CheckLine(s32 arg0) {
             }
         }
     }
-    D_00351240[arg0].center = symbols[arg0][1];
+    gSh_SlotInfo[arg0].center = symbols[arg0][1];
 }
 #pragma optimization_level reset
 
@@ -756,18 +756,18 @@ typedef struct {
 #pragma optimization_level 0
 
 s32 ShSlot_IsFlashStop(void) {
-    extern Board_002817C0 D_00351210;
+    extern Board_002817C0 gSh_Flash;
     s32 i;
     s32 j;
 
     for (i = 0; i < 5; i++) {
-        if (D_00351210.slots[i] > 1) {
+        if (gSh_Flash.slots[i] > 1) {
             return 0;
         }
     }
     for (j = 0; j < 3; j++) {
         for (i = 0; i < 3; i++) {
-            if (D_00351210.cells[j][i] > 1) {
+            if (gSh_Flash.cells[j][i] > 1) {
                 return 0;
             }
         }
@@ -848,8 +848,8 @@ void ShSlot_DrawParts(s32 arg0) {
     extern s32 func_00207650();
     extern Items_002818A0 D_002B87A0;
     extern Pulse_002818A0 D_002B8E30;
-    extern struct { u8 pad[4]; u8 lv[12]; } D_00351210;
-    extern u8 D_002B8740[];
+    extern struct { u8 pad[4]; u8 lv[12]; } gSh_Flash;
+    extern u8 gSh_Lamp[];
     s32 i;
     s32 bit;
     s32 skip;
@@ -876,8 +876,8 @@ void ShSlot_DrawParts(s32 arg0) {
     handles[1] = (void *)func_00202BF0(9, 1);
     tmp = func_00209E50();
     tmp += func_00202E00(tmp, 1);
-    D_00351228 = func_00202B00(D_00351228, 9, tmp, NULL);
-    D_00351228 = func_0020F290(D_00351228);
+    gSh_pbVif1_Slot = func_00202B00(gSh_pbVif1_Slot, 9, tmp, NULL);
+    gSh_pbVif1_Slot = func_0020F290(gSh_pbVif1_Slot);
     func_00202D60(9, -1);
     while (items.items[i].x != -1) {
         skip = 0;
@@ -918,7 +918,7 @@ void ShSlot_DrawParts(s32 arg0) {
         case 6:
         case 7:
         case 8:
-            if (D_00351240[0].state == 1) {
+            if (gSh_SlotInfo[0].state == 1) {
                 bit = items.items[i].kind - 4;
                 if (D_00351242 & (1 << bit)) {
                     packet.color.r = packet.color.g = packet.color.b = pulse.values[(D_00351246 >> 1) & 0xF] + 0x40;
@@ -961,16 +961,16 @@ void ShSlot_DrawParts(s32 arg0) {
         case 21:
             tmp = items.items[i].kind - 0x11;
             bit = tmp;
-            if (D_00351210.lv[bit]) {
-                packet.color.r = packet.color.g = packet.color.b = D_002B8740[D_00351210.lv[bit]];
+            if (gSh_Flash.lv[bit]) {
+                packet.color.r = packet.color.g = packet.color.b = gSh_Lamp[gSh_Flash.lv[bit]];
                 packet.color.a = packet.color.r >> 1;
                 func_00208700(&packet.header[0], handles[items.items[i].tex], 1);
                 func_00208CB0(&packet.header[0], CLAMP_002818A0(2, 2, items.items[i].u, items.items[i].uw,
                                                               items.items[i].v, items.items[i].vh));
                 func_002086D0(&packet.header[0], 0x44);
-                D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+                gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
                 func_002086D0(&packet.header[0], 0x49);
-                D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+                gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
             }
             skip = 1;
             break;
@@ -978,7 +978,7 @@ void ShSlot_DrawParts(s32 arg0) {
         if (!skip) {
             func_00208700(&packet.header[0], handles[items.items[i].tex], 1);
             func_002086D0(&packet.header[0], 0x44);
-            D_00351228 = func_00207650(D_00351228, &packet.header[0], 0, -1);
+            gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
         }
         i++;
     }
@@ -1049,8 +1049,8 @@ void ShSlot_DrawEye(void) {
     handle = SzText_LoadRequest(3, 7);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 3, size, NULL);
-    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 3, size, NULL);
+    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
     SzText_FreeRequest(3, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
@@ -1065,7 +1065,7 @@ void ShSlot_DrawEye(void) {
     x = (pulse.values[D_00351246 & 0xF] >> 2) + 0x77E;
     width = 0x20 - (pulse.values[D_00351246 & 0xF] >> 1);
     for (i = 0; i < 3; i++) {
-        if (D_00351240[i].enabled != 4) {
+        if (gSh_SlotInfo[i].enabled != 4) {
             packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
             packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
             packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + (width << 4);
@@ -1105,15 +1105,15 @@ void ShSlot_DrawEye(void) {
             }
             ExAssignTexture(&packet.header[0], (void *)handle, 0);
             ExAssignAlpha(&packet.header[0], 0x44);
-            D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
+            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
         }
     }
 
     handle = SzText_LoadRequest(9, 0);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, size, NULL);
-    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, size, NULL);
+    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
     SzText_FreeRequest(9, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
@@ -1128,7 +1128,7 @@ void ShSlot_DrawEye(void) {
     y = 0x8B7;
     x = 0x77D;
     for (i = 0; i < 3; i++) {
-        if (D_00351240[i].enabled != 4) {
+        if (gSh_SlotInfo[i].enabled != 4) {
             packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
             packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
             packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + 0x220;
@@ -1144,7 +1144,7 @@ void ShSlot_DrawEye(void) {
             ((UV_002825F0 *)&packet.v3.texture)->v = 0x780;
             ExAssignTexture(&packet.header[0], (void *)handle, 0);
             ExAssignAlpha(&packet.header[0], 0x48);
-            D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
+            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
         }
     }
 }
@@ -1202,9 +1202,9 @@ void ShSlot_FlashBox(void) {
     extern s32 SzText_LoadRequest();
     extern s32 SzText_InitClutManage();
     extern s32 ExSortPrim_Pipe();
-    extern u8 D_002B8740[];
-    extern State_002831A0 D_00351210;
-    extern s32 D_00351228;
+    extern u8 gSh_Lamp[];
+    extern State_002831A0 gSh_Flash;
+    extern s32 gSh_pbVif1_Slot;
     Packet_002831A0 packet;
     s32 y;
     s32 x;
@@ -1217,20 +1217,20 @@ void ShSlot_FlashBox(void) {
     handle = SzText_LoadRequest(9, 1);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, size, NULL);
-    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, size, NULL);
+    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
     SzText_FreeRequest(9, -1);
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            if (D_00351210.cells[i][j]) {
+            if (gSh_Flash.cells[i][j]) {
                 x = i * 0x70 + 0x760;
                 y = 0x840 - j * 0x70;
                 ((Header_002831A0 *)&packet.header[0])->flags = 0x24;
                 ((Header_002831A0 *)&packet.header[0])->id = 9;
                 ((Header_002831A0 *)&packet.header[0])->command = 0x424242421LL;
                 ((Header_002831A0 *)&packet.header[0])->reserved = 0;
-                packet.color.r = packet.color.g = packet.color.b = D_002B8740[D_00351210.cells[i][j]];
+                packet.color.r = packet.color.g = packet.color.b = gSh_Lamp[gSh_Flash.cells[i][j]];
                 packet.color.a = packet.color.r >> 1;
                 packet.color.q = 1.0f;
                 packet.v0.position.z = packet.v1.position.z = packet.v2.position.z = packet.v3.position.z = 0xFFFFF8;
@@ -1275,9 +1275,9 @@ void ShSlot_FlashBox(void) {
                     ExAssignClamp(&packet.header[0], 0x1C4391F044ALL);
                     ExAssignTexture(&packet.header[0], (void *)handle, 1);
                     ExAssignAlpha(&packet.header[0], 0x44);
-                    D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
+                    gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
                     ExAssignAlpha(&packet.header[0], 0x49);
-                    D_00351228 = ExSortPrim_Pipe(D_00351228, &packet.header[0], 0, -1);
+                    gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
                 }
             }
         }
@@ -1352,8 +1352,8 @@ void ShSlot_DrawReel(s32 arg0) {
     extern s32 ExSortPrim_Pipe();
     extern s32 SzText_GetReadyItem();
     extern s32 SzText_Load_Pipe();
-    extern s32 D_00351228;
-    extern u8 *D_00351230;
+    extern s32 gSh_pbVif1_Slot;
+    extern u8 *gSh_SlotOrderPT;
 
     s32 i;
     s32 u0;
@@ -1376,10 +1376,10 @@ void ShSlot_DrawReel(s32 arg0) {
     work.background = (s32 *) SzText_LoadRequest(9, 0);
     position = RhBase_GetUserGsAddress();
     position += SzText_InitClutManage(position, 1);
-    D_00351228 = SzText_DoRequest_Pipe(D_00351228, 9, position, NULL);
-    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, position, NULL);
+    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
     SzText_FreeRequest(9, -1);
-    scroll = D_00351240[arg0].angle % 176;
+    scroll = gSh_SlotInfo[arg0].angle % 176;
 
     ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
     ((Tag_00283880 *) &work.textured.header[0])->count = 9;
@@ -1401,7 +1401,7 @@ void ShSlot_DrawReel(s32 arg0) {
             work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
             work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + 0xB00;
             ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
-            if (D_00351240[arg0].angle < 176) {
+            if (gSh_SlotInfo[arg0].angle < 176) {
                 u0 = 0x30;
                 u1 = 0x98;
             } else {
@@ -1423,7 +1423,7 @@ void ShSlot_DrawReel(s32 arg0) {
             work.textured.v1.xyz.y = work.textured.v0.xyz.y = backgroundY << 4;
             work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
             work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + (scroll << 4);
-            if (D_00351240[arg0].angle < 176) {
+            if (gSh_SlotInfo[arg0].angle < 176) {
                 u0 = 0x98;
                 u1 = 0x100;
             } else {
@@ -1459,21 +1459,21 @@ void ShSlot_DrawReel(s32 arg0) {
         ExAssignClamp(&work.textured.header[0], ((s64) u0 << 4) | 0xA | ((s64) u1 << 14) | 0x50000000 | ((u64) 0x3FC << 32));
         ExAssignTexture(&work.textured.header[0], work.background, 1);
         ExAssignAlpha(&work.textured.header[0], 0x44);
-        D_00351228 = ExSortPrim_Pipe(D_00351228, &work.textured.header[0], 0, -1);
+        gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.textured.header[0], 0, -1);
     }
 
-    imageIndex = D_00351240[arg0].position / 112;
-    scroll = D_00351240[arg0].position % 112;
+    imageIndex = gSh_SlotInfo[arg0].position / 112;
+    scroll = gSh_SlotInfo[arg0].position % 112;
     position = RhBase_GetUserGsAddress();
     position += SzText_InitClutManage(position, 1);
     for (i = 0; i < 4; i++) {
-        work.images[i] = SzText_GetReadyItem(1, D_00351240[arg0].symbols[(imageIndex + i) % *D_00351230]);
+        work.images[i] = SzText_GetReadyItem(1, gSh_SlotInfo[arg0].symbols[(imageIndex + i) % *gSh_SlotOrderPT]);
         if (work.images[i] != NULL) {
-            D_00351228 = SzText_Load_Pipe(D_00351228, *(s32 *) work.images[i], position, &size);
+            gSh_pbVif1_Slot = SzText_Load_Pipe(gSh_pbVif1_Slot, *(s32 *) work.images[i], position, &size);
             position += size;
         }
     }
-    D_00351228 = RhText_SetTextureFlush(D_00351228);
+    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
     for (i = 0; i < 4; i++) {
         if (work.images[i] != NULL) {
             ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
@@ -1516,7 +1516,7 @@ void ShSlot_DrawReel(s32 arg0) {
             ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) (bottom << 4);
             ExAssignClamp(&work.textured.header[0], ((s64) top << 24) | 0x20000A | ((s64) bottom << 34));
             ExAssignTexture(&work.textured.header[0], *(void **) work.images[i], 1);
-            D_00351228 = ExSortPrim_Pipe(D_00351228, &work.textured.header[0], 0, -1);
+            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.textured.header[0], 0, -1);
         }
     }
     ((Tag_00283880 *) &work.gradient.header[0])->flags = 0x14;
@@ -1568,7 +1568,7 @@ void ShSlot_DrawReel(s32 arg0) {
         work.gradient.v3.xyz.x = work.gradient.v1.xyz.x = work.gradient.v0.xyz.x + 0x680;
         work.gradient.v3.xyz.y = work.gradient.v2.xyz.y = work.gradient.v0.xyz.y + (shadeHeight << 4);
         ExAssignAlpha(&work.gradient.header[0], 0x42 | ((u64) 0x80 << 32));
-        D_00351228 = ExSortPrim_Pipe(D_00351228, &work.gradient.header[0], 0, -1);
+        gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.gradient.header[0], 0, -1);
     }
 }
 
@@ -1580,7 +1580,7 @@ typedef struct Timers_00284D30 {
     u8 grid[3][3];
 } Timers_00284D30;
 
-extern u8 D_00351178;
+extern u8 gSh_DlgInfo;
 extern u8 D_00351179;
 extern u8 D_0035117A;
 extern u16 D_0035117C;
@@ -1589,7 +1589,7 @@ extern s16 D_00351248;
 #pragma optimization_level 0
 
 s32 ShSlot_Draw_Pipe(s32 arg0) {
-    extern Timers_00284D30 D_00351210;
+    extern Timers_00284D30 gSh_Flash;
     s32 i;
     s32 j;
     s32 speed;
@@ -1597,123 +1597,123 @@ s32 ShSlot_Draw_Pipe(s32 arg0) {
     s32 segment;
 
     for (i = 0; i < 3; i++) {
-        switch (D_00351240[i].enabled) {
+        switch (gSh_SlotInfo[i].enabled) {
         case 0:
         case 4:
             break;
         case 1:
-            if (D_00351240[i].velocity < 32) {
-                D_00351240[i].velocity++;
+            if (gSh_SlotInfo[i].velocity < 32) {
+                gSh_SlotInfo[i].velocity++;
             } else {
-                D_00351240[i].enabled = 2;
+                gSh_SlotInfo[i].enabled = 2;
             }
         case 2:
-            speed = D_00351240[i].velocity;
-            D_00351240[i].position += (s16)speed;
-            if (D_00351240[i].position > D_00351248) {
-                D_00351240[i].position -= D_00351248;
-            } else if (D_00351240[i].position < 0) {
-                D_00351240[i].position += D_00351248;
+            speed = gSh_SlotInfo[i].velocity;
+            gSh_SlotInfo[i].position += (s16)speed;
+            if (gSh_SlotInfo[i].position > D_00351248) {
+                gSh_SlotInfo[i].position -= D_00351248;
+            } else if (gSh_SlotInfo[i].position < 0) {
+                gSh_SlotInfo[i].position += D_00351248;
             }
-            D_00351240[i].angle += (s16)speed;
-            if (D_00351240[i].angle > 351) {
-                D_00351240[i].angle -= 351;
-            } else if (D_00351240[i].angle < 0) {
-                D_00351240[i].angle += 351;
+            gSh_SlotInfo[i].angle += (s16)speed;
+            if (gSh_SlotInfo[i].angle > 351) {
+                gSh_SlotInfo[i].angle -= 351;
+            } else if (gSh_SlotInfo[i].angle < 0) {
+                gSh_SlotInfo[i].angle += 351;
             }
             break;
         case 3:
-            if (D_00351240[i].countdown < 6) {
-                switch (D_00351240[i].countdown) {
+            if (gSh_SlotInfo[i].countdown < 6) {
+                switch (gSh_SlotInfo[i].countdown) {
                 case 5:
-                    segment = D_00351240[i].position / 112;
-                    D_00351240[i].position = (s16)((segment + 1) * 112);
-                    D_00351240[i].velocity = 16;
+                    segment = gSh_SlotInfo[i].position / 112;
+                    gSh_SlotInfo[i].position = (s16)((segment + 1) * 112);
+                    gSh_SlotInfo[i].velocity = 16;
                     break;
                 case 4:
                 case 3:
-                    D_00351240[i].velocity = -12;
+                    gSh_SlotInfo[i].velocity = -12;
                     break;
                 case 2:
                 case 1:
-                    D_00351240[i].velocity = 4;
+                    gSh_SlotInfo[i].velocity = 4;
                     break;
                 }
             }
-            brakingSpeed = D_00351240[i].velocity;
-            D_00351240[i].position += (s16)brakingSpeed;
-            if (D_00351240[i].position > D_00351248) {
-                D_00351240[i].position -= D_00351248;
-            } else if (D_00351240[i].position < 0) {
-                D_00351240[i].position += D_00351248;
+            brakingSpeed = gSh_SlotInfo[i].velocity;
+            gSh_SlotInfo[i].position += (s16)brakingSpeed;
+            if (gSh_SlotInfo[i].position > D_00351248) {
+                gSh_SlotInfo[i].position -= D_00351248;
+            } else if (gSh_SlotInfo[i].position < 0) {
+                gSh_SlotInfo[i].position += D_00351248;
             }
-            D_00351240[i].angle += (s16)brakingSpeed;
-            if (D_00351240[i].angle > 351) {
-                D_00351240[i].angle -= 351;
-            } else if (D_00351240[i].angle < 0) {
-                D_00351240[i].angle += 351;
+            gSh_SlotInfo[i].angle += (s16)brakingSpeed;
+            if (gSh_SlotInfo[i].angle > 351) {
+                gSh_SlotInfo[i].angle -= 351;
+            } else if (gSh_SlotInfo[i].angle < 0) {
+                gSh_SlotInfo[i].angle += 351;
             }
-            D_00351240[i].countdown--;
-            if (!D_00351240[i].countdown) {
-                D_00351240[i].velocity = 0;
-                D_00351240[i].enabled = 4;
+            gSh_SlotInfo[i].countdown--;
+            if (!gSh_SlotInfo[i].countdown) {
+                gSh_SlotInfo[i].velocity = 0;
+                gSh_SlotInfo[i].enabled = 4;
                 ShSlot_CheckLine(i);
             }
             break;
         }
     }
-    D_00351228 = arg0;
-    if (D_00351228 != 0) {
+    gSh_pbVif1_Slot = arg0;
+    if (gSh_pbVif1_Slot != 0) {
         ShSlot_DrawParts(0);
         ShSlot_DrawEye();
         for (j = 0; j < 3; j++) {
             ShSlot_DrawReel(j);
         }
-        if (D_00351210.enabled != 0) {
+        if (gSh_Flash.enabled != 0) {
             ShSlot_FlashBox();
             ShSlot_DrawParts(2);
             for (i = 0; i < 5; i++) {
-                if (D_00351210.counters[i] > 1) {
-                    D_00351210.counters[i]--;
+                if (gSh_Flash.counters[i] > 1) {
+                    gSh_Flash.counters[i]--;
                 }
             }
             for (j = 0; j < 3; j++) {
                 for (i = 0; i < 3; i++) {
-                    if (D_00351210.grid[j][i] > 1) {
-                        D_00351210.grid[j][i]--;
+                    if (gSh_Flash.grid[j][i] > 1) {
+                        gSh_Flash.grid[j][i]--;
                     }
                 }
             }
         }
         ShSlot_DrawParts(1);
-        if (D_00351240[0].state == 3) {
-            switch (D_00351178) {
+        if (gSh_SlotInfo[0].state == 3) {
+            switch (gSh_DlgInfo) {
             case 1:
                 ShSlot_HitCardRequest();
                 if (D_0035117C != 0xFFFF) {
                     if (D_0035117A > 3) {
                         SzSound_PlaySE(0, 25);
                         SzDuel_OpenMsgPopup(3, 0, 0, D_0035117C);
-                        D_00351178 = 2;
+                        gSh_DlgInfo = 2;
                         D_00351179 = 0;
                     } else {
                         SzSound_PlaySE(0, 7);
                         SzDuel_OpenMsgPopup(2, 0, 0, D_0035117C);
-                        D_00351178 = 2;
+                        gSh_DlgInfo = 2;
                         D_00351179 = 0;
                     }
                 } else {
                     SzDuel_CloseMsgPopup();
-                    D_00351178 = 6;
+                    gSh_DlgInfo = 6;
                     D_00351179 = 8;
                 }
                 break;
             }
         }
-        ShSlot_Flear(D_00351180, 3);
+        ShSlot_Flear(gSh_Flear, 3);
     }
     D_00351246++;
-    return D_00351228;
+    return gSh_pbVif1_Slot;
 }
 #pragma optimization_level reset
 
@@ -1740,13 +1740,13 @@ typedef struct Counters_00285880 {
     u8 rows[3][3];
 } Counters_00285880;
 
-extern Counters_00285880 D_00351210;
+extern Counters_00285880 gSh_Flash;
 extern u8 D_00351214;
 extern u8 D_00351215;
 extern u8 D_00351216;
 extern u8 D_00351217;
 extern u8 D_00351218;
-extern Deck_00285880 *D_00351230;
+extern Deck_00285880 *gSh_SlotOrderPT;
 extern u8 D_00351241;
 extern u8 D_00351242;
 extern u8 D_00351244;
@@ -1763,13 +1763,13 @@ void ShSlot_Init(s32 arg0) {
     u16 temp;
     Deck_00285880 *deck;
     s32 k;
-    extern Flags_00280670 D_00351240[];
+    extern Flags_00280670 gSh_SlotInfo[];
     extern s32 ShSlot_Start();
 
     D_00351244 = arg0;
-    D_00351230 = (Deck_00285880 *)0x01ED0000;
+    gSh_SlotOrderPT = (Deck_00285880 *)0x01ED0000;
     if (D_00351244) {
-        deck = D_00351230;
+        deck = gSh_SlotOrderPT;
         deck->count = 0x10;
         deck->extra[0] = deck->extra[1] = deck->extra[2] = deck->extra[3] = deck->extra[4] = 0xFFFE;
         for (k = 0; k < deck->count; k++) {
@@ -1778,48 +1778,48 @@ void ShSlot_Init(s32 arg0) {
         deck->cards[0][deck->count >> 1] = 0x334;
         deck->flags = 2;
     }
-    D_00351230->extra[0] = 0xFFFE;
+    gSh_SlotOrderPT->extra[0] = 0xFFFE;
     D_00351241 = D_00351242 = 0;
     for (i = 0; i < 5; i++) {
-        if (D_00351230->extra[i] != 0xFFFF) {
+        if (gSh_SlotOrderPT->extra[i] != 0xFFFF) {
             D_00351241 |= (u8)(1 << i);
         }
     }
-    D_00351240[0].state = 0;
-    D_00351248 = D_00351230->count * 0x70;
+    gSh_SlotInfo[0].state = 0;
+    D_00351248 = gSh_SlotOrderPT->count * 0x70;
     D_00351246 = 0;
-    D_00351210.state = 0;
+    gSh_Flash.state = 0;
     for (j = 0; j < 3; j++) {
-        D_00351210.rows[j][0] = D_00351210.rows[j][1] = D_00351210.rows[j][2] = 0;
+        gSh_Flash.rows[j][0] = gSh_Flash.rows[j][1] = gSh_Flash.rows[j][2] = 0;
     }
     D_00351214 = D_00351215 = D_00351216 = D_00351217 = D_00351218 = 0;
     for (j = 0; j < 3; j++) {
-        ((Row_00285880 *)&D_00351240[j])->field12 = 0;
-        ((Row_00285880 *)&D_00351240[j])->field16 = 0;
-        ((Row_00285880 *)&D_00351240[j])->field18 = 0xFFFF;
-        D_00351240[j].enabled = 0;
+        ((Row_00285880 *)&gSh_SlotInfo[j])->field12 = 0;
+        ((Row_00285880 *)&gSh_SlotInfo[j])->field16 = 0;
+        ((Row_00285880 *)&gSh_SlotInfo[j])->field18 = 0xFFFF;
+        gSh_SlotInfo[j].enabled = 0;
         switch (j) {
         case 0:
-            for (i = 0; i < D_00351230->count; i++) {
-                ((Row_00285880 *)&(&D_00351240[0].state)[i * 2])->cards[0] = D_00351230->cards[0][i];
+            for (i = 0; i < gSh_SlotOrderPT->count; i++) {
+                ((Row_00285880 *)&(&gSh_SlotInfo[0].state)[i * 2])->cards[0] = gSh_SlotOrderPT->cards[0][i];
             }
             break;
         case 1:
         case 2:
-            if (D_00351230->flags & 1) {
-                for (i = 0; i < D_00351230->count; i++) {
-                    ((Row_00285880 *)&(&D_00351240[j].state)[i * 2])->cards[0] = D_00351230->cards[j][i];
+            if (gSh_SlotOrderPT->flags & 1) {
+                for (i = 0; i < gSh_SlotOrderPT->count; i++) {
+                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[i * 2])->cards[0] = gSh_SlotOrderPT->cards[j][i];
                 }
             } else {
-                for (i = 0; i < D_00351230->count; i++) {
-                    ((Row_00285880 *)&(&D_00351240[j].state)[i * 2])->cards[0] = ((Row_00285880 *)&(&D_00351240[0].state)[i * 2])->cards[0];
+                for (i = 0; i < gSh_SlotOrderPT->count; i++) {
+                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[i * 2])->cards[0] = ((Row_00285880 *)&(&gSh_SlotInfo[0].state)[i * 2])->cards[0];
                 }
-                for (i = 0; i < D_00351230->count * 2; i++) {
-                    a = (func_0019A5C8() >> 4) % D_00351230->count;
-                    b = (func_0019A5C8() >> 4) % D_00351230->count;
-                    temp = ((Row_00285880 *)&(&D_00351240[j].state)[a * 2])->cards[0];
-                    ((Row_00285880 *)&(&D_00351240[j].state)[a * 2])->cards[0] = ((Row_00285880 *)&(&D_00351240[j].state)[b * 2])->cards[0];
-                    ((Row_00285880 *)&(&D_00351240[j].state)[b * 2])->cards[0] = temp;
+                for (i = 0; i < gSh_SlotOrderPT->count * 2; i++) {
+                    a = (func_0019A5C8() >> 4) % gSh_SlotOrderPT->count;
+                    b = (func_0019A5C8() >> 4) % gSh_SlotOrderPT->count;
+                    temp = ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[a * 2])->cards[0];
+                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[a * 2])->cards[0] = ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[b * 2])->cards[0];
+                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[b * 2])->cards[0] = temp;
                 }
             }
             break;
@@ -1843,11 +1843,11 @@ void ShSlot_Draw(void) {
 #pragma optimization_level reset
 
 static inline Object_00280670 *object_00285F20(s32 index) {
-    return &D_00351180[index];
+    return &gSh_Flear[index];
 }
 
 static inline Flags_00280670 *row_00285F20(s32 index) {
-    return &D_00351240[index];
+    return &gSh_SlotInfo[index];
 }
 
 #pragma optimization_level 0
@@ -1875,7 +1875,7 @@ void ShSlot_Act(void) {
             SzGame_Pop();
         }
     }
-    switch (D_00351240[0].state) {
+    switch (gSh_SlotInfo[0].state) {
     case 0:
         if (SzPad_Check(0, 0, 0x4000) != 0 ||
             (SzPad_IsAnalog(0) != 0 && (SzPad_GetAnalogInfo(0, 3) & 0xFF) > 0xF0)) {
@@ -1884,7 +1884,7 @@ void ShSlot_Act(void) {
         }
         break;
     case 1:
-        if (D_00351240[0].enabled == 2 && SzPad_Check(0, 0, 0x80) != 0) {
+        if (gSh_SlotInfo[0].enabled == 2 && SzPad_Check(0, 0, 0x80) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(0), 0x10, 0, 0xFF);
             object_00285F20(0)->width = 40.0f;
@@ -1892,12 +1892,12 @@ void ShSlot_Act(void) {
             row_00285F20(0)->enabled = 3;
             remainder1 = row_00285F20(0)->position % 112;
             row_00285F20(0)->countdown = (u8)((0x70 - remainder1) / row_00285F20(0)->velocity + 5);
-            if (D_00351230->flags & 2) {
+            if (gSh_SlotOrderPT->flags & 2) {
                 row_00285F20(0)->countdown +=
                     (u8)((0x70 / row_00285F20(0)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (D_00351240[1].enabled == 2 && SzPad_Check(0, 0, 0x10) != 0) {
+        if (gSh_SlotInfo[1].enabled == 2 && SzPad_Check(0, 0, 0x10) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(1), 0x10, 0, 0xFF);
             object_00285F20(1)->width = 40.0f;
@@ -1905,12 +1905,12 @@ void ShSlot_Act(void) {
             row_00285F20(1)->enabled = 3;
             remainder2 = row_00285F20(1)->position % 112;
             row_00285F20(1)->countdown = (u8)((0x70 - remainder2) / row_00285F20(1)->velocity + 5);
-            if (D_00351230->flags & 2) {
+            if (gSh_SlotOrderPT->flags & 2) {
                 row_00285F20(1)->countdown +=
                     (u8)((0x70 / row_00285F20(1)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (D_00351240[2].enabled == 2 && SzPad_Check(0, 0, 0x20) != 0) {
+        if (gSh_SlotInfo[2].enabled == 2 && SzPad_Check(0, 0, 0x20) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(2), 0x10, 0, 0xFF);
             object_00285F20(2)->width = 40.0f;
@@ -1918,45 +1918,45 @@ void ShSlot_Act(void) {
             row_00285F20(2)->enabled = 3;
             remainder3 = row_00285F20(2)->position % 112;
             row_00285F20(2)->countdown = (u8)((0x70 - remainder3) / row_00285F20(2)->velocity + 5);
-            if (D_00351230->flags & 2) {
+            if (gSh_SlotOrderPT->flags & 2) {
                 row_00285F20(2)->countdown +=
                     (u8)((0x70 / row_00285F20(2)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (D_00351240[0].enabled == 4 && D_00351240[1].enabled == 4 && D_00351240[2].enabled == 4) {
-            D_00351240[0].state = 2;
+        if (gSh_SlotInfo[0].enabled == 4 && gSh_SlotInfo[1].enabled == 4 && gSh_SlotInfo[2].enabled == 4) {
+            gSh_SlotInfo[0].state = 2;
             SzSound_StopSE(0, 0x1E);
         }
         break;
     case 2:
         if (ShSlot_IsFlashStop() != 0) {
             if ((D_00351242 & 0x1F) == 0) {
-                D_00351240[0].state = 3;
-                D_00351178 = 0;
+                gSh_SlotInfo[0].state = 3;
+                gSh_DlgInfo = 0;
                 D_00351179 = 0x10;
             } else {
                 for (i = 0; i < 5; i++) {
                     if (D_00351242 & (1 << i)) {
                         switch (i) {
                         case 0:
-                            D_00351210.state = 1;
-                            D_00351214 = D_00351210.rows[0][1] = D_00351210.rows[1][1] = D_00351210.rows[2][1] = 0x10;
+                            gSh_Flash.state = 1;
+                            D_00351214 = gSh_Flash.rows[0][1] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][1] = 0x10;
                             break;
                         case 1:
-                            D_00351210.state = 1;
-                            D_00351215 = D_00351210.rows[0][2] = D_00351210.rows[1][2] = D_00351210.rows[2][2] = 0x10;
+                            gSh_Flash.state = 1;
+                            D_00351215 = gSh_Flash.rows[0][2] = gSh_Flash.rows[1][2] = gSh_Flash.rows[2][2] = 0x10;
                             break;
                         case 2:
-                            D_00351210.state = 1;
-                            D_00351216 = D_00351210.rows[0][0] = D_00351210.rows[1][0] = D_00351210.rows[2][0] = 0x10;
+                            gSh_Flash.state = 1;
+                            D_00351216 = gSh_Flash.rows[0][0] = gSh_Flash.rows[1][0] = gSh_Flash.rows[2][0] = 0x10;
                             break;
                         case 3:
-                            D_00351210.state = 1;
-                            D_00351217 = D_00351210.rows[0][2] = D_00351210.rows[1][1] = D_00351210.rows[2][0] = 0x10;
+                            gSh_Flash.state = 1;
+                            D_00351217 = gSh_Flash.rows[0][2] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][0] = 0x10;
                             break;
                         case 4:
-                            D_00351210.state = 1;
-                            D_00351218 = D_00351210.rows[0][0] = D_00351210.rows[1][1] = D_00351210.rows[2][2] = 0x10;
+                            gSh_Flash.state = 1;
+                            D_00351218 = gSh_Flash.rows[0][0] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][2] = 0x10;
                             break;
                         }
                         D_00351242 &= (u8)~(1 << i);
@@ -1967,12 +1967,12 @@ void ShSlot_Act(void) {
         }
         break;
     case 3:
-        switch (D_00351178) {
+        switch (gSh_DlgInfo) {
         case 0:
             if (D_00351179) {
                 D_00351179--;
             } else {
-                D_00351178 = 1;
+                gSh_DlgInfo = 1;
                 D_0035117A = 0;
                 D_00351179 = 8;
             }
@@ -1981,7 +1981,7 @@ void ShSlot_Act(void) {
             break;
         case 2:
             if (SzPad_Check(0, 0, 0xF0) != 0) {
-                D_00351178 = 1;
+                gSh_DlgInfo = 1;
                 D_00351179 = 8;
             }
             break;
@@ -1989,7 +1989,7 @@ void ShSlot_Act(void) {
             if (D_00351179) {
                 D_00351179--;
             } else {
-                D_00351240[0].state = 4;
+                gSh_SlotInfo[0].state = 4;
             }
             break;
         }

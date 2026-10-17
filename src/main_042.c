@@ -160,8 +160,8 @@ typedef struct {
     u8 high : 4;
 } Nibbles_001C4B00;
 
-extern u8 D_00290020[];
-extern u8 D_00290080[];
+extern u8 gSzDuel_Attr[];
+extern u8 gSzDuel_Icon[];
 extern u8 D_0029086E[];
 extern u8 D_00290878[];
 extern u8 D_002908BE[];
@@ -390,7 +390,7 @@ extern s32 D_00290A1C;
 extern char D_002BF051[];
 extern char D_002BF056[];
 
-extern u8 D_00290080[];
+extern u8 gSzDuel_Icon[];
 extern u8 D_002908F0[];
 extern u8 D_0029099A[];
 
@@ -563,8 +563,8 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
     extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
-    extern u8 D_00290080[];
-    extern u8 D_002BE8C0[];
+    extern u8 gSzDuel_Icon[];
+    extern u8 gSzDuel_aaicolField[];
     extern char D_002BF074[];
     extern char D_002BEF93[];
     extern s32 D_002902C4;
@@ -573,7 +573,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     s32 ret;
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     u8 *save = (u8 *)0xA9C000;
     Maps_001CB6B0 *maps;
     s8 *text1;
@@ -640,7 +640,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     px = x + 0x81C;
     for (i = 0; i < 7; i++) {
         for (j = 0; j < 7; j++) {
-            id = func_001B3CC0(id, D_00290080 + (board[i * 7 + j] + 0x10E) * 10, px + j * 16,
+            id = func_001B3CC0(id, gSzDuel_Icon + (board[i * 7 + j] + 0x10E) * 10, px + j * 16,
                                y + 0x75C + i * 16, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
         }
     }
@@ -657,7 +657,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
                 }
             }
         }
-        id = func_001B3CC0(id, D_00290080 + (row + 0x10E) * 10, x + 0x89B, y + 0x745 + row * 16, 0, 1, 0,
+        id = func_001B3CC0(id, gSzDuel_Icon + (row + 0x10E) * 10, x + 0x89B, y + 0x745 + row * 16, 0, 1, 0,
                            0, 0, 0, 1, 0, -1, 0x80);
         id = func_001B4780(id, 0xD, -1, 5, x + 0x1EB, y + 0x25 + row * 16, -0x54, -0x10, 1);
         px = x + 0x8AB;
@@ -668,15 +668,15 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
         ((Tag_001CB6B0 *)packet.tag)->count = 8;
         ((Tag_001CB6B0 *)packet.tag)->registers = 0x41414141;
         ((Tag_001CB6B0 *)packet.tag)->padding = 0;
-        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3]);
-        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 1]);
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 1]);
         set_xyz_001CB6B0(&packet.points[0].xyz, px, py, state);
         set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py, state);
         set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h, state);
         set_xyz_001CB6B0(&packet.points[3].xyz, px + w, py + h, state);
         id = func_00207650(id, (s32)packet.tag, 0, 0);
-        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 1]);
-        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)D_002BE8C0)[row * 3 + 2]);
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 1]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 2]);
         set_xyz_001CB6B0(&packet.points[0].xyz, px, py + h, state);
         set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py + h, state);
         set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h * 2, state);
@@ -730,7 +730,7 @@ extern Vec4_001CC4B0 D_002914B0;
 extern Vec4_001CC4B0 D_002914C0;
 
 void SzDuel_InitMapEdit(s32 arg0) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 i;
     Vec4_001CC4B0 vector0;
     Vec4_001CC4B0 vector1;
@@ -800,7 +800,7 @@ extern PulseFlags_001CC620 D_003181F4;
 void SzDuel_ActMapEdit(void) {
     extern void *SzData_GetData(s32);
     extern s32 SzDuel_SetField();
-    State_001CC620 *state = (State_001CC620 *)D_00317490.b;
+    State_001CC620 *state = (State_001CC620 *)gSzDuel_dl.b;
     s32 row;
     s32 column;
     u8 *cell;
@@ -814,7 +814,7 @@ void SzDuel_ActMapEdit(void) {
     State_001CC620 *p2;
 
     {
-        p = (State_001CC620 *)D_00317490.b;
+        p = (State_001CC620 *)gSzDuel_dl.b;
         if (D_003181F3 != 0) {
             p->flags.first = 1;
         }
@@ -826,7 +826,7 @@ void SzDuel_ActMapEdit(void) {
         }
     }
     {
-        p2 = (State_001CC620 *)D_00317490.b;
+        p2 = (State_001CC620 *)gSzDuel_dl.b;
         step = D_003181F4.second << 11;
         p2->second = (D_00318118 + step > 0 ? p2->second + step : 0) < 0x8000 ?
             (p2->second + step > 0 ? p2->second + step : 0) : 0x8000;
@@ -1049,9 +1049,9 @@ static inline void set_xyz_001CCEA0(Vertex_001CCEA0 *v, s32 x, s32 y, u8 *state)
 s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
     extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe(s32, s32, s32, s32, s32, s32, s32);
-    extern u8 D_00290080[];
-    extern u8 D_002BE8C0[];
-    u8 *state = D_00317490.b;
+    extern u8 gSzDuel_Icon[];
+    extern u8 gSzDuel_aaicolField[];
+    u8 *state = gSzDuel_dl.b;
     u8 cur;
     s32 j;
     s32 i;
@@ -1076,7 +1076,7 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
             }
         }
         px = x + 0x6C5;
-        id = lSzDuel_DrawWindow_ExIcon_Pipe(id, D_00290080 + (row + 0x10E) * 10, px, y + 0x725 + row * 16, 0, 1, 0,
+        id = lSzDuel_DrawWindow_ExIcon_Pipe(id, gSzDuel_Icon + (row + 0x10E) * 10, px, y + 0x725 + row * 16, 0, 1, 0,
                            0, 0, 0, 1, 0, (cur == row) ? 1 : -1, 0x80);
         id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xD, -1, 5, x + 0x15, y + 5 + row * 16, -0x54, -0x10, 1);
         px = x + 0x6D5;
@@ -1087,15 +1087,15 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
         ((Tag_001CCEA0 *)packet.tag)->count = 8;
         ((Tag_001CCEA0 *)packet.tag)->registers = 0x41414141;
         ((Tag_001CCEA0 *)packet.tag)->padding = 0;
-        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3]);
-        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 1]);
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 1]);
         set_xyz_001CCEA0(&packet.points[0].xyz, px, py, state);
         set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py, state);
         set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h, state);
         set_xyz_001CCEA0(&packet.points[3].xyz, px + w, py + h, state);
         id = ExSortPrim_Pipe(id, (s32)packet.tag, 0, 0);
-        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 1]);
-        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)D_002BE8C0)[row * 3 + 2]);
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 1]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 2]);
         set_xyz_001CCEA0(&packet.points[0].xyz, px, py + h, state);
         set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py + h, state);
         set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h * 2, state);
@@ -1235,8 +1235,8 @@ s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
     extern s32 SzDuel_DrawHandCard_Pipe(s32);
     Vec4_001CD710 position;
     Command_001CD710 command;
-    u8 *base = D_00317490.b;
-    u8 *selected = D_00317490.b + D_003181E4 * 0x350;
+    u8 *base = gSzDuel_dl.b;
+    u8 *selected = gSzDuel_dl.b + D_003181E4 * 0x350;
     s32 original;
     s64 mode;
     s32 special;
@@ -1305,7 +1305,7 @@ void SzDuel_InitCardRequest(void) {
     u8 *entry;
     s32 i;
 
-    entry = D_003193C0;
+    entry = gSzDuel_aCardRequest;
     i = 0;
     do {
         SzDuel_FreeCardRequest(entry);
@@ -1336,7 +1336,7 @@ u8 *SzDuel_GetCardRequest(void) {
     s32 i;
     Slot_001CDAA0 *slot;
 
-    slot = (Slot_001CDAA0 *)D_003193C0;
+    slot = (Slot_001CDAA0 *)gSzDuel_aCardRequest;
     i = 0;
     do {
         if (slot->in_use == 0) {
@@ -1410,7 +1410,7 @@ s32 SzDuel_DrawCardRequest_Pipe(s32 arg0) {
     void *position;
     s32 height;
 
-    entry = (Entry_001CDB00 *)D_003193C0;
+    entry = (Entry_001CDB00 *)gSzDuel_aCardRequest;
     i = 0;
     color = *(PackedColor_001CDB00 *)&D_002914D8;
     do {
@@ -1451,7 +1451,7 @@ void SzDuel_InitCardControl(void) {
     u8 *p;
     s32 i;
 
-    p = D_0031A7C0;
+    p = gSzDuel_aCardControl;
     i = 0;
     do {
         SzDuel_ClearCardControl(p);
@@ -1505,7 +1505,7 @@ void *SzDuel_GetCardControl(s32 arg0) {
         return NULL;
     }
 
-    return &D_0031A7C0[arg0 * 0xA0];
+    return &gSzDuel_aCardControl[arg0 * 0xA0];
 }
 
 typedef struct Flags_001CDEB0 {
@@ -1667,8 +1667,8 @@ s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
     u8 alpha;
     f32 fade;
 
-    game = D_00317490.b;
-    player = D_00317490.b + D_003181E4 * 0x350;
+    game = gSzDuel_dl.b;
+    player = gSzDuel_dl.b + D_003181E4 * 0x350;
     mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     ownColor = D_002914E0;
@@ -1862,14 +1862,14 @@ typedef struct Record_001CECF0 {
     u8 tail[0x11];
 } Record_001CECF0;
 
-extern s32 (*D_002BAEB0[])(u16, void *);
-extern s8 D_0034F700;
-extern s8 D_0034F708;
+extern s32 (*g_aLogFunc[])(u16, void *);
+extern s8 Rensyu_flg;
+extern s8 Rensyu_END;
 
 s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
-    u8 *base = D_00317490.b;
+    u8 *base = gSzDuel_dl.b;
     s32 ret = 0;
-    Record_001CECF0 *record = (Record_001CECF0 *)(D_00317490.b + arg0 * 0x350);
+    Record_001CECF0 *record = (Record_001CECF0 *)(gSzDuel_dl.b + arg0 * 0x350);
     void *selected;
     s32 result;
 
@@ -1887,14 +1887,14 @@ s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
                 selected = base;
             }
             if (SzView_InqRequest(-1, -1) == NULL) {
-                result = D_002BAEB0[record->kind]((u16)((record->high << 8) | record->low), selected);
+                result = g_aLogFunc[record->kind]((u16)((record->high << 8) | record->low), selected);
                 if (result < 0) {
-                    if (D_0034F700 != 0) {
+                    if (Rensyu_flg != 0) {
                         if (result == -1) {
                             Taku_Camp_Go_Rensyu_Duel(1);
                         } else {
-                            D_0034F700 = 0;
-                            D_0034F708 = 1;
+                            Rensyu_flg = 0;
+                            Rensyu_END = 1;
                             SzGame_Pop();
                         }
                     } else {
@@ -2010,7 +2010,7 @@ static inline u8 *slot_001CEE60(s32 n) {
     if (n < 0 || n >= 6) {
         return NULL;
     }
-    return D_0031A7C0 + n * 0xA0;
+    return gSzDuel_aCardControl + n * 0xA0;
 }
 
 static inline void freeobj_001CEE60(u8 *obj) {
@@ -2201,8 +2201,8 @@ s32 SzDuel_Act(void) {
     s8 bit;
     Object_001CEE60 tmpo;
 
-    duel = D_00317490.b;
-    me = &D_00317490.b[D_003181E4 * 0x350];
+    duel = gSzDuel_dl.b;
+    me = &gSzDuel_dl.b[D_003181E4 * 0x350];
     list = me + 0x1D0;
     cam = func_001F9AD0(0);
     hand0 = func_001DF470(0);
@@ -2399,7 +2399,7 @@ s32 SzDuel_Act(void) {
         DUEL[0xD57] = 0x15;
     }
     {
-        Duel_00317490_s *q = &D_00317490.s;
+        Duel_00317490_s *q = &gSzDuel_dl.s;
         if (q->hold != 0) {
             q->dirs.dir1 = 1;
         }
@@ -2409,7 +2409,7 @@ s32 SzDuel_Act(void) {
         }
     }
     {
-        Duel_00317490_s *q = &D_00317490.s;
+        Duel_00317490_s *q = &gSzDuel_dl.s;
         s32 st = q->dirs.dir2 << 0xB;
         q->wave2 = MIN_001CEE60(MAX_001CEE60(q->wave2 + st, 0), 0x8000);
         if ((q->wave2 == 0) || ((s32) q->wave2 >= 0x8000)) {
@@ -3303,7 +3303,7 @@ s32 SzDuel_Act(void) {
         DUEL[0xD57] == 0x25 || DUEL[0xD57] == 0x29 || DUEL[0xD57] == 0x2D || DUEL[0xD57] == 0x30 ||
         DUEL[0xD57] == 0x33 || DUEL[0xD57] == 0x35 || DUEL[0xD57] == 0x3E || DUEL[0xD57] == 0x43 ||
         DUEL[0xD57] == 0x53 || DUEL[0xD57] == 0x46 || DUEL[0xD57] == 0x5C || DUEL[0xD57] == 0x61) {
-        sl = &D_00317490.b[DUEL[0xD54] * 0x350];
+        sl = &gSzDuel_dl.b[DUEL[0xD54] * 0x350];
         if (sl[0x33C] < 100 && *(s32 *)(sl + 0x334) != 0) {
             func_0020B380((void *)0x3F0000, (void *) *(s32 *)(sl + 0x334), *(u16 *)(sl + 0x338) >> 4);
             func_0017BB60(0);
@@ -4780,7 +4780,7 @@ s32 SzDuel_Act(void) {
                     DUEL[0xD4C] = DUEL[0xD4B] + 1;
                     DUEL[0xD4D] = DUEL[0xD4B] + DUEL[0xD4A];
                     if (DUEL_DUO(0x6CC) != NULL) {
-                        if ((sl = D_0031A7C0) != NULL && *(u8 **)sl != NULL) {
+                        if ((sl = gSzDuel_aCardControl) != NULL && *(u8 **)sl != NULL) {
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b6 = 0;
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b5 = 0;

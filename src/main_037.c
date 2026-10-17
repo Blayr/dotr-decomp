@@ -24,12 +24,12 @@ typedef struct Flags2E_001A6C80 {
 } Flags2E_001A6C80;
 
 void func_001A6C80(void) {
-    s8 *data = (s8 *)&D_00317250;
+    s8 *data = (s8 *)&gSzGame_gl;
     s32 i;
     s32 *p;
 
-    RhMem_FillMemory((s8 *) &D_00317250, 0, 0x230);
-    D_00317250 = 0;
+    RhMem_FillMemory((s8 *) &gSzGame_gl, 0, 0x230);
+    gSzGame_gl = 0;
     D_00317254 = 0;
     D_0031747A = 1;
     i = 0;
@@ -280,7 +280,7 @@ typedef struct File_001A7380 {
     u32 flag : 1;
 } File_001A7380;
 
-extern u8 D_002BE660[];
+extern u8 gSzGame_abMenu[];
 extern char D_002BE7D0[];
 extern char D_002BE7D5[];
 extern u8 D_00317473;
@@ -300,7 +300,7 @@ void SzGame_ActMenu(void) {
     u32 previous;
     char filename[128];
 
-    menu = (Menu_001A7380 *) &D_00317250;
+    menu = (Menu_001A7380 *) &gSzGame_gl;
     selectionIndex = D_00317473 + (D_0031747D & 7) * 20;
     if (SzGame_ActMemCardProc() >= 0) {
         return;
@@ -309,7 +309,7 @@ void SzGame_ActMenu(void) {
             selectionIndex = (menu->page & 7) * 20;
             menu->selected = 0;
         }
-        item = D_002BE660[selectionIndex];
+        item = gSzGame_abMenu[selectionIndex];
         if (SzFade_GetRestCount(0) == 0) {
             SzGame_SetMode(menu->x, menu->y);
             SzFade_SetKillFlag(0);
@@ -673,7 +673,7 @@ typedef struct {
 } Table_001A82E0;
 
 s32 SzGame_GetMenuNum(s32 arg0) {
-    Table_001A82E0 *table = (Table_001A82E0 *)&D_00317250;
+    Table_001A82E0 *table = (Table_001A82E0 *)&gSzGame_gl;
     s32 result;
 
     if ((arg0 < 0) || (arg0 >= 0x25)) {
@@ -690,7 +690,7 @@ typedef struct State_001A8320 {
 } State_001A8320;
 
 s32 SzGame_SetMenuNum(s32 arg0, s32 arg1) {
-    State_001A8320 *state = (State_001A8320 *)&D_00317250;
+    State_001A8320 *state = (State_001A8320 *)&gSzGame_gl;
 
     if ((arg0 < 0) || (arg0 >= 0x25)) {
         return 0;
@@ -704,7 +704,7 @@ void SzGame_PlayMovieNo(s32 arg0, s32 arg1, s32 arg2) {
     void func_0019B648(void *, void *, ...);
     u8 buf[128];
 
-    func_0019B648(buf, D_002BE809, SzFile_GetEnv(D_002BE80F), D_0028FF10[arg0]);
+    func_0019B648(buf, D_002BE809, SzFile_GetEnv(D_002BE80F), apchMovie[arg0]);
     SzGame_PlayMovie(buf, arg1, arg2);
 }
 
@@ -791,7 +791,7 @@ typedef struct {
 } State_001A86A0;
 
 void SzGame_SetAutoBlur(s32 arg0) {
-    State_001A86A0 *state = (State_001A86A0 *)&D_00317250;
+    State_001A86A0 *state = (State_001A86A0 *)&gSzGame_gl;
 
     if ((arg0 >= 0) && ((u32)arg0 < state->count)) {
         state->selected = arg0;
@@ -812,7 +812,7 @@ s32 SzGame_InqSoftFocus(void) {
 }
 
 s32 SzGame_VSync(void) {
-    D_00317250 += 1;
+    gSzGame_gl += 1;
     return 1;
 }
 
@@ -860,7 +860,7 @@ typedef struct {
 extern Tail_001A87C0 D_0031746F;
 
 void SzGame_Goto(s32 arg0, s32 arg1) {
-    State_001A87C0 *state = (State_001A87C0 *)&D_00317250;
+    State_001A87C0 *state = (State_001A87C0 *)&gSzGame_gl;
 
     SzFade_Entry(0, 1, 1, 0, 60, 0);
     D_0031746F.a = -2;
@@ -886,7 +886,7 @@ typedef struct State_001A8870 {
 } State_001A8870;
 
 void SzGame_Push(s32 arg0, s32 arg1) {
-    State_001A8870 *state = (State_001A8870 *)&D_00317250;
+    State_001A8870 *state = (State_001A8870 *)&gSzGame_gl;
     s8 *entry;
 
     if ((D_00317472 + 1) < 8) {
@@ -914,7 +914,7 @@ typedef struct {
 extern u8 D_00317472;
 
 void SzGame_Pop(void) {
-    State_001A8920 *state = (State_001A8920 *)&D_00317250;
+    State_001A8920 *state = (State_001A8920 *)&gSzGame_gl;
 
     if ((D_00317472 - 1) >= 0) {
         SzFade_Entry(0, 1, 1, 0, 60, 0);
@@ -1306,7 +1306,7 @@ typedef struct Sprite_001A9590 {
 #pragma opt_propagation off
 
 void SzGame_ModeDraw(void) {
-    u8 *data = (u8 *)&D_00317250;
+    u8 *data = (u8 *)&gSzGame_gl;
     s64 temp_v0;
     Sprite_001A9590 sprite;
     Sprite_001A9590 *s;
@@ -1394,7 +1394,7 @@ void SzGame_ModeDraw(void) {
 
 
 void SzGame_ModeDrawAfter(void) {
-    u8 *data = (u8 *) &D_00317250;
+    u8 *data = (u8 *) &gSzGame_gl;
     s64 temp_v0;
 
     temp_v0 = SzGame_GetMode(1);
@@ -1737,7 +1737,7 @@ void SzGame_ModeAct(void) {
     s32 j12;
     s32 step;
 
-    state = (State_001AA260 *)&D_00317250;
+    state = (State_001AA260 *)&gSzGame_gl;
     event = SzGame_GetMode(0);
     switch (D_0031747C.state) {
     case 3:
@@ -1949,7 +1949,7 @@ void SzGame_ModeAct(void) {
             }
         }
         if (SzPad_Check(0, 0, 0x20) != 0) {
-            state = (State_001AA260 *)&D_00317250;
+            state = (State_001AA260 *)&gSzGame_gl;
             if ((D_00317472 - 1) >= 0) {
                 SzFade_Entry(0, 1, 1, 0, 0x3C, 0);
                 state->selection = -2;
@@ -2098,7 +2098,7 @@ void SzGame_ReqBGM(int n, int b)
 
 void SzGame_ModeTerm(s32 arg0) {
     extern void func_001C5D70(s32);
-    s8 *data = (s8 *)&D_00317250;
+    s8 *data = (s8 *)&gSzGame_gl;
 
     switch (arg0) {
     case 1:
@@ -2168,7 +2168,7 @@ typedef struct {
 
 s64 SzGame_GetMode(s32 arg0) {
     s8 value;
-    State_001AAF60 *state = (State_001AAF60 *)&D_00317250;
+    State_001AAF60 *state = (State_001AAF60 *)&gSzGame_gl;
 
     if (arg0 > 0) {
         value = state->values[state->selected];
@@ -2195,7 +2195,7 @@ typedef struct Flags2E_001AAFA0 {
 void SzGame_InitMemCardProc(s32 arg0) {
     extern char D_002BE7D0[];
     extern char D_002BE821[];
-    s8 *data = (s8 *)&D_00317250;
+    s8 *data = (s8 *)&gSzGame_gl;
 
     switch (arg0) {
     case 0:
@@ -2260,7 +2260,7 @@ extern u8 D_0031747D;
 #define CODE (*(u16 *)(data + 0x21C))
 
 s32 SzGame_ActMemCardProc(void) {
-    s8 *data = (s8 *)&D_00317250;
+    s8 *data = (s8 *)&gSzGame_gl;
     s32 prev;
     s32 cancel;
     s32 cmd;
@@ -2777,7 +2777,7 @@ typedef struct State_001AC610 {
 extern s32 D_003173B0;
 
 void lSzGame_InitTitle(s32 arg0) {
-    State_001AC610 *state = (State_001AC610 *)&D_00317250;
+    State_001AC610 *state = (State_001AC610 *)&gSzGame_gl;
     s32 i;
 
     i = 0;
@@ -3071,7 +3071,7 @@ s32 lSzGame_DrawTitle_Pipe(s32 arg0) {
     s32 i;
     s32 *image;
 
-    state = (State_001ACC80 *)&D_00317250;
+    state = (State_001ACC80 *)&gSzGame_gl;
     resourceOffset = 0x37C0;
     cuts = *(Cuts_001ACC80 *)D_0028FF28;
     resourceOffset += SzText_InitClutManage(resourceOffset, 2);
@@ -3388,7 +3388,7 @@ s32 lSzGame_DrawTitle_Rose_Pipe(s32 packet, s32 id, s32 x, s32 y, s32 width, s32
 }
 
 void SzDuel_Initialize(void) {
-    u8 *state = D_00317490.b;
+    u8 *state = gSzDuel_dl.b;
     s32 x;
     s32 y;
     u8 *cell;
@@ -3397,7 +3397,7 @@ void SzDuel_Initialize(void) {
     u8 *entry;
     u8 *row;
 
-    RhMem_FillMemory((s8 *)D_00317490.b, 0, 0xD70);
+    RhMem_FillMemory((s8 *)gSzDuel_dl.b, 0, 0xD70);
     SzDuel_InitCardRequest();
     SzDuel_InitCardControl();
     y = 0;
@@ -3412,7 +3412,7 @@ void SzDuel_Initialize(void) {
         y++;
     } while (y < 7);
 
-    row = D_00318280;
+    row = gSzDuel_aaVarInfo;
     group = 0;
     do {
         index = 0;
@@ -3488,7 +3488,7 @@ void lSzDuel_InitCom(s32 arg0) {
         } while (j < 2);
     }
     if (arg0 != 0) {
-        s32 color = (s32) &D_00291000;
+        s32 color = (s32) &gSzDuel_StageParam;
         s32 ambient = (s32) &D_0029100C;
         s32 matrix = (s32) &D_00291020;
         s32 range = (s32) &D_002910B0;

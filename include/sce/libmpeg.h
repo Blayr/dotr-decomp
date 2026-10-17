@@ -46,6 +46,6 @@ typedef struct {
     u64 mask;
 } StrDesc;
 
-extern StrDesc D_0028DAB8[10];
+extern StrDesc _strmap[10];
 
 #endif

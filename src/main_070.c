@@ -71,7 +71,7 @@ s32 videoDecIsFlushed(void *arg0) {
 
 void videoDecMain(void *arg0) {
     viBufReset((u8 *)arg0 + 0x48);
-    voBufReset(D_00350600);
+    voBufReset(voBuf);
     decBs0(arg0);
     do {
 
@@ -336,10 +336,10 @@ typedef struct Quad_00245980 {
     s16 w;
 } Quad_00245980;
 
-extern Quad_00245980 **D_0029D488[];
+extern Quad_00245980 **gpShFaceIndex[];
 
 void ShAnime_GetPartsRect(s32 arg0, s32 arg1, void *arg2) {
-    *(Quad_00245980 *)arg2 = (*D_0029D488[(u8)arg0])[(u8)arg1];
+    *(Quad_00245980 *)arg2 = (*gpShFaceIndex[(u8)arg0])[(u8)arg1];
 }
 
 typedef struct Name_002459D0 {
@@ -347,7 +347,7 @@ typedef struct Name_002459D0 {
 } Name_002459D0;
 
 void ShAnime_GetPatInfo(u8 arg0, u8 arg1, void *arg2) {
-    *(Name_002459D0 *)arg2 = ((Name_002459D0 **)D_0029D488[arg0])[1][arg1];
+    *(Name_002459D0 *)arg2 = ((Name_002459D0 **)gpShFaceIndex[arg0])[1][arg1];
 }
 
 typedef struct Record_00245A30 {
@@ -364,16 +364,16 @@ typedef struct Data_00245A30 {
 } Data_00245A30;
 
 void ShAnime_GetFixInfo(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
-    extern struct Quad_00245980 **D_0029D488[];
+    extern struct Quad_00245980 **gpShFaceIndex[];
     u8 var_a1;
     u8 temp_a0;
     Record_00245A30 *records;
     s32 var_t1;
 
     var_t1 = 0;
-    var_a1 = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
+    var_a1 = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
     if (arg2 != 0) {
-        records = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->records;
+        records = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->records;
         while (var_t1 != (arg2 & 0xFF)) {
             temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
             if (temp_a0 == 0 || temp_a0 == 0xFF) {
@@ -383,7 +383,7 @@ void ShAnime_GetFixInfo(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
             var_a1 = temp_a0 & 0xFF;
         }
     }
-    *(Record_00245A30 *)arg3 = ((Data_00245A30 *)D_0029D488[arg0 & 0xFF])->records[var_a1 & 0xFF];
+    *(Record_00245A30 *)arg3 = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->records[var_a1 & 0xFF];
 }
 
 typedef struct Record_00245AE0 {
@@ -403,7 +403,7 @@ typedef struct Data_00245AE0 {
 } Data_00245AE0;
 
 void ShAnime_GetAnmDat(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
-    extern struct Quad_00245980 **D_0029D488[];
+    extern struct Quad_00245980 **gpShFaceIndex[];
     Record_00245AE0 *table;
     u8 var_a1;
     u8 temp_a0;
@@ -412,9 +412,9 @@ void ShAnime_GetAnmDat(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
     s32 count;
 
     var_t1 = 0;
-    var_a1 = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
+    var_a1 = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
     if (arg2 != 0) {
-        records = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.records;
+        records = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.records;
         while (var_t1 != (arg2 & 0xFF)) {
             temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
             if (temp_a0 == 0 || temp_a0 == 0xFF) {
@@ -424,8 +424,8 @@ void ShAnime_GetAnmDat(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
             var_a1 = temp_a0 & 0xFF;
         }
     }
-    var_t1 = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.links[var_a1 & 0xFF][6];
-    table = ((Data_00245AE0 *)D_0029D488[arg0 & 0xFF])->u.records;
+    var_t1 = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.links[var_a1 & 0xFF][6];
+    table = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.records;
     count = 0;
     if (arg3 != 0) {
         while (count != (arg3 & 0xFF)) {
@@ -467,11 +467,11 @@ s32 ShFace_Request(void *arg0) {
     Request_00245BE0 *req = arg0;
     Slot_00245BE0 *entry;
     s32 i;
-    extern Slot_00245BE0 D_00350FD0[];
+    extern Slot_00245BE0 gSh_Face[];
 
     if (req->slot == 0xFF) {
         for (i = 0; i < 8; i++) {
-            if (D_00350FD0[i].value == 0) {
+            if (gSh_Face[i].value == 0) {
                 break;
             }
         }
@@ -479,17 +479,17 @@ s32 ShFace_Request(void *arg0) {
             return 0;
         }
         req->slot = i;
-        D_00350FD0[req->slot].value = 1;
-        D_00350FD0[req->slot].b = 0xFF;
+        gSh_Face[req->slot].value = 1;
+        gSh_Face[req->slot].b = 0xFF;
     }
-    entry = &D_00350FD0[req->slot];
+    entry = &gSh_Face[req->slot];
     if (entry->value == 0) {
         return 0;
     }
     if (entry->b != req->b) {
         for (i = 0; i < 16; i++) {
-            D_00350FD0[req->slot].y[i] = 0;
-            D_00350FD0[req->slot].x[i] = 0;
+            gSh_Face[req->slot].y[i] = 0;
+            gSh_Face[req->slot].x[i] = 0;
         }
     }
     entry->a = req->a;
@@ -505,10 +505,10 @@ typedef struct {
     u8 padding[0x30];
 } Entry_00245D80;
 
-extern Entry_00245D80 D_00350FD0[];
+extern Entry_00245D80 gSh_Face[];
 
 void ShFace_Close(u8 *arg0) {
-    D_00350FD0[*arg0].value = 0;
+    gSh_Face[*arg0].value = 0;
 }
 
 typedef struct {
@@ -553,7 +553,7 @@ typedef struct {
 } Object_00245DB0;
 
 void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
-    extern s32 D_00350FC0;
+    extern s32 gSh_pbVif1;
     Object_00245DB0 *object = arg0;
     u16 *rect = arg1;
     u32 shift;
@@ -592,8 +592,8 @@ void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     ExAssignClamp(packet.tag, ((u64)rect[1] << 4) | 0xA | ((u64)rect[3] << 14) |
                                   ((u64)rect[0] << 24) | ((u64)rect[2] << 34));
     ExAssignAlpha(packet.tag, 0x44);
-    if (D_00350FC0 != 0) {
-        D_00350FC0 = ExSortPrim_Pipe(D_00350FC0, (s32)packet.tag, 0, 0);
+    if (gSh_pbVif1 != 0) {
+        gSh_pbVif1 = ExSortPrim_Pipe(gSh_pbVif1, (s32)packet.tag, 0, 0);
     }
 }
 
@@ -707,47 +707,47 @@ typedef struct {
 } Entry_00246340;
 
 s32 ShFace_Draw_Pipe(s32 arg0) {
-    extern s32 D_00350FC0;
+    extern s32 gSh_pbVif1;
     extern s32 ShFace_DrawOne();
     extern s32 SzText_InitClutManage();
     Entry_00246340 *entry;
     s32 i;
     s32 base;
 
-    D_00350FC0 = arg0;
+    gSh_pbVif1 = arg0;
     for (i = 0; i < 8; i++) {
-        if (((Entry_00246340 *)D_00350FD0)[i].value != 0) {
-            ((Entry_00246340 *)D_00350FD0)[i].handle = SzText_LoadRequest(7, ((Entry_00246340 *)D_00350FD0)[i].kind);
+        if (((Entry_00246340 *)gSh_Face)[i].value != 0) {
+            ((Entry_00246340 *)gSh_Face)[i].handle = SzText_LoadRequest(7, ((Entry_00246340 *)gSh_Face)[i].kind);
         }
     }
     base = RhBase_GetUserGsAddress();
     base += SzText_InitClutManage(base, 2);
-    D_00350FC0 = SzText_DoRequest_Pipe(D_00350FC0, 7, base, NULL);
-    D_00350FC0 = RhText_SetTextureFlush(D_00350FC0);
+    gSh_pbVif1 = SzText_DoRequest_Pipe(gSh_pbVif1, 7, base, NULL);
+    gSh_pbVif1 = RhText_SetTextureFlush(gSh_pbVif1);
     SzText_FreeRequest(7, -1);
-    entry = (Entry_00246340 *)D_00350FD0;
+    entry = (Entry_00246340 *)gSh_Face;
     for (i = 0; i < 8; i++, entry++) {
         if (entry->value != 0 && entry->handle != 0) {
             ShFace_DrawOne(entry);
         }
     }
-    return D_00350FC0;
+    return gSh_pbVif1;
 }
 
 void ShFace_Init(s32 arg0) {
-    extern s32 D_00350FC0;
+    extern s32 gSh_pbVif1;
     s32 i;
     Entry_00245D80 *entry;
 
-    D_00351170 = arg0;
-    entry = D_00350FD0;
+    gSh_FaceMode = arg0;
+    entry = gSh_Face;
     i = 0;
     do {
         i += 1;
         entry->value = 0;
         entry++;
     } while (i < 8);
-    D_00350FC0 = 0;
+    gSh_pbVif1 = 0;
 }
 
 void ShFace_Draw(void) {
@@ -755,7 +755,7 @@ void ShFace_Draw(void) {
 }
 
 void ShFace_Act(void) {
-    if (D_00351170) {
+    if (gSh_FaceMode) {
         return;
     }
 }
@@ -1437,7 +1437,7 @@ s32 Do_ChkEncMatch(u32 arg0, s32 arg1, s32 arg2) {
 
     row = SzDuel_GetUnitCardNo(arg0, arg1) * 7;
     offset = arg2 - 0x2F0;
-    return ((D_0029D580 + (offset >> 3))[row] >> (offset % 8)) & 1;
+    return ((EnchMatch + (offset >> 3))[row] >> (offset % 8)) & 1;
 }
 
 extern int func_001E1030_b(int a, int b);
@@ -1547,7 +1547,7 @@ s32 Do_Chk_Enc(s32 arg0, s32 arg1) {
     s32 bit;
 
     bit = arg1 - 0x2F0;
-    if ((D_0029D580[arg0 * 7 + (bit >> 3)] >> (bit % 8)) & 1) {
+    if ((EnchMatch[arg0 * 7 + (bit >> 3)] >> (bit % 8)) & 1) {
         switch (D_0029D1F0[arg1]) {
         case 4:
             switch (D_0029CF32[arg1]) {
@@ -1721,7 +1721,7 @@ s32 Ta_GetHandEnchant(s32 arg0, s32 arg1) {
     s32 temp_a2;
 
     temp_a2 = arg1 - 0x2F0;
-    if ((D_0029D580[arg0 * 7 + (temp_a2 >> 3)] >> (temp_a2 % 8)) & 1) {
+    if ((EnchMatch[arg0 * 7 + (temp_a2 >> 3)] >> (temp_a2 % 8)) & 1) {
         return Ta_GetHandEnchant3(arg0, arg1);
     }
     return -1;
@@ -1869,7 +1869,7 @@ s32 TaEnc_GetEnchantLst(u16 arg0, u16 *arg1) {
     card = 0x2F0;
     count = 0;
     i = 0;
-    flags = D_0029D580 + arg0 * 7;
+    flags = EnchMatch + arg0 * 7;
 
     do {
         s32 offset;

@@ -132,7 +132,7 @@ void printfloat(s64 bits) {
     v = u.d;
     if (v < zero) {
         v = zero - v;
-        D_0028CA0C('-');
+        _putchar('-');
     }
     if (v < 0.1) {
         while (v < 0.1) {
@@ -227,7 +227,7 @@ void _printf(char *fmt, u8 *ap) {
                 p = pad;
             }
             while (*p) {
-                D_0028CA0C(*p++);
+                _putchar(*p++);
             }
             break;
         case 'x':
@@ -260,7 +260,7 @@ void _printf(char *fmt, u8 *ap) {
                 p = pad;
             }
             while (*p) {
-                D_0028CA0C(*p++);
+                _putchar(*p++);
             }
             break;
         case 'd':
@@ -281,7 +281,7 @@ void _printf(char *fmt, u8 *ap) {
             } else {
                 if (v < 0) {
                     v = -v;
-                    D_0028CA0C('-');
+                    _putchar('-');
                 }
                 while (v != 0) {
                     *--p = func_001A0CF8(v, 10) + '0';
@@ -292,7 +292,7 @@ void _printf(char *fmt, u8 *ap) {
                 p = pad;
             }
             while (*p) {
-                D_0028CA0C(*p++);
+                _putchar(*p++);
             }
             break;
         case 'u':
@@ -320,7 +320,7 @@ void _printf(char *fmt, u8 *ap) {
                 p = pad;
             }
             while (*p) {
-                D_0028CA0C(*p++);
+                _putchar(*p++);
             }
             break;
         case 'e':
@@ -328,7 +328,7 @@ void _printf(char *fmt, u8 *ap) {
             ap += 8;
             f = *(f32 *)(ap - 8);
             if (f == 0.0f) {
-                D_0028CA0C('0');
+                _putchar('0');
             } else {
                 printfloat(((s64 (*)(f32))func_001A2370)(f));
             }
@@ -337,27 +337,27 @@ void _printf(char *fmt, u8 *ap) {
             ap += 8;
             s = *(char **)(ap - 8);
             if (*s == 0) {
-                D_0028CA0C('(');
-                D_0028CA0C('n');
-                D_0028CA0C('u');
-                D_0028CA0C('l');
-                D_0028CA0C('l');
-                D_0028CA0C(')');
+                _putchar('(');
+                _putchar('n');
+                _putchar('u');
+                _putchar('l');
+                _putchar('l');
+                _putchar(')');
             } else {
                 p = s;
                 do {
-                    D_0028CA0C(*p++);
+                    _putchar(*p++);
                 } while (*p);
             }
             break;
         case 'c':
             ap += 8;
             v = *(char *)(ap - 8);
-            D_0028CA0C(v);
+            _putchar(v);
             break;
         }
         } else {
-            D_0028CA0C(*fmt);
+            _putchar(*fmt);
         }
         fmt++;
     }
@@ -371,10 +371,10 @@ s32 scePrintf(const char *arg0, ...) {
     void (*old)(s32);
     s32 r;
 
-    old = D_0028CA0C;
-    D_0028CA0C = deci2Putchar;
+    old = _putchar;
+    _putchar = deci2Putchar;
     r = ((s32 (*)(const char *, void *))_printf)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
-    D_0028CA0C = old;
+    _putchar = old;
     return r;
 }
 
@@ -429,11 +429,11 @@ void sceSifInitCmd(void) {
     s32 i;
 
     func_001843E0();
-    if (D_0028CA10 != 0) {
+    if (_cmd_init_check != 0) {
         func_00184428();
         return;
     }
-    D_0028CA10 = 1;
+    _cmd_init_check = 1;
     cmdData_0017DB70.sendbuf = (s32)D_00310DC0 | 0x20000000;
     cmdData_0017DB70.ackbuf = (s32)D_00310E40 | 0x20000000;
     cmdData_0017DB70.iopbuf = 0;
@@ -485,7 +485,7 @@ void sceSifInitCmd(void) {
 void sceSifExitCmd(void) {
     func_0017C490(5);
     RemoveDmacHandler(5, D_00310E94);
-    D_0028CA10 = 0;
+    _cmd_init_check = 0;
 }
 
 s32 sceSifSetCmdBuffer(s32 arg0, s32 arg1) {
@@ -739,11 +739,11 @@ void func_0017E240(s32 mode) {
     u32 *cmdp;
 
     func_001843E0();
-    if (D_0028CA18 != 0) {
+    if (_sceSifInitCheck != 0) {
         func_00184428();
         return;
     }
-    D_0028CA18 = 1;
+    _sceSifInitCheck = 1;
     func_00184428();
     sceSifInitCmd();
     func_001843E0();
@@ -775,7 +775,7 @@ void func_0017E240(s32 mode) {
 
 void sceSifExitRpc(void) {
     sceSifExitCmd();
-    D_0028CA18 = 0;
+    _sceSifInitCheck = 0;
 }
 
 /* _sceRpcGetPacket: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */

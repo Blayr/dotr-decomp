@@ -1,6 +1,6 @@
 #include "common.h"
 
-extern f32 D_00293040[4][4];
+extern f32 gSzView_vecUnit[4][4];
 
 typedef struct Vec4_001FB500 {
     f32 x, y, z, w;
@@ -19,7 +19,7 @@ static inline s32 aim_001FB500(s32 index) {
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB500 *)D_0031BEB0[index];
+    entry = (Camera_001FB500 *)gSzView_hView[index];
     if (entry == 0) {
         return 0;
     }
@@ -39,7 +39,7 @@ s32 SzView_SetLookCP(s32 index, f32 *src) {
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB500 *)D_0031BEB0[index];
+    entry = (Camera_001FB500 *)gSzView_hView[index];
     if (entry == 0) {
         return 0;
     }
@@ -51,7 +51,7 @@ s32 SzView_SetLookCP(s32 index, f32 *src) {
     if (SzView_GetLookVector(index, (s32)angles) != 0) {
         RhGeom_GetRotXYZMatrix(matrix, angles);
     }
-    RhGeom_MulMatrixVector(entry->direction, matrix, D_00293040);
+    RhGeom_MulMatrixVector(entry->direction, matrix, gSzView_vecUnit);
     entry->target[0] = entry->origin[0] - entry->direction[0] * entry->param.x;
     entry->target[1] = entry->origin[1] - entry->direction[1] * entry->param.x;
     entry->target[2] = entry->origin[2] - entry->direction[2] * entry->param.x;
@@ -90,7 +90,7 @@ s32 SzView_RollCamera(s32 arg0, s32 arg1, s32 arg2, f32 fparg0, f32 fparg1, f32 
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    slot = &D_0031BEB0[arg0];
+    slot = &gSzView_hView[arg0];
     camera = (Camera_001FB6A0 *)*slot;
     if (camera == 0) {
         return 0;
@@ -180,7 +180,7 @@ typedef struct Motion_001FB940 {
 static inline void direction_001FB940(s32 index) {
     Camera_001FB940 *camera;
     if (index >= 0 && index <= 0) {
-        camera = (Camera_001FB940 *)D_0031BEB0[index];
+        camera = (Camera_001FB940 *)gSzView_hView[index];
         if (camera != NULL) {
             camera->direction.x = camera->target.x - camera->eye.x;
             camera->direction.y = camera->target.y - camera->eye.y;
@@ -198,7 +198,7 @@ static inline void polar_001FB940(s32 index) {
     Vec4_001FB940 polar;
     if (index >= 0) {
         if (index <= 0) {
-            camera = (Camera_001FB940 *)D_0031BEB0[index];
+            camera = (Camera_001FB940 *)gSzView_hView[index];
             if (camera != NULL) {
                 eye = &camera->eye;
                 target = &camera->target;
@@ -244,7 +244,7 @@ s32 SzView_SetInterpCameraMotion(s32 index, void *motion, s32 duration, s32 fram
     if (((Motion_001FB940 *)motion)->magic != 0x544F4D43) {
         return 0;
     }
-    slot = &D_0031BEB0[index];
+    slot = &gSzView_hView[index];
     camera = (Camera_001FB940 *)*slot;
     if (camera == NULL) {
         return 0;
@@ -450,7 +450,7 @@ typedef struct Camera_001FC210 {
 
 static inline void direction_001FC210(s32 index) {
     if (index >= 0 && index <= 0) {
-        Camera_001FC210 *camera = (Camera_001FC210 *)D_0031BEB0[index];
+        Camera_001FC210 *camera = (Camera_001FC210 *)gSzView_hView[index];
         if (camera != NULL) {
         camera->direction.x = camera->target.x - camera->position.x;
         camera->direction.y = camera->target.y - camera->position.y;
@@ -463,7 +463,7 @@ static inline void direction_001FC210(s32 index) {
 
 static inline void polar_001FC210(s32 index) {
     if (index >= 0 && index <= 0) {
-        Camera_001FC210 *camera = (Camera_001FC210 *)D_0031BEB0[index];
+        Camera_001FC210 *camera = (Camera_001FC210 *)gSzView_hView[index];
         if (camera != NULL) {
         Vec4_001FC210 polar;
         Vec4_001FC210 *position = &camera->position;
@@ -493,7 +493,7 @@ s32 SzView_SetViewCamera(s32 index, s32 otherIndex, f32 *target, s32 mode, f32 w
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FC210 *)D_0031BEB0[index];
+    camera = (Camera_001FC210 *)gSzView_hView[index];
     if (camera == NULL) {
         return 0;
     }
@@ -536,7 +536,7 @@ s32 SzView_IsFogZ(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    entry = D_0031BEB0[arg0];
+    entry = gSzView_hView[arg0];
     if (entry == 0) {
         return 0;
     }
@@ -557,7 +557,7 @@ s32 SzView_IsFogY(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v1 = D_0031BEB0[arg0];
+    temp_v1 = gSzView_hView[arg0];
     if (temp_v1 == 0) {
         return 0;
     }
@@ -578,7 +578,7 @@ s32 SzView_GetMode(s32 arg0) {
     if (arg0 < 0 || arg0 > 0) {
         result = -1;
     } else {
-        temp_v0 = (void *)D_0031BEB0[arg0];
+        temp_v0 = (void *)gSzView_hView[arg0];
         if (temp_v0 == NULL) {
             result = -1;
         } else {
@@ -594,7 +594,7 @@ s32 SzView_SetMode(s32 arg0, s32 arg1) {
     if (arg0 < 0 || arg0 > 0) {
         return 0;
     }
-    temp_v0 = (void *)D_0031BEB0[arg0];
+    temp_v0 = (void *)gSzView_hView[arg0];
     if (temp_v0 == NULL) {
         return 0;
     }
@@ -639,7 +639,7 @@ typedef struct {
 s32 SzView_InitCamera(s32 arg0) {
     extern char D_002CFC50[];
     extern char D_002CFC67[];
-    extern u16 D_00293070;
+    extern u16 gSzView_wFrame;
     extern void func_0019B648();
     extern void *SzFile_ReadParam();
     char path[128];
@@ -655,42 +655,42 @@ s32 SzView_InitCamera(s32 arg0) {
     if (entry->size == 0 || (data = entry->data) == NULL) {
         return 0;
     }
-    D_0031C048 = (s32)data;
-    D_00293070 = data->unkC;
+    gSzView_pCamera = (s32)data;
+    gSzView_wFrame = data->unkC;
     return 1;
 }
 
 void SzView_TermCamera(void) {
 
-    if (D_0031C048 != 0) {
-        SzMem_Free(D_0031C048);
-        D_0031C048 = 0;
+    if (gSzView_pCamera != 0) {
+        SzMem_Free(gSzView_pCamera);
+        gSzView_pCamera = 0;
     }
 }
 
 void SzView_ActCamera(void) {
-    extern u16 D_00293070;
+    extern u16 gSzView_wFrame;
     s32 value;
     s32 handle;
     s32 hint = 0;
 
-    if (D_0031C048 != 0) {
+    if (gSzView_pCamera != 0) {
         if (SzPad_Check(0, 2, 4) != 0) {
-            value = D_00293070 - 1;
-            D_00293070 = (value > 0) ? value : 0;
+            value = gSzView_wFrame - 1;
+            gSzView_wFrame = (value > 0) ? value : 0;
         }
         if (SzPad_Check(0, 2, 8) != 0) {
-            value = D_00293070 + 1;
-            D_00293070 = (value < 1000) ? value : 1000;
+            value = gSzView_wFrame + 1;
+            gSzView_wFrame = (value < 1000) ? value : 1000;
         }
         if (SzPad_Check(0, 0, 0x10) != 0) {
-            SzView_ReqCamera(0, 0, 8, D_00293070, 7, hint != 0 ? NULL : (void *)D_0031C048);
+            SzView_ReqCamera(0, 0, 8, gSzView_wFrame, 7, hint != 0 ? NULL : (void *)gSzView_pCamera);
         }
         if (SzPad_Check(0, 0, 0xA0) != 0) {
             value = SzBattle_InqEntry(0);
             handle = SzDuel_GetUnitModelID(value >> 8, value & 0xFF);
             SzModel_SetAnimIntr(handle, SzPad_Check(0, 0, 0x80) ? 5 : 2);
-            SzView_ReqCamera(0, 0, 8, D_00293070, handle, hint != 0 ? NULL : (void *)D_0031C048);
+            SzView_ReqCamera(0, 0, 8, gSzView_wFrame, handle, hint != 0 ? NULL : (void *)gSzView_pCamera);
         }
     }
 }
@@ -699,7 +699,7 @@ void SzFade_Init(void) {
     Entry_0031C050 *entry;
     s32 count;
 
-    entry = D_0031C050;
+    entry = gSzFade_fl;
     count = 2;
     while (count--) {
         entry->flag = 1;
@@ -724,7 +724,7 @@ typedef struct {
 s32 SzFade_Entry(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
     Entry_0031C050 *entry;
 
-    entry = &D_0031C050[arg0];
+    entry = &gSzFade_fl[arg0];
     if (entry->flag == 0) {
         return 0;
     }
@@ -749,7 +749,7 @@ s32 SzFade_Entry(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4, void *arg5) {
 s32 SzFade_Destroy(s32 arg0) {
     Entry_0031C050 *temp_a2;
 
-    temp_a2 = &D_0031C050[arg0];
+    temp_a2 = &gSzFade_fl[arg0];
     temp_a2->flag = 1;
     return 1;
 }
@@ -778,7 +778,7 @@ s32 SzFade_Disp(s32 arg0) {
     if ((arg0 < 0) || (arg0 >= 2)) {
         return 0;
     }
-    entry = &D_0031C050[arg0];
+    entry = &gSzFade_fl[arg0];
     if (entry->flag != 0) {
         return 0;
     }
@@ -865,7 +865,7 @@ s32 SzFade_SetKillFlag(s32 arg0) {
     if (arg0 < 0 || arg0 >= 2) {
         return 0;
     }
-    entry = &D_0031C050[arg0];
+    entry = &gSzFade_fl[arg0];
     if (entry->flag) {
         return 0;
     }
@@ -884,7 +884,7 @@ s32 SzFade_SetPauseFlag(s32 arg0, s64 arg1) {
     if (arg0 < 0 || arg0 >= 2) {
         return 0;
     }
-    temp_a2 = &D_0031C050[arg0];
+    temp_a2 = &gSzFade_fl[arg0];
     if (temp_a2->flag != 0) {
         return 0;
     }
@@ -898,7 +898,7 @@ s32 SzFade_GetRestCount(s32 arg0) {
     if (arg0 < 0 || arg0 >= 2) {
         return -1;
     }
-    e = &D_0031C050[arg0];
+    e = &gSzFade_fl[arg0];
     if (e->flag != 0) {
         return -1;
     }
@@ -911,7 +911,7 @@ static inline s32 calc_001FD220(s32 idx) {
     if (idx < 0 || idx >= 2) {
         return -1;
     }
-    e = &D_0031C050[idx];
+    e = &gSzFade_fl[idx];
     if (e->flag) {
         return -1;
     }
@@ -931,9 +931,9 @@ s32 SzFade_IsDoing(s32 arg0) {
 }
 
 void SzMsg_Initialize(void) {
-    extern u8 D_0031C070[];
+    extern u8 gSzMsg_ml[];
 
-    RhMem_FillMemory((s8 *)D_0031C070, 0, 0x27C);
+    RhMem_FillMemory((s8 *)gSzMsg_ml, 0, 0x27C);
 }
 
 s32 SzMsg_Init(s32 arg0, s32 arg1) {
@@ -957,12 +957,12 @@ typedef struct State_001FD320 {
 } State_001FD320;
 
 s32 SzMsg_Init_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
-    extern State_001FD320 D_0031C070;
+    extern State_001FD320 gSzMsg_ml;
     extern s32 D_002D19D0;
     extern u16 D_002D49D4[];
     extern s32 SzText_InitClutManage();
     extern s32 SzMsg_LoadClut_Pipe();
-    State_001FD320 *state = &D_0031C070;
+    State_001FD320 *state = &gSzMsg_ml;
     s32 start;
     s32 i;
     s32 tw;
@@ -970,8 +970,8 @@ s32 SzMsg_Init_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 *arg3) {
 
     start = arg2;
     SzMsg_FreeAll();
-    D_0031C070.width = 640;
-    D_0031C070.height = 384;
+    gSzMsg_ml.width = 640;
+    gSzMsg_ml.height = 384;
     for (tw = 0; (1 << tw) < 640; tw++) {
     }
     for (th = 0; (1 << th) < 384; th++) {
@@ -1014,8 +1014,8 @@ typedef union Packet_001FD4C0 {
 
 void SzMsg_LoadClut_Pipe(u64 *arg0, s32 arg1, s32 arg2) {
     extern void *RhMem_CopyMemory4(void *, void *, s32);
-    extern u8 D_002CFC70[][16];
-    extern u8 D_002CFCA0[][16];
+    extern u8 gSzMsg_abAlpha[][16];
+    extern u8 gSzMsg_abRGB[][16];
     Packet_001FD4C0 *packet = (Packet_001FD4C0 *)arg0;
     u8 colors[16][4];
     s32 i;
@@ -1023,8 +1023,8 @@ void SzMsg_LoadClut_Pipe(u64 *arg0, s32 arg1, s32 arg2) {
     s32 count;
 
     for (i = 0; i < 16; i++) {
-        colors[i][0] = colors[i][1] = colors[i][2] = D_002CFCA0[arg1][i];
-        colors[i][3] = D_002CFC70[arg1][i];
+        colors[i][0] = colors[i][1] = colors[i][2] = gSzMsg_abRGB[arg1][i];
+        colors[i][3] = gSzMsg_abAlpha[arg1][i];
     }
 
     arg0[1] = 0;
@@ -1075,8 +1075,8 @@ s32 SzMsg_LoadFont_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern s32 D_002D19D0[];
     extern u16 D_002D49D4[];
     extern u8 D_002F8DEC[];
-    extern Context_001FD680 D_0031C070;
-    Context_001FD680 *context = &D_0031C070;
+    extern Context_001FD680 gSzMsg_ml;
+    Context_001FD680 *context = &gSzMsg_ml;
     u8 *glyphs[17][53];
     u8 runs[17][53];
     u16 indices[17][53];
@@ -1369,8 +1369,8 @@ typedef struct {
 } TexInfo_001FDD70;
 
 void lSzMsg_GetTexInfo(void *arg0, void *arg1) {
-    extern TexInfo_001FDD70 D_0031C070;
-    TexInfo_001FDD70 *texture = &D_0031C070;
+    extern TexInfo_001FDD70 gSzMsg_ml;
+    TexInfo_001FDD70 *texture = &gSzMsg_ml;
 
     if (arg0 != NULL) {
         ((Tex0_001FDD70 *)arg0)->TBP0 = texture->tbp;
@@ -1458,10 +1458,10 @@ static inline void set_uv_001FDFE0(UV_001FDFE0 *p, s32 u, s32 v) {
 
 s32 SzMsg_DrawRect_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *arg5) {
     extern u8 D_00293078[];
-    extern s32 D_002CFCD0[];
-    extern State_001FDFE0 D_0031C070;
+    extern s32 gSzMsg_defRect[];
+    extern State_001FDFE0 gSzMsg_ml;
     Packet_001FDFE0 packet __attribute__((aligned(8)));
-    State_001FDFE0 *state = &D_0031C070;
+    State_001FDFE0 *state = &gSzMsg_ml;
     Info_001FDFE0 *info;
     s32 x0;
     s32 y0;
@@ -1482,7 +1482,7 @@ s32 SzMsg_DrawRect_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, u8 *a
         return arg0;
     }
     if (rect == NULL) {
-        rect = D_002CFCD0;
+        rect = gSzMsg_defRect;
     }
     if (color == NULL) {
         color = D_00293078;
@@ -1663,12 +1663,12 @@ typedef struct Rect_001FE660 {
 typedef s32 (*Draw_001FE660)(s32, s32, s64, s64, Rect_001FE660 *, s32);
 
 s32 SzMsg_DrawRatioX_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3, f32 scaleX, f32 scaleY, s32 arg4, void (*arg5)(void)) {
-    extern Rect_001FE660 D_002CFCD0;
+    extern Rect_001FE660 gSzMsg_defRect;
     Rect_001FE660 rect;
     s32 *info;
 
     info = SzMsg_GetInfo(arg1);
-    rect = D_002CFCD0;
+    rect = gSzMsg_defRect;
     if (info == NULL) {
         return arg0;
     }
@@ -1691,12 +1691,12 @@ typedef struct Rect_001FE7D0 {
 typedef s32 (*Draw_001FE7D0)(s32, s32, s32, s32, Rect_001FE7D0 *, s32);
 
 s32 SzMsg_DrawX_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern Rect_001FE7D0 D_002CFCD0;
+    extern Rect_001FE7D0 gSzMsg_defRect;
     Rect_001FE7D0 rect;
     s32 *info;
 
     info = SzMsg_GetInfo(arg1);
-    rect = D_002CFCD0;
+    rect = gSzMsg_defRect;
     if (info == NULL) {
         return arg0;
     }
@@ -1741,11 +1741,11 @@ static inline void tag_001FE8F0(void *packet) {
 
 s32 SzMsg_DrawGlass_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     extern u8 D_00293088[];
-    extern s32 D_002CFCD0[];
-    extern State_001FE8F0 D_0031C070;
+    extern s32 gSzMsg_defRect[];
+    extern State_001FE8F0 gSzMsg_ml;
     Packet_001FE8F0 packet;
     u8 *color = (u8 *)arg4;
-    State_001FE8F0 *state = &D_0031C070;
+    State_001FE8F0 *state = &gSzMsg_ml;
     s32 x0;
     s32 y0;
     s32 x1;
@@ -1753,7 +1753,7 @@ s32 SzMsg_DrawGlass_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 *rect = (s32 *)arg3;
 
     if (rect == NULL) {
-        rect = D_002CFCD0;
+        rect = gSzMsg_defRect;
     }
     if (color == NULL) {
         color = D_00293088;
@@ -1784,15 +1784,15 @@ typedef struct Vec4_001FEA80 {
     f32 x, y, z, w;
 } Vec4_001FEA80;
 
-extern Vec4_001FEA80 D_002CFCD0;
+extern Vec4_001FEA80 gSzMsg_defRect;
 
 void SzMsg_GetDefRect(void *arg0) {
-    *(Vec4_001FEA80 *)arg0 = D_002CFCD0;
+    *(Vec4_001FEA80 *)arg0 = gSzMsg_defRect;
 }
 
 void *SzMsg_GetInfo(s32 arg0) {
-    extern u8 D_0031C070[];
-    u8 *data = D_0031C070;
+    extern u8 gSzMsg_ml[];
+    u8 *data = gSzMsg_ml;
     void *result;
 
     if (arg0 >= 0) {
@@ -1817,10 +1817,10 @@ typedef struct {
     Entry_001FEAF0 entries[30];
 } Table_001FEAF0;
 
-extern Table_001FEAF0 D_0031C070;
+extern Table_001FEAF0 gSzMsg_ml;
 
 void SzMsg_Free(s32 arg0) {
-    Table_001FEAF0 *t = &D_0031C070;
+    Table_001FEAF0 *t = &gSzMsg_ml;
 
     if (arg0 >= 0 && arg0 < 0x1E) {
         t->entries[arg0].flag_001FEAF0 = 0;
@@ -1873,7 +1873,7 @@ typedef struct Entry8_001FEB80 {
     s32 field4;
 } Entry8_001FEB80;
 
-extern State_001FEB80 D_0031C2F0;
+extern State_001FEB80 gSzFile_fl;
 extern Entry36_001FEB80 D_00320370[];
 extern Entry8_001FEB80 D_00322770[];
 
@@ -1883,11 +1883,11 @@ void SzFile_Init(void) {
     Entry36_001FEB80 *large;
     s32 count;
 
-    state = &D_0031C2F0;
+    state = &gSzFile_fl;
     large = D_00320370;
     small = D_00322770;
     count = 0x100;
-    RhMem_FillMemory((s8 *)&D_0031C2F0, 0, 0x66A0);
+    RhMem_FillMemory((s8 *)&gSzFile_fl, 0, 0x66A0);
     while (count--) {
         large->field0 = -1;
         large++;
@@ -1920,7 +1920,7 @@ typedef struct Queue_001FECB0 {
 } Queue_001FECB0;
 
 s32 SzFile_ReadRequestParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s64 arg8) {
-    Queue_001FECB0 *queue = (Queue_001FECB0 *)&D_0031C2F0;
+    Queue_001FECB0 *queue = (Queue_001FECB0 *)&gSzFile_fl;
     Request_001FECB0 *request;
 
     if (arg2 == 0) {
@@ -1937,7 +1937,7 @@ s32 SzFile_ReadRequestParam(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s3
     return (s32)request;
 }
 
-extern char *D_00293090[];
+extern char *mapFile[];
 extern s64 D_00293098[];
 extern s32 D_002930A8[];
 extern char D_002D0638[];
@@ -2016,7 +2016,7 @@ s32 lSzFile_SetReadRequestParam(void *arg0, s32 arg1, s32 arg2, void *arg3,
                     name = (s32)D_002D063D;
                     length = func_0019BEF0((char *)(name + 1));
                 }
-                entry = D_00293090;
+                entry = mapFile;
                 i = 0;
                 do {
                     char *path = func_0019C478(*entry, '\\');

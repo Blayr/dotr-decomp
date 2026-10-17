@@ -641,8 +641,8 @@ typedef struct State_00224A40 {
 } State_00224A40;
 
 void Taku_Camp_Ivent_Name_Set(void) {
-    extern u16 D_00299CE0[];
-    extern u16 D_00299D00[][6];
+    extern u16 DeckTab[];
+    extern u16 DeckDat[][6];
     extern Tables_00224A40 D_002D19D0;
     extern s32 D_002D19D8;
     extern u16 D_002D49D4[];
@@ -661,7 +661,7 @@ void Taku_Camp_Ivent_Name_Set(void) {
     u8 *code_ptr;
 
     state = (State_00224A40 *)0x01ED0000;
-    sum_ptr = (u8 *)&D_00299E10;
+    sum_ptr = (u8 *)&save_data;
     i = 0;
     offset = 0;
     out = sum_ptr;
@@ -714,9 +714,9 @@ void Taku_Camp_Ivent_Name_Set(void) {
     shift = 0;
     code_ptr = (u8 *)state;
     while (code_index < 3) {
-        *(u16 *)(code_ptr + 0x53F8) = ((s32)D_00299CE0[state->checksum] >> shift) & 0x1F;
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)DeckTab[state->checksum] >> shift) & 0x1F;
         shift += 5;
-        *(u16 *)(code_ptr + 0x53FE) = D_00299D00[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
+        *(u16 *)(code_ptr + 0x53FE) = DeckDat[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
         code_index++;
         code_ptr += 2;
     }
@@ -774,9 +774,9 @@ extern Sprite_00224E40 D_0029AAA0;
 extern Pair_00224E40 D_0029AAD0;
 extern Sprite_00224E40 D_0029AB20;
 extern Sprite_00224E40 D_0029AB50;
-extern Sprite_00224E40 D_002980D0[];
-extern Tex_00224E40 D_002950A0[];
-extern Code_00224E40 D_00299D00[];
+extern Sprite_00224E40 tex_bara_data[];
+extern Tex_00224E40 tex_uv_data[];
+extern Code_00224E40 DeckDat[];
 extern char D_0030F0BB[];
 extern char D_0030F0C7[];
 extern char D_0030F0D4[];
@@ -843,7 +843,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     Frame_00224E40 frame;
     Color_00224E40 color;
 
-    ctx = (s8 *)&D_00299E10;
+    ctx = (s8 *)&save_data;
     state = (State_00224E40 *)0x01ED0000;
     frame = D_0029AA08;
     s100 = D_0029AA20;
@@ -897,7 +897,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2738:
             case 0x276A:
                 if (*(s8 *)0x01ED53A6 == 2) {
-                    tmpl = D_002980D0;
+                    tmpl = tex_bara_data;
                     for (i = 0; i < 2; i++) {
                         s100 = *tmpl;
                         if (i == 0) {
@@ -972,11 +972,11 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2757:
             case 0x2760:
                 for (n = 0; n < 3; n++) {
-                    hundreds[n] = D_00299D00[state->codes[n]].number / 100;
-                    ones[n] = D_00299D00[state->codes[n]].number % 100;
+                    hundreds[n] = DeckDat[state->codes[n]].number / 100;
+                    ones[n] = DeckDat[state->codes[n]].number % 100;
                     for (m = 0; m < 4; m++) {
-                        digits[n][m] = ((s32)D_00299D00[state->codes[n]].digits >> (m * 3)) & 7;
-                        types[n][m] = (D_00299D00[state->codes[n]].types >> (5 * m)) & 0x1F;
+                        digits[n][m] = ((s32)DeckDat[state->codes[n]].digits >> (m * 3)) & 7;
+                        types[n][m] = (DeckDat[state->codes[n]].types >> (5 * m)) & 0x1F;
                     }
                 }
                 if (*(s8 *)0x01ED5494 == 0) {
@@ -1006,8 +1006,8 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                     if (n < hundreds[cur]) {
                         arg0 = Taku_Obj_Set(arg0, &pair130.s[0], xx3, 0);
                     } else {
-                        D_002950A0[pair130.s[1].index].width = (ones[cur] * 16) / 100;
-                        pair130.s[1].x1 = pair130.s[1].x0 + D_002950A0[pair130.s[1].index].width;
+                        tex_uv_data[pair130.s[1].index].width = (ones[cur] * 16) / 100;
+                        pair130.s[1].x1 = pair130.s[1].x0 + tex_uv_data[pair130.s[1].index].width;
                         arg0 = Taku_Obj_Set(arg0, &pair130.s[1], xx3, 0);
                     }
                 }
@@ -1210,13 +1210,13 @@ typedef struct Packet_00226120 {
 } Packet_00226120;
 
 extern s16 D_00299ED2;
-extern u8 D_00299F60;
+extern u8 prim_data;
 extern Packet_00226120 D_0029AB80;
 
 void *Taku_Camp_Kumo(void *arg0) {
     extern void *Taku_G4_Set();
-    s8 *context = &D_00299E10;
-    u8 *slot = &D_00299F60;
+    s8 *context = &save_data;
+    u8 *slot = &prim_data;
     Packet_00226120 packet = D_0029AB80;
     s16 state;
     s16 i;

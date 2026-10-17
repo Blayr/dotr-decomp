@@ -427,7 +427,7 @@ s32 InitThread(void) {
     s32 tid;
     ring_t *r;
 
-    if (D_0028CA00 > 0) {
+    if (topId > 0) {
         return -1;
     }
     sp.init_count = 0;
@@ -441,7 +441,7 @@ s32 InitThread(void) {
     tp.stackSize = 0x400;
     tp.gpReg = &D_00317EF0;
     tp.initPriority = 0;
-    D_0028CA00 = tid = CreateThread(&tp);
+    topId = tid = CreateThread(&tp);
     if (tid < 0) {
         DeleteSema(D_00310510);
         return -1;
@@ -451,7 +451,7 @@ s32 InitThread(void) {
     r->count = 0;
     StartThread(tid, r);
     ChangeThreadPriority(GetThreadId(), 1);
-    return D_0028CA00;
+    return topId;
 }
 
 s32 iWakeupThread(s32 arg0) {
@@ -460,7 +460,7 @@ s32 iWakeupThread(s32 arg0) {
     if (tid != arg0) {
         return _iWakeupThread(arg0);
     }
-    if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
+    if ((u32)tid >= 0x100 || topId == 0) {
         return -1;
     }
     {
@@ -475,7 +475,7 @@ s32 iWakeupThread(s32 arg0) {
 }
 
 s32 iRotateThreadReadyQueue(u32 arg0) {
-    if (arg0 >= 0x80 || D_0028CA00 == 0) {
+    if (arg0 >= 0x80 || topId == 0) {
         return -1;
     }
     {
@@ -495,7 +495,7 @@ s32 iSuspendThread(s32 arg0) {
     if (tid != arg0) {
         return _iSuspendThread(arg0);
     }
-    if ((u32)tid >= 0x100 || D_0028CA00 == 0) {
+    if ((u32)tid >= 0x100 || topId == 0) {
         return -1;
     }
     {

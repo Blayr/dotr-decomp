@@ -963,7 +963,7 @@ void memclr(s8 *arg0, s32 arg1) {
 
 s32 sceDmaGetChan(s32 arg0) {
     if ((u32) arg0 < 0xAU) {
-        return ((s32 *)&D_0028D930)[arg0];
+        return ((s32 *)&dch)[arg0];
     }
     return 0;
 }
@@ -976,8 +976,8 @@ s32 sceDmaReset(s32 arg0) {
 
     prev = *(volatile s32 *)0x1000E000 & 1;
     for (i = 0; i < 10; i++) {
-        if ((&D_0028D970)[i] != 0) {
-            ch = (volatile s32 *)(&D_0028D930)[i];
+        if ((&isclr)[i] != 0) {
+            ch = (volatile s32 *)(&dch)[i];
             ch[0x20] = 0;
             ch[0] = 0;
             ch[0xC] = 0;
@@ -999,8 +999,8 @@ s32 sceDmaReset(s32 arg0) {
 s32 sceDmaDebug(s32 arg0) {
     s32 temp_v0;
 
-    temp_v0 = D_0028D958;
-    D_0028D958 = arg0;
+    temp_v0 = sceDmaDebugMode;
+    sceDmaDebugMode = arg0;
     return temp_v0;
 }
 
@@ -1008,7 +1008,7 @@ typedef struct GsDef_00186410 {
     s32 v[5];
 } GsDef_00186410;
 
-extern GsDef_00186410 D_0028D9C8;
+extern GsDef_00186410 sceDmaCurrentEnv;
 
 typedef struct {
     u8 mfd;
@@ -1023,9 +1023,9 @@ typedef struct {
     s32 rbsize;
 } DmaEnv_00186238;
 
-extern u8 D_0028D998[16];
-extern u8 D_0028D9A8[16];
-extern u8 D_0028D9B8[16];
+extern u8 ststbl[16];
+extern u8 stdtbl[16];
+extern u8 mfdtbl[16];
 
 /* sceDmaPutEnv: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
 
@@ -1049,9 +1049,9 @@ s32 sceDmaPutEnv(void *arg0) {
     if (env->rcyc >= 7) {
         return -4;
     }
-    ctrl = (ctrl & 0xFFFFFFCF) | (D_0028D998[env->mfd] << 4);
-    ctrl = (ctrl & 0xFFFFFF3F) | (D_0028D9A8[env->sts] << 6);
-    ctrl = (ctrl & 0xFFFFFFF3) | (D_0028D9B8[env->std] << 2);
+    ctrl = (ctrl & 0xFFFFFFCF) | (ststbl[env->mfd] << 4);
+    ctrl = (ctrl & 0xFFFFFF3F) | (stdtbl[env->sts] << 6);
+    ctrl = (ctrl & 0xFFFFFFF3) | (mfdtbl[env->std] << 2);
     if (env->rcyc != 0) {
         ctrl |= 2;
         ctrl = (ctrl & 0xFFFFFCFF) | ((env->rcyc - 1) << 8);
@@ -1067,12 +1067,12 @@ s32 sceDmaPutEnv(void *arg0) {
     *(volatile s32 *)0x1000E030 = sqwc;
     *(volatile s32 *)0x1000E050 = rbor;
     *(volatile s32 *)0x1000E040 = rbsr;
-    D_0028D9C8 = *(GsDef_00186410 *)env;
+    sceDmaCurrentEnv = *(GsDef_00186410 *)env;
     return 0;
 }
 
 void *sceDmaGetEnv(void *arg0) {
-    *(GsDef_00186410 *)arg0 = D_0028D9C8;
+    *(GsDef_00186410 *)arg0 = sceDmaCurrentEnv;
     return arg0;
 }
 

@@ -18,8 +18,8 @@ s32 Taku_Camp_BUN_HANTEI(void) {
     s16 temp_v1_5;
     s16 temp_a0_6;
 
-    player = D_00299E10;
-    context = &D_00299E10;
+    player = save_data;
+    context = &save_data;
     if (D_00299ED2 < 0xC8) {
         *(s8 *)0x01ED537E = 0;
         if ((s16)player == 0) {

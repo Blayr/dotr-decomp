@@ -11,11 +11,11 @@ s32 func_00191C50(s32 arg0) {
     (*(s32 *)b_D_0028F300) = arg0;
     func_0017E190(&D_0028F300, 4);
     if (sceSifCallRpc(&D_0028F708, 0x22, 0, &D_0028F300, 4, &D_0028EEC0, 4, 0, 0) < 0) {
-        SignalSema(D_0028DCEC);
+        SignalSema(scmd_semid);
         return 0;
     }
     temp_s0 = *(s32 *)((s32) &D_0028EEC0 | 0x20000000);
-    SignalSema(D_0028DCEC);
+    SignalSema(scmd_semid);
     return temp_s0;
 }
 
@@ -89,18 +89,18 @@ s32 func_00191D18(s32 lsn, s32 sectors, s32 buf, void *arg3) {
     func_0017E190(D_0028EDC0, 144);
     func_0017E190((s32 *)sd, 24);
     func_0017E190(D_0028EE80, 4);
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00191D18(D_002BCD98);
     }
-    *(volatile s32 *)&D_0028DD14 = 1;
-    D_0028DCF0 = 1;
+    *(volatile s32 *)&sceCdCbfunc_num = 1;
+    c_cb_sem = 1;
     if (sceSifCallRpc(&D_0028EE90, 1, 1, (s32 *)sd, 24, 0, 0, (s32)cd_read_intr, (s32)D_0028EDC0) < 0) {
-        *(volatile s32 *)&D_0028DD14 = 0;
-        D_0028DCF0 = 0;
-        ((s32 (*)(s32))SignalSema)(*(volatile s32 *)&D_0028DCE8);
+        *(volatile s32 *)&sceCdCbfunc_num = 0;
+        c_cb_sem = 0;
+        ((s32 (*)(s32))SignalSema)(*(volatile s32 *)&ncmd_semid);
         return 0;
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00191D18(D_002BCDB0);
     }
     return 1;
@@ -116,37 +116,37 @@ s32 func_00191EF8(void) {
         return -1;
     }
     if (sceSifCallRpc(&D_0028F708, 4, 0, 0, 0, &D_0028EEC0, 4, 0, 0) < 0) {
-        SignalSema(D_0028DCEC);
+        SignalSema(scmd_semid);
         return -1;
     }
     temp_s0 = *(s32 *)((s32) &D_0028EEC0 | 0x20000000);
-    SignalSema(D_0028DCEC);
+    SignalSema(scmd_semid);
     return temp_s0;
 }
 
 s32 sceCdStInit(s32 arg0, s32 arg1, s32 arg2) {
-    D_0028F730 = 0;
-    return sceCdStream(arg0, arg1, arg2, 5, &D_00315958);
+    stm_status = 0;
+    return sceCdStream(arg0, arg1, arg2, 5, &dum_mode);
 }
 
 s32 sceCdStStart(s32 arg0, s32 *arg1) {
-    D_0028F730 = 1;
+    stm_status = 1;
     return sceCdStream(arg0, 0, 0, 1, arg1);
 }
 
 s32 sceCdStSeekF(s32 arg0) {
 
-    return sceCdStream(arg0, 0, 0, 9, &D_00315958);
+    return sceCdStream(arg0, 0, 0, 9, &dum_mode);
 }
 
 s32 sceCdStSeek(s32 arg0) {
 
-    return sceCdStream(arg0, 0, 0, 4, &D_00315958);
+    return sceCdStream(arg0, 0, 0, 4, &dum_mode);
 }
 
 s32 sceCdStStop(void) {
-    D_0028F730 = 0;
-    return sceCdStream(0, 0, 0, 3, &D_00315958);
+    stm_status = 0;
+    return sceCdStream(0, 0, 0, 3, &dum_mode);
 }
 
 extern char D_002BCDC0[];
@@ -164,10 +164,10 @@ s32 sceCdStRead(s32 sectors, s32 buf, s32 mode, s32 *err) {
     int e;
     int rerr;
 
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf_00192090(D_002BCDC0, sectors);
     }
-    if (D_0028F730 == 0) {
+    if (stm_status == 0) {
         return 0;
     }
     rerr = 0;
@@ -175,25 +175,25 @@ s32 sceCdStRead(s32 sectors, s32 buf, s32 mode, s32 *err) {
     func_0017E190((s32 *)buf, sectors << 11);
     if (mode != 0) {
         do {
-            r = sceCdStream(0, sectors - got, buf + (got << 11), 2, &D_00315958);
+            r = sceCdStream(0, sectors - got, buf + (got << 11), 2, &dum_mode);
             n = r & 0xFFFF;
             e = r >> 16;
             got += n;
             if (e != 0) {
                 rerr = e;
-                if (D_0028DCD0 > 0) {
+                if (SCE_CD_debug > 0) {
                     scePrintf_00192090(D_002BCDF0, got, n, sectors, e);
                 }
             } else if (n == 0) {
                 sceCdDelayThread(8);
             }
         } while (got != sectors && (e == 0 || n != 0));
-        if (D_0028DCD0 > 0) {
+        if (SCE_CD_debug > 0) {
             scePrintf_00192090(D_002BCE38);
         }
         *err = rerr;
     } else {
-        r = sceCdStream(0, sectors, buf, 2, &D_00315958);
+        r = sceCdStream(0, sectors, buf, 2, &dum_mode);
         e = r >> 16;
         got = r & 0xFFFF;
         *err = e;
@@ -204,26 +204,26 @@ s32 sceCdStRead(s32 sectors, s32 buf, s32 mode, s32 *err) {
 #undef scePrintf_00192090
 
 s32 sceCdStPause(void) {
-    D_0028F730 = 0;
-    if (D_0028DCD0 > 0) {
+    stm_status = 0;
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCE58);
     }
-    return sceCdStream(0, 0, 0, 7, &D_00315958);
+    return sceCdStream(0, 0, 0, 7, &dum_mode);
 }
 
 s32 sceCdStResume(void) {
-    D_0028F730 = 1;
-    if (D_0028DCD0 > 0) {
+    stm_status = 1;
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCE70);
     }
-    return sceCdStream(0, 0, 0, 8, &D_00315958);
+    return sceCdStream(0, 0, 0, 8, &dum_mode);
 }
 
 s32 sceCdStStat(void) {
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCE88);
     }
-    return sceCdStream(0, 0, 0, 6, &D_00315958);
+    return sceCdStream(0, 0, 0, 6, &dum_mode);
 }
 
 extern s32 D_0028DDC0;
@@ -249,7 +249,7 @@ s32 sceCdStream(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
     if (ncmd_prechk(0xF) == 0) {
         return 0;
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCEA0);
     }
     p->lbn = arg0;
@@ -261,20 +261,20 @@ s32 sceCdStream(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
         p->mode[1] = ((u8 *)arg4)[1];
         p->mode[2] = ((u8 *)arg4)[2];
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCEB8);
     }
     func_0017E190((s32 *)p, 0x14);
     q = &D_0028DD40;
     if (sceSifCallRpc(&D_0028EE90, 9, 0, (s32 *)p, 0x14, q, 4, 0, 0) < 0) {
-        SignalSema(D_0028DCE8);
+        SignalSema(ncmd_semid);
         return 0;
     }
-    if (D_0028DCD0 > 0) {
+    if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCED0);
     }
     r = *(s32 *)((u32)q | 0x20000000);
-    SignalSema(D_0028DCE8);
+    SignalSema(ncmd_semid);
     return r;
 }
 
@@ -287,7 +287,7 @@ s32 _send_to_iop(s32 port, s32 slot) {
 
     buf = (u32 *)D_003159D0[port][slot].unk4[0];
     if (D_003159D0[port][slot].unk4[2] != 0 && sceSifDmaStat(D_003159D0[port][slot].unk4[2]) >= 0) {
-        if (D_0028F74C != 0) {
+        if (isWarning != 0) {
             func_00199B50(D_002BCEE0);
         }
         return 0;
@@ -302,7 +302,7 @@ s32 _send_to_iop(s32 port, s32 slot) {
     dma[3] = 0;
     id = sceSifSetDma(dma, 1);
     if (id == 0) {
-        if (D_0028F74C != 0) {
+        if (isWarning != 0) {
             func_00199B50(D_002BCEE0);
         }
         return 0;
@@ -321,7 +321,7 @@ s32 scePadInit(s32 a0) {
     s32 major;
     s32 i;
 
-    D_0028F748 = 1;
+    isInit = 1;
     while (1) {
         sceSifBindRpc(&D_00315980[0], 0x80000100, 0);
         if (D_00315980[0].serve != 0) {
@@ -339,7 +339,7 @@ s32 scePadInit(s32 a0) {
     ver = scePadGetModVersion();
     major = ver >> 8;
     if (major != 4) {
-        if (D_0028F74C != 0) {
+        if (isWarning != 0) {
             ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF28);
             ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF50, 4, 0, major, ver & 0xFF);
         }
@@ -377,7 +377,7 @@ s32 scePadEnd(void) {
         return 0;
     }
     if ((*(s32 *)((u8 *)(&D_00315BC0) + 0xC)) == 1) {
-        D_0028F748 = 0;
+        isInit = 0;
     }
     return (*(s32 *)((u8 *)(&D_00315BC0) + 0xC));
 }
@@ -396,13 +396,13 @@ s32 scePadPortOpen(s32 port, s32 slot, void *addr) {
     s32 *q;
 
     if (((u32)addr & 0x3F) != 0) {
-        if (D_0028F74C != 0) {
+        if (isWarning != 0) {
             ((s32 (*)(const char *, ...))func_00199B50)(D_002BCF78, addr);
         }
         return 0;
     }
     if (D_003159D0[port][slot].open == 1) {
-        if (D_0028F74C != 0) {
+        if (isWarning != 0) {
             ((s32 (*)(const char *, ...))func_00199B50)(D_002BCFA8, port, slot);
         }
         return 0;
@@ -503,7 +503,7 @@ s32 scePadGetState(s32 port, s32 slot) {
 
 void scePadStateIntToStr(u32 arg0, s8 *arg1) {
     if (arg0 < 8U) {
-        func_0019BDD8(arg1, (&D_0028F750)[arg0]);
+        func_0019BDD8(arg1, (&PadStateStr)[arg0]);
         return;
     }
     *arg1 = (s8) D_002BD000;
@@ -526,7 +526,7 @@ u8 scePadGetReqState(s32 port, s32 slot) {
 
 void scePadReqIntToStr(u32 arg0, s8 *arg1) {
     if (arg0 < 4U) {
-        func_0019BDD8(arg1, (&D_0028F770)[arg0]);
+        func_0019BDD8(arg1, (&ReqStateStr)[arg0]);
         return;
     }
     *arg1 = (s8) D_002BD000;
@@ -901,7 +901,7 @@ s32 func_001939C0(void) {
 
 s32 *func_00193A00(s32 **arg0, s32 **arg1) {
     *arg0 = &D_00317200;
-    *arg1 = &D_0028F790;
+    *arg1 = &mcRunCmdNo;
     (*(s32 *)((u8 *)(&D_00317200) + 0x3C)) = (s32) D_0028F794;
     return &D_00315C40;
 }
@@ -923,7 +923,7 @@ s32 func_00193A30(s32 arg0) {
     (*(s32 *)(b_D_00315CC0 + 0x14)) = arg0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x14, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 0x14;
+        mcRunCmdNo = 0x14;
     } else {
         SignalSema(D_0028F794);
     }
@@ -981,7 +981,7 @@ s32 func_00193BA8(s32 arg0, s32 arg1, s8 *arg2, s32 arg3) {
     (*(s8 *)((u8 *)temp_v1 + 0x413)) = 0;
     temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 2, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
     if (temp_v0 == 0) {
-        D_0028F790 = 2;
+        mcRunCmdNo = 2;
     } else {
         SignalSema(D_0028F794);
     }
@@ -993,7 +993,7 @@ s32 sceMcMkdir(s32 arg0, s32 arg1, void *arg2) {
 
     ret = func_00193BA8(arg0, arg1, arg2, 0x40);
     if (ret == 0) {
-        D_0028F790 = 0xB;
+        mcRunCmdNo = 0xB;
     }
     return ret;
 }
