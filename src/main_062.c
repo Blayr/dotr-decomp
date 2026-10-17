@@ -631,17 +631,17 @@ typedef struct Entry_0021D480 {
     u16 other[5];
 } Entry_0021D480;
 
-extern u16 campaignDeckTable[]; /* original: DeckTab */
-extern Entry_0021D480 campaignDecks[]; /* original: DeckDat */
+extern u16 campaignDeckChoiceSets[]; /* original: DeckTab */
+extern Entry_0021D480 campaignDeckChoices[]; /* original: DeckDat */
 extern s8 campaignHelpFlag; /* original: HELP_flg */
 
 /* Sets up the campaign state from the save: the decks, the places, the help flag. */
 void Taku_Camp_Data_Init(void) {
     u8 *base = (u8 *)0x01ED0000;
     u8 *record = (u8 *)&campaignState;
-    f32 eye[4];
-    f32 target[4];
-    f32 up[4];
+    f32 groundPoint0[4];
+    f32 groundPoint1[4];
+    f32 groundPoint2[4];
     s32 i;
     s32 inner;
     s32 k;
@@ -661,16 +661,16 @@ void Taku_Camp_Data_Init(void) {
     u16 *halves;
 
     func_00195108((s32)base, 0x54B0);
-    eye[0] = 0.0f;
-    eye[1] = 8.65f;
-    eye[2] = 100.0f;
-    target[0] = 0.0f;
-    target[1] = 8.65f;
-    target[2] = 0.0f;
-    up[0] = 100.0f;
-    up[1] = 8.65f;
-    up[2] = 0.0f;
-    Ex3d_GetSurfaceC(eye, target, up, (f32 *)0x01ED0190);
+    groundPoint0[0] = 0.0f;
+    groundPoint0[1] = 8.65f;
+    groundPoint0[2] = 100.0f;
+    groundPoint1[0] = 0.0f;
+    groundPoint1[1] = 8.65f;
+    groundPoint1[2] = 0.0f;
+    groundPoint2[0] = 100.0f;
+    groundPoint2[1] = 8.65f;
+    groundPoint2[2] = 0.0f;
+    Ex3d_GetSurfaceC(groundPoint0, groundPoint1, groundPoint2, (f32 *)0x01ED0190);
     i = 0;
     do {
         base[0x53CF + i] = 0;
@@ -770,9 +770,9 @@ void Taku_Camp_Data_Init(void) {
     shift = 0;
     halves = (u16 *)0x01ED0000;
     for (; j < 3; j++) {
-        halves[0x53F8 / 2] = ((s32)campaignDeckTable[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
+        halves[0x53F8 / 2] = ((s32)campaignDeckChoiceSets[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
         shift += 5;
-        halves[0x53FE / 2] = campaignDecks[halves[0x53F8 / 2]].value & 0x3FF;
+        halves[0x53FE / 2] = campaignDeckChoices[halves[0x53F8 / 2]].value & 0x3FF;
         halves++;
     }
 }

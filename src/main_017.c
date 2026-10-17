@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* Moves the camera to a tutorial unit's model. */
 void TaTuto_FocusUnit_001745F0(s32 arg0) {
     s32 rot[4];
     f32 vec[4];
@@ -537,6 +538,7 @@ s32 TaTuto_Lesson2(s32 event, void *tutorial) {
     return 0;
 }
 
+/* Moves the camera to a tutorial unit's model (second lesson). */
 void TaTuto_FocusUnit_00175BA0(s32 arg0) {
     s32 rot[4];
     f32 vec[4];
@@ -597,6 +599,7 @@ void TaTuto_FocusUnit_00175BA0(s32 arg0) {
     }
 }
 
+/* Resets the tutorial's deck and hand. */
 void func_00175E60(void) {
     s32 i;
     s32 n;

@@ -1,6 +1,7 @@
 #include "common.h"
 
-s32 Ta_GetSacrificeUnit(s32 *arg0, s32 arg1) {
+/* The units side `nSide` gives up for a summon, into `Buf`. */
+s32 Ta_GetSacrificeUnit(s32 *Buf, s32 nSide) {
     s32 ids[6];
     s32 scores[6];
     s32 key[3];
@@ -24,42 +25,42 @@ s32 Ta_GetSacrificeUnit(s32 *arg0, s32 arg1) {
     for (i = 0; i < 6; i++) {
         switch (i) {
         case 0:
-            key[0] = arg0[0];
-            key[1] = arg0[1];
-            key[2] = arg0[2];
+            key[0] = Buf[0];
+            key[1] = Buf[1];
+            key[2] = Buf[2];
             break;
         case 1:
-            key[0] = arg0[0];
-            key[1] = arg0[2];
-            key[2] = arg0[1];
+            key[0] = Buf[0];
+            key[1] = Buf[2];
+            key[2] = Buf[1];
             break;
         case 2:
-            key[0] = arg0[1];
-            key[1] = arg0[0];
-            key[2] = arg0[2];
+            key[0] = Buf[1];
+            key[1] = Buf[0];
+            key[2] = Buf[2];
             break;
         case 3:
-            key[0] = arg0[1];
-            key[1] = arg0[2];
-            key[2] = arg0[0];
+            key[0] = Buf[1];
+            key[1] = Buf[2];
+            key[2] = Buf[0];
             break;
         case 4:
-            key[0] = arg0[2];
-            key[1] = arg0[0];
-            key[2] = arg0[1];
+            key[0] = Buf[2];
+            key[1] = Buf[0];
+            key[2] = Buf[1];
             break;
         case 5:
-            key[0] = arg0[2];
-            key[1] = arg0[1];
-            key[2] = arg0[0];
+            key[0] = Buf[2];
+            key[1] = Buf[1];
+            key[2] = Buf[0];
             break;
         default:
-            key[0] = arg0[0];
-            key[1] = arg0[1];
-            key[2] = arg0[2];
+            key[0] = Buf[0];
+            key[1] = Buf[1];
+            key[2] = Buf[2];
             break;
         }
-        if ((ids[i] = Ta_GetScrificeOrder(key, arg1)) >= 0) {
+        if ((ids[i] = Ta_GetScrificeOrder(key, nSide)) >= 0) {
             scores[i] = 0;
             count = Ta_GetUnitNumFrom22bitFlagList(ids[i]);
             if (count == 3) {
@@ -88,7 +89,8 @@ s32 Ta_GetSacrificeUnit(s32 *arg0, s32 arg1) {
     return ids[best];
 }
 
-s32 Ta_GetScrificeOrder(void *arg0, s32 arg1) {
+/* The order in which side `nSide`'s units are given up for a summon, into `Work`. */
+s32 Ta_GetScrificeOrder(void *Work, s32 nSide) {
     s32 result;
     s32 *src;
     s32 selections[3];
@@ -101,8 +103,8 @@ s32 Ta_GetScrificeOrder(void *arg0, s32 arg1) {
     s32 count;
 
     selection = selections;
-    selector = arg1;
-    src = arg0;
+    selector = nSide;
+    src = Work;
     i = 0;
     result = 0;
     do {
@@ -130,140 +132,142 @@ s32 Ta_GetScrificeOrder(void *arg0, s32 arg1) {
     return result;
 }
 
-void Ta_GetCeremSacrifice(s32 *arg0, s32 arg1) {
-    arg0[2] = -1;
-    arg0[1] = -1;
-    arg0[0] = -1;
-    switch (arg1) {
+/* The units a ritual (ceremony) gives up, into `Buf`. */
+void Ta_GetCeremSacrifice(s32 *Buf, s32 Obj) {
+    Buf[2] = -1;
+    Buf[1] = -1;
+    Buf[0] = -1;
+    switch (Obj) {
     case 0xBD:
-        arg0[0] = 0x07D00039;
-        arg0[1] = 0x07D00039;
-        arg0[2] = 0x07D00039;
+        Buf[0] = 0x07D00039;
+        Buf[1] = 0x07D00039;
+        Buf[2] = 0x07D00039;
         break;
     case 0xD:
-        arg0[0] = 4;
-        arg0[1] = 0;
-        arg0[2] = 0x11;
+        Buf[0] = 4;
+        Buf[1] = 0;
+        Buf[2] = 0x11;
         break;
     case 0x91:
-        arg0[0] = 0x63001C;
-        arg0[1] = 0x023D001C;
-        arg0[2] = 0x0216001C;
+        Buf[0] = 0x63001C;
+        Buf[1] = 0x023D001C;
+        Buf[2] = 0x0216001C;
         break;
     case 0x8F:
-        arg0[0] = 0x9B001C;
-        arg0[1] = 0x05DC0025;
-        arg0[2] = 0x05DC0025;
+        Buf[0] = 0x9B001C;
+        Buf[1] = 0x05DC0025;
+        Buf[2] = 0x05DC0025;
         break;
     case 0x151:
-        arg0[0] = 0x012C001C;
-        arg0[1] = 7;
-        arg0[2] = 7;
+        Buf[0] = 0x012C001C;
+        Buf[1] = 7;
+        Buf[2] = 7;
         break;
     case 0xF8:
-        arg0[0] = 0xF9001C;
-        arg0[1] = 5;
-        arg0[2] = 5;
+        Buf[0] = 0xF9001C;
+        Buf[1] = 5;
+        Buf[2] = 5;
         break;
     case 0x152:
-        arg0[0] = 0x0149001C;
-        arg0[1] = 0x0121001C;
-        arg0[2] = 7;
+        Buf[0] = 0x0149001C;
+        Buf[1] = 0x0121001C;
+        Buf[2] = 7;
         break;
     case 0x2:
-        arg0[0] = 0x1C;
-        arg0[1] = 0x1C;
-        arg0[2] = 0x1C;
+        Buf[0] = 0x1C;
+        Buf[1] = 0x1C;
+        Buf[2] = 0x1C;
         break;
     case 0xC3:
-        arg0[0] = 0x0236001C;
-        arg0[1] = 6;
-        arg0[2] = 3;
+        Buf[0] = 0x0236001C;
+        Buf[1] = 6;
+        Buf[2] = 3;
         break;
     case 0x93:
-        arg0[0] = 0xD2001C;
-        arg0[1] = 0x0150001C;
-        arg0[2] = 0x0295001C;
+        Buf[0] = 0xD2001C;
+        Buf[1] = 0x0150001C;
+        Buf[2] = 0x0295001C;
         break;
     case 0xDC:
-        arg0[0] = 0x0279001C;
-        arg0[1] = 4;
-        arg0[2] = 4;
+        Buf[0] = 0x0279001C;
+        Buf[1] = 4;
+        Buf[2] = 4;
         break;
     case 0x87:
-        arg0[0] = 0x23001C;
-        arg0[1] = 3;
-        arg0[2] = 3;
+        Buf[0] = 0x23001C;
+        Buf[1] = 3;
+        Buf[2] = 3;
         break;
     case 0xA:
-        arg0[0] = 0x5001C;
-        arg0[1] = 0x0125001C;
-        arg0[2] = 0x6001C;
+        Buf[0] = 0x5001C;
+        Buf[1] = 0x0125001C;
+        Buf[2] = 0x6001C;
         break;
     case 0xB:
-        arg0[0] = 0x8001C;
-        arg0[1] = 3;
-        arg0[2] = 6;
+        Buf[0] = 0x8001C;
+        Buf[1] = 3;
+        Buf[2] = 6;
         break;
     case 0x254:
-        arg0[0] = 0x0248001C;
-        arg0[1] = 0x10;
-        arg0[2] = 0x10;
+        Buf[0] = 0x0248001C;
+        Buf[1] = 0x10;
+        Buf[2] = 0x10;
         break;
     case 0x4D:
-        arg0[0] = 0x0131001C;
-        arg0[1] = 1;
-        arg0[2] = 1;
+        Buf[0] = 0x0131001C;
+        Buf[1] = 1;
+        Buf[2] = 1;
         break;
     case 0x160:
-        arg0[0] = 0x014A001C;
-        arg0[1] = 0x03E80025;
-        arg0[2] = 0x03E80025;
+        Buf[0] = 0x014A001C;
+        Buf[1] = 0x03E80025;
+        Buf[2] = 0x03E80025;
         break;
     case 0x161:
-        arg0[0] = 0xAD001C;
-        arg0[1] = 0xE;
-        arg0[2] = 0xE;
+        Buf[0] = 0xAD001C;
+        Buf[1] = 0xE;
+        Buf[2] = 0xE;
         break;
     case 0x1A6:
-        arg0[0] = 0x018E001C;
-        arg0[1] = 9;
-        arg0[2] = 9;
+        Buf[0] = 0x018E001C;
+        Buf[1] = 9;
+        Buf[2] = 9;
         break;
     case 0x94:
-        arg0[0] = 0x92001C;
-        arg0[1] = 3;
-        arg0[2] = 3;
+        Buf[0] = 0x92001C;
+        Buf[1] = 3;
+        Buf[2] = 3;
         break;
     case 0x4C:
-        arg0[0] = 0x029B001C;
-        arg0[1] = 0xCC001C;
-        arg0[2] = 0x4F001C;
+        Buf[0] = 0x029B001C;
+        Buf[1] = 0xCC001C;
+        Buf[2] = 0x4F001C;
         break;
     case 0x80:
-        arg0[0] = 2;
-        arg0[1] = 0xE;
-        arg0[2] = 9;
+        Buf[0] = 2;
+        Buf[1] = 0xE;
+        Buf[2] = 9;
         break;
     case 0x1D8:
-        arg0[0] = 0x0214001C;
-        arg0[1] = 0xC;
-        arg0[2] = 0xC;
+        Buf[0] = 0x0214001C;
+        Buf[1] = 0xC;
+        Buf[2] = 0xC;
         break;
     case 0x4E:
-        arg0[0] = 0x3C001C;
-        arg0[1] = 0x05DC0025;
-        arg0[2] = 0x05DC0025;
+        Buf[0] = 0x3C001C;
+        Buf[1] = 0x05DC0025;
+        Buf[2] = 0x05DC0025;
         break;
     default:
-        arg0[0] = -1;
-        arg0[1] = -1;
-        arg0[2] = -1;
+        Buf[0] = -1;
+        Buf[1] = -1;
+        Buf[2] = -1;
         break;
     }
 }
 
-s32 Ta_Manage_Effect(u32 *arg0, u16 *arg1, s32 arg2) {
+/* Runs the effect script of effect `eInfo` (with work area `pTemp`) step `ID`; returns when it has finished. */
+s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
     extern void SzDuel_SetUnitStatus(s32, s32, s32, s32);
     extern s32 Ta_Eff_002();
     extern s32 Ta_Eff_009();
@@ -282,215 +286,215 @@ s32 Ta_Manage_Effect(u32 *arg0, u16 *arg1, s32 arg2) {
     s32 var_s0;
     s32 var_s1;
 
-    if ((arg0 == NULL) || (arg1 == NULL)) {
+    if ((eInfo == NULL) || (pTemp == NULL)) {
         return 0;
     }
-    temp_v0 = *arg0 & 0x7FFF;
+    temp_v0 = *eInfo & 0x7FFF;
     var_s1 = 0;
     switch (temp_v0) {
     case 0x0:
-        var_s1 = Ta_Eff_000(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_000(eInfo, pTemp, ID);
         break;
     case 0x1:
-        var_s1 = Ta_Eff_001(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_001(eInfo, pTemp, ID);
         break;
     case 0x2:
-        var_s1 = Ta_Eff_002(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_002(eInfo, pTemp, ID);
         break;
     case 0x3:
-        var_s1 = Ta_Eff_003B(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_003B(eInfo, pTemp, ID);
         break;
     case 0x4:
-        var_s1 = Ta_Eff_004(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_004(eInfo, pTemp, ID);
         break;
     case 0x5:
-        var_s1 = Ta_Eff_005(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_005(eInfo, pTemp, ID);
         break;
     case 0x6:
-        var_s1 = Ta_Eff_006(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_006(eInfo, pTemp, ID);
         break;
     case 0x7:
-        var_s1 = Ta_Eff_007(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_007(eInfo, pTemp, ID);
         break;
     case 0x8:
-        var_s1 = Ta_Eff_008(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_008(eInfo, pTemp, ID);
         break;
     case 0x9:
-        var_s1 = Ta_Eff_009(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_009(eInfo, pTemp, ID);
         break;
     case 0xC:
-        var_s1 = Ta_Eff_012(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_012(eInfo, pTemp, ID);
         break;
     case 0xD:
-        var_s1 = Ta_Eff_013(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_013(eInfo, pTemp, ID);
         break;
     case 0xE:
-        var_s1 = Ta_Eff_014(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_014(eInfo, pTemp, ID);
         break;
     case 0xF:
-        var_s1 = Ta_Eff_015(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_015(eInfo, pTemp, ID);
         break;
     case 0x10:
-        var_s1 = Ta_Eff_016(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_016(eInfo, pTemp, ID);
         break;
     case 0x11:
-        var_s1 = Ta_Eff_017_A(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_017_A(eInfo, pTemp, ID);
         break;
     case 0x12:
-        var_s1 = Ta_Eff_018(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_018(eInfo, pTemp, ID);
         break;
     case 0x13:
-        var_s1 = Ta_Eff_019(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_019(eInfo, pTemp, ID);
         break;
     case 0x14:
-        var_s1 = Ta_Eff_020((s32) arg0, arg1, arg2);
+        var_s1 = Ta_Eff_020((s32) eInfo, pTemp, ID);
         break;
     case 0x15:
-        var_s1 = Ta_Eff_021(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_021(eInfo, pTemp, ID);
         break;
     case 0x17:
-        var_s1 = Ta_Eff_023(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_023(eInfo, pTemp, ID);
         break;
     case 0x19:
-        var_s1 = Ta_Eff_025(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_025(eInfo, pTemp, ID);
         break;
     case 0x1A:
-        var_s1 = Ta_Eff_026(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_026(eInfo, pTemp, ID);
         break;
     case 0x1C:
-        var_s1 = Ta_Eff_028(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_028(eInfo, pTemp, ID);
         break;
     case 0x1D:
-        var_s1 = Ta_Eff_029(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_029(eInfo, pTemp, ID);
         break;
     case 0x5B:
-        var_s1 = Ta_Eff_029_CNG(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_029_CNG(eInfo, pTemp, ID);
         break;
     case 0x1E:
-        var_s1 = Ta_Eff_030(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_030(eInfo, pTemp, ID);
         break;
     case 0x1F:
-        var_s1 = Ta_Eff_031(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_031(eInfo, pTemp, ID);
         break;
     case 0x20:
-        var_s1 = Ta_Eff_032(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_032(eInfo, pTemp, ID);
         break;
     case 0x21:
-        var_s1 = Ta_Eff_033(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_033(eInfo, pTemp, ID);
         break;
     case 0x22:
-        var_s1 = Ta_Eff_034(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_034(eInfo, pTemp, ID);
         break;
     case 0x23:
-        var_s1 = Ta_Eff_035(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_035(eInfo, pTemp, ID);
         break;
     case 0x5A:
-        var_s1 = Ta_Eff_017_MEGUMI(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_017_MEGUMI(eInfo, pTemp, ID);
         break;
     case 0x5C:
-        var_s1 = Ta_Eff_006_WIND(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_006_WIND(eInfo, pTemp, ID);
         break;
     case 0x5D:
-        var_s1 = Ta_Eff_BTL_000(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_BTL_000(eInfo, pTemp, ID);
         break;
     case 0x24:
-        var_s1 = Ta_Eff_036(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_036(eInfo, pTemp, ID);
         break;
     case 0x25:
-        var_s1 = Ta_Eff_037(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_037(eInfo, pTemp, ID);
         break;
     case 0x5E:
-        var_s1 = Ta_Eff_BTL_001(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_BTL_001(eInfo, pTemp, ID);
         break;
     case 0x5F:
-        var_s1 = Ta_Eff_BTL_002(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_BTL_002(eInfo, pTemp, ID);
         break;
     case 0x2B:
-        var_s1 = Ta_Eff_100(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_100(eInfo, pTemp, ID);
         break;
     case 0x2C:
-        var_s1 = Ta_Eff_044(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_044(eInfo, pTemp, ID);
         break;
     case 0x2D:
-        var_s1 = Ta_Eff_045(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_045(eInfo, pTemp, ID);
         break;
     case 0x2E:
-        var_s1 = Ta_Eff_046(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_046(eInfo, pTemp, ID);
         break;
     case 0x33:
-        var_s1 = Ta_Eff_051(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_051(eInfo, pTemp, ID);
         break;
     case 0x36:
-        var_s1 = Ta_Eff_054(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_054(eInfo, pTemp, ID);
         break;
     case 0x38:
-        var_s1 = Ta_Eff_056(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_056(eInfo, pTemp, ID);
         break;
     case 0x39:
-        var_s1 = Ta_Eff_057(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_057(eInfo, pTemp, ID);
         break;
     case 0x3A:
-        var_s1 = Ta_Eff_058(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_058(eInfo, pTemp, ID);
         break;
     case 0x3B:
-        var_s1 = Ta_Eff_059(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_059(eInfo, pTemp, ID);
         break;
     case 0x3C:
-        var_s1 = Ta_Eff_060(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_060(eInfo, pTemp, ID);
         break;
     case 0x3F:
-        var_s1 = Ta_Eff_063(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_063(eInfo, pTemp, ID);
         break;
     case 0x40:
-        var_s1 = Ta_Eff_064(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_064(eInfo, pTemp, ID);
         break;
     case 0x41:
-        var_s1 = Ta_Eff_065(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_065(eInfo, pTemp, ID);
         break;
     case 0x42:
-        var_s1 = Ta_Eff_066(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_066(eInfo, pTemp, ID);
         break;
     case 0x43:
-        var_s1 = Ta_Eff_067(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_067(eInfo, pTemp, ID);
         break;
     case 0x46:
-        var_s1 = Ta_Eff_070(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_070(eInfo, pTemp, ID);
         break;
     case 0x47:
-        var_s1 = Ta_Eff_071(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_071(eInfo, pTemp, ID);
         break;
     case 0x48:
-        var_s1 = Ta_Eff_072(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_072(eInfo, pTemp, ID);
         break;
     case 0x64:
-        var_s1 = Ta_Eff_100(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_100(eInfo, pTemp, ID);
         break;
     case 0x65:
-        var_s1 = Ta_Eff_101(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_101(eInfo, pTemp, ID);
         break;
     case 0x66:
-        var_s1 = Ta_Eff_102(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_102(eInfo, pTemp, ID);
         break;
     case 0x6D:
-        var_s1 = Ta_Eff_109(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_109(eInfo, pTemp, ID);
         break;
     case 0x70:
-        var_s1 = Ta_Eff_112(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_112(eInfo, pTemp, ID);
         break;
     case 0x71:
-        var_s1 = Ta_Eff_113(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_113(eInfo, pTemp, ID);
         break;
     case 0x72:
-        var_s1 = Ta_Eff_114(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_114(eInfo, pTemp, ID);
         break;
     case 0x96:
-        var_s1 = Ta_Eff_Hand_Dest(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_Hand_Dest(eInfo, pTemp, ID);
         break;
     case 0xFF:
-        var_s1 = Ta_Eff_ETC(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_ETC(eInfo, pTemp, ID);
         break;
     case 0xFE:
-        var_s1 = Ta_Eff_WAIT(arg0, arg1, arg2);
+        var_s1 = Ta_Eff_WAIT(eInfo, pTemp, ID);
         break;
     case 0x3E7:
         var_s1 = 0;
@@ -518,39 +522,40 @@ s32 Ta_Manage_Effect(u32 *arg0, u16 *arg1, s32 arg2) {
     return var_s1;
 }
 
-void InitEffectTemp(void *arg0) {
+/* Clears an effect script's work area and saves the camera to restore. */
+void InitEffectTemp(void *pTemp) {
     f32 *temp_v0_2;
     f32 *temp_s0;
     s32 var_a0;
     u8 *var_a1;
 
-    *(s16 *)((u8 *)arg0 + 0) = 0;
-    *(s16 *)((u8 *)arg0 + 2) = 0;
-    *(s16 *)((u8 *)arg0 + 4) = 0;
-    *(s8 *)((u8 *)arg0 + 0xD4) = 0;
-    TaEffect_ClearEffectTemp(arg0);
+    *(s16 *)((u8 *)pTemp + 0) = 0;
+    *(s16 *)((u8 *)pTemp + 2) = 0;
+    *(s16 *)((u8 *)pTemp + 4) = 0;
+    *(s8 *)((u8 *)pTemp + 0xD4) = 0;
+    TaEffect_ClearEffectTemp(pTemp);
     var_a0 = 0;
-    var_a1 = arg0;
+    var_a1 = pTemp;
     do {
-        *(u8 *)((u32)arg0 + var_a0 + 6) = 0xFF;
+        *(u8 *)((u32)pTemp + var_a0 + 6) = 0xFF;
         *(s32 *)(var_a1 + 0x20) = 0;
         var_a0 += 1;
         var_a1 += 4;
     } while (var_a0 < 0x18);
     temp_s0 = (f32 *)SzView_GetCP(0);
     temp_v0_2 = SzView_GetLook(0);
-    *(s32 *)((u8 *)arg0 + 0xD0) = 0;
-    *(s32 *)((u8 *)arg0 + 0xCC) = 0;
-    *(s8 *)((u8 *)arg0 + 0x100) = 0;
-    *(s16 *)((u8 *)arg0 + 0x102) = 0;
-    *(f32 *)((u8 *)arg0 + 0xE0) = temp_s0[0];
-    *(f32 *)((u8 *)arg0 + 0xE4) = temp_s0[1];
-    *(f32 *)((u8 *)arg0 + 0xE8) = temp_s0[2];
-    *(f32 *)((u8 *)arg0 + 0xEC) = temp_s0[3];
-    *(f32 *)((u8 *)arg0 + 0xF0) = temp_v0_2[0];
-    *(f32 *)((u8 *)arg0 + 0xF4) = temp_v0_2[1];
-    *(f32 *)((u8 *)arg0 + 0xF8) = temp_v0_2[2];
-    *(f32 *)((u8 *)arg0 + 0xFC) = temp_v0_2[3];
+    *(s32 *)((u8 *)pTemp + 0xD0) = 0;
+    *(s32 *)((u8 *)pTemp + 0xCC) = 0;
+    *(s8 *)((u8 *)pTemp + 0x100) = 0;
+    *(s16 *)((u8 *)pTemp + 0x102) = 0;
+    *(f32 *)((u8 *)pTemp + 0xE0) = temp_s0[0];
+    *(f32 *)((u8 *)pTemp + 0xE4) = temp_s0[1];
+    *(f32 *)((u8 *)pTemp + 0xE8) = temp_s0[2];
+    *(f32 *)((u8 *)pTemp + 0xEC) = temp_s0[3];
+    *(f32 *)((u8 *)pTemp + 0xF0) = temp_v0_2[0];
+    *(f32 *)((u8 *)pTemp + 0xF4) = temp_v0_2[1];
+    *(f32 *)((u8 *)pTemp + 0xF8) = temp_v0_2[2];
+    *(f32 *)((u8 *)pTemp + 0xFC) = temp_v0_2[3];
 }
 
 typedef struct Request_00255A30 {
@@ -561,12 +566,13 @@ typedef struct Request_00255A30 {
 } Request_00255A30;
 
 
-s32 Ta_Do_Effect(void *arg0, void *arg1) {
+/* Starts an effect's animation (its module must be loaded). */
+s32 Ta_Do_Effect(void *eInfo, void *Temp) {
     extern s32 SzEffect_Entry(s32, s32, s32, s32, s32);
-    Request_00255A30 *req = arg0;
+    Request_00255A30 *req = eInfo;
     s32 ret;
 
-    switch (TaEffect_IsLoadModule2(arg1, req->id)) {
+    switch (TaEffect_IsLoadModule2(Temp, req->id)) {
     case 0:
         return -2;
     case -1:
@@ -588,12 +594,13 @@ typedef struct State_00255AC0 {
     s16 entries[32];
 } State_00255AC0;
 
-s32 TaEffect_LoadModule(void *arg0, s16 arg1) {
+/* Loads the effect module of function `nFunc` for an effect script. */
+s32 TaEffect_LoadModule(void *Temp, s16 nFunc) {
     extern s32 SzEffect_LoadModule(s32, s16, s32);
-    State_00255AC0 *state = arg0;
+    State_00255AC0 *state = Temp;
 
-    if (SzEffect_LoadModule(0, arg1, 0) != 0) {
-        state->entries[state->count] = arg1;
+    if (SzEffect_LoadModule(0, nFunc, 0) != 0) {
+        state->entries[state->count] = nFunc;
         state->count++;
         return 1;
     }
@@ -615,7 +622,8 @@ typedef struct {
 } Data_00255B50;
 
 
-s32 TaEffect_IsLoadModule(void *arg0) {
+/* Whether an effect script's module has loaded. */
+s32 TaEffect_IsLoadModule(void *Temp) {
     s32 i;
     Data_00255B50 *cursor;
     Data_00255B50 *data;
@@ -623,7 +631,7 @@ s32 TaEffect_IsLoadModule(void *arg0) {
     u8 *entry;
     s32 type;
 
-    data = arg0;
+    data = Temp;
     i = 0;
     cursor = data;
     for (; i < data->flags.count; i++) {
@@ -655,18 +663,19 @@ typedef struct Slots_00255C30 {
 } Slots_00255C30;
 
 
-s32 TaEffect_IsLoadModule2(void *arg0, s32 arg1) {
+/* Whether the effect module of function `nFunc` has loaded. */
+s32 TaEffect_IsLoadModule2(void *Temp, s32 nFunc) {
     s32 state;
     s32 i;
     u8 *entry;
-    Slots_00255C30 *slots = arg0;
+    Slots_00255C30 *slots = Temp;
 
-    if (arg0 == NULL) {
+    if (Temp == NULL) {
         return 0;
     }
 
     for (i = 0; i < 24; i++) {
-        if (arg1 == slots->ids[i]) {
+        if (nFunc == slots->ids[i]) {
             entry = SzEffect_GetModuleInfo(0, slots->ids[i]);
             if (entry != NULL) {
                 state = *entry & 7;
@@ -690,8 +699,9 @@ typedef struct {
     u8 states[0x18];
 } State_00255CD0;
 
-void TaEffect_ClearEffectTemp(void *arg0) {
-    State_00255CD0 *state = arg0;
+/* Clears an effect script's work area. */
+void TaEffect_ClearEffectTemp(void *Temp) {
+    State_00255CD0 *state = Temp;
     s32 i;
 
     state->active = 0;
@@ -702,17 +712,18 @@ void TaEffect_ClearEffectTemp(void *arg0) {
     }
 }
 
-void Ta_GetStdCompleteView(s32 *arg0) {
+/* The standard full-board camera for the turn owner into `pVec`. */
+void Ta_GetStdCompleteView(s32 *pVec) {
     if (SzDuel_GetTurnOwner() == 0) {
-        arg0[0] = 0x1F4;
-        arg0[1] = 0x3FFF;
-        arg0[2] = 0x17FF;
-        arg0[3] = 0;
+        pVec[0] = 0x1F4;
+        pVec[1] = 0x3FFF;
+        pVec[2] = 0x17FF;
+        pVec[3] = 0;
     } else {
-        arg0[0] = 0x1F4;
-        arg0[1] = 0xBFFF;
-        arg0[2] = 0x17FF;
-        arg0[3] = 0;
+        pVec[0] = 0x1F4;
+        pVec[1] = 0xBFFF;
+        pVec[2] = 0x17FF;
+        pVec[3] = 0;
     }
 }
 
@@ -723,8 +734,9 @@ typedef struct Config_00255DB0 {
     s32 reserved;
 } Config_00255DB0;
 
-void Ta_GetStdTopDownView(void *arg0) {
-    Config_00255DB0 *config = arg0;
+/* The standard top-down camera into `pVec`. */
+void Ta_GetStdTopDownView(void *pVec) {
+    Config_00255DB0 *config = pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
         config->value = 0x1F4;
@@ -739,8 +751,9 @@ void Ta_GetStdTopDownView(void *arg0) {
     }
 }
 
-void Ta_GetFlatCompleteView(void *arg0) {
-    s32 *values = arg0;
+/* The flat full-board camera into `pVec`. */
+void Ta_GetFlatCompleteView(void *pVec) {
+    s32 *values = pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
         values[0] = 0x1F4;
@@ -755,8 +768,9 @@ void Ta_GetFlatCompleteView(void *arg0) {
     }
 }
 
-void Ta_GetDestinyView(void *arg0) {
-    s32 *values = (s32 *)arg0;
+/* The destiny-draw camera into `pVec`. */
+void Ta_GetDestinyView(void *pVec) {
+    s32 *values = (s32 *)pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
         values[0] = 0x7A;
@@ -771,16 +785,17 @@ void Ta_GetDestinyView(void *arg0) {
     }
 }
 
-void Ta_GetStdFocusView(void *arg0, s32 arg1) {
-    s32 *data = arg0;
+/* The standard camera focused on square `nForcus` into `pVec`. */
+void Ta_GetStdFocusView(void *pVec, s32 nForcus) {
+    s32 *data = pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
-        data[0] = arg1;
+        data[0] = nForcus;
         data[1] = 0x3FFF;
         data[2] = 0x1000;
         data[3] = 0;
     } else {
-        data[0] = arg1;
+        data[0] = nForcus;
         data[1] = 0xBFFF;
         data[2] = 0x1000;
         data[3] = 0;
@@ -794,22 +809,24 @@ typedef struct {
     s32 fC;
 } Block_00255F70;
 
-void Ta_GetStdFocusView2(void *arg0, s32 arg1) {
+/* The second focused camera on square `nForcus` into `pVec`. */
+void Ta_GetStdFocusView2(void *pVec, s32 nForcus) {
     if (SzDuel_GetTurnOwner() == 0) {
-        ((Block_00255F70 *)arg0)->f0 = arg1;
-        ((Block_00255F70 *)arg0)->f4 = 0x4FFF;
-        ((Block_00255F70 *)arg0)->f8 = 0x1800;
-        ((Block_00255F70 *)arg0)->fC = 0;
+        ((Block_00255F70 *)pVec)->f0 = nForcus;
+        ((Block_00255F70 *)pVec)->f4 = 0x4FFF;
+        ((Block_00255F70 *)pVec)->f8 = 0x1800;
+        ((Block_00255F70 *)pVec)->fC = 0;
     } else {
-        ((Block_00255F70 *)arg0)->f0 = arg1;
-        ((Block_00255F70 *)arg0)->f4 = 0xCFFF;
-        ((Block_00255F70 *)arg0)->f8 = 0x1800;
-        ((Block_00255F70 *)arg0)->fC = 0;
+        ((Block_00255F70 *)pVec)->f0 = nForcus;
+        ((Block_00255F70 *)pVec)->f4 = 0xCFFF;
+        ((Block_00255F70 *)pVec)->f8 = 0x1800;
+        ((Block_00255F70 *)pVec)->fC = 0;
     }
 }
 
-void Ta_GetTopView(void *arg0) {
-    s32 *values = arg0;
+/* The top camera into `pVec`. */
+void Ta_GetTopView(void *pVec) {
+    s32 *values = pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
         values[0] = 0xFA;
@@ -824,8 +841,9 @@ void Ta_GetTopView(void *arg0) {
     }
 }
 
-void Ta_GetSkyView(void *arg0) {
-    s32 *values = arg0;
+/* The sky camera into `pVec`. */
+void Ta_GetSkyView(void *pVec) {
+    s32 *values = pVec;
 
     if (SzDuel_GetTurnOwner() == 0) {
         values[0] = 0x1F4;
@@ -868,12 +886,14 @@ typedef struct State_002560C0 {
 } State_002560C0;
 
 
-s32 Ta_Eff_000(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 000, step `ID`: its camera, fades and effect module; it curses units, binds units with a spell,
+   turns cards face up. */
+s32 Ta_Eff_000(void *eInfo, void *Temp, s32 ID) {
     extern s32 TaUtil_GetObjSideNum();
     extern s32 SzDuel_SetUnitSpellRest();
     s32 effect[4];
-    Context_002560C0 *context = arg0;
-    State_002560C0 *state = arg1;
+    Context_002560C0 *context = eInfo;
+    State_002560C0 *state = Temp;
     s32 *effectData = effect;
     s32 i;
     s32 count;
@@ -888,11 +908,11 @@ s32 Ta_Eff_000(void *arg0, void *arg1, s32 arg2) {
     count = 0;
     flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         Ta_GetUnitNumFrom22bitFlagList(context->handle);
         state->alpha = 0x80;
-        Ta_AllUnitFade(context, state, arg2, -1, 1, 1);
+        Ta_AllUnitFade(context, state, ID, -1, 1, 1);
         TaEffect_LoadModule(state, 500);
         if (Ta_GetUnitNumFrom22bitFlagList(context->handle) == 1) {
             TaView_ReqFocusCamera(0x20, Ta_GetUnitOwnerIDFromLstCount(context->handle, 0), 100, 180);
@@ -951,7 +971,7 @@ s32 Ta_Eff_000(void *arg0, void *arg1, s32 arg2) {
                 }
             }
             state->phase++;
-            Ta_AllUnitFade(context, state, arg2, 1, 0, 1);
+            Ta_AllUnitFade(context, state, ID, 1, 0, 1);
         }
         break;
     default:
@@ -1033,6 +1053,7 @@ extern void func_002614C0_b(unsigned char b, int cell, int value);
     ((E002_MAX(y, (eInfo->dwFrom & 0xFF)) - E002_MIN(y, (eInfo->dwFrom & 0xFF))) \
      + (E002_MAX(x, (eInfo->dwFrom >> 8)) - E002_MIN(x, (eInfo->dwFrom >> 8))) <= eInfo->dwTo)
 
+/* Effect script 002, step `ID`: its camera, fades and effect module. */
 int Ta_Eff_002(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c * eInfo = eInfo_v;
@@ -1200,10 +1221,11 @@ typedef struct Request_00256AB0 {
 } Request_00256AB0;
 
 
-s32 Ta_Eff_003B(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 003B, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_003B(void *eInfo, void *Temp, s32 ID) {
     Request_00256AB0 request;
-    State_00256AB0 *state = arg1;
-    Input_00256AB0 *input = arg0;
+    State_00256AB0 *state = Temp;
+    Input_00256AB0 *input = eInfo;
     {
     Request_00256AB0 *p = &request;
     s32 complete;
@@ -1216,24 +1238,24 @@ s32 Ta_Eff_003B(void *arg0, void *arg1, s32 arg2) {
     request.kind = 0;
     complete = 0;
 
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        Ta_AllUnitFade2(arg0, arg1, arg2, -1, 1, 3);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        Ta_AllUnitFade2(eInfo, Temp, ID, -1, 1, 3);
         TaView_ReqStdCompleteView(30);
-        TaEffect_LoadModule(arg1, 503);
-        TaEffect_LoadModule(arg1, 502);
+        TaEffect_LoadModule(Temp, 503);
+        TaEffect_LoadModule(Temp, 502);
         return 1;
     } else {
         switch (state->state) {
         case 0: {
             if (state->timer++ > 30) {
-              if (TaEffect_IsLoadModule(arg1) == 1) {
+              if (TaEffect_IsLoadModule(Temp) == 1) {
                 u8 id;
                 p->id = 503;
                 p->flags = 1;
                 p->value = input->second;
                 p->kind = 8;
-                id = Ta_Do_Effect((s32 *)p, arg1);
+                id = Ta_Do_Effect((s32 *)p, Temp);
                 state->ids[state->count] = id;
                 if ((s32)id >= 0) {
                     state->values[state->count] = input->second;
@@ -1243,7 +1265,7 @@ s32 Ta_Eff_003B(void *arg0, void *arg1, s32 arg2) {
                 p->flags = 0;
                 p->value = input->first;
                 p->kind = 7;
-                id = Ta_Do_Effect((s32 *)p, arg1);
+                id = Ta_Do_Effect((s32 *)p, Temp);
                 state->ids[state->count] = id;
                 if ((s32)id >= 0) {
                     state->values[state->count] = input->first;
@@ -1256,7 +1278,7 @@ s32 Ta_Eff_003B(void *arg0, void *arg1, s32 arg2) {
         }
         case 1: {
             i = 0;
-            walk = arg1;
+            walk = Temp;
             for (; i < state->count; walk += 4, i++) {
                 if (SzEffect_IsUse(state->ids[i]) != 0) {
                     if (SzEffect_GetStatus(state->ids[i]) == 2 && *(u16 *)(walk + 0x20) != 0xFFFF) {
@@ -1268,9 +1290,9 @@ s32 Ta_Eff_003B(void *arg0, void *arg1, s32 arg2) {
             }
             if (complete >= state->count) {
                 state->state++;
-                TaView_RestoreOriginalView(arg1, 30);
+                TaView_RestoreOriginalView(Temp, 30);
                 state->timer = 0;
-                Ta_AllUnitFade2(arg0, arg1, arg2, 1, 1, 3);
+                Ta_AllUnitFade2(eInfo, Temp, ID, 1, 1, 3);
             }
             return 1;
         }
@@ -1338,13 +1360,15 @@ typedef struct Card_00256D80 {
 } Card_00256D80;
 
 
-s32 Ta_Eff_001(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 001, step `ID`: its camera, fades and effect module; it puts a card on the board, uses the
+   graveyard, turns cards face up. */
+s32 Ta_Eff_001(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetGraveCount();
     extern void *SzDuel_AddUnit();
     s32 packet[4];
     s32 *p;
-    Command_00256D80 *command = arg0;
-    State_00256D80 *state = arg1;
+    Command_00256D80 *command = eInfo;
+    State_00256D80 *state = Temp;
     s32 i;
     s32 count;
     u32 card;
@@ -1355,7 +1379,7 @@ s32 Ta_Eff_001(void *arg0, void *arg1, s32 arg2) {
     packet[3] = 0;
     p = packet;
 
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         if (command->card == 999) {
             SzDuel_CloseMsgPopup();
@@ -1538,17 +1562,19 @@ typedef struct State_00257340 {
 } State_00257340;
 
 
+/* Whether a card id is valid. */
 static inline u8 valid_00257340(u16 value) {
     return value != 0xFF;
 }
 
-s32 Ta_Eff_004(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 004, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+s32 Ta_Eff_004(void *eInfo, void *Temp, s32 ID) {
     s32 data[4];
     s32 index;
     u8 flags;
     s32 *command;
-    Context_00257340 *context = arg0;
-    State_00257340 *state = arg1;
+    Context_00257340 *context = eInfo;
+    State_00257340 *state = Temp;
     s32 specialFirst;
     s32 foundFirst;
 
@@ -1563,7 +1589,7 @@ s32 Ta_Eff_004(void *arg0, void *arg1, s32 arg2) {
     index = 0;
     flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         state->first = 0xFF;
         state->second = 0xFF;
@@ -1792,12 +1818,13 @@ typedef struct State_00257AA0 {
 } State_00257AA0;
 
 
-s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 005, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+s32 Ta_Eff_005(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitCtlRateC();
     extern s32 SzDuel_GetUnitCtlRateM();
     extern s32 SzDuel_GetUnitOpenRate();
-    State_00257AA0 *state = arg1;
-    Request_00257AA0 *request = arg0;
+    State_00257AA0 *state = Temp;
+    Request_00257AA0 *request = eInfo;
     s32 i;
     s32 k;
     s32 failed;
@@ -1825,16 +1852,16 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
     complete = 0;
     flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         state->mask = Ta_RemoveObjFromFlagLst(request->mask, *(u16 *)&request->flags);
-        if ((arg2 = Ta_IsActiveTrapB((request->flags >> 16) == 0 ? 1 : 0, 0x50)) < 0) {
+        if ((ID = Ta_IsActiveTrapB((request->flags >> 16) == 0 ? 1 : 0, 0x50)) < 0) {
             TaView_ReqFocusCamera2(0, request->position, 200);
         } else {
             if ((second = Ta_IsActiveTrapB(request->flags >> 16, 0x2E)) < 0) {
-                TaView_ReqFocusCamera(0, arg2, 180, 180);
-                TaUtil_DoOpen(arg2 >> 8, arg2 & 0xFF, 1);
-                state->positions[0] = arg2;
+                TaView_ReqFocusCamera(0, ID, 180, 180);
+                TaUtil_DoOpen(ID >> 8, ID & 0xFF, 1);
+                state->positions[0] = ID;
                 state->nextState = 0x82;
                 state->state = 0x80;
                 state->phase = 0x20;
@@ -1847,11 +1874,11 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                 state->phase = 0x20;
             }
         }
-        TaEffect_LoadModule(arg1, 0x1F9);
-        TaEffect_LoadModule(arg1, 0x25A);
+        TaEffect_LoadModule(Temp, 0x1F9);
+        TaEffect_LoadModule(Temp, 0x25A);
         return 1;
     }
-    if (TaEffect_IsLoadModule(arg1) == 1) {
+    if (TaEffect_IsLoadModule(Temp) == 1) {
         if (state->state < 0x80 || state->state == 0xFF) {
             i = 0;
             positionp = (s32 *)state;
@@ -1904,7 +1931,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                         event->position = 0;
                         event->mask = position;
                         event->flags = 0;
-                        slot = (u8)Ta_Do_Effect(event, arg1);
+                        slot = (u8)Ta_Do_Effect(event, Temp);
                         *(u8 *)(state->slotCount + (s32)state + 6) = slot;
                         if (slot >= 0) {
                             *(s32 *)(((s32)state->slotCount << 2) + (s32)state + 0x20) = position;
@@ -1922,7 +1949,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                                 event->position = 0;
                                 event->mask = position;
                                 event->flags = 0;
-                                slot = (u8)Ta_Do_Effect(event, arg1);
+                                slot = (u8)Ta_Do_Effect(event, Temp);
                                 *((u8 *)state + state->slotCount + 6) = slot;
                                 if (slot >= 0) {
                                     state->positions[state->slotCount] = position;
@@ -1973,7 +2000,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                         event->position = 0;
                         event->mask = state->positions[0];
                         event->flags = 0;
-                        state->slots[0] = Ta_Do_Effect(event, arg1);
+                        state->slots[0] = Ta_Do_Effect(event, Temp);
                         state->state++;
                     }
                     break;
@@ -1998,7 +2025,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                             event->position = 0;
                             event->mask = SzDuel_GetUnitLoc(state->positions[0] >> 8, state->positions[0] & 0xFF);
                             event->flags = 0;
-                            *(u8 *)(state->slotCount + (s32)state + 6) = Ta_Do_Effect(event, arg1);
+                            *(u8 *)(state->slotCount + (s32)state + 6) = Ta_Do_Effect(event, Temp);
                             *(s32 *)(((s32)state->slotCount << 2) + (s32)state + 0x20) = state->positions[0];
                             state->targetCount++;
                         }
@@ -2015,7 +2042,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
                     event->position = 0;
                     event->mask = request->position;
                     event->flags = 0;
-                    state->slots[0] = Ta_Do_Effect(event, arg1);
+                    state->slots[0] = Ta_Do_Effect(event, Temp);
                     state->positions[0] = (((u32)request->position >> 8) << 8) | (request->position & 0xFF);
                     state->slotCount++;
                     state->timer++;
@@ -2040,7 +2067,7 @@ s32 Ta_Eff_005(void *arg0, void *arg1, s32 arg2) {
             case 2:
                 if (flags & 1) {
                     SzDuel_CloseMsgPopup();
-                    TaView_RestoreOriginalView(arg1, 16);
+                    TaView_RestoreOriginalView(Temp, 16);
                     state->phase = 0xFF;
                     state->phaseTimer = 0;
                 }
@@ -2089,13 +2116,14 @@ typedef struct State_00258490 {
 } State_00258490;
 
 
-s32 Ta_Eff_006(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 006, step `ID`: its camera, fades and effect module; it destroys units. */
+s32 Ta_Eff_006(void *eInfo, void *Temp, s32 ID) {
     Command_00258490 request;
     {
     Command_00258490 *command = &request;
     u8 flags = 0;
-    State_00258490 *state = arg1;
-    Command_00258490 *src = arg0;
+    State_00258490 *state = Temp;
+    Command_00258490 *src = eInfo;
     s32 i;
 
     request.kind = 999;
@@ -2103,7 +2131,7 @@ s32 Ta_Eff_006(void *arg0, void *arg1, s32 arg2) {
     request.mask = 0;
     request.extra = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         TaEffect_LoadModule(state, 6);
         return 1;
@@ -2207,7 +2235,8 @@ typedef struct State_00258760 {
     u16 timer;
 } State_00258760;
 
-s32 Ta_Eff_007(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 007, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+s32 Ta_Eff_007(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
     Request_00258760 requestData;
     s32 i;
@@ -2220,15 +2249,15 @@ s32 Ta_Eff_007(void *arg0, void *arg1, s32 arg2) {
     s32 object;
     s32 coord;
     u8 handle;
-    Input_00258760 *input = arg0;
-    State_00258760 *state = arg1;
+    Input_00258760 *input = eInfo;
+    State_00258760 *state = Temp;
 
     request->command = 999;
     request->field4 = 0;
     request->coord = 0;
     request->fieldC = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         state->flags = Ta_RemoveObjFromFlagLst(input->field8, (u16)input->fieldC);
         if ((first = Ta_IsActiveTrapB(input->fieldC, 0x4B)) >= 0) {
@@ -2402,10 +2431,11 @@ typedef struct Command_00258E20 {
     s32 amount;
 } Command_00258E20;
 
-s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 008, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. */
+s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
-    Input_00258E20 *input = arg0;
-    State_00258E20 *state = arg1;
+    Input_00258E20 *input = eInfo;
+    State_00258E20 *state = Temp;
     s32 var_s0;
     Command_00258E20 command;
     Command_00258E20 *action = &command;
@@ -2435,19 +2465,19 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
         var_s0 = 0;
     }
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x1FC);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x1FC);
         if ((temp_v0 = Ta_IsActiveTrapB(input->index, 0x2A)) < 0) {
             state->phase = 0x20U;
         } else {
             if ((temp_v0_2 = Ta_IsActiveTrapB(input->index, 0x2E)) < 0) {
                 state->position = (u16) temp_v0;
-                TaEffect_LoadModule(arg1, 0x25A);
-                TaEffect_LoadModule(arg1, 0x224);
+                TaEffect_LoadModule(Temp, 0x25A);
+                TaEffect_LoadModule(Temp, 0x224);
                 state->phase = 0x40U;
             } else {
-                TaEffect_LoadModule(arg1, 0x25A);
+                TaEffect_LoadModule(Temp, 0x25A);
                 TaView_ReqFocusCamera(0, temp_v0_2, 0xB4, 0xB4);
                 state->position = (u16) temp_v0_2;
                 TaUtil_DoOpen(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 1);
@@ -2457,7 +2487,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
         }
         return 1;
     }
-    if (TaEffect_IsLoadModule(arg1) == 1) {
+    if (TaEffect_IsLoadModule(Temp) == 1) {
         temp_v1 = state->phase;
         switch (temp_v1) {                          
         case 0x0:
@@ -2486,7 +2516,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->flags = 0;
             action->position = (s32) state->position;
             action->amount = 0;
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             state->phase = (u16) (state->phase + 1);
             return 1;
@@ -2507,7 +2537,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->flags = 0;
             action->position = 0;
             action->amount = var_s0;
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             state->phase = (u16) (state->phase + 1);
             return 1;
@@ -2517,7 +2547,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             SzDuel_SetUnitStatus((s32) temp_v0_6 >> 8, temp_v0_6 & 0xFF, 0, 1);
             SzDuel_CalcLP(input->index, 1, var_s0);
             state->phase = (u16) (state->phase + 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0U;
             break;
         case 0x6:
@@ -2543,7 +2573,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->flags = 0;
             action->position = (s32) state->position;
             action->amount = 0;
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             state->phase = (u16) (state->phase + 1);
             break;
@@ -2553,7 +2583,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->flags = 0;
             action->position = 0;
             action->amount = var_s0;
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             state->phase = 0U;
             return 1;
@@ -2562,7 +2592,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->flags = 0;
             action->position = 0;
             action->amount = var_s0;
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10A);
             state->phase = 0U;
@@ -2574,7 +2604,7 @@ s32 Ta_Eff_008(void *arg0, void *arg1, s32 arg2) {
             action->amount = (s32) (var_s0 | 0x10000);
             SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10A);
             state->phase = (u16) (state->phase + 1);
-            state->entries[state->count] = Ta_Do_Effect((s32 *)action, arg1);
+            state->entries[state->count] = Ta_Do_Effect((s32 *)action, Temp);
             state->count = (u8) (state->count + 1);
             break;
         case 0x41:
@@ -2615,9 +2645,10 @@ typedef struct EffTemp_002594D0 {
     u16 wCamTime;
 } EffTemp_002594D0;
 
-s32 Ta_Eff_009(void *arg0, void *arg1, s32 ID) {
+/* Effect script 009, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. */
+s32 Ta_Eff_009(void *eInfoIn, void *arg1, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
-    EffInfo_002594D0 *eInfo = arg0;
+    EffInfo_002594D0 *eInfo = eInfoIn;
     EffTemp_002594D0 *Temp = arg1;
     s32 Unit;
     s32 Unit2;
@@ -2832,10 +2863,11 @@ typedef struct Task_00259D90 {
     u16 timer;
 } Task_00259D90;
 
-s32 Ta_Eff_012(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 012, step `ID`: its camera, fades and effect module; it curses units, turns cards face up. */
+s32 Ta_Eff_012(void *eInfo, void *Temp, s32 ID) {
     s32 setupData[4];
     s32 *setup = setupData;
-    Task_00259D90 *task = arg1;
+    Task_00259D90 *task = Temp;
     s32 i;
     s32 complete;
     u8 flags;
@@ -2849,29 +2881,29 @@ s32 Ta_Eff_012(void *arg0, void *arg1, s32 arg2) {
     complete = 0;
     flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         TaView_ReqTopView();
-        TaEffect_LoadModule(arg1, 0x200);
+        TaEffect_LoadModule(Temp, 0x200);
         return 1;
     }
 
     switch (task->active) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             SzDuel_OpenMsgPopup(0, -120, 80, 0x108);
-            Ta_SetEffectDependOnFlagLst(arg0, arg1, setup, 0x200);
+            Ta_SetEffectDependOnFlagLst(eInfo, Temp, setup, 0x200);
             task->active++;
         }
         break;
     default:
-        for (i = 0, position = arg1; i < task->count; position += 4, i++) {
+        for (i = 0, position = Temp; i < task->count; position += 4, i++) {
             id = &task->ids[i];
             if (SzEffect_IsUse(*id) == 1) {
                 if (SzEffect_GetStatus(*id) == 2 && *(s32 *)(position + 0x20) >= 0) {
                     TaUtil_DoOpen(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, 1);
                     SzDuel_SetUnitStatus(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, 0, 1);
-                    Ta_SetUnitCurseRest(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, *((u8 *)arg0 + 0xC));
+                    Ta_SetUnitCurseRest(*(s32 *)(position + 0x20) >> 8, *(s32 *)(position + 0x20) & 0xFF, *((u8 *)eInfo + 0xC));
                     *(s32 *)(position + 0x20) = -1;
                 }
             } else {
@@ -2898,7 +2930,7 @@ s32 Ta_Eff_012(void *arg0, void *arg1, s32 arg2) {
             if (task->timer++ > 16) {
                 task->state++;
                 task->timer = 0;
-                TaView_RestoreOriginalView(arg1, 16);
+                TaView_RestoreOriginalView(Temp, 16);
             }
         }
         break;
@@ -2937,9 +2969,10 @@ typedef struct State_0025A060 {
 } State_0025A060;
 
 
-s32 Ta_Eff_013(void *arg0, void *arg1, s32 arg2) {
-    State_0025A060 *state = arg1;
-    Request_0025A060 *request = arg0;
+/* Effect script 013, step `ID`: its camera, fades and effect module; it turns cards face up. */
+s32 Ta_Eff_013(void *eInfo, void *Temp, s32 ID) {
+    State_0025A060 *state = Temp;
+    Request_0025A060 *request = eInfo;
     Request_0025A060 task;
     s32 i;
     s32 finished;
@@ -2955,10 +2988,10 @@ s32 Ta_Eff_013(void *arg0, void *arg1, s32 arg2) {
     next->value = 0;
     i = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         state->alpha = 0x80;
-        Ta_AllUnitFade(request, state, arg2, -1, 1, 1);
+        Ta_AllUnitFade(request, state, ID, -1, 1, 1);
         if (Ta_GetUnitNumFrom22bitFlagList(request->mask) == 1) {
             TaView_ReqFocusCamera(0, Ta_GetUnitOwnerIDFromLstCount(request->mask, 0), 100, 180);
         } else {
@@ -3031,7 +3064,7 @@ s32 Ta_Eff_013(void *arg0, void *arg1, s32 arg2) {
         if ((s32)state->timer++ > 0x10) {
             TaView_RestoreOriginalView(state, 0x10);
             state->timer = 0;
-            Ta_AllUnitFade(request, state, arg2, 1, 0, 1);
+            Ta_AllUnitFade(request, state, ID, 1, 0, 1);
             state->phase++;
         }
         break;
@@ -3078,33 +3111,34 @@ typedef struct Command_0025A4C0 {
 } Command_0025A4C0;
 
 
-s32 Ta_Eff_014(void *arg0, u16 *arg1, s32 arg2) {
+/* Effect script 014, step `ID`: its camera, fades and effect module; it works on the hand, uses the graveyard. */
+s32 Ta_Eff_014(void *eInfo, u16 *Temp, s32 ID) {
     Command_0025A4C0 command;
     Command_0025A4C0 *packet = &command;
-    Context_0025A4C0 *context = arg0;
-    State_0025A4C0 *state = (State_0025A4C0 *)arg1;
+    Context_0025A4C0 *context = eInfo;
+    State_0025A4C0 *state = (State_0025A4C0 *)Temp;
 
     command.id = 999;
     command.field4 = 0;
     command.field8 = 0;
     command.fieldC = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x202);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x202);
         if (context->mode != 0) {
-            TaEffect_LoadModule(arg1, 0x263);
+            TaEffect_LoadModule(Temp, 0x263);
         }
         return 1;
     }
     switch (state->step) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             packet->id = 0x202;
             packet->field4 = 0;
             packet->field8 = 0;
             packet->fieldC = 0;
-            state->handle = Ta_Do_Effect((s32 *)packet, arg1);
+            state->handle = Ta_Do_Effect((s32 *)packet, Temp);
             state->step++;
         }
         break;
@@ -3121,11 +3155,11 @@ s32 Ta_Eff_014(void *arg0, u16 *arg1, s32 arg2) {
                 return 0;
             }
             if (state->counter < 150) {
-                TaEff_PopHand((s32)arg0, arg1, 1, context->side, 1);
+                TaEff_PopHand((s32)eInfo, Temp, 1, context->side, 1);
                 state->counter++;
                 return 1;
             }
-            if (TaEff_PopHand((s32)arg0, arg1, 1, context->side, 0) == 0) {
+            if (TaEff_PopHand((s32)eInfo, Temp, 1, context->side, 0) == 0) {
                 SzDuel_CloseHandPopup();
                 if (SzDuel_GetWindowDisp() != 0) {
                     SzDuel_SetWindowDraw(1);
@@ -3137,14 +3171,14 @@ s32 Ta_Eff_014(void *arg0, u16 *arg1, s32 arg2) {
                 state->step++;
                 return 1;
             }
-            if (TaEff_PopHand((s32)arg0, arg1, 0, context->side == 0 ? 1 : 0, 1) == 0) {
+            if (TaEff_PopHand((s32)eInfo, Temp, 0, context->side == 0 ? 1 : 0, 1) == 0) {
                 return 1;
             }
             packet->id = 0x263;
             packet->field4 = 0;
             packet->field8 = 0;
             packet->fieldC = 0;
-            state->handle = Ta_Do_Effect((s32 *)packet, arg1);
+            state->handle = Ta_Do_Effect((s32 *)packet, Temp);
             state->step++;
             state->side = context->side;
         }
@@ -3163,14 +3197,14 @@ s32 Ta_Eff_014(void *arg0, u16 *arg1, s32 arg2) {
             state->step = 16;
             return 1;
         }
-        if (TaEff_PopHand((s32)arg0, arg1, 1, context->side, 1) == 0) {
+        if (TaEff_PopHand((s32)eInfo, Temp, 1, context->side, 1) == 0) {
             return 1;
         }
         packet->id = 0x263;
         packet->field4 = 0;
         packet->field8 = 0;
         packet->fieldC = 0;
-        state->handle = Ta_Do_Effect((s32 *)packet, arg1);
+        state->handle = Ta_Do_Effect((s32 *)packet, Temp);
         state->side = context->side;
         state->step++;
         break;
@@ -3214,6 +3248,7 @@ s32 Ta_Eff_014(void *arg0, u16 *arg1, s32 arg2) {
     return 1;
 }
 
+/* Pops a hand card up for an effect. */
 s32 TaEff_PopHand(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 temp_a1;
     s32 temp_v1;
@@ -3271,14 +3306,15 @@ typedef struct Mask_0025AA80 {
 } Mask_0025AA80;
 
 
-s32 Ta_Eff_015(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 015, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_015(void *eInfo, void *Temp, s32 ID) {
     s32 descriptor[4];
     s32 i;
     u8 flags;
     s32 *request = descriptor;
-    State_0025AA80 *state = arg1;
-    Mask_0025AA80 *source = arg0;
-    s32 mode = arg2;
+    State_0025AA80 *state = Temp;
+    Mask_0025AA80 *source = eInfo;
+    s32 mode = ID;
     u8 handle;
     u8 phase;
 
@@ -3290,14 +3326,14 @@ s32 Ta_Eff_015(void *arg0, void *arg1, s32 arg2) {
     flags = 0;
     SzDuel_SetWindowDraw(0);
     if (mode >= 0) {
-        InitEffectTemp(arg1);
+        InitEffectTemp(Temp);
         TaView_ReqStdTopDownView(0);
-        TaEffect_LoadModule(arg1, 15);
+        TaEffect_LoadModule(Temp, 15);
         return 1;
     }
     switch (state->step) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             do {
                 if ((source->mask >> (21 - i) & 1) == 1) {
                     if (i < 11) {
@@ -3305,7 +3341,7 @@ s32 Ta_Eff_015(void *arg0, void *arg1, s32 arg2) {
                         request[1] = 0;
                         request[2] = i;
                         request[3] = SzDuel_GetUnitKind(0, i) >> 5;
-                        handle = Ta_Do_Effect(request, arg1);
+                        handle = Ta_Do_Effect(request, Temp);
                         state->handles[state->count] = handle;
                         if (handle >= 0) {
                             state->entries[state->count] = i;
@@ -3318,7 +3354,7 @@ s32 Ta_Eff_015(void *arg0, void *arg1, s32 arg2) {
                         request[1] = 0;
                         request[2] = entry | 0x100;
                         request[3] = SzDuel_GetUnitKind(1, entry) >> 5;
-                        handle = Ta_Do_Effect(request, arg1);
+                        handle = Ta_Do_Effect(request, Temp);
                         state->handles[state->count] = handle;
                         if (handle >= 0) {
                             state->entries[state->count] = (i - 11) | 0x100;
@@ -3350,7 +3386,7 @@ s32 Ta_Eff_015(void *arg0, void *arg1, s32 arg2) {
         if (flags & 1) {
             state->phase = phase + 1;
             state->timer = 0;
-            TaView_RestoreOriginalView(arg1, 30);
+            TaView_RestoreOriginalView(Temp, 30);
         }
         break;
     default:
@@ -3380,10 +3416,11 @@ typedef struct State_0025AD60 {
 } State_0025AD60;
 
 
-s32 Ta_Eff_016(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 016, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_016(void *eInfo, void *Temp, s32 ID) {
     s32 packetData[4];
     s32 *packet = packetData;
-    State_0025AD60 *state = arg1;
+    State_0025AD60 *state = Temp;
     u8 slot;
     extern s32 Ta_IsFinishDestEfc();
 
@@ -3392,13 +3429,13 @@ s32 Ta_Eff_016(void *arg0, void *arg1, s32 arg2) {
     packetData[2] = 0;
     packetData[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         TaView_ReqStdCompleteView(0x10);
-        TaEffect_LoadModule(arg1, 0x204);
-        TaEffect_LoadModule(arg1, 0x1F);
-        TaEffect_LoadModule(arg1, 0x25B);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x204);
+        TaEffect_LoadModule(Temp, 0x1F);
+        TaEffect_LoadModule(Temp, 0x25B);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
         state->alpha = 0x80;
         return 1;
     }
@@ -3408,12 +3445,12 @@ s32 Ta_Eff_016(void *arg0, void *arg1, s32 arg2) {
             state->alpha -= 0xF;
         } else {
             state->alpha = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1 && state->timer++ > 0x10) {
+            if (TaEffect_IsLoadModule(Temp) == 1 && state->timer++ > 0x10) {
                 packet[0] = 0x204;
                 packet[1] = 0;
                 packet[2] = 0;
                 packet[3] = 0;
-                slot = Ta_Do_Effect(packet, arg1);
+                slot = Ta_Do_Effect(packet, Temp);
                 state->slots[state->count] = slot;
                 if (slot >= 0) {
                     state->count++;
@@ -3427,16 +3464,16 @@ s32 Ta_Eff_016(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->slots[0]) == 1) {
             return 1;
         }
-        Ta_SetEffectDependOnFlagLst(arg0, arg1, packet, 0x1F);
+        Ta_SetEffectDependOnFlagLst(eInfo, Temp, packet, 0x1F);
         state->phase++;
     } else if (state->phase == 2) {
-        if (Ta_ManageDestroyEffect(arg0, arg1, packet) != 0) {
+        if (Ta_ManageDestroyEffect(eInfo, Temp, packet) != 0) {
             state->phase++;
         }
     } else if (state->phase == 3) {
-        if (Ta_IsFinishDestEfc(arg0, arg1, packet) != 0) {
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc(eInfo, Temp, packet) != 0) {
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0;
             state->phase++;
         }
@@ -3475,11 +3512,12 @@ typedef struct Params_0025B050 {
 } Params_0025B050;
 
 
-s32 Ta_Eff_017_A(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 017_A, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_017_A(void *eInfo, void *Temp, s32 ID) {
     extern s32 Ta_IsFinishDestEfc();
     Params_0025B050 params;
     Params_0025B050 *p = &params;
-    State_0025B050 *state = arg1;
+    State_0025B050 *state = Temp;
     u8 slot;
 
     p->id = 999;
@@ -3487,13 +3525,13 @@ s32 Ta_Eff_017_A(void *arg0, void *arg1, s32 arg2) {
     p->value2 = 0;
     p->value3 = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         TaView_ReqStdCompleteView(0x10);
-        TaEffect_LoadModule(arg1, 0x14);
-        TaEffect_LoadModule(arg1, 0x1F);
-        TaEffect_LoadModule(arg1, 0x25B);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x14);
+        TaEffect_LoadModule(Temp, 0x1F);
+        TaEffect_LoadModule(Temp, 0x25B);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
         state->alpha = 0x80;
         return 1;
     }
@@ -3502,12 +3540,12 @@ s32 Ta_Eff_017_A(void *arg0, void *arg1, s32 arg2) {
             state->alpha -= 0xF;
         } else {
             state->alpha = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 p->id = 0x14;
                 p->value1 = 0;
                 p->value2 = 0;
                 p->value3 = 0;
-                slot = Ta_Do_Effect((s32 *)p, arg1);
+                slot = Ta_Do_Effect((s32 *)p, Temp);
                 state->slots[state->count] = slot;
                 if (slot >= 0) {
                     state->count++;
@@ -3520,16 +3558,16 @@ s32 Ta_Eff_017_A(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->slots[0]) == 1) {
             return 1;
         }
-        Ta_SetEffectDependOnFlagLst(arg0, arg1, p, 0x1F);
+        Ta_SetEffectDependOnFlagLst(eInfo, Temp, p, 0x1F);
         state->phase++;
     } else if (state->phase == 2) {
-        if (Ta_ManageDestroyEffect(arg0, arg1, p) != 0) {
+        if (Ta_ManageDestroyEffect(eInfo, Temp, p) != 0) {
             state->phase++;
         }
     } else if (state->phase == 3) {
-        if (Ta_IsFinishDestEfc(arg0, arg1, p) != 0) {
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc(eInfo, Temp, p) != 0) {
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0;
             state->phase++;
         }
@@ -3563,11 +3601,12 @@ typedef struct {
 } State_0025B330;
 
 
-s32 Ta_Eff_018(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 018, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_018(void *eInfo, void *Temp, s32 ID) {
     extern s32 Ta_IsFinishDestEfc();
     s32 data[4];
     s32 *params = data;
-    State_0025B330 *state = arg1;
+    State_0025B330 *state = Temp;
     u8 result;
     u16 stage;
 
@@ -3576,12 +3615,12 @@ s32 Ta_Eff_018(void *arg0, void *arg1, s32 arg2) {
     data[2] = 0;
     data[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x206);
-        TaEffect_LoadModule(arg1, 0x1F);
-        TaEffect_LoadModule(arg1, 0x25B);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x206);
+        TaEffect_LoadModule(Temp, 0x1F);
+        TaEffect_LoadModule(Temp, 0x25B);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
         state->fade = 0x80;
         return 1;
     }
@@ -3592,13 +3631,13 @@ s32 Ta_Eff_018(void *arg0, void *arg1, s32 arg2) {
             state->fade -= 0xF;
         } else {
             state->fade = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 params[0] = 0x206;
                 params[1] = 0;
                 params[2] = 0;
                 params[3] = 0;
                 TaView_ReqStdCompleteView(0x10);
-                result = Ta_Do_Effect(params, arg1);
+                result = Ta_Do_Effect(params, Temp);
                 state->entries[state->count] = result;
                 if (result >= 0) {
                     state->count++;
@@ -3611,16 +3650,16 @@ s32 Ta_Eff_018(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->entries[0]) == 1) {
             return 1;
         }
-        Ta_SetEffectDependOnFlagLst(arg0, arg1, params, 0x1F);
+        Ta_SetEffectDependOnFlagLst(eInfo, Temp, params, 0x1F);
         state->state++;
     } else if (stage == 2) {
-        if (Ta_ManageDestroyEffect(arg0, arg1, params) != 0) {
+        if (Ta_ManageDestroyEffect(eInfo, Temp, params) != 0) {
             state->state++;
         }
     } else if (stage == 3) {
-        if (Ta_IsFinishDestEfc(arg0, arg1, params) != 0) {
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc(eInfo, Temp, params) != 0) {
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0;
             state->state++;
         }
@@ -3658,10 +3697,11 @@ typedef struct Source_0025B610 {
 } Source_0025B610;
 
 
-s32 Ta_Eff_019(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 019, step `ID`: its camera, fades and effect module; it destroys units. */
+s32 Ta_Eff_019(void *eInfo, void *Temp, s32 ID) {
     s32 event[4];
     s32 *command = event;
-    State_0025B610 *state = arg1;
+    State_0025B610 *state = Temp;
     s32 i;
     u8 id;
 
@@ -3670,24 +3710,24 @@ s32 Ta_Eff_019(void *arg0, void *arg1, s32 arg2) {
     event[2] = 0;
     event[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
         TaView_ReqStdCompleteView(0x10);
         state->fade = 0x80;
-        TaEffect_LoadModule(arg1, 0x38);
+        TaEffect_LoadModule(Temp, 0x38);
     } else if (state->phase == 0) {
         if (state->fade > 0x3F) {
             state->fade -= 0xF;
         } else {
             state->fade = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 command[0] = 0x38;
                 command[1] = 0;
-                command[2] = ((Source_0025B610 *)arg0)->mask;
+                command[2] = ((Source_0025B610 *)eInfo)->mask;
                 command[3] = 0;
                 state->flags[state->count] = 1;
-                id = Ta_Do_Effect(command, arg1);
+                id = Ta_Do_Effect(command, Temp);
                 state->ids[state->count] = id;
                 if (id >= 0) {
                     state->count++;
@@ -3703,7 +3743,7 @@ s32 Ta_Eff_019(void *arg0, void *arg1, s32 arg2) {
                 if (state->flags[0] == 1) {
                     i = 0;
                     do {
-                        if ((((Source_0025B610 *)arg0)->mask >> (0x15 - i) & 1) == 1) {
+                        if ((((Source_0025B610 *)eInfo)->mask >> (0x15 - i) & 1) == 1) {
                             if (i < 0xB) {
                                 Ta_DelUnit(0, i);
                             } else {
@@ -3717,8 +3757,8 @@ s32 Ta_Eff_019(void *arg0, void *arg1, s32 arg2) {
             }
             return 1;
         }
-        Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-        TaView_RestoreOriginalView(arg1, 0x10);
+        Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+        TaView_RestoreOriginalView(Temp, 0x10);
         state->timer = 0;
         state->phase++;
     } else {
@@ -3753,9 +3793,10 @@ typedef struct State_0025B900 {
 
 extern char D_002B86E8[];
 
-s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
+/* Effect script 020, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_020(s32 eInfo, void *Temp, s32 ID) {
     s32 data[4];
-    State_0025B900 *state = arg1;
+    State_0025B900 *state = Temp;
     s32 i;
     s32 position;
     u32 pool;
@@ -3775,12 +3816,12 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
     command[2] = 0;
     command[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x11);
-        TaEffect_LoadModule(arg1, 0x18);
-        TaEffect_LoadModule(arg1, 0x25B);
-        Ta_AllUnitFade((void *)arg0, arg1, arg2, -1, 1, 1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x11);
+        TaEffect_LoadModule(Temp, 0x18);
+        TaEffect_LoadModule(Temp, 0x25B);
+        Ta_AllUnitFade((void *)eInfo, Temp, ID, -1, 1, 1);
         TaView_ReqFlatCompleteView(0x10);
         state->alpha = 0x80;
         return 1;
@@ -3792,12 +3833,12 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             state->alpha -= 0xF;
         } else {
             state->alpha = 0x30;
-            if (state->timer >= 0x10 && TaEffect_IsLoadModule(arg1) == 1) {
+            if (state->timer >= 0x10 && TaEffect_IsLoadModule(Temp) == 1) {
                 command[0] = 0x11;
                 command[1] = 0;
                 command[2] = 0;
                 command[3] = 0;
-                result = (u8)Ta_Do_Effect(command, arg1);
+                result = (u8)Ta_Do_Effect(command, Temp);
                 state->events[state->count] = result;
                 if (result >= 0) {
                     state->count++;
@@ -3811,8 +3852,8 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             return 1;
         }
         pool = 0;
-        for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(*(s32 *)(arg0 + 8)); i++) {
-            position = Ta_GetUnitOwnerIDFromLstCount(*(s32 *)(arg0 + 8), i);
+        for (i = 0; i < Ta_GetUnitNumFrom22bitFlagList(*(s32 *)(eInfo + 8)); i++) {
+            position = Ta_GetUnitOwnerIDFromLstCount(*(s32 *)(eInfo + 8), i);
             x = position >> 8;
             y = position & 0xFF;
             if (SzDuel_GetUnitStatus(x, y, 4) != 0 &&
@@ -3821,7 +3862,7 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             }
         }
         if (Ta_GetUnitNumFrom22bitFlagList(pool) == 0) {
-            pool = *(s32 *)(arg0 + 8);
+            pool = *(s32 *)(eInfo + 8);
         }
         state->target = Ta_GetRandomUnit(pool);
         TaView_ReqFocusCamera(0, state->target, 100, 180);
@@ -3830,7 +3871,7 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
         command[1] = 0;
         command[2] = state->target;
         command[3] = 0;
-        result = (u8)Ta_Do_Effect(command, arg1);
+        result = (u8)Ta_Do_Effect(command, Temp);
         state->events[0] = result;
         if (result >= 0) {
             state->count++;
@@ -3842,8 +3883,8 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             s32 j;
             s32 other;
 
-            for (j = 0; j < Ta_GetUnitNumFrom22bitFlagList(*(s32 *)(arg0 + 8)); j++) {
-                other = Ta_GetUnitOwnerIDFromLstCount(*(s32 *)(arg0 + 8), j);
+            for (j = 0; j < Ta_GetUnitNumFrom22bitFlagList(*(s32 *)(eInfo + 8)); j++) {
+                other = Ta_GetUnitOwnerIDFromLstCount(*(s32 *)(eInfo + 8), j);
                 if (other != position) {
                     otherX = other >> 8;
                     otherY = other & 0xFF;
@@ -3861,7 +3902,7 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             command[1] = 0;
             command[2] = state->target;
             command[3] = 0;
-            result = (u8)Ta_Do_Effect(command, arg1);
+            result = (u8)Ta_Do_Effect(command, Temp);
             state->events[state->count] = result;
             if (result >= 0) {
                 state->count++;
@@ -3869,9 +3910,9 @@ s32 Ta_Eff_020(s32 arg0, void *arg1, s32 arg2) {
             state->phase++;
         }
     } else if (state->phase == 3) {
-        if (Ta_IsFinishDestEfc((void *)arg0, arg1, command) != 0) {
-            Ta_AllUnitFade((void *)arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc((void *)eInfo, Temp, command) != 0) {
+            Ta_AllUnitFade((void *)eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0;
             state->phase++;
         }
@@ -3915,27 +3956,28 @@ typedef struct Obj_0025BE50 {
 } Obj_0025BE50;
 
 
-s32 Ta_Eff_021(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 021, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_021(void *eInfo, void *Temp, s32 ID) {
     extern s32 Ta_IsFinishDestEfc();
     s32 work[4];
     s32 *workp;
     Obj_0025BE50 *obj;
 
     workp = work;
-    obj = arg1;
+    obj = Temp;
     work[0] = 0x3E7;
     work[1] = 0;
     work[2] = 0;
     work[3] = 0;
     SzDuel_SetWindowDraw(0);
 
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         obj->amount = 0x80;
         TaView_ReqStdCompleteView(0x10);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
-        TaEffect_LoadModule(arg1, 0x1F);
-        TaEffect_LoadModule(arg1, 0x25B);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x1F);
+        TaEffect_LoadModule(Temp, 0x25B);
         return 1;
     }
 
@@ -3949,8 +3991,8 @@ s32 Ta_Eff_021(void *arg0, void *arg1, s32 arg2) {
         } else {
             amount = 0x30;
             obj->amount = amount;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
-                Ta_SetEffectDependOnFlagLst(arg0, arg1, workp, 0x1F);
+            if (TaEffect_IsLoadModule(Temp) == 1) {
+                Ta_SetEffectDependOnFlagLst(eInfo, Temp, workp, 0x1F);
                 obj->mode++;
             }
         }
@@ -3958,14 +4000,14 @@ s32 Ta_Eff_021(void *arg0, void *arg1, s32 arg2) {
         break;
     }
     case 1:
-        if (Ta_ManageDestroyEffect(arg0, arg1, workp) != 0) {
+        if (Ta_ManageDestroyEffect(eInfo, Temp, workp) != 0) {
             obj->mode++;
         }
         break;
     case 2:
-        if (Ta_IsFinishDestEfc(arg0, arg1, workp) != 0) {
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc(eInfo, Temp, workp) != 0) {
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             obj->timer = 0;
             obj->mode++;
         }
@@ -4001,27 +4043,28 @@ typedef struct Obj_0025C0B0 {
 } Obj_0025C0B0;
 
 
-s32 Ta_Eff_023(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 023, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_023(void *eInfo, void *Temp, s32 ID) {
     extern s32 Ta_IsFinishDestEfc();
     s32 work[4];
     s32 *workp;
     Obj_0025C0B0 *obj;
 
     workp = work;
-    obj = arg1;
+    obj = Temp;
     work[0] = 0x3E7;
     work[1] = 0;
     work[2] = 0;
     work[3] = 0;
     SzDuel_SetWindowDraw(0);
 
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         obj->amount = 0x80;
         TaView_ReqFlatCompleteView(0x10);
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
-        TaEffect_LoadModule(arg1, 0x20B);
-        TaEffect_LoadModule(arg1, 0x25B);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x20B);
+        TaEffect_LoadModule(Temp, 0x25B);
         return 1;
     }
 
@@ -4037,8 +4080,8 @@ s32 Ta_Eff_023(void *arg0, void *arg1, s32 arg2) {
         } else {
             amount = 0x30;
             obj->amount = amount;
-            if (obj->timer >= 0x10 && TaEffect_IsLoadModule(arg1) == 1) {
-                Ta_SetEffectDependOnFlagLst(arg0, arg1, workp, 0x20B);
+            if (obj->timer >= 0x10 && TaEffect_IsLoadModule(Temp) == 1) {
+                Ta_SetEffectDependOnFlagLst(eInfo, Temp, workp, 0x20B);
                 obj->mode++;
             }
         }
@@ -4046,14 +4089,14 @@ s32 Ta_Eff_023(void *arg0, void *arg1, s32 arg2) {
         break;
     }
     case 1:
-        if (Ta_ManageDestroyEffect(arg0, arg1, workp) != 0) {
+        if (Ta_ManageDestroyEffect(eInfo, Temp, workp) != 0) {
             obj->mode++;
         }
         break;
     case 2:
-        if (Ta_IsFinishDestEfc(arg0, arg1, workp) != 0) {
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+        if (Ta_IsFinishDestEfc(eInfo, Temp, workp) != 0) {
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             obj->timer = 0;
             obj->mode++;
         }
@@ -4110,11 +4153,13 @@ typedef struct State_0025C330 {
     u16 timer;
 } State_0025C330;
 
+/* The primary byte of an effect record. */
 static inline u8 *primary_0025C330(u8 *bytes) {
     return bytes + 6;
 }
 
-s32 Ta_Eff_025(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 025, step `ID`: its camera, fades and effect module; it destroys units. */
+s32 Ta_Eff_025(void *eInfo, void *Temp, s32 ID) {
     s32 complete;
     u8 flags;
     Command_0025C330 command;
@@ -4126,7 +4171,7 @@ s32 Ta_Eff_025(void *arg0, void *arg1, s32 arg2) {
     u16 oldTimer;
     u8 *entry;
     u8 *cleanupEntry;
-    State_0025C330 *state = arg1;
+    State_0025C330 *state = Temp;
     Command_0025C330 *cmd = &command;
 
     cmd->kind = 999;
@@ -4136,7 +4181,7 @@ s32 Ta_Eff_025(void *arg0, void *arg1, s32 arg2) {
     complete = 0;
     flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         index = 0;
         entry = (u8 *)state;
@@ -4254,7 +4299,7 @@ s32 Ta_Eff_025(void *arg0, void *arg1, s32 arg2) {
                                 resolvedPosition = SzDuel_GetUnitLoc(entity, 0);
                                 Ta_SetRangeVisual(resolvedPosition & 0xFF, resolvedPosition >> 8, 0,
                                     Ta_IsLDAbl(9, entity), 1, 1, 11);
-                            } else if (Ta_IsResistAll(y, x) && entity != ((Owner_0025C330 *)arg0)->entity) {
+                            } else if (Ta_IsResistAll(y, x) && entity != ((Owner_0025C330 *)eInfo)->entity) {
                                 SzDuel_OpenMsgPopup(0, 0, 0, SzDuel_GetMsgName(0x53));
                             } else {
                                 cmd->kind = 0x25B;
@@ -4360,13 +4405,14 @@ typedef struct Command_0025C9E0 {
 } Command_0025C9E0;
 
 
-s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 026, step `ID`: its camera, fades and effect module; it turns cards face up. */
+s32 Ta_Eff_026(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitCurseRest();
     extern s32 SzDuel_GetUnitSpellRest();
     Command_0025C9E0 storage;
     s32 *command = (s32 *)&storage;
-    Context_0025C9E0 *ctx = arg0;
-    State_0025C9E0 *state = arg1;
+    Context_0025C9E0 *ctx = eInfo;
+    State_0025C9E0 *state = Temp;
     s32 i;
     s32 card;
     s32 position;
@@ -4377,17 +4423,17 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
     storage.value = 0;
     storage.unused = 0;
 
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         if (ctx->target == -1) {
             SzDuel_CloseMsgPopup();
             return 0;
         }
         SzDuel_SetWindowDraw(0);
         TaView_ReqStdCompleteView(0x10);
-        TaEffect_LoadModule(arg1, 0x201);
-        TaEffect_LoadModule(arg1, 0x1A);
-        TaEffect_LoadModule(arg1, 0x1B);
+        TaEffect_LoadModule(Temp, 0x201);
+        TaEffect_LoadModule(Temp, 0x1A);
+        TaEffect_LoadModule(Temp, 0x1B);
         return 1;
     }
     if (ctx->target == -1) {
@@ -4397,12 +4443,12 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
     SzDuel_SetWindowDraw(0);
     switch (state->state) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             command[0] = 0x1A;
             command[1] = 0;
             command[2] = 0;
             command[3] = 0;
-            state->handle = Ta_Do_Effect(command, arg1);
+            state->handle = Ta_Do_Effect(command, Temp);
             state->state++;
         }
         break;
@@ -4410,7 +4456,7 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
     case 3:
         if (SzEffect_IsUse(state->handle) == 0) {
             if (state->state == 3) {
-                TaView_RestoreOriginalView(arg1, 0x10);
+                TaView_RestoreOriginalView(Temp, 0x10);
                 state->timer = 0;
             }
             state->state++;
@@ -4418,7 +4464,7 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
         break;
     case 2:
         if (ctx->target == 0xFFFE) {
-            Ta_SetEffectDependOnFlagLst(arg0, arg1, command, 0x1B);
+            Ta_SetEffectDependOnFlagLst(eInfo, Temp, command, 0x1B);
             if (Ta_GetUnitNumFrom22bitFlagList(ctx->mask) == 1) {
                 TaView_ReqFocusCamera(0, Ta_GetUnitOwnerIDFromLstCount(ctx->mask, 0), 100, 180);
             }
@@ -4429,7 +4475,7 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
             command[2] = ctx->target;
             command[3] = 0;
             TaView_ReqFocusCamera(0, ctx->target, 100, 180);
-            state->handle = Ta_Do_Effect(command, arg1);
+            state->handle = Ta_Do_Effect(command, Temp);
             state->state++;
         }
         break;
@@ -4518,7 +4564,7 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
                     command[1] = 0;
                     command[2] = state->card;
                     command[3] = 0;
-                    state->handle = Ta_Do_Effect(command, arg1);
+                    state->handle = Ta_Do_Effect(command, Temp);
                     state->state = 16;
                 } else {
                     card = ctx->card;
@@ -4542,7 +4588,7 @@ s32 Ta_Eff_026(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->handle) == 0) {
             if (state->counter++ < 31) {
                 SzDuel_CloseMsgPopup();
-                TaView_RestoreOriginalView(arg1, 16);
+                TaView_RestoreOriginalView(Temp, 16);
                 state->timer = 0;
                 state->state++;
             }
@@ -4584,29 +4630,30 @@ typedef struct Command_0025D230 {
 } Command_0025D230;
 
 
-s32 Ta_Eff_029_CNG(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 029_CNG, step `ID`: its camera, fades and effect module; it changes attack or defence. */
+s32 Ta_Eff_029_CNG(void *eInfo, void *Temp, s32 ID) {
     s32 i = 0;
     Command_0025D230 data;
     Command_0025D230 *command = &data;
     s32 j;
-    State_0025D230 *state = arg1;
-    Mask_0025D230 *input = arg0;
+    State_0025D230 *state = Temp;
+    Mask_0025D230 *input = eInfo;
 
     command->id = 999;
     command->x = 0;
     command->y = 0;
     command->z = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         state->alpha = 0x80;
         if (Ta_GetUnitNumFrom22bitFlagList(input->mask) == 1) {
             TaView_ReqFocusCamera(0x10, Ta_GetUnitOwnerIDFromLstCount(input->mask, 0), 100, 180);
         } else {
             TaView_ReqStdCompleteView(0x10);
         }
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
-        TaEffect_LoadModule(arg1, 0x211);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x211);
         return 1;
     }
 
@@ -4616,9 +4663,9 @@ s32 Ta_Eff_029_CNG(void *arg0, void *arg1, s32 arg2) {
             state->alpha -= 15;
         } else {
             state->alpha = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 SzDuel_OpenMsgPopup(0, -120, 80, SzDuel_GetMsgName(0x2E0));
-                Ta_SetEffectDependOnFlagLst(arg0, arg1, command, 0x211);
+                Ta_SetEffectDependOnFlagLst(eInfo, Temp, command, 0x211);
                 state->phase++;
             }
         }
@@ -4654,8 +4701,8 @@ s32 Ta_Eff_029_CNG(void *arg0, void *arg1, s32 arg2) {
                 }
                 i++;
             } while (i < 22);
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->phase++;
         }
         break;
@@ -4697,13 +4744,14 @@ typedef struct State_0025D640 {
 } State_0025D640;
 
 
-s32 Ta_Eff_029(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 029, step `ID`: its camera, fades and effect module; it changes attack or defence. */
+s32 Ta_Eff_029(void *eInfo, void *Temp, s32 ID) {
     s32 data[4];
     s32 completed;
     s32 *params = data;
     s32 i;
-    Command_0025D640 *command = arg0;
-    State_0025D640 *state = arg1;
+    Command_0025D640 *command = eInfo;
+    State_0025D640 *state = Temp;
 
     params[0] = 999;
     params[1] = 0;
@@ -4711,16 +4759,16 @@ s32 Ta_Eff_029(void *arg0, void *arg1, s32 arg2) {
     params[3] = 0;
     completed = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         state->value = 0x80;
         if (Ta_GetUnitNumFrom22bitFlagList(command->flags) == 1) {
             TaView_ReqFocusCamera(0x10, Ta_GetUnitOwnerIDFromLstCount(command->flags, 0), 100, 180);
         } else {
             TaView_ReqStdCompleteView(0x10);
         }
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
-        TaEffect_LoadModule(arg1, 0x211);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x211);
         return 1;
     }
 
@@ -4730,9 +4778,9 @@ s32 Ta_Eff_029(void *arg0, void *arg1, s32 arg2) {
             state->value -= 15;
         } else {
             state->value = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 SzDuel_OpenMsgPopup(0, -120, 80, 0x106);
-                Ta_SetEffectDependOnFlagLst(arg0, arg1, params, 0x211);
+                Ta_SetEffectDependOnFlagLst(eInfo, Temp, params, 0x211);
                 state->stage++;
             }
         }
@@ -4766,8 +4814,8 @@ s32 Ta_Eff_029(void *arg0, void *arg1, s32 arg2) {
                 }
                 completed++;
             } while (completed < 22);
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
-            TaView_RestoreOriginalView(arg1, 0x10);
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->stage++;
         }
         break;
@@ -4813,15 +4861,17 @@ typedef struct Packet_0025D9D0 {
 } Packet_0025D9D0;
 
 
-s32 Ta_Eff_028(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 028, step `ID`: its camera, fades and effect module; it destroys units, changes attack or defence,
+   curses units, binds units with a spell. */
+s32 Ta_Eff_028(void *eInfo, void *Temp, s32 ID) {
     Packet_0025D9D0 data;
     s32 done;
     Packet_0025D9D0 *packet = &data;
     s32 i;
     s32 j;
     u8 effect;
-    Input_0025D9D0 *input = arg0;
-    State_0025D9D0 *state = arg1;
+    Input_0025D9D0 *input = eInfo;
+    State_0025D9D0 *state = Temp;
 
     data.type = 999;
     data.unused = 0;
@@ -4829,7 +4879,7 @@ s32 Ta_Eff_028(void *arg0, void *arg1, s32 arg2) {
     data.flag = 0;
     done = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         state->alpha = 0x80;
         TaView_ReqStdCompleteView(0x10);
@@ -4989,12 +5039,13 @@ typedef struct Selection_0025DE70 {
 } Selection_0025DE70;
 
 
-s32 Ta_Eff_030(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 030, step `ID`: its camera, fades and effect module; it destroys units. */
+s32 Ta_Eff_030(void *eInfo, void *Temp, s32 ID) {
     s32 count;
     Selection_0025DE70 selection_data;
     Selection_0025DE70 *selection = &selection_data;
-    State_0025DE70 *state = arg1;
-    Context_0025DE70 *context = arg0;
+    State_0025DE70 *state = Temp;
+    Context_0025DE70 *context = eInfo;
     extern s32 SzDuel_GetUnitCardNo();
 
     selection->field0 = 999;
@@ -5003,16 +5054,16 @@ s32 Ta_Eff_030(void *arg0, void *arg1, s32 arg2) {
     selection->fieldC = 0;
     count = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         state->alpha = 0x80;
         if (Ta_GetUnitNumFrom22bitFlagList(context->mask) == 1) {
             TaView_ReqFocusCamera(0x10, Ta_GetUnitOwnerIDFromLstCount(context->mask, 0), 0x64, 0xB4);
         } else {
             TaView_ReqStdCompleteView(0x10);
         }
-        Ta_AllUnitFade(arg0, arg1, arg2, -1, 1, 1);
-        TaEffect_LoadModule(arg1, 0x1E);
+        Ta_AllUnitFade(eInfo, Temp, ID, -1, 1, 1);
+        TaEffect_LoadModule(Temp, 0x1E);
         return 1;
     }
 
@@ -5022,9 +5073,9 @@ s32 Ta_Eff_030(void *arg0, void *arg1, s32 arg2) {
             state->alpha -= 0xF;
         } else {
             state->alpha = 0x30;
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 if ((s32)state->timer++ > 0x10) {
-                    Ta_SetEffectDependOnFlagLst(arg0, arg1, selection, 0x1E);
+                    Ta_SetEffectDependOnFlagLst(eInfo, Temp, selection, 0x1E);
                     state->phase++;
                     state->timer = 0;
                 }
@@ -5063,9 +5114,9 @@ s32 Ta_Eff_030(void *arg0, void *arg1, s32 arg2) {
     }
     case 2:
         if ((s32)state->timer++ > 0x10) {
-            TaView_RestoreOriginalView(arg1, 0x10);
+            TaView_RestoreOriginalView(Temp, 0x10);
             state->timer = 0;
-            Ta_AllUnitFade(arg0, arg1, arg2, 1, 0, 1);
+            Ta_AllUnitFade(eInfo, Temp, ID, 1, 0, 1);
             state->phase++;
         }
         break;
@@ -5112,21 +5163,22 @@ typedef struct {
 } State_0025E200;
 
 
-s32 Ta_Eff_031(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 031, step `ID`: its camera, fades and effect module; it moves units. */
+s32 Ta_Eff_031(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitCtlRateM();
     extern s32 SzDuel_SetUnitCtlGoalM();
     extern s32 Ta_Do_Effect(s32 *, void *);
     s32 request[4];
     s32 *data = request;
-    Command_0025E200 *command = arg0;
-    State_0025E200 *state = arg1;
+    Command_0025E200 *command = eInfo;
+    State_0025E200 *state = Temp;
 
     request[0] = 999;
     request[1] = 0;
     request[2] = 0;
     request[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         state->alpha = 0x80;
         TaEffect_LoadModule(state, 0x213);
@@ -5136,7 +5188,7 @@ s32 Ta_Eff_031(void *arg0, void *arg1, s32 arg2) {
         } else {
             TaView_ReqStdCompleteView(0);
         }
-        Ta_AllUnitFade(command, state, arg2, -1, 1, 1);
+        Ta_AllUnitFade(command, state, ID, -1, 1, 1);
         return 1;
     }
 
@@ -5225,7 +5277,7 @@ s32 Ta_Eff_031(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->slots[state->count - 1]) != 1) {
             state->phase++;
             TaView_RestoreOriginalView(state, 16);
-            Ta_AllUnitFade(command, state, arg2, 1, 0, 1);
+            Ta_AllUnitFade(command, state, ID, 1, 0, 1);
         }
         break;
 
@@ -5284,6 +5336,7 @@ extern void func_00260740_b(unsigned char who);
 extern void func_00260A70_25e710(struct jp_69942_25e710 *Temp, unsigned char b);
 extern void func_001DFD50_b(int a, int b, int c, int d);
 
+/* Effect script 032, step `ID`: its camera, fades and effect module; it moves units. */
 int Ta_Eff_032(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c_25e710 * eInfo = eInfo_v;
@@ -5407,21 +5460,23 @@ int Ta_Eff_032(void *eInfo_v, void *Temp_v, int ID)
     return 1;
 }
 
-void Ta_SwapUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Swaps the squares of units (nSide1, nID1) and (nSide2, nID2). */
+void Ta_SwapUnit(s32 nSide1, s32 nID1, s32 nSide2, s32 nID2) {
     s32 temp_s0;
     s32 temp_s1;
     s32 temp_v0;
 
     temp_v0 = Ta_SearchMoveTemp();
     if (temp_v0 >= 0) {
-        temp_s0 = SzDuel_GetUnitLoc(arg0, arg1);
-        temp_s1 = SzDuel_GetUnitLoc(arg2, arg3);
-        SzDuel_MoveUnit(arg0, arg1, temp_v0 & 0xFF, temp_v0 >> 8);
-        SzDuel_MoveUnit(arg2, arg3, temp_s0 & 0xFF, temp_s0 >> 8);
-        SzDuel_MoveUnit(arg0, arg1, temp_s1 & 0xFF, temp_s1 >> 8);
+        temp_s0 = SzDuel_GetUnitLoc(nSide1, nID1);
+        temp_s1 = SzDuel_GetUnitLoc(nSide2, nID2);
+        SzDuel_MoveUnit(nSide1, nID1, temp_v0 & 0xFF, temp_v0 >> 8);
+        SzDuel_MoveUnit(nSide2, nID2, temp_s0 & 0xFF, temp_s0 >> 8);
+        SzDuel_MoveUnit(nSide1, nID1, temp_s1 & 0xFF, temp_s1 >> 8);
     }
 }
 
+/* A free square to park a unit on during a swap. */
 s32 Ta_SearchMoveTemp(void) {
     s32 var_s0;
     s32 var_s1;

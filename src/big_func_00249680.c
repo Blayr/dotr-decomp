@@ -73,6 +73,7 @@ extern int func_0024F830_b(int a, int b, int x, int y, struct DotrFinishMoveInfo
 #define HI(v) (((v) & 0xff) << 16)
 #define HW(v) (((v) & 0xffff) << 16)
 
+/* Finishes unit (nSide, nID)'s move to (nX, nZ): its act effects, battles and traps, into `eInfo_v`. */
 int Ta_FinishMove(int nSide, int nID, int nX, int nZ, void *eInfo_v, int PrNo)
 {
     extern int Ta_Manage_ActEfc();

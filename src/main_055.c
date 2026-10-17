@@ -563,16 +563,16 @@ typedef struct {
     u16 used;
 } Buffer_00202F00;
 
-/* The GS address of palette page `index`. */
-s32 SzText_GetClutGsAddr(s32 index) {
+/* Takes `count` units of palette space; returns their GS address, or -1 if there is no room. */
+s32 SzText_GetClutGsAddr(s32 count) {
     s32 temp_v0;
     Buffer_00202F00 *buffer = (Buffer_00202F00 *)&clutState;
 
-    if (((u16) D_00322994 + index) > (s32) D_00322992) {
+    if (((u16) D_00322994 + count) > (s32) D_00322992) {
         return -1;
     }
     temp_v0 = buffer->base + buffer->used;
-    buffer->used += index;
+    buffer->used += count;
     return temp_v0;
 }
 
@@ -961,8 +961,8 @@ s32 SzPad_VSync(void) {
 }
 
 typedef struct State_00203A40 {
-    u16 flags;
-    u16 disabled;
+    u16 held;       /* the buttons held this frame */
+    u16 heldBefore; /* the buttons held the frame before (SzPad_Act copies `held` here first) */
     u8 padding04[0x14];
     s32 counters[16];
     u8 padding58[2];
@@ -986,7 +986,7 @@ s32 SzPad_Check(s32 pad, s32 mode, s32 wanted) {
     buttons = (State_00203A40 *)(padState + 0x200);
     switch (mode) {
     case 0:
-        return wanted & (buttons->flags & ~buttons->disabled);
+        return wanted & (buttons->held & ~buttons->heldBefore);
     case 2:
         result = 0;
         bit = 0;
@@ -1005,7 +1005,7 @@ s32 SzPad_Check(s32 pad, s32 mode, s32 wanted) {
         } while (bit < 0x10);
         return result | SzPad_Check(pad, 0, wanted);
     case 1:
-        return buttons->flags & wanted;
+        return buttons->held & wanted;
     }
     return 0;
 }

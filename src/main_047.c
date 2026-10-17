@@ -362,7 +362,7 @@ s32 SzBattle_InqCamera(void) {
     return D_0031AB90;
 }
 
-/* The board square of the monster in battle slot `index` (-1 for none). */
+/* The unit ((side << 8) | unit) in battle slot `index`, or -1. */
 s32 SzBattle_InqEntry(s32 index) {
     return *(s32 *)&battleState.padding[index * 4];
 }
@@ -386,23 +386,23 @@ typedef union {
 
 extern Rotation_001E5260 D_002921C0;
 
-/* Brings side `side`'s unit on board square `square` ((x << 8) | z) into the 3D battle. */
-void SzBattle_Entry(s32 side, s32 square) {
+/* Brings unit `unitId` ((side << 8) | unit) into the 3D battle on battle side `side` (0 near, 1 far). */
+void SzBattle_Entry(s32 side, s32 unitId) {
     extern s32 SzModel_GetModelNo();
     s32 *states = (s32 *)&battleState;
-    s32 x = square >> 8;
-    s32 y = square & 0xFF;
+    s32 unitSide = unitId >> 8;
+    s32 unitIndex = unitId & 0xFF;
     void *card;
     s32 model;
     Rotation_001E5260 rotation;
     f32 position[4];
     f32 offset;
 
-    card = (void *)SzDuel_GetUnit(x, y);
+    card = (void *)SzDuel_GetUnit(unitSide, unitIndex);
     rotation = D_002921C0;
     rotation.axis[1] = (side != 0) ? 0 : 0x8000;
     if (card != NULL && *(s32 *)card != 0) {
-        SzDuel_SetBusyFlag(x, y, 1);
+        SzDuel_SetBusyFlag(unitSide, unitIndex, 1);
         model = *((u8 *)card + 0x46);
         SzSound_TransferSEGrp(side + 2, SzModel_GetModelNo(model), 0);
         SzModel_SetRot(model, &rotation);
@@ -420,7 +420,7 @@ void SzBattle_Entry(s32 side, s32 square) {
         SzModel_SetDeformRatio(model, 0);
         SzModel_SetAnimDirect(model, 0);
         SzModel_SetAnimDir(model, 1);
-        states[side] = square;
+        states[side] = unitId;
     }
 }
 

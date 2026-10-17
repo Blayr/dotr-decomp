@@ -2769,8 +2769,8 @@ s32 TaLogic019_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
     return 1;
 }
 
-void TaLogic_GetSommonPiecePreference_001604A0(s32 unused0, s32 unused1) {
-    Ta_GetSommonPiecePreference(unused0, unused1);
+void TaLogic_GetSommonPiecePreference_001604A0(s32 nSide, s32 nPr) {
+    Ta_GetSommonPiecePreference(nSide, nPr);
 }
 
 typedef struct {

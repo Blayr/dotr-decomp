@@ -607,11 +607,11 @@ void lSzFile_ReadCB(s32 request, s64 ok) {
     D_00322980.enabled = (s8)ok;
 }
 
-/* The folder files are read from. */
-u8 *SzFile_GetEnv(s32 unused0) {
+/* The value of setting `name` from the environment (the folder files are read from), or the default folder. */
+u8 *SzFile_GetEnv(s32 name) {
     u8 *ret;
 
-    ret = getenv(unused0);
+    ret = getenv(name);
     if (ret == NULL) {
         ret = D_002D0655;
     }

@@ -12,10 +12,11 @@ typedef struct RGBA_0027F700 {
 #define MAX_0027F700(a, b) ((a) > (b) ? (a) : (b))
 #define MIN_0027F700(a, b) ((a) < (b) ? (a) : (b))
 
-void TaTuto_DrawTrapArea(void *arg0, s32 arg1, s32 nX, s32 nZ) {
+/* Colours the board squares around (nX, nZ) that a tutorial trap covers. */
+void TaTuto_DrawTrapArea(void *pCtlIn, s32 bDifIn, s32 nX, s32 nZ) {
     extern void SzDuel_SetMapColor();
-    TutoCtl_0027F700 *pCtl = arg0;
-    u8 bDif = arg1;
+    TutoCtl_0027F700 *pCtl = pCtlIn;
+    u8 bDif = bDifIn;
     s32 i;
     s32 j;
     RGBA_0027F700 *pRGBA;
@@ -40,19 +41,21 @@ void TaTuto_DrawTrapArea(void *arg0, s32 arg1, s32 nX, s32 nZ) {
     }
 }
 
-s32 TaTuto_IsTuto(s32 arg0) {
+/* Whether side `nSide` is playing a tutorial duel. */
+s32 TaTuto_IsTuto(s32 nSide) {
     extern s32 SzDuel_GetPlayer();
     s32 var_s0;
 
     var_s0 = 0;
-    if (SzDuel_GetPlayer(arg0) >= 0x20) {
-        if (SzDuel_GetPlayer(arg0) < 0x64) {
+    if (SzDuel_GetPlayer(nSide) >= 0x20) {
+        if (SzDuel_GetPlayer(nSide) < 0x64) {
             var_s0 = 1;
         }
     }
     return (var_s0 != 0) ? 1 : 0;
 }
 
+/* Fades the duel and monster black-out in or out (`Flip`) at speed `FadeSpd` for the tutorial. */
 s32 func_0027F890(s32 FadeSpd, s32 Flip, s32 arg2) {
     u8 EndCond;
 
@@ -103,6 +106,7 @@ typedef struct Cam_0027FA30 {
     Vec_0027FA30 vec;
 } Cam_0027FA30;
 
+/* Moves the camera to a tutorial view over `nSpeed` frames. */
 s32 func_0027FA30(void *arg0, s32 nSpeed) {
     Cam_0027FA30 *pCam = arg0;
 
@@ -120,6 +124,7 @@ typedef struct Cam_0027FAB0 {
     Vec_0027FAB0 vec;
 } Cam_0027FAB0;
 
+/* Saves the current camera for the tutorial. */
 s32 func_0027FAB0(void *arg0) {
     Cam_0027FAB0 *pCam = arg0;
     Vec_0027FAB0 *pVec;
@@ -137,6 +142,7 @@ s32 func_0027FAB0(void *arg0) {
     pCam->vec.w = pVec->w;
 }
 
+/* Opens tutorial message `nMsgID` (its time into `wTime`). */
 s32 func_0027FB30(s32 nMsgID, u16 *wTime) {
     extern s32 func_0027FDA0(s32);
 
@@ -149,6 +155,7 @@ s32 func_0027FB30(s32 nMsgID, u16 *wTime) {
     return 0;
 }
 
+/* Shows tutorial message `nMsgID` and closes it when its time `wTime` runs out. */
 s32 func_0027FBA0(s32 nMsgID, u16 *wTime) {
     extern s32 func_0027FDA0(s32);
 
@@ -171,6 +178,7 @@ typedef struct TutoCtl_0027FC20 {
     u16 wait;
 } TutoCtl_0027FC20;
 
+/* Shows tutorial messages `nStartMsgID` to `nEndMsgID`, one per button press. */
 s32 func_0027FC20(s32 nStartMsgID, s32 nEndMsgID, void *arg2) {
     extern s32 func_0027FB30(s32, u16 *);
     extern s32 func_0027FBA0(s32, u16 *);
@@ -214,6 +222,7 @@ s32 func_0027FC20(s32 nStartMsgID, s32 nEndMsgID, void *arg2) {
     return 0;
 }
 
+/* The real message id of tutorial message `nMsgID` (by the options and the turn owner). */
 s32 func_0027FDA0(s32 nMsgID) {
     if (SzData_GetOption(SzDuel_GetTurnOwner(), 0) == 0) {
         return nMsgID;
@@ -1766,8 +1775,9 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-/* Starts the slot machine (`withDeck`: the reels are built from the player's deck). */
-void ShSlot_Init(s32 withDeck) {
+/* Starts the slot machine on the reel cards at 0x1ED0000 (or, with `useTestReels`, a built-in set of 16 without
+   starting the spin). */
+void ShSlot_Init(s32 useTestReels) {
     s32 i;
     s32 j;
     s32 a;
@@ -1778,7 +1788,7 @@ void ShSlot_Init(s32 withDeck) {
     extern Flags_00280670 slotReels[];
     extern s32 ShSlot_Start();
 
-    D_00351244 = withDeck;
+    D_00351244 = useTestReels;
     slotReelCards = (Deck_00285880 *)0x01ED0000;
     if (D_00351244) {
         deck = slotReelCards;

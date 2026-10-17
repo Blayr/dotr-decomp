@@ -11,14 +11,15 @@ typedef struct Entry_00276120 {
     u8 padding[3];
 } Entry_00276120;
 
-s32 TaLogic_DoUnitAssign(u16 arg0, void *arg1) {
-    Entry_00276120 *entries = arg1;
+/* Adds unit `uID` to the computer opponent's task list in `pCtl` (by summon order). */
+s32 TaLogic_DoUnitAssign(u16 uID, void *pCtl) {
+    Entry_00276120 *entries = pCtl;
     s32 i;
 
     for (i = 0; i < 22; i++) {
         if (entries[i].id == 0xFFFF) {
-            entries[i].id = arg0;
-            entries[i].field_02 = SzDuel_GetUnitSummonOrder(arg0 >> 8, arg0 & 0xFF);
+            entries[i].id = uID;
+            entries[i].field_02 = SzDuel_GetUnitSummonOrder(uID >> 8, uID & 0xFF);
             entries[i].field_08 = -1;
             entries[i].field_04 = 0xFFFF;
             entries[i].state = 0;
@@ -39,18 +40,19 @@ typedef struct {
     u8 padding[3];
 } Entry_002761D0;
 
-void TaLogic_DoSortTaskList(void *arg0) {
+/* Sorts the computer opponent's task list in `pCtl` by distance to each task's goal. */
+void TaLogic_DoSortTaskList(void *pCtl) {
     s32 i;
     s32 j;
     Entry_002761D0 *dst;
     Entry_002761D0 *src;
 
     i = 0;
-    dst = arg0;
+    dst = pCtl;
     do {
         if (dst->id == 0xFFFF) {
             for (j = i + 1; j < 22; j++) {
-                src = &((Entry_002761D0 *)arg0)[j];
+                src = &((Entry_002761D0 *)pCtl)[j];
                 if (src->id != 0xFFFF) {
                     j = 22;
                     *dst = *src;
@@ -99,6 +101,8 @@ typedef char DotrInputQueueTaskSizeMustBe20[(sizeof(struct DotrInputQueueTask) =
 #define DX (sX - (pTask->target & 0xff))
 #define DZ (sZ - (pTask->target >> 8))
 
+/* Turns the cheapest task `pTask_v` into cursor and button inputs for the computer opponent, from cursor square
+   `wCursorPos`. */
 int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned short wCursorPos)
 {
     struct DotrInputQueueCtl * pCtl = pCtl_v;
@@ -216,6 +220,7 @@ int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned sho
 #undef DX
 #undef DZ
 
+/* The absolute value of `value`. */
 static inline s32 absolute_00276B60(s32 value) {
     if (value >= 0) {
         return value;
@@ -223,22 +228,23 @@ static inline s32 absolute_00276B60(s32 value) {
     return -value;
 }
 
-s32 TaLogic_GetQueueXY_Move1(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* The first step for unit (nSide, nID) on (nX, nZ) toward goal (gX, gZ). */
+s32 TaLogic_GetQueueXY_Move1(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     extern s32 TaLogic_IsPassRoot();
     s16 cell;
 
-    cell = SzDuel_GetMapUnitID(arg4, arg5);
-    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) +
-        (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) == 1) {
+    cell = SzDuel_GetMapUnitID(gX, gZ);
+    if ((((gX < nX) ? nX : gX) - ((nX < gX) ? nX : gX)) +
+        (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) == 1) {
         return 1;
     }
-    switch (absolute_00276B60(arg2 - arg4)) {
+    switch (absolute_00276B60(nX - gX)) {
     case 0:
         return 1;
     case 2:
         return 1;
     case 1:
-        if (TaLogic_IsPassRoot(arg0, arg1, arg2, arg3, arg4, arg3, &cell) == 1) {
+        if (TaLogic_IsPassRoot(nSide, nID, nX, nZ, gX, nZ, &cell) == 1) {
             return 1;
         }
         return 0;
@@ -246,15 +252,16 @@ s32 TaLogic_GetQueueXY_Move1(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s
     return 1;
 }
 
-s32 TaLogic_GetActionUnitFromOwnerID(u16 *arg0, s32 arg1) {
+/* The computer opponent's task entry for unit `OwnerID`. */
+s32 TaLogic_GetActionUnitFromOwnerID(u16 *pCtl, s32 OwnerID) {
     s32 i = 0;
 
     do {
-        if (arg1 == *arg0) {
+        if (OwnerID == *pCtl) {
             return i;
         }
         i++;
-        arg0 += 8;
+        pCtl += 8;
     } while (i < 0x16);
     return -1;
 }
@@ -266,6 +273,8 @@ extern int func_00278510_b(struct jp_9a533 *pVarInfo, int wUnit, int bWarnLvl, i
 #define LO(a, b) ((a) < (b) ? (a) : (b))
 #define HI(a, b) ((b) < (a) ? (a) : (b))
 
+/* How dangerous square (nX, nZ) is for unit `nOwnerID`: enemies within `bWarnRange` that beat it at level
+   `bWarnLvl`. */
 int TaLogic_GetUnitWarning(int nX, int nZ, int nOwnerID, unsigned char bWarnRange, unsigned short bWarnLvl, unsigned char fView)
 {
     struct jp_9a533 *pVarInfo;
@@ -313,6 +322,7 @@ typedef struct {
     u8 field_10;
 } Data_00276EC0;
 
+/* The cheapest "do nothing" task: the unit stays where it is. */
 void TaLogic_GetMinimumTask_DoNone(u16 *arg0, s32 arg1, void *arg2) {
     Data_00276EC0 *dest = arg2;
     u16 temp_v0;
@@ -333,8 +343,9 @@ typedef struct {
 s32 func_00277160_b(void *arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, u8 arg6, u8 arg7, u8 arg8,
                   s32 arg9, s32 arg10);
 
-s32 TaLogic_GetNearCard2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
-                  s32 arg9) {
+/* The nearest card a unit (record `pVarInfo`) on (nX, nZ) can reach that matches the kind and face filters. */
+s32 TaLogic_GetNearCard2(void *pVarInfo, s32 nX, s32 nZ, s32 nSide, s32 bChase, s32 sKind, s32 fOpen, s32 fDef, s32 fView,
+                  s32 bWarnLvl) {
     s32 state;
     s32 i;
     s32 result;
@@ -358,9 +369,9 @@ s32 TaLogic_GetNearCard2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     b = 0;
     c = 0;
     state = 0;
-    for (i = 1; i <= (u8)arg4; i++) {
-        state = TaLogic_GetNearUnitL2(state, arg0, arg1, arg2, arg3, (u8)i, arg8, arg9, slots, &a, &c, &b, work);
-        result = func_00277160_b(arg0, arg1, arg2, slots, arg4, arg5, arg6, arg7, arg8, arg9, a);
+    for (i = 1; i <= (u8)bChase; i++) {
+        state = TaLogic_GetNearUnitL2(state, pVarInfo, nX, nZ, nSide, (u8)i, fView, bWarnLvl, slots, &a, &c, &b, work);
+        result = func_00277160_b(pVarInfo, nX, nZ, slots, bChase, sKind, fOpen, fDef, fView, bWarnLvl, a);
         if (result >= 0) {
             return result;
         }
@@ -371,14 +382,15 @@ s32 TaLogic_GetNearCard2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     return -1;
 }
 
-void TaLogic_GetNearUnitL2(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                   s32 arg4, s32 arg5, s32 arg6, s32 arg7,
-                   s32 arg8, s32 arg9, s32 arg10, s32 arg11, s32 arg12) {
+/* The nearest enemy unit a unit (record `pVarInfo`) on (nX, nZ) can reach and beat, searched by a move tree. */
+void TaLogic_GetNearUnitL2(s32 pTree, s32 pVarInfo, s32 nX, s32 nZ,
+                   s32 nSide, s32 bChase, s32 fView, s32 bWarnLvl,
+                   s32 nUnitLst, s32 wUnitNum, s32 wSize, s32 wNodeCount, s32 wIgnoreLst) {
     extern u8 *TaLogic_GetNearUnitPickUpTree();
 
-    TaLogic_GetNearUnitPickUpTree(arg0, 0, arg1, arg2, arg3, arg4, arg5, arg6,
-                   (u16) arg7, 0, (s64) arg10, (s64) arg11,
-                   (s64) arg8, (s64) arg9, (s64) arg12);
+    TaLogic_GetNearUnitPickUpTree(pTree, 0, pVarInfo, nX, nZ, nSide, bChase, fView,
+                   (u16) bWarnLvl, 0, (s64) wSize, (s64) wNodeCount,
+                   (s64) nUnitLst, (s64) wUnitNum, (s64) wIgnoreLst);
 }
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
@@ -394,6 +406,7 @@ extern int func_00278510_277160(struct jp_9a533_277160 *pVarInfo, int wUnit, int
 #define MAX(a, b) ((a) < (b) ? (b) : (a))
 #define ID_277160(w) (w) >> 8, (w) & 0xFF
 
+/* The nearest unit of list `nUnitLst_v` to square (nX, nZ) matching `sKey`. */
 int TaLogic_GetNearUnitL3(void *pVarInfo_v, int nX, int nZ, void *nUnitLst_v, unsigned char bChase, int sKey, unsigned char fOpen, unsigned char fDef, unsigned char fView, int bWarnLvl, unsigned short wUnitNum)
 {
     struct jp_9a533_277160 * pVarInfo = pVarInfo_v;
@@ -450,7 +463,8 @@ int TaLogic_GetNearUnitL3(void *pVarInfo_v, int nX, int nZ, void *nUnitLst_v, un
 #undef MAX
 #undef ID_277160
 
-s32 TaLogic_GetFollowNearUnit(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u16 arg7) {
+/* The nearest unit of list `nUnitLst` to (nX, nZ) to follow (key `sKey`, face filters `fOpen`, `fDef`). */
+s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sKey, u8 fOpen, u8 fDef, u16 wUnitNum) {
     extern s32 SzDuel_GetUnitCardNo();
     s32 var_s0;
     s32 temp_s1;
@@ -481,79 +495,79 @@ s32 TaLogic_GetFollowNearUnit(s32 arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4
     u16 temp_v0_5;
     s32 temp_v0_7;
 
-    var_s4 = arg2;
+    var_s4 = nUnitLst;
     var_fp = 7;
     var_s3 = 0xFFFF & 0xFFFF;
-    for (var_s0 = 0; var_s0 < arg7; var_s0++) {
+    for (var_s0 = 0; var_s0 < wUnitNum; var_s0++) {
         temp_v0 = *(u16 *)var_s4;
         if (SzDuel_GetUnit((s32) temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
             temp_v0_2 = *(u16 *)var_s4;
             temp_s1 = SzDuel_GetUnitLoc((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF);
             temp_v0_3 = *(u16 *)var_s4;
-            if (TaLogic_IsStatusMatch(SzDuel_GetUnitStatus((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 2), arg5) == 1) {
+            if (TaLogic_IsStatusMatch(SzDuel_GetUnitStatus((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 2), fOpen) == 1) {
                 temp_v0_4 = *(u16 *)var_s4;
-                if (TaLogic_IsStatusMatch(SzDuel_GetUnitStatus((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 5), arg6) == 1) {
+                if (TaLogic_IsStatusMatch(SzDuel_GetUnitStatus((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 5), fDef) == 1) {
                     temp_v0_5 = *(u16 *)var_s4;
-                    if (TaLogic_IsUnitCategory((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, arg4) == 1) {
+                    if (TaLogic_IsUnitCategory((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, sKey) == 1) {
                         temp_s2 = var_s4[2];
-                        if (temp_s2 <= (u8) arg3) {
+                        if (temp_s2 <= (u8) bChase) {
                           if ((s32) temp_s2 > 0) {
                             temp_v0_6 = var_fp & 0xFF;
                             if ((s32) temp_s2 < temp_v0_6) {
                                 y = temp_s1 >> 8;
-                                if (arg1 < y) {
-                                    var_v0_2 = arg1;
+                                if (nZ < y) {
+                                    var_v0_2 = nZ;
                                 } else {
                                     var_v0_2 = y;
                                 }
-                                if (y < arg1) {
-                                    var_a0 = arg1;
+                                if (y < nZ) {
+                                    var_a0 = nZ;
                                 } else {
                                     var_a0 = y;
                                 }
                                 x = temp_s1 & 0xFF;
-                                if (arg0 < x) {
-                                    var_v1 = arg0;
+                                if (nX < x) {
+                                    var_v1 = nX;
                                 } else {
                                     var_v1 = x;
                                 }
-                                if (x < arg0) {
-                                    var_a1 = arg0;
+                                if (x < nX) {
+                                    var_a1 = nX;
                                 } else {
                                     var_a1 = x;
                                 }
                                 var_s3 = *(u16 *)var_s4;
                                 var_fp = ((var_a1 - var_v1) + (var_a0 - var_v0_2)) & 0xFF;
-                                arg3 = temp_s2 & 0xFF;
+                                bChase = temp_s2 & 0xFF;
                             } else if (temp_s2 == temp_v0_6) {
                                 temp_v0_7 = SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(*(u16 *)var_s4 >> 8, *(u16 *)var_s4 & 0xFF))[3];
                                 spA0 = (s32) temp_v0_7;
                                 if ((s32) SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(var_s3 >> 8, var_s3 & 0xFF))[3] < spA0) {
                                     y2 = temp_s1 >> 8;
                                     var_s3 = *(u16 *)var_s4;
-                                    if (arg1 < y2) {
-                                        var_v0_3 = arg1;
+                                    if (nZ < y2) {
+                                        var_v0_3 = nZ;
                                     } else {
                                         var_v0_3 = y2;
                                     }
-                                    if (y2 < arg1) {
-                                        var_a0_2 = arg1;
+                                    if (y2 < nZ) {
+                                        var_a0_2 = nZ;
                                     } else {
                                         var_a0_2 = y2;
                                     }
                                     x2 = temp_s1 & 0xFF;
-                                    if (arg0 < x2) {
-                                        var_v1_2 = arg0;
+                                    if (nX < x2) {
+                                        var_v1_2 = nX;
                                     } else {
                                         var_v1_2 = x2;
                                     }
-                                    if (x2 < arg0) {
-                                        var_a1_2 = arg0;
+                                    if (x2 < nX) {
+                                        var_a1_2 = nX;
                                     } else {
                                         var_a1_2 = x2;
                                     }
                                     var_fp = ((var_a1_2 - var_v1_2) + (var_a0_2 - var_v0_3)) & 0xFF;
-                                    arg3 = temp_s2 & 0xFF;
+                                    bChase = temp_s2 & 0xFF;
                                 }
                             }
                           }
@@ -578,6 +592,7 @@ typedef struct Visit_002777F0 {
     u8 pad;
 } Visit_002777F0;
 
+/* Grows the move tree from a node, noting enemies the moving card can beat. */
 u8 *TaLogic_GetNearUnitPickUpTree(u8 *node, s32 parent, s32 card, s32 x, s32 y,
                   s32 owner, u8 limit, s32 flags, u16 value, u8 depth,
                   u16 *pool, u16 *poolCount, void *visited, u16 *visitCount,
@@ -688,7 +703,8 @@ typedef struct Entry_00277C60 {
     u8 pad;
 } Entry_00277C60;
 
-s32 TaLogic_IsAdjustUnitLst(void *arg0, s32 arg1, s32 arg2) {
+/* Whether unit `nUnitID` of list `nUnitLst` is within distance `Dist`. */
+s32 TaLogic_IsAdjustUnitLst(void *nUnitLst, s32 nUnitID, s32 Dist) {
     s32 i;
     s32 result;
     Entry_00277C60 *entry;
@@ -698,12 +714,12 @@ s32 TaLogic_IsAdjustUnitLst(void *arg0, s32 arg1, s32 arg2) {
     i = 0;
     result = 0;
     do {
-        entry = &((Entry_00277C60 *)arg0)[i];
+        entry = &((Entry_00277C60 *)nUnitLst)[i];
         key = entry->key;
-        if (arg1 == key) {
+        if (nUnitID == key) {
             value = &entry->value;
-            if (arg2 < *value) {
-                *value = arg2;
+            if (Dist < *value) {
+                *value = Dist;
             }
             result = 1;
         } else if (key == 0xFFFF) {
@@ -721,12 +737,13 @@ typedef struct Entry_00277CD0 {
     u8 pad;
 } Entry_00277CD0;
 
-s32 TaLogic_GetTrapNearCard(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
-                  u8 range, s32 arg6, u8 arg7, u8 arg8, s32 arg9,
-                  s32 fallback, u16 count, u8 arg12) {
+/* The nearest card a trap unit (tSide, tID) can catch within `range` of (nX, nZ). */
+s32 TaLogic_GetTrapNearCard(s32 tSide, s32 tID, s32 nX, s32 nZ, void *nUnitLst,
+                  u8 range, s32 sKey, u8 fOpen, u8 fDef, s32 fView,
+                  s32 fallback, u16 count, u8 fTrap) {
     s32 cost;
-    Entry_00277CD0 *p = arg4;
-    u8 mode = (u8)arg9;
+    Entry_00277CD0 *p = nUnitLst;
+    u8 mode = (u8)fView;
     s32 i;
     s32 newScore;
     u8 bestDistance = 7;
@@ -743,26 +760,26 @@ s32 TaLogic_GetTrapNearCard(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
 
         if (SzDuel_GetUnit(p->id >> 8, p->id & 0xFF) != 0) {
             pos = SzDuel_GetUnitLoc(p->id >> 8, p->id & 0xFF);
-            if ((((pos & 0xFF) < arg2 ? arg2 : (pos & 0xFF)) - (arg2 < (pos & 0xFF) ? arg2 : (pos & 0xFF))) +
-                (((pos >> 8) < arg3 ? arg3 : (pos >> 8)) - (arg3 < (pos >> 8) ? arg3 : (pos >> 8))) <= range &&
-                TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 2), arg7) == 1 &&
-                TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 5), arg8) == 1 &&
-                TaLogic_IsUnitCategory(p->id >> 8, p->id & 0xFF, arg6) == 1 &&
+            if ((((pos & 0xFF) < nX ? nX : (pos & 0xFF)) - (nX < (pos & 0xFF) ? nX : (pos & 0xFF))) +
+                (((pos >> 8) < nZ ? nZ : (pos >> 8)) - (nZ < (pos >> 8) ? nZ : (pos >> 8))) <= range &&
+                TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 2), fOpen) == 1 &&
+                TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 5), fDef) == 1 &&
+                TaLogic_IsUnitCategory(p->id >> 8, p->id & 0xFF, sKey) == 1 &&
                 ((TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1 &&
-                  TaTrapA_IsTrapAct(arg0, arg1, p->id >> 8, p->id & 0xFF, (pos & 0xFF), (pos >> 8)) == 1) ||
-                 (TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1 && arg12 == 1))) {
+                  TaTrapA_IsTrapAct(tSide, tID, p->id >> 8, p->id & 0xFF, (pos & 0xFF), (pos >> 8)) == 1) ||
+                 (TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1 && fTrap == 1))) {
                 cost = p->cost;
                 if (cost <= range && cost > 0) {
                     if (cost < bestDistance) {
                         s32 maxY;
                         s32 maxX;
-                        if (arg3 < (pos >> 8)) minY = arg3;
+                        if (nZ < (pos >> 8)) minY = nZ;
                         else minY = pos >> 8;
-                        if ((pos >> 8) < arg3) maxY = arg3;
+                        if ((pos >> 8) < nZ) maxY = nZ;
                         else maxY = pos >> 8;
-                        if (arg2 < (pos & 0xFF)) minX = arg2;
+                        if (nX < (pos & 0xFF)) minX = nX;
                         else minX = pos & 0xFF;
-                        if ((pos & 0xFF) < arg2) maxX = arg2;
+                        if ((pos & 0xFF) < nX) maxX = nX;
                         else maxX = pos & 0xFF;
                         best = p->id;
                         bestDistance = (maxX - minX) + (maxY - minY);
@@ -770,12 +787,12 @@ s32 TaLogic_GetTrapNearCard(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
                         range = (u8)cost;
                     } else if (cost == bestDistance) {
                         if (TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1) {
-                            newScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(arg0, arg1), p->id, (pos & 0xFF), (pos >> 8));
+                            newScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(tSide, tID), p->id, (pos & 0xFF), (pos >> 8));
                         } else {
                             newScore = fallback;
                         }
                         if (TaLogic_IsJudgeUnitDanger(best >> 8, best & 0xFF, mode) == 1) {
-                            oldScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(arg0, arg1), best, bestPos & 0xFF, bestPos >> 8);
+                            oldScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(tSide, tID), best, bestPos & 0xFF, bestPos >> 8);
                         } else {
                             oldScore = fallback;
                         }
@@ -783,13 +800,13 @@ s32 TaLogic_GetTrapNearCard(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
                             s32 maxY;
                             s32 maxX;
                             best = p->id;
-                            if (arg3 < (pos >> 8)) minY = arg3;
+                            if (nZ < (pos >> 8)) minY = nZ;
                             else minY = pos >> 8;
-                            if ((pos >> 8) < arg3) maxY = arg3;
+                            if ((pos >> 8) < nZ) maxY = nZ;
                             else maxY = pos >> 8;
-                            if (arg2 < (pos & 0xFF)) minX = arg2;
+                            if (nX < (pos & 0xFF)) minX = nX;
                             else minX = pos & 0xFF;
-                            if ((pos & 0xFF) < arg2) maxX = arg2;
+                            if ((pos & 0xFF) < nX) maxX = nX;
                             else maxX = pos & 0xFF;
                             bestDistance = (maxX - minX) + (maxY - minY);
                             bestPos = (u16)pos;
@@ -805,15 +822,16 @@ s32 TaLogic_GetTrapNearCard(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4,
     return best == 0xFFFF ? -1 : best;
 }
 
-s32 TaLogic_IsStatusMatch(s32 arg0, s32 arg1) {
-    switch (arg1) {
+/* Whether a unit's status `Status` matches face filter `fOpen`. */
+s32 TaLogic_IsStatusMatch(s32 Status, s32 fOpen) {
+    switch (fOpen) {
     case 0:
-        if (arg0 == 0) {
+        if (Status == 0) {
             return 1;
         }
         break;
     case 1:
-        if (arg0 == 1) {
+        if (Status == 1) {
             return 1;
         }
         break;
@@ -824,18 +842,20 @@ s32 TaLogic_IsStatusMatch(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 TaLogic_IsJudgeUnitDanger(s32 arg0, s32 arg1, s32 arg2) {
-    if (arg2 != 0) {
+/* Whether the computer opponent can judge unit (nSide, nID) (face up, or `fView` lets it look). */
+s32 TaLogic_IsJudgeUnitDanger(s32 nSide, s32 nID, s32 fView) {
+    if (fView != 0) {
         return 1;
     }
-    if (SzDuel_GetUnitStatus(arg0, arg1, 2) == 1) {
+    if (SzDuel_GetUnitStatus(nSide, nID, 2) == 1) {
         return 1;
     }
     return 0;
 }
 
-s32 TaLogic_IsUnitWin(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    return TaLogic_IsUnitWin2(SzDuel_GetUnit(arg0 >> 8, arg0 & 0xFF), arg1, arg2, arg3);
+/* Whether unit `Unit1` beats unit `Unit2` on square (nX, nZ). */
+s32 TaLogic_IsUnitWin(s32 Unit1, s32 Unit2, s32 nX, s32 nZ) {
+    return TaLogic_IsUnitWin2(SzDuel_GetUnit(Unit1 >> 8, Unit1 & 0xFF), Unit2, nX, nZ);
 }
 
 typedef struct {
@@ -850,11 +870,13 @@ typedef struct {
     s8 high : 4;
 } Obj_00278250;
 
-s32 TaLogic_IsUnitWin2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Whether a unit (record `pVarInfo`) beats unit `Unit2` on square (nX, nZ): attack against attack or defence,
+   bonuses. */
+s32 TaLogic_IsUnitWin2(s32 pVarInfo, s32 Unit2, s32 nX, s32 nZ) {
     extern s32 TaUtil_GetUnitDP2(s32, s32, s32);
     extern s32 TaUtil_GetUnitAP2();
     extern s32 TaLogic_GetActOfs(void *, void *);
-    Obj_00278250 *obj = (Obj_00278250 *)arg0;
+    Obj_00278250 *obj = (Obj_00278250 *)pVarInfo;
     s32 mine;
     s32 theirs;
 
@@ -865,28 +887,29 @@ s32 TaLogic_IsUnitWin2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         mine = 0;
     } else if ((obj->unk3E >> 5) != 0) {
         mine = 0;
-    } else if (obj->unk40 == arg2 && obj->unk41 == arg3 && obj->flag) {
-        mine = TaUtil_GetUnitDP2(arg0, arg2, arg3);
+    } else if (obj->unk40 == nX && obj->unk41 == nZ && obj->flag) {
+        mine = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
     } else {
-        mine = TaUtil_GetUnitAP2(arg0, arg2, arg3);
+        mine = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
     }
-    mine += TaLogic_GetActOfs(obj, (void *)SzDuel_GetUnit(arg1 >> 8, arg1 & 0xFF));
-    if (TaUtil_IsVarInfoLeader((void *)SzDuel_GetUnit(arg1 >> 8, arg1 & 0xFF)) == 1) {
+    mine += TaLogic_GetActOfs(obj, (void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF));
+    if (TaUtil_IsVarInfoLeader((void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF)) == 1) {
         theirs = 0;
-    } else if ((SzDuel_GetUnitKind(arg1 >> 8, arg1 & 0xFF) >> 5) != 0) {
+    } else if ((SzDuel_GetUnitKind(Unit2 >> 8, Unit2 & 0xFF) >> 5) != 0) {
         theirs = 0;
-    } else if (SzDuel_GetUnitStatus(arg1 >> 8, arg1 & 0xFF, 5) != 0) {
-        theirs = TaUtil_GetUnitDP(arg1 >> 8, arg1 & 0xFF, arg2, arg3);
+    } else if (SzDuel_GetUnitStatus(Unit2 >> 8, Unit2 & 0xFF, 5) != 0) {
+        theirs = TaUtil_GetUnitDP(Unit2 >> 8, Unit2 & 0xFF, nX, nZ);
     } else {
-        theirs = TaUtil_GetUnitAP(arg1 >> 8, arg1 & 0xFF, arg2, arg3);
+        theirs = TaUtil_GetUnitAP(Unit2 >> 8, Unit2 & 0xFF, nX, nZ);
     }
-    theirs += TaLogic_GetActOfs((void *)SzDuel_GetUnit(arg1 >> 8, arg1 & 0xFF), obj);
+    theirs += TaLogic_GetActOfs((void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF), obj);
     return mine - theirs;
 }
 
-s32 TaLogic_IsUnitWin3(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Whether a unit (record `pVarInfo`) on (nX, nZ) is strong enough for warning level `bWarnLvl`. */
+s32 TaLogic_IsUnitWin3(s32 pVarInfo, s32 bWarnLvl, s32 nX, s32 nZ) {
     extern s32 TaUtil_GetUnitDP2(s32, s32, s32);
-    Obj_00278250 *obj = (Obj_00278250 *)arg0;
+    Obj_00278250 *obj = (Obj_00278250 *)pVarInfo;
     s32 mine;
 
     if (obj == NULL) {
@@ -894,30 +917,32 @@ s32 TaLogic_IsUnitWin3(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
     if (TaUtil_IsVarInfoLeader(obj) == 1) {
         mine = 0;
-    } else if (obj->unk40 == arg2 && obj->unk41 == arg3 && obj->flag) {
-        mine = TaUtil_GetUnitDP2(arg0, arg2, arg3);
+    } else if (obj->unk40 == nX && obj->unk41 == nZ && obj->flag) {
+        mine = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
     } else {
-        mine = TaUtil_GetUnitAP2(arg0, arg2, arg3);
+        mine = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
     }
-    if (SzDuel_GetField(arg2, arg3) == 9) {
-        arg1 = GetCap(0x5DC, arg1);
+    if (SzDuel_GetField(nX, nZ) == 9) {
+        bWarnLvl = GetCap(0x5DC, bWarnLvl);
     }
-    return mine - arg1;
+    return mine - bWarnLvl;
 }
 
-void TaLogic_IsUnitWin4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    if (arg1 == -1) {
-        TaLogic_IsUnitWin3(arg0, arg2, arg3, arg4);
+/* Whether a unit (record `pVarInfo`) beats enemy `nEnemyID` on (nX, nZ), judging hidden cards by level `bWarnLvl`. */
+void TaLogic_IsUnitWin4(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ, s32 fView) {
+    if (nEnemyID == -1) {
+        TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
     }
-    if (TaLogic_IsJudgeUnitDanger(arg1 >> 8, arg1 & 0xFF, arg5 & 0xFF) == 0) {
-        TaLogic_IsUnitWin3(arg0, arg2, arg3, arg4);
+    if (TaLogic_IsJudgeUnitDanger(nEnemyID >> 8, nEnemyID & 0xFF, fView & 0xFF) == 0) {
+        TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
     }
-    TaLogic_IsUnitWin2(arg0, arg1, arg3, arg4);
+    TaLogic_IsUnitWin2(pVarInfo, nEnemyID, nX, nZ);
 }
 
-s32 TaLogic_IsUnitWin5(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Whether a unit (record `pVarInfo`) beats enemy `nEnemyID` on (nX, nZ), with attribute and effect bonuses. */
+s32 TaLogic_IsUnitWin5(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ, s32 fView) {
     extern s32 TaLogic_IsUnitWin3();
     extern s32 TaUtil_GetUnitAP2();
     extern s32 TaUtil_GetUnitDP2();
@@ -927,49 +952,49 @@ s32 TaLogic_IsUnitWin5(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg
     s32 item;
     s32 card;
 
-    if (arg0 == 0) {
+    if (pVarInfo == 0) {
         return 0;
     }
-    card = arg1 >> 8;
-    if (arg1 == -1) {
-        return TaLogic_IsUnitWin3(arg0, arg2, arg3, arg4);
+    card = nEnemyID >> 8;
+    if (nEnemyID == -1) {
+        return TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
     }
-    item = arg1 & 0xFF;
-    if (TaLogic_IsJudgeUnitDanger(card, item, arg5 & 0xFF) == 0) {
-        damage = TaUtil_GetUnitAP2(arg0, arg3, arg4);
-        defense = TaUtil_GetUnitDP2(arg0, arg3, arg4);
+    item = nEnemyID & 0xFF;
+    if (TaLogic_IsJudgeUnitDanger(card, item, fView & 0xFF) == 0) {
+        damage = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
+        defense = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
     } else {
-        if (TaUtil_IsVarInfoLeader((void *)arg0) == 1) {
+        if (TaUtil_IsVarInfoLeader((void *)pVarInfo) == 1) {
             defense = 0;
             damage = 0;
-        } else if ((*(u8 *)((u8 *)arg0 + 0x3E) >> 5) != 0) {
+        } else if ((*(u8 *)((u8 *)pVarInfo + 0x3E) >> 5) != 0) {
             defense = 0;
             damage = 0;
         } else {
-            damage = TaUtil_GetUnitAP2(arg0, arg3, arg4);
-            defense = TaUtil_GetUnitDP2(arg0, arg3, arg4);
-            damage += TaLogic_GetActOfs((void *)arg0, (void *)SzDuel_GetUnit(card, item));
-            defense += TaLogic_GetActOfs((void *)arg0, (void *)SzDuel_GetUnit(card, item));
+            damage = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
+            defense = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
+            damage += TaLogic_GetActOfs((void *)pVarInfo, (void *)SzDuel_GetUnit(card, item));
+            defense += TaLogic_GetActOfs((void *)pVarInfo, (void *)SzDuel_GetUnit(card, item));
         }
 
         if (TaUtil_IsVarInfoLeader((void *)SzDuel_GetUnit(card, item)) == 1) {
-            arg2 = 0;
+            bWarnLvl = 0;
         } else if ((SzDuel_GetUnitKind(card, item) >> 5) != 0) {
-            arg2 = 0;
+            bWarnLvl = 0;
         } else {
-            arg2 = TaUtil_GetUnitAP(card, item, arg3, arg4);
-            arg2 += TaLogic_GetActOfs((void *)SzDuel_GetUnit(card, item), (void *)arg0);
+            bWarnLvl = TaUtil_GetUnitAP(card, item, nX, nZ);
+            bWarnLvl += TaLogic_GetActOfs((void *)SzDuel_GetUnit(card, item), (void *)pVarInfo);
         }
     }
 
     if (defense < damage) {
-        if (damage >= arg2) {
+        if (damage >= bWarnLvl) {
             return 3;
         }
         return 0;
     }
     if (damage <= defense) {
-        return (arg2 < defense) ? 2 : 0;
+        return (bWarnLvl < defense) ? 2 : 0;
     }
     return 0;
 }
@@ -986,9 +1011,10 @@ typedef struct Object_002787F0 {
     u8 flags;
 } Object_002787F0;
 
-u16 TaLogic_GetActOfs(void *arg0, void *arg1) {
-    Object_002787F0 *first = arg0;
-    Object_002787F0 *second = arg1;
+/* The attack change a unit (record `pVarInfo`) gets against another (`pVarInfo2`), from attributes. */
+u16 TaLogic_GetActOfs(void *pVarInfo, void *pVarInfo2) {
+    Object_002787F0 *first = pVarInfo;
+    Object_002787F0 *second = pVarInfo2;
     Info_002787F0 *info = &second->info;
     u32 packed = info->packed;
     u8 flags;
@@ -1014,27 +1040,29 @@ u16 TaLogic_GetActOfs(void *arg0, void *arg1) {
     return 0;
 }
 
-void TaLogic_GetUnitNum(s32 arg0, s32 arg1) {
-    if (arg1 == 1) {
-        SzDuel_GetUnitSpellCount(arg0);
+/* How many monsters (or spells, `fSpell`) side `nSide` has. */
+void TaLogic_GetUnitNum(s32 nSide, s32 fSpell) {
+    if (fSpell == 1) {
+        SzDuel_GetUnitSpellCount(nSide);
         return;
     }
-    SzDuel_GetUnitMonsterCount(arg0);
+    SzDuel_GetUnitMonsterCount(nSide);
 }
 
 typedef struct {
     u8 b[0x18];
 } Ent_002788D0;
 
-void *TaLogic_TreeAloc(u16 *arg0, u16 *arg1) {
+/* Takes the next node of the fusion tree (`wSize` free, `NodeCount` used). */
+void *TaLogic_TreeAloc(u16 *wSize, u16 *NodeCount) {
     u16 idx;
 
-    if ((s64)(u32)(*arg0 + 0x38) > 0x10000) {
+    if ((s64)(u32)(*wSize + 0x38) > 0x10000) {
         return 0;
     }
-    idx = *arg1;
-    *arg1 = idx + 1;
-    *arg0 += 0x18;
+    idx = *NodeCount;
+    *NodeCount = idx + 1;
+    *wSize += 0x18;
     return &((Ent_002788D0 *)0x01ED0000)[idx];
 }
 
@@ -1045,39 +1073,41 @@ typedef struct Entry_00278930 {
     s32 values[4];
 } Entry_00278930;
 
-void TaLogic_InitTree(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Entry_00278930 *entry = arg0;
+/* Sets up a fusion-tree node for root card `nRoot`, combination `pCombo` and order `nOrder`. */
+void TaLogic_InitTree(void *p_fTree, s32 nRoot, s32 pCombo, s32 nOrder) {
+    Entry_00278930 *entry = p_fTree;
     s32 i;
     u8 *p;
 
-    entry->id = arg1;
+    entry->id = nRoot;
     i = 0;
     do {
         entry->slots[i] = 0xFF;
         i++;
     } while (i < 5);
     i = 0;
-    p = arg0;
+    p = p_fTree;
     do {
         i++;
         *(s32 *)(p + 8) = 0;
         p += 4;
     } while (i < 4);
-    if (arg2 == 0) {
-        ((u8 *)arg0)[2] = arg3;
+    if (pCombo == 0) {
+        ((u8 *)p_fTree)[2] = nOrder;
         return;
     }
-    TaLogic_CopyArray((u8 *)arg2, (u8 *)arg0 + 2);
-    entry->slots[(u8)TaLogic_GetArrayLength((u8 *)arg2)] = arg3;
+    TaLogic_CopyArray((u8 *)pCombo, (u8 *)p_fTree + 2);
+    entry->slots[(u8)TaLogic_GetArrayLength((u8 *)pCombo)] = nOrder;
 }
 
-s32 TaLogic_GetHandFusion(s32 arg0, s32 arg1) {
+/* The result of combining card `nRoot` with card `nHeap` (fusion or equip), or none. */
+s32 TaLogic_GetHandFusion(s32 nRoot, s32 nHeap) {
     s32 temp_v0;
     s32 temp_s1;
     s32 temp_s2;
 
-    temp_s2 = arg0 & 0xFFFF;
-    if ((temp_s2 == 0x3E7) || (temp_s1 = arg1 & 0xFFFF, (temp_s1 == 0x3E7))) {
+    temp_s2 = nRoot & 0xFFFF;
+    if ((temp_s2 == 0x3E7) || (temp_s1 = nHeap & 0xFFFF, (temp_s1 == 0x3E7))) {
         return 0x3E7;
     }
     temp_v0 = Ta_GetHandEnchant(temp_s2, temp_s1);
@@ -1095,6 +1125,7 @@ extern int TaLogic_GetHandFusion_b(unsigned short a, unsigned short b);
 extern struct TreeTag *TaLogic_TreeAloc_b(unsigned short *wSize, unsigned short *wCount);
 extern void TaLogic_InitTree_b(struct TreeTag *pTree, unsigned short nRoot, unsigned char *pCombo, unsigned char nOrder);
 
+/* Builds the tree of hand combinations side `nSide` can make from root `pRoot`. */
 void * TaLogic_GetFusionTree(int nSide, struct TreeTag *p_fTree, unsigned char nOrder, unsigned short pRoot, unsigned char *pCombo, unsigned short *wSize, unsigned short *wCount)
 {
     int arNextHand[5];
@@ -1141,47 +1172,50 @@ void * TaLogic_GetFusionTree(int nSide, struct TreeTag *p_fTree, unsigned char n
     return p_fTree;
 }
 
-void *TaLogic_GetFusionTree2(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                    s32 arg4, u16 *arg5, u16 *arg6) {
+/* Builds the combination tree for side `nSide` from root `pRoot` and combination `pCombo`. */
+void *TaLogic_GetFusionTree2(s32 nSide, s32 p_fTree, s32 nOrder, s32 pRoot,
+                    s32 pCombo, u16 *wSize, u16 *wCount) {
     s32 sp60[8];
     void *temp_v0;
 
-    TaHand_GetNextHand(arg0, sp60);
-    if (arg4 != 0) {
+    TaHand_GetNextHand(nSide, sp60);
+    if (pCombo != 0) {
         return NULL;
     }
-    if ((temp_v0 = TaLogic_TreeAloc(arg5, arg6)) == NULL) {
+    if ((temp_v0 = TaLogic_TreeAloc(wSize, wCount)) == NULL) {
         return NULL;
     }
-    TaLogic_InitTree(temp_v0, arg3 & 0xFFFF, arg4, arg2);
+    TaLogic_InitTree(temp_v0, pRoot & 0xFFFF, pCombo, nOrder);
     return temp_v0;
 }
 
-void TaLogic_AddEmptyCombo(u8 *arg0, u8 arg1) {
+/* Adds hand order `bOrder` to combination `bCombo`. */
+void TaLogic_AddEmptyCombo(u8 *bCombo, u8 bOrder) {
     s32 var_a0;
     u8 *temp_a1;
     u8 temp_v1;
 
-    if ((TaLogic_GetArrayLength(arg0) & 0xFF) != 5) {
+    if ((TaLogic_GetArrayLength(bCombo) & 0xFF) != 5) {
         var_a0 = 3;
         do {
-            temp_a1 = &arg0[var_a0];
+            temp_a1 = &bCombo[var_a0];
             temp_v1 = temp_a1[0];
             var_a0 -= 1;
             temp_a1[1] = temp_v1;
         } while (var_a0 >= 0);
-        *arg0 = arg1;
+        *bCombo = bOrder;
     }
 }
 
-s32 TaLogic_GetArrayLength(u8 *arg0) {
+/* How many entries a byte list ending in 0xFF holds. */
+s32 TaLogic_GetArrayLength(u8 *bArray) {
     s32 index;
     s32 count;
 
     index = 0;
     count = 0;
     do {
-        if (arg0[index] == 0xFF) {
+        if (bArray[index] == 0xFF) {
             return count;
         }
         index++;
@@ -1190,6 +1224,7 @@ s32 TaLogic_GetArrayLength(u8 *arg0) {
     return count;
 }
 
+/* Copies a byte list ending in 0xFF. */
 void TaLogic_CopyArray(u8 *src, u8 *dst) {
     s32 i;
 
@@ -1200,6 +1235,7 @@ void TaLogic_CopyArray(u8 *src, u8 *dst) {
     } while (i < 5);
 }
 
+/* Whether hand card `value` is already in combination `values`. */
 s32 TaLogic_IsUseHandInCombo(u8 value, u8 *values) {
     s32 i;
 
@@ -1213,14 +1249,15 @@ s32 TaLogic_IsUseHandInCombo(u8 value, u8 *values) {
     return 0;
 }
 
-u16 *TaLogic_GetFusionRes(u16 *arg0) {
+/* The best result (attack plus defence) of a combination tree. */
+u16 *TaLogic_GetFusionRes(u16 *p_fTree) {
     s32 var_s3;
     u16 *temp_v0;
     s32 var_s5;
     u8 *var_s0;
     u16 *var_s1;
 
-    var_s1 = arg0;
+    var_s1 = p_fTree;
     if (var_s1 != NULL) {
         var_s5 = (TaHand_GetCardAPDP(*var_s1) >> 0x10) & 0xFFFF;
         var_s3 = 0;
@@ -1240,7 +1277,8 @@ u16 *TaLogic_GetFusionRes(u16 *arg0) {
     return var_s1;
 }
 
-s32 TaLogic_GetEnchantQue(s32 arg0, u16 *arg1, void **arg2, s32 arg3) {
+/* The best equip to use for side `nSide` from the tree, kept in `pKeep` (`nKeepDepth` deep). */
+s32 TaLogic_GetEnchantQue(s32 nSide, u16 *p_fTree, void **pKeep, s32 nKeepDepth) {
     extern s32 TaLogic_IsKeepEnchant();
     extern s32 TaEnc_GetEncScore();
     s32 entries[8];
@@ -1254,30 +1292,30 @@ s32 TaLogic_GetEnchantQue(s32 arg0, u16 *arg1, void **arg2, s32 arg3) {
     s32 count;
     s32 status;
 
-    totalHigh = (u32)TaHand_GetCardAPDP(*arg1) >> 16;
-    totalLow = TaHand_GetCardAPDP(*arg1) & 0xFFFF;
-    TaHand_GetNextHand(arg0, entries);
-    status = Ta_IsActiveTrapB(arg0, 0x2B);
+    totalHigh = (u32)TaHand_GetCardAPDP(*p_fTree) >> 16;
+    totalLow = TaHand_GetCardAPDP(*p_fTree) & 0xFFFF;
+    TaHand_GetNextHand(nSide, entries);
+    status = Ta_IsActiveTrapB(nSide, 0x2B);
     if ((status >= 0) && (SzDuel_GetUnitStatus(status >> 8, status & 0xFF, 4) != 0)) {
         return 0;
     }
 
     i = 0;
-    if (i < TaHand_GetNextHandNum(arg0)) {
+    if (i < TaHand_GetNextHandNum(nSide)) {
         entry = entries;
-        count = arg3 & 0xFF;
+        count = nKeepDepth & 0xFF;
         do {
-            if ((TaLogic_IsUseHandInCombo(i & 0xFF, arg1 + 1) & 0xFF) == 0) {
+            if ((TaLogic_IsUseHandInCombo(i & 0xFF, p_fTree + 1) & 0xFF) == 0) {
                 id = *entry;
                 if (((TaHand_GetCardKind(*entry) >> 5) == 2) && (*entry != 0x31C) && (*entry != 0x31B) &&
-                    ((Ta_GetHandEnchant(*arg1, id) >> 16) == 1) &&
+                    ((Ta_GetHandEnchant(*p_fTree, id) >> 16) == 1) &&
                     (TaEnc_IsEncDo(id) == 1)) {
-                    if (arg2 != NULL) {
+                    if (pKeep != NULL) {
                         j = 0;
-                        target = arg2;
+                        target = pKeep;
                         goto targets_test_00278F10;
                     targets_body_00278F10:
-                        TaLogic_IsKeepEnchant(*target, id, *arg1);
+                        TaLogic_IsKeepEnchant(*target, id, *p_fTree);
                         target++;
                         j++;
                     targets_test_00278F10:
@@ -1285,7 +1323,7 @@ s32 TaLogic_GetEnchantQue(s32 arg0, u16 *arg1, void **arg2, s32 arg3) {
                             goto targets_body_00278F10;
                         }
                     } else {
-                        ((u8 *)arg1)[2 + (TaLogic_GetArrayLength(arg1 + 1) & 0xFF)] = i;
+                        ((u8 *)p_fTree)[2 + (TaLogic_GetArrayLength(p_fTree + 1) & 0xFF)] = i;
                         totalHigh += TaEnc_GetEncScore(id);
                         totalLow += TaEnc_GetEncScore(id);
                     }
@@ -1293,11 +1331,12 @@ s32 TaLogic_GetEnchantQue(s32 arg0, u16 *arg1, void **arg2, s32 arg3) {
             }
             entry++;
             i++;
-        } while (i < TaHand_GetNextHandNum(arg0));
+        } while (i < TaHand_GetNextHandNum(nSide));
     }
     return (totalHigh << 16) | (totalLow & 0xFFFF);
 }
 
+/* The equip result's score of a tree node. */
 s32 TaLogic_GetEnchantQue2(s32 arg0, u16 *arg1) {
     u32 temp_s0;
 
@@ -1311,23 +1350,24 @@ typedef struct Condition_00279170 {
     u32 value;
 } Condition_00279170;
 
-s32 TaLogic_IsKeepEnchant(void *arg0, s32 arg1, s32 arg2) {
-    Condition_00279170 *condition = arg0;
+/* Whether equip card `nEncCardNo` on card `nObjCardNo` is better than the one kept in `pKeep`. */
+s32 TaLogic_IsKeepEnchant(void *pKeep, s32 nEncCardNo, s32 nObjCardNo) {
+    Condition_00279170 *condition = pKeep;
 
     if (condition == NULL) {
         return 1;
     }
-    if (arg1 != condition->id) {
+    if (nEncCardNo != condition->id) {
         return 1;
     }
     switch (condition->operation) {
     case 36:
-        if ((TaHand_GetCardAPDP(arg2) >> 16) >= condition->value) {
+        if ((TaHand_GetCardAPDP(nObjCardNo) >> 16) >= condition->value) {
             return 1;
         }
         break;
     case 37:
-        if ((TaHand_GetCardAPDP(arg2) >> 16) <= condition->value) {
+        if ((TaHand_GetCardAPDP(nObjCardNo) >> 16) <= condition->value) {
             return 1;
         }
         break;
@@ -1335,15 +1375,18 @@ s32 TaLogic_IsKeepEnchant(void *arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-void TaLogic_GetRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                   s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8) {
+/* The path for unit (nSide, nID) from (nX, nZ) to goal (gX, gZ), into `pMovePiece`. */
+void TaLogic_GetRoot(s32 nSide, s32 nID, s32 pMovePiece, s32 nX,
+                   s32 nZ, s32 gX, s32 gZ, s32 gUnitID, u8 bAbort) {
     extern s32 TaLogic_GetRoot2(s32, s32, s32, s32, s32, s32, s32, u8);
 
-    TaLogic_GetRoot2(SzDuel_GetUnit(arg0, arg1), arg2, arg3, arg4,
-                  arg5, arg6, arg7, arg8);
+    TaLogic_GetRoot2(SzDuel_GetUnit(nSide, nID), pMovePiece, nX, nZ,
+                  gX, gZ, gUnitID, bAbort);
 }
 
-s32 TaLogic_GetRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, u8 arg7) {
+/* The path for a unit (record `pVarInfo`) from (nX, nZ) to goal (gX, gZ), into `pMovePiece` (`bAbort` stops
+   early). */
+s32 TaLogic_GetRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX, s32 gZ, s16 gUnitID, u8 bAbort) {
     extern void TaLogic_InitIgnoreLst();
     u8 scratch[0x6A];
     s16 x;
@@ -1359,23 +1402,23 @@ s32 TaLogic_GetRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     x = 0;
     level = 1;
     result = 0;
-    if (arg0 == 0) {
+    if (pVarInfo == 0) {
         return -1;
     }
     TaLogic_InitIgnoreLst(scratch);
     if (SzGame_GetHSyncCount() > 0x2EE0U) {
         return -1;
     }
-    if (GetMoveRev(arg0, arg2, arg3) == 0) {
+    if (GetMoveRev(pVarInfo, nX, nZ) == 0) {
         return 0;
     }
-    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) + (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) > (s32)arg7) {
+    if ((((gX < nX) ? nX : gX) - ((nX < gX) ? nX : gX)) + (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) > (s32)bAbort) {
         return -1;
     }
-    while (flag == 0 && (previous = (u8)level, arg7 >= previous)) {
-        result = (s32)TaLogic_GetRootTree2((u8 *)result, 0, arg0, arg2, arg3, arg4, arg5, level, (s8 *)&flag, (s32)&arg6, 0, (u16 *)&x, (u16 *)&y, (s32)scratch);
+    while (flag == 0 && (previous = (u8)level, bAbort >= previous)) {
+        result = (s32)TaLogic_GetRootTree2((u8 *)result, 0, pVarInfo, nX, nZ, gX, gZ, level, (s8 *)&flag, (s32)&gUnitID, 0, (u16 *)&x, (u16 *)&y, (s32)scratch);
         if (flag == 1) {
-            TaLogic_GetShortRoot(arg1, result, arg4, arg5);
+            TaLogic_GetShortRoot(pMovePiece, result, gX, gZ);
             return previous;
         }
         if (TaLogic_IsConnectRoot((void *)result, 0, level) == 1) {
@@ -1396,9 +1439,10 @@ typedef struct Node_002794E0 {
 } Node_002794E0;
 
 
+/* Grows the path tree from a node toward the goal square. */
 u8 *TaLogic_GetRootTree2(u8 *node, s32 parent, s32 card, s32 x, s32 y,
                   s32 targetX, s32 targetY, u8 limit, s8 *found, s32 mode,
-                  u8 depth, u16 *pool, u16 *poolEnd, s32 arg13) {
+                  u8 depth, u16 *pool, u16 *poolEnd, s32 wIgnoreLst) {
     s32 count;
     s32 minY;
     u32 maxX;
@@ -1458,7 +1502,7 @@ u8 *TaLogic_GetRootTree2(u8 *node, s32 parent, s32 card, s32 x, s32 y,
                             TaLogic_GetRootTree2(((Node_002794E0 *)node)->children[count],
                                          (s32)node, card, ix, iy, targetX, targetY,
                                          limit, found, mode, (u8)nextDepth,
-                                         pool, poolEnd, arg13);
+                                         pool, poolEnd, wIgnoreLst);
                         count++;
                     }
                     iy++;
@@ -1476,17 +1520,20 @@ u8 *TaLogic_GetRootTree2(u8 *node, s32 parent, s32 card, s32 x, s32 y,
     return node;
 }
 
-void TaLogic_IsPassRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                   s32 arg4, s32 arg5, s32 arg6) {
-    TaLogic_IsPassRoot2(SzDuel_GetUnit(arg0, arg1), arg2, arg3, arg4, arg5, arg6);
+/* Whether unit (nSide, nID) can move from (nX, nZ) to (gX, gZ) this turn. */
+void TaLogic_IsPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
+                   s32 gX, s32 gZ, s32 gUnitID) {
+    TaLogic_IsPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ, gX, gZ, gUnitID);
 }
 
 
+/* The board distance between (x1, y1) and (x2, y2). */
 static inline s32 distance_002798C0(s32 y1, s32 x1, s32 y2, s32 x2) {
     return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
            (((x2 < x1) ? x1 : x2) - ((x1 < x2) ? x1 : x2));
 }
 
+/* The absolute value of `value`. */
 static inline s32 absolute_002798C0(s32 value) {
     if (value >= 0) {
         return value;
@@ -1494,54 +1541,55 @@ static inline s32 absolute_002798C0(s32 value) {
     return -value;
 }
 
-s32 TaLogic_IsPassRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Whether a unit (record `pVarInfo`) can move from (nX, nZ) to (gX, gZ) this turn (fields, units in the way). */
+s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitID) {
     extern s32 Ta_IsVirus_Chk3();
     s32 flags;
     s32 delta;
 
-    flags = GetMoveRev(arg0, arg1, arg2);
-    if (arg0 == 0) {
+    flags = GetMoveRev(pVarInfo, nX, nZ);
+    if (pVarInfo == 0) {
         return 0;
     }
-    if (distance_002798C0(arg1, arg2, arg3, arg4) == 0) {
+    if (distance_002798C0(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_002798C0(arg1, arg2, arg3, arg4) == 1) {
-        if ((SzDuel_GetField(arg3, arg4) == 8 && !(flags & 0x10)) ||
-            (SzDuel_GetField(arg3, arg4) == 9 && Ta_IsVirus_Chk3(arg0, arg3, arg4) == 1)) {
+    if (distance_002798C0(nX, nZ, gX, gZ) == 1) {
+        if ((SzDuel_GetField(gX, gZ) == 8 && !(flags & 0x10)) ||
+            (SzDuel_GetField(gX, gZ) == 9 && Ta_IsVirus_Chk3(pVarInfo, gX, gZ) == 1)) {
             return 0;
         }
-        if (SzDuel_GetMapUnit(arg3, arg4) != 0) {
-            u16 tile = *(u16 *)arg5;
-            if (tile != SzDuel_GetMapUnitID(arg3, arg4)) {
+        if (SzDuel_GetMapUnit(gX, gZ) != 0) {
+            u16 tile = *(u16 *)gUnitID;
+            if (tile != SzDuel_GetMapUnitID(gX, gZ)) {
                 return 0;
             }
         }
         return 1;
-    } else if (distance_002798C0(arg1, arg2, arg3, arg4) == 2) {
-        delta = absolute_002798C0(arg1 - arg3);
+    } else if (distance_002798C0(nX, nZ, gX, gZ) == 2) {
+        delta = absolute_002798C0(nX - gX);
         switch (delta) {
         case 0: {
-            s32 midpoint = (arg2 + arg4) >> 1;
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg3, midpoint, arg5) == 1) {
-                return TaLogic_IsPassRoot2(arg0, arg1, midpoint, arg3, arg4, arg5);
+            s32 midpoint = (nZ + gZ) >> 1;
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, gX, midpoint, gUnitID) == 1) {
+                return TaLogic_IsPassRoot2(pVarInfo, nX, midpoint, gX, gZ, gUnitID);
             }
             break;
         }
         case 2: {
-            s32 midpoint = (arg1 + arg3) >> 1;
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, midpoint, arg4, arg5) == 1) {
-                return TaLogic_IsPassRoot2(arg0, midpoint, arg2, arg3, arg4, arg5);
+            s32 midpoint = (nX + gX) >> 1;
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, midpoint, gZ, gUnitID) == 1) {
+                return TaLogic_IsPassRoot2(pVarInfo, midpoint, nZ, gX, gZ, gUnitID);
             }
             break;
         }
         case 1:
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg3, arg2, arg5) == 1 &&
-                TaLogic_IsPassRoot2(arg0, arg3, arg2, arg3, arg4, arg5) == 1) {
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, gX, nZ, gUnitID) == 1 &&
+                TaLogic_IsPassRoot2(pVarInfo, gX, nZ, gX, gZ, gUnitID) == 1) {
                 return 1;
             }
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg1, arg4, arg5) == 1 &&
-                TaLogic_IsPassRoot2(arg0, arg1, arg4, arg3, arg4, arg5) == 1) {
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, nX, gZ, gUnitID) == 1 &&
+                TaLogic_IsPassRoot2(pVarInfo, nX, gZ, gX, gZ, gUnitID) == 1) {
                 return 1;
             }
             return 0;
@@ -1552,13 +1600,15 @@ s32 TaLogic_IsPassRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     return 0;
 }
 
-void TaLogic_IsRunPassRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                   s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    TaLogic_IsRunPassRoot2(SzDuel_GetUnit(arg0, arg1), arg2, arg3,
-                  arg4, arg5, arg6, arg7);
+/* Whether unit (nSide, nID) can run from (nX, nZ) to (gX, gZ) (`fFoot` counts its moves). */
+void TaLogic_IsRunPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
+                   s32 gX, s32 gZ, s32 gUnitID, s32 fFoot) {
+    TaLogic_IsRunPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ,
+                  gX, gZ, gUnitID, fFoot);
 }
 
-s32 TaLogic_IsRunPassRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Whether a unit (record `pVarInfo`) can run from (nX, nZ) to (gX, gZ) (`fFoot` counts its moves). */
+s32 TaLogic_IsRunPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitID, s32 fFoot) {
     extern s32 Ta_IsVirus_Chk3();
     s32 flags;
     s32 delta;
@@ -1567,57 +1617,57 @@ s32 TaLogic_IsRunPassRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     s32 middle;
     u16 current;
 
-    flags = GetMoveRev(arg0, arg1, arg2);
-    if (arg0 == 0) {
+    flags = GetMoveRev(pVarInfo, nX, nZ);
+    if (pVarInfo == 0) {
         return 0;
     }
-    if (distance_002798C0(arg1, arg2, arg3, arg4) == 0) {
+    if (distance_002798C0(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_002798C0(arg1, arg2, arg3, arg4) == 1) {
-        if ((SzDuel_GetField(arg3, arg4) == 8 && !(flags & 0x10)) ||
-            (SzDuel_GetField(arg3, arg4) == 9 && Ta_IsVirus_Chk3(arg0, arg3, arg4) == 1)) {
+    if (distance_002798C0(nX, nZ, gX, gZ) == 1) {
+        if ((SzDuel_GetField(gX, gZ) == 8 && !(flags & 0x10)) ||
+            (SzDuel_GetField(gX, gZ) == 9 && Ta_IsVirus_Chk3(pVarInfo, gX, gZ) == 1)) {
             return 0;
         } else {
-            if (SzDuel_GetMapUnit(arg3, arg4) != 0) {
-                current = *(u16 *)arg5;
-                if (current == SzDuel_GetMapUnitID(arg3, arg4)) {
+            if (SzDuel_GetMapUnit(gX, gZ) != 0) {
+                current = *(u16 *)gUnitID;
+                if (current == SzDuel_GetMapUnitID(gX, gZ)) {
                     return 1;
                 }
-                if (!(arg6 & 0xFF)) {
+                if (!(fFoot & 0xFF)) {
                     return 0;
                 }
-                tile = SzDuel_GetMapUnitID(arg3, arg4);
+                tile = SzDuel_GetMapUnitID(gX, gZ);
                 owner = Ta_IsUnitControl(tile >> 8, tile & 0xFF);
-                if (owner == Ta_IsUnitControl2((void *)arg0)) {
+                if (owner == Ta_IsUnitControl2((void *)pVarInfo)) {
                     return 1;
                 }
                 return 0;
             }
             return 1;
         }
-    } else if (distance_002798C0(arg1, arg2, arg3, arg4) == 2) {
-        delta = absolute_002798C0(arg1 - arg3);
+    } else if (distance_002798C0(nX, nZ, gX, gZ) == 2) {
+        delta = absolute_002798C0(nX - gX);
         switch (delta) {
         case 0:
-            middle = (arg2 + arg4) >> 1;
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg3, middle, arg5) == 1) {
-                return TaLogic_IsPassRoot2(arg0, arg1, middle, arg3, arg4, arg5);
+            middle = (nZ + gZ) >> 1;
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, gX, middle, gUnitID) == 1) {
+                return TaLogic_IsPassRoot2(pVarInfo, nX, middle, gX, gZ, gUnitID);
             }
             break;
         case 2:
-            middle = (arg1 + arg3) >> 1;
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, middle, arg4, arg5) == 1) {
-                return TaLogic_IsPassRoot2(arg0, middle, arg2, arg3, arg4, arg5);
+            middle = (nX + gX) >> 1;
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, middle, gZ, gUnitID) == 1) {
+                return TaLogic_IsPassRoot2(pVarInfo, middle, nZ, gX, gZ, gUnitID);
             }
             break;
         case 1:
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg3, arg2, arg5) == 1 &&
-                TaLogic_IsPassRoot2(arg0, arg3, arg2, arg3, arg4, arg5) == 1) {
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, gX, nZ, gUnitID) == 1 &&
+                TaLogic_IsPassRoot2(pVarInfo, gX, nZ, gX, gZ, gUnitID) == 1) {
                 return 1;
             }
-            if (TaLogic_IsPassRoot2(arg0, arg1, arg2, arg1, arg4, arg5) == 1 &&
-                TaLogic_IsPassRoot2(arg0, arg1, arg4, arg3, arg4, arg5) == 1) {
+            if (TaLogic_IsPassRoot2(pVarInfo, nX, nZ, nX, gZ, gUnitID) == 1 &&
+                TaLogic_IsPassRoot2(pVarInfo, nX, gZ, gX, gZ, gUnitID) == 1) {
                 return 1;
             }
             return 0;
@@ -1628,13 +1678,15 @@ s32 TaLogic_IsRunPassRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     return 0;
 }
 
-void TaLogic_GetInvadeRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
-                   s32 arg5, s32 arg6, s32 arg7, s32 arg8, u8 arg9, u16 arg10) {
-    TaLogic_GetInvadeRoot2(SzDuel_GetUnit(arg0, arg1), arg2, arg3, arg4, arg5,
-                  arg6, arg7, arg8, arg9, arg10);
+/* The attack path for unit (nSide, nID) from (nX, nZ) to (gX, gZ), into `pMovePiece`. */
+void TaLogic_GetInvadeRoot(s32 nSide, s32 nID, s32 pMovePiece, s32 nX, s32 nZ,
+                   s32 gX, s32 gZ, s32 gUnitID, s32 fView, u8 bAbort, u16 bWarnLvl) {
+    TaLogic_GetInvadeRoot2(SzDuel_GetUnit(nSide, nID), pMovePiece, nX, nZ, gX,
+                  gZ, gUnitID, fView, bAbort, bWarnLvl);
 }
 
-s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, u8 arg8, u16 arg9) {
+/* The attack path for a unit (record `pVarInfo`) from (nX, nZ) to (gX, gZ), into `pMovePiece`. */
+s32 TaLogic_GetInvadeRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitID, s32 fView, u8 bAbort, u16 bWarnLvl) {
     extern s32 GetMoveRev(s32, s32, s32);
     extern s32 TaLogic_GetInvadeRootTree2(s32, s32, s32, s32, s32, s32, s32, u8, u8 *, s32 *, s32, u16, s32, s16 *, s16 *, void *);
     extern void TaLogic_InitIgnoreLst();
@@ -1655,20 +1707,20 @@ s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     if (SzGame_GetHSyncCount() > 0x2EE0U) {
         return -1;
     }
-    if (arg0 == 0) {
+    if (pVarInfo == 0) {
         return -1;
     }
-    if (GetMoveRev(arg0, arg2, arg3) == 0) {
+    if (GetMoveRev(pVarInfo, nX, nZ) == 0) {
         return 0;
     }
-    if ((((arg4 < arg2) ? arg2 : arg4) - ((arg2 < arg4) ? arg2 : arg4)) + (((arg5 < arg3) ? arg3 : arg5) - ((arg3 < arg5) ? arg3 : arg5)) > (s32)arg8) {
+    if ((((gX < nX) ? nX : gX) - ((nX < gX) ? nX : gX)) + (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) > (s32)bAbort) {
         return -1;
     }
     TaLogic_InitIgnoreLst(scratch);
-    while (flag != 1 && (previous = (u8)level, arg8 >= previous)) {
-        result = TaLogic_GetInvadeRootTree2(result, 0, arg0, arg2, arg3, arg4, arg5, level, &flag, &arg6, arg7, arg9, 0, &x, &y, scratch);
+    while (flag != 1 && (previous = (u8)level, bAbort >= previous)) {
+        result = TaLogic_GetInvadeRootTree2(result, 0, pVarInfo, nX, nZ, gX, gZ, level, &flag, &gUnitID, fView, bWarnLvl, 0, &x, &y, scratch);
         if (flag == 1) {
-            TaLogic_GetShortRoot(arg1, result, arg4, arg5);
+            TaLogic_GetShortRoot(pMovePiece, result, gX, gZ);
             return previous;
         }
         if (TaLogic_IsConnectRoot((void *)result, 0, level) == 1) {
@@ -1683,7 +1735,8 @@ s32 TaLogic_GetInvadeRoot2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     return -1;
 }
 
-u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u8 arg7, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38) {
+/* Grows the attack-path tree from node `pPrev`. */
+u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, u8 bDist, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38) {
     extern s32 GetMoveRev();
     s32 spE0;
     s32 spFC;
@@ -1703,12 +1756,12 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg
     u8 *var_s2;
     u8 *var_s6;
 
-    var_s6 = arg0;
-    sp16C = arg5;
-    sp168 = arg6;
-    sp167 = arg7;
-    temp_s1 = GetMoveRev(arg2, arg3, arg4);
-    if (arg2 == NULL) {
+    var_s6 = pTree;
+    sp16C = gX;
+    sp168 = gZ;
+    sp167 = bDist;
+    temp_s1 = GetMoveRev(pVarInfo, nX, nZ);
+    if (pVarInfo == NULL) {
         return NULL;
     }
     if (var_s6 == NULL) {
@@ -1718,22 +1771,22 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg
         if ((var_s6 = TaLogic_RootTreeAloc(arg_sp28, arg_sp30)) == NULL) {
             return NULL;
         }
-        TaLogic_SetRootTreeDat(var_s6, arg1, arg3, arg4);
-        if ((arg3 == sp16C) && (arg4 == sp168)) {
+        TaLogic_SetRootTreeDat(var_s6, pPrev, nX, nZ);
+        if ((nX == sp16C) && (nZ == sp168)) {
             *arg_sp0 = 1;
             return var_s6;
         }
     }
     temp_s0 = temp_s1 & 0xF;
     spE0 = 0;
-    var_s1 = GetCap(0, arg3 - temp_s0);
-    if ((u32)(arg3 + temp_s0) >= 7U) {
+    var_s1 = GetCap(0, nX - temp_s0);
+    if ((u32)(nX + temp_s0) >= 7U) {
         sp110 = 6;
     } else {
-        sp110 = arg3 + temp_s0;
+        sp110 = nX + temp_s0;
     }
-    spFC = GetCap(0, arg4 - temp_s0);
-    sp120 = arg4 + temp_s0;
+    spFC = GetCap(0, nZ - temp_s0);
+    sp120 = nZ + temp_s0;
     if (sp120 >= 7U) {
         sp120 = 6;
     }
@@ -1747,9 +1800,9 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg
             if (var_s0 <= (s32) sp120) {
                 var_s2 = sp130;
                 do {
-                    if ((var_s1 >= 0) && (var_s0 >= 0) && (var_s1 < 7) && (var_s0 < 7) && ((u32) ((((var_s1 < arg3) ? arg3 : var_s1) - ((arg3 < var_s1) ? arg3 : var_s1)) + (((var_s0 < arg4) ? arg4 : var_s0) - ((arg4 < var_s0) ? arg4 : var_s0))) < sp140) && (((((var_s1 < arg3) ? arg3 : var_s1) - ((arg3 < var_s1) ? arg3 : var_s1)) + (((var_s0 < arg4) ? arg4 : var_s0) - ((arg4 < var_s0) ? arg4 : var_s0))) != 0)) {
-                        if ((TaLogic_IsPassInvadeRoot2(arg2, arg3, arg4, var_s1, var_s0, arg_sp8, arg_sp10, sp100, arg_sp18) == 1) && (TaLogic_IsRootPast2(var_s6, var_s1, var_s0, arg3, arg4, arg_sp20) == 0)) {
-                            *(u8 **)(var_s2 + 4) = TaLogic_GetInvadeRootTree2(*(u8 **)(var_s2 + 4), (s32)var_s6, arg2, var_s1, var_s0, sp16C, sp168, sp167, arg_sp0, arg_sp8, arg_sp10, arg_sp18, (u8)sp150, arg_sp28, arg_sp30, arg_sp38);
+                    if ((var_s1 >= 0) && (var_s0 >= 0) && (var_s1 < 7) && (var_s0 < 7) && ((u32) ((((var_s1 < nX) ? nX : var_s1) - ((nX < var_s1) ? nX : var_s1)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) < sp140) && (((((var_s1 < nX) ? nX : var_s1) - ((nX < var_s1) ? nX : var_s1)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) != 0)) {
+                        if ((TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, var_s1, var_s0, arg_sp8, arg_sp10, sp100, arg_sp18) == 1) && (TaLogic_IsRootPast2(var_s6, var_s1, var_s0, nX, nZ, arg_sp20) == 0)) {
+                            *(u8 **)(var_s2 + 4) = TaLogic_GetInvadeRootTree2(*(u8 **)(var_s2 + 4), (s32)var_s6, pVarInfo, var_s1, var_s0, sp16C, sp168, sp167, arg_sp0, arg_sp8, arg_sp10, arg_sp18, (u8)sp150, arg_sp28, arg_sp30, arg_sp38);
                         }
                         var_s2 += 4;
                         sp130 += 4;
@@ -1765,49 +1818,51 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *arg0, s32 arg1, void *arg2, s32 arg3, s32 arg
 }
 
 
+/* The board distance between (x1, y1) and (x2, y2). */
 static inline s32 distance_0027A710(s32 y1, s32 x1, s32 y2, s32 x2) {
     return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
            (((x2 < x1) ? x1 : x2) - ((x1 < x2) ? x1 : x2));
 }
 
-s32 TaLogic_IsPassInvadeRoot2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
-                  s32 *arg5, s32 arg6, u8 arg7, u16 arg8) {
+/* Whether a unit (record `pVarInfo`) can attack its way from (nX, nZ) to (gX, gZ). */
+s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
+                  s32 *gUnitID, s32 fView, u8 Node0, u16 bWarnLvl) {
     s32 flags;
     s32 dy;
     extern s32 TaLogic_IsUnitWin3();
 
-    flags = GetMoveRev((s32)arg0, arg1, arg2);
-    if (arg0 == NULL) {
+    flags = GetMoveRev((s32)pVarInfo, nX, nZ);
+    if (pVarInfo == NULL) {
         return 0;
     }
-    if (distance_0027A710(arg1, arg2, arg3, arg4) == 0) {
+    if (distance_0027A710(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_0027A710(arg1, arg2, arg3, arg4) == 1) {
+    if (distance_0027A710(nX, nZ, gX, gZ) == 1) {
         s32 cell;
         s32 y;
         s32 x;
         s32 result;
 
-        if ((SzDuel_GetField(arg3, arg4) == 8 && !(flags & 0x10)) ||
-            (SzDuel_GetField(arg3, arg4) == 9 &&
-             Ta_IsVirus_Chk3(arg0, arg3, arg4) == 1)) {
+        if ((SzDuel_GetField(gX, gZ) == 8 && !(flags & 0x10)) ||
+            (SzDuel_GetField(gX, gZ) == 9 &&
+             Ta_IsVirus_Chk3(pVarInfo, gX, gZ) == 1)) {
             return 0;
         }
-        if (SzDuel_GetMapUnit(arg3, arg4) == 0) {
+        if (SzDuel_GetMapUnit(gX, gZ) == 0) {
             return 1;
         }
-        cell = SzDuel_GetMapUnitID(arg3, arg4);
-        if (arg5 != NULL && cell == *arg5) {
+        cell = SzDuel_GetMapUnitID(gX, gZ);
+        if (gUnitID != NULL && cell == *gUnitID) {
             return 1;
         }
         y = cell >> 8;
         x = cell & 0xFF;
-        if (Ta_IsUnitControl(y, x) != Ta_IsUnitControl2(arg0)) {
-            if (TaLogic_IsJudgeUnitDanger(y, x, arg6) != 0) {
-                result = TaLogic_IsUnitWin2((s32)arg0, cell, arg3, arg4) > 0;
+        if (Ta_IsUnitControl(y, x) != Ta_IsUnitControl2(pVarInfo)) {
+            if (TaLogic_IsJudgeUnitDanger(y, x, fView) != 0) {
+                result = TaLogic_IsUnitWin2((s32)pVarInfo, cell, gX, gZ) > 0;
             } else {
-                result = TaLogic_IsUnitWin3((s32)arg0, arg8, arg3, arg4) > 0;
+                result = TaLogic_IsUnitWin3((s32)pVarInfo, bWarnLvl, gX, gZ) > 0;
             }
             if (result) {
                 return 1;
@@ -1815,36 +1870,36 @@ s32 TaLogic_IsPassInvadeRoot2(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4
             return 2;
         } else {
             if (x != 0) {
-                return arg7 == 1 ? 0 : 1;
+                return Node0 == 1 ? 0 : 1;
             }
             return 0;
         }
     }
-    if (distance_0027A710(arg1, arg2, arg3, arg4) == 2) {
-        dy = arg1 - arg3;
+    if (distance_0027A710(nX, nZ, gX, gZ) == 2) {
+        dy = nX - gX;
         dy = dy >= 0 ? dy : -dy;
         switch (dy) {
         case 0: {
-            s32 midX = (arg2 + arg4) >> 1;
-            if (TaLogic_IsPassInvadeRoot2(arg0, arg1, arg2, arg3, midX, arg5, arg6, arg7, arg8) == 1) {
-                return TaLogic_IsPassInvadeRoot2(arg0, arg1, midX, arg3, arg4, arg5, arg6, arg7, arg8);
+            s32 midX = (nZ + gZ) >> 1;
+            if (TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, gX, midX, gUnitID, fView, Node0, bWarnLvl) == 1) {
+                return TaLogic_IsPassInvadeRoot2(pVarInfo, nX, midX, gX, gZ, gUnitID, fView, Node0, bWarnLvl);
             }
             goto failed;
         }
         case 2: {
-            s32 midY = (arg1 + arg3) >> 1;
-            if (TaLogic_IsPassInvadeRoot2(arg0, arg1, arg2, midY, arg4, arg5, arg6, arg7, arg8) == 1) {
-                return TaLogic_IsPassInvadeRoot2(arg0, midY, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            s32 midY = (nX + gX) >> 1;
+            if (TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, midY, gZ, gUnitID, fView, Node0, bWarnLvl) == 1) {
+                return TaLogic_IsPassInvadeRoot2(pVarInfo, midY, nZ, gX, gZ, gUnitID, fView, Node0, bWarnLvl);
             }
             goto failed;
         }
         case 1:
-            if (TaLogic_IsPassInvadeRoot2(arg0, arg1, arg2, arg3, arg2, arg5, arg6, arg7, arg8) == 1 &&
-                TaLogic_IsPassInvadeRoot2(arg0, arg3, arg2, arg3, arg4, arg5, arg6, arg7, arg8) == 1) {
+            if (TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, gX, nZ, gUnitID, fView, Node0, bWarnLvl) == 1 &&
+                TaLogic_IsPassInvadeRoot2(pVarInfo, gX, nZ, gX, gZ, gUnitID, fView, Node0, bWarnLvl) == 1) {
                 return 1;
             }
-            if (TaLogic_IsPassInvadeRoot2(arg0, arg1, arg2, arg1, arg4, arg5, arg6, arg7, arg8) == 1 &&
-                TaLogic_IsPassInvadeRoot2(arg0, arg1, arg4, arg3, arg4, arg5, arg6, arg7, arg8) == 1) {
+            if (TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, nX, gZ, gUnitID, fView, Node0, bWarnLvl) == 1 &&
+                TaLogic_IsPassInvadeRoot2(pVarInfo, nX, gZ, gX, gZ, gUnitID, fView, Node0, bWarnLvl) == 1) {
                 return 1;
             }
             return 0;
@@ -1856,21 +1911,22 @@ failed:
     return 0;
 }
 
-s32 TaLogic_IsConnectRoot(void *arg0, u8 arg1, u8 arg2) {
+/* Whether a path tree reaches depth `bDepth` within distance `Dist`. */
+s32 TaLogic_IsConnectRoot(void *pTree, u8 bDepth, u8 Dist) {
     s32 i;
     void **children;
     s32 nextDepth;
     s32 result;
 
-    if (arg0 != NULL) {
-        if (arg1 == arg2) {
+    if (pTree != NULL) {
+        if (bDepth == Dist) {
             return 1;
         }
-        nextDepth = arg1 + 1;
-        children = arg0;
+        nextDepth = bDepth + 1;
+        children = pTree;
         i = 0;
         do {
-            result = TaLogic_IsConnectRoot(children[1], nextDepth, arg2);
+            result = TaLogic_IsConnectRoot(children[1], nextDepth, Dist);
             if (result == 1) {
                 return result;
             }
@@ -1881,13 +1937,14 @@ s32 TaLogic_IsConnectRoot(void *arg0, u8 arg1, u8 arg2) {
     return 0;
 }
 
-void TaLogic_GetShortRoot(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* The shortest path in tree `pTree` to goal (gX, gZ), into `pMovePiece`. */
+void TaLogic_GetShortRoot(s32 pMovePiece, s32 pTree, s32 gX, s32 gZ) {
     s32 sp18;
     u8 sp1F;
 
     sp1F = 0xFF;
     sp18 = 0;
-    TaLogic_DoGetShortRoot(arg0, &sp18, &sp1F, arg1, arg2, arg3, arg0, 0);
+    TaLogic_DoGetShortRoot(pMovePiece, &sp18, &sp1F, pTree, gX, gZ, pMovePiece, 0);
 }
 
 typedef struct Position_0027ACB0 {
@@ -1897,6 +1954,7 @@ typedef struct Position_0027ACB0 {
     u8 nextY : 4;
 } Position_0027ACB0;
 
+/* Walks the path tree for the shortest path to the goal (recursive). */
 void TaLogic_DoGetShortRoot(s32 first, s32 *count, u8 *bestDepth, s32 node,
                    s32 x, s32 y, s32 closest, u8 depth) {
     s32 i;

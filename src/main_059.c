@@ -2628,8 +2628,8 @@ typedef struct Save_00214290 {
     u8 padding3[3];
 } Save_00214290;
 
-/* Clears both save profiles (0xFFA0 bytes each): every card's trunk entries, the five special cards, the three
-   decks, the five edited maps (all field 7), the options. */
+/* Clears both save profiles (0xFFA0 bytes each): every card's trunk entries, the five-newest-cards list (CARD_NONE),
+   the special-card counters, the three decks, the five edited maps (all field 7), the options. */
 void SzData_Initialize(void) {
     extern Save_00214290 saveProfiles[2];
     s32 card;

@@ -745,15 +745,15 @@ typedef struct {
     s8 unused : 7;
 } Flags_001FCC70;
 
-/* Starts fade `fade` (0 or 1): `in` (1) or out, `step` per frame up to `length`, in `color` (or black). */
-s32 SzFade_Entry(s32 fade, s32 in, u8 step, u8 start, u8 length, void *color) {
+/* Starts fade `fade` (0 or 1): towards `color` (or black) when `toColor` is 1 (a fade out), away from it when 0 (a fade in); `step` per frame from `start` to `length`. */
+s32 SzFade_Entry(s32 fade, s32 toColor, u8 step, u8 start, u8 length, void *color) {
     Entry_0031C050 *entry;
 
     entry = &fadeSlots[fade];
     if (entry->flag == 0) {
         return 0;
     }
-    ((Value_001FCC70 *)((u8 *)entry + 7))->value = in;
+    ((Value_001FCC70 *)((u8 *)entry + 7))->value = toColor;
     entry->pad0[4] = step;
     entry->lo = start;
     entry->hi = length;

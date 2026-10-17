@@ -391,7 +391,7 @@ s32 lSzDuel_DeckCostCmp(u16 *a, u16 *b) {
     return (keyA < keyB) ? -1 : 0;
 }
 
-/* Compares two cards by the side's rank for them (cards from 0x2AB on last). */
+/* Compares two cards by the side's leader rank with them (cards 0x2AB and up last). */
 s32 lSzDuel_RankCmp(u16 *a, u16 *b) {
     extern s64 SzData_GetRank(u8, s32);
     u8 side;
@@ -2880,6 +2880,7 @@ static inline s32 deadzone_001C12B0(s32 value) {
     return value;
 }
 
+/* The absolute value of a float. */
 static inline f32 absf_001C12B0(f32 value) {
     return value >= 0.0f ? value : -value;
 }

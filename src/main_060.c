@@ -966,7 +966,8 @@ typedef struct {
 extern Entry_00216580 specialCards[]; /* original: aSpecialCard */
 extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-/* After side `side` gets card `card`, rolls for which of the five special cards it also unlocks. */
+/* Side `sideIndex` got card `card`: if it is one of the 16 special-card entries, steps that entry's counter
+   (save 0xFE90 + i) to its next alternative, wrapping. */
 s32 SzData_RollSpecial(s32 sideIndex, s32 card) {
     s32 i;
     State_002158B0 *player;
@@ -1090,7 +1091,7 @@ typedef struct Record_00216800 {
 
 extern u8 profileZeroSide; /* original: gSzData_bRoseFlag */
 
-/* Marks card `card` as new in side `side`'s trunk. */
+/* Puts card `card` at the front of side `side`'s five-newest-cards list (save 0xFD88). */
 s32 SzData_PushBagNew(s32 side, s32 card) {
     s32 record_index;
     s32 i;

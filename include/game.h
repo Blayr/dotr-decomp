@@ -24,13 +24,12 @@ extern s32 *g_SDValue;
 extern u8 D_1FE0000;
 
 
-/* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
-   Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
-/* Card ids: 0..CARD_COUNT-1. CARD_NONE marks an empty deck, graveyard or hand slot; card id
-   CARD_STORED_AS_NONE (0x29F) is stored as CARD_NONE by SzDuel_AddDeck/SetDeck/AddGrave/AddHand. */
+/* Card ids: 0..CARD_COUNT-1. CARD_NONE marks an empty deck, graveyard or hand slot. Card 0x29F is
+   treated as no card: the deck, graveyard and hand adders refuse it, Xax2New/New2Xax map it to
+   CARD_NONE. */
 #define CARD_COUNT 0x356
 #define CARD_NONE 999
-#define CARD_STORED_AS_NONE 0x29F
+#define CARD_REJECTED 0x29F
 
 /* The `operation` of SzDuel_CalcLP / SzDuel_CalcSummonPower. */
 #define DUEL_CALC_ADD 0
@@ -57,6 +56,8 @@ typedef struct DuelHand {
     u8 count;
 } DuelHand;
 
+/* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
+   Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
 typedef struct DuelPlayer {
     u8 pad000[0x1D0];
     s32 cameraOrbit[4];            /* 0x1D0: the camera around this side's cursor: distance, heading, pitch
@@ -68,14 +69,15 @@ typedef struct DuelPlayer {
     s32 loadedData;                /* 0x334: memory SzDuel_Init frees (SzMem_Free) */
     u16 loadedSize;                /* 0x338 */
     u16 lifePoints;                /* 0x33A: 0..9999 (SzDuel_CalcLP) */
-    u8 duelistId;                  /* 0x33C: who plays this side; 100 and up = a computer duelist (id - 100) */
+    u8 duelistId;                  /* 0x33C: who plays this side: 0..0x1F a computer duelist, 0x20..0x63 a
+                                      tutorial script (both run g_aLogFunc[id]), 100 + n the human on pad n */
     u8 cursorX;                    /* 0x33D: board column 0..6 */
     u8 cursorZ;                    /* 0x33E: board row 0..6 */
     u8 pad33F[0x341 - 0x33F];
     u8 summonPower;                /* 0x341: 0..12 (SzDuel_CalcSummonPower) */
     u8 summonCharge;               /* 0x342 */
     u8 pad343;
-    u8 destinyFlag;                /* 0x344: SzDuel_InqDestinyFlag / SetDestinyFlag */
+    u8 destinyDraw;                /* 0x344: bits 0-3 destinyDrawTable entry, 4-6 bonus level, 7 used this duel */
     s8 cursorHeight;               /* 0x345: the cursor's height above the board (40 at the start) */
     struct {
         s8 handPhase : 1;          /* SzDuel_InqHandPhase / SetHandPhase */
@@ -325,7 +327,7 @@ extern u8 boardSquares[]; /* original: gSzDuel_aaMapInfo */
 
 
 
-extern u8 EnchMatch[];
+extern u8 equipMatchTable[]; /* original: EnchMatch */
 
 
 
@@ -359,7 +361,7 @@ extern char D_002BF002[];
 extern char D_002BF040;
 
 
-extern u32 FusionDat[];
+extern u32 fusionTable[]; /* original: FusionDat */
 
 
 

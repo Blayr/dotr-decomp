@@ -644,8 +644,8 @@ typedef struct State_00224A40 {
 
 /* Picks the texts of the campaign event window for the current place and opponent. */
 void Taku_Camp_Ivent_Name_Set(void) {
-    extern u16 campaignDeckTable[];
-    extern u16 campaignDecks[][6];
+    extern u16 campaignDeckChoiceSets[];
+    extern u16 campaignDeckChoices[][6];
     extern Tables_00224A40 D_002D19D0;
     extern s32 D_002D19D8;
     extern u16 D_002D49D4[];
@@ -717,9 +717,9 @@ void Taku_Camp_Ivent_Name_Set(void) {
     shift = 0;
     code_ptr = (u8 *)state;
     while (code_index < 3) {
-        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckTable[state->checksum] >> shift) & 0x1F;
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckChoiceSets[state->checksum] >> shift) & 0x1F;
         shift += 5;
-        *(u16 *)(code_ptr + 0x53FE) = campaignDecks[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
+        *(u16 *)(code_ptr + 0x53FE) = campaignDeckChoices[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
         code_index++;
         code_ptr += 2;
     }
@@ -779,7 +779,7 @@ extern Sprite_00224E40 D_0029AB20;
 extern Sprite_00224E40 D_0029AB50;
 extern Sprite_00224E40 tex_bara_data[];
 extern Tex_00224E40 campaignSprites[]; /* original: tex_uv_data */
-extern Code_00224E40 campaignDecks[]; /* original: DeckDat */
+extern Code_00224E40 campaignDeckChoices[]; /* original: DeckDat */
 extern char D_0030F0BB[];
 extern char D_0030F0C7[];
 extern char D_0030F0D4[];
@@ -976,11 +976,11 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2757:
             case 0x2760:
                 for (n = 0; n < 3; n++) {
-                    hundreds[n] = campaignDecks[state->codes[n]].number / 100;
-                    ones[n] = campaignDecks[state->codes[n]].number % 100;
+                    hundreds[n] = campaignDeckChoices[state->codes[n]].number / 100;
+                    ones[n] = campaignDeckChoices[state->codes[n]].number % 100;
                     for (m = 0; m < 4; m++) {
-                        digits[n][m] = ((s32)campaignDecks[state->codes[n]].digits >> (m * 3)) & 7;
-                        types[n][m] = (campaignDecks[state->codes[n]].types >> (5 * m)) & 0x1F;
+                        digits[n][m] = ((s32)campaignDeckChoices[state->codes[n]].digits >> (m * 3)) & 7;
+                        types[n][m] = (campaignDeckChoices[state->codes[n]].types >> (5 * m)) & 0x1F;
                     }
                 }
                 if (*(s8 *)0x01ED5494 == 0) {

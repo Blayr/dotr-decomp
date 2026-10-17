@@ -53,9 +53,9 @@ s32 SzMem_Alloc(s32 size) {
     return (s32)func_00197990(0x10, size);
 }
 
-/* Frees an allocation. */
-void SzMem_Free(s32 unused0) {
-    func_00197C18(unused0);
+/* Frees allocation `block`. */
+void SzMem_Free(s32 block) {
+    func_00197C18(block);
 }
 
 /* A newly allocated copy of `str`, or 0. */

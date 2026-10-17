@@ -1,7 +1,7 @@
 #include "common.h"
 
 /* Sets the position of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
-s32 SzEffect_SetModelPos2(s32 id, void *mode) {
+s32 SzEffect_SetModelPos2(s32 id, void *pos) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side;
     s32 slot;
@@ -15,7 +15,7 @@ s32 SzEffect_SetModelPos2(s32 id, void *mode) {
     if (id < 0) {
         return 0;
     }
-    return SzModel_SetPos(id, mode);
+    return SzModel_SetPos(id, pos);
 }
 
 /* The position of unit `id`'s model ((side << 8) | unit) into `out`. */
@@ -39,7 +39,7 @@ s32 SzEffect_GetModelPos2(s32 id, f32 *out) {
 }
 
 /* Sets the rotation of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
-s32 SzEffect_SetModelRot2(s32 id, void *mode) {
+s32 SzEffect_SetModelRot2(s32 id, void *rot) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side;
     s32 slot;
@@ -53,7 +53,7 @@ s32 SzEffect_SetModelRot2(s32 id, void *mode) {
     if (id < 0) {
         return 0;
     }
-    return SzModel_SetRot(id, mode);
+    return SzModel_SetRot(id, rot);
 }
 
 /* Sets the rotation centre of the effect target's model. */
@@ -125,7 +125,7 @@ s32 SzEffect_GetModelRotC2(s32 id, s32 out) {
 }
 
 /* Sets the scale of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
-s32 SzEffect_SetModelScale2(s32 id, void *mode) {
+s32 SzEffect_SetModelScale2(s32 id, void *scale) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side;
     s32 slot;
@@ -139,7 +139,7 @@ s32 SzEffect_SetModelScale2(s32 id, void *mode) {
     if (id < 0) {
         return 0;
     }
-    return SzModel_SetScale(id, mode);
+    return SzModel_SetScale(id, scale);
 }
 
 /* The scale of unit `id`'s model ((side << 8) | unit) into `out`. */
@@ -163,10 +163,11 @@ s32 SzEffect_GetModelScale2(s32 id, f32 *out) {
 }
 
 /* Sets the colour of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
-void SzEffect_SetModelRgba2(s32 id, s32 mode) {
-    SzEffect_SetModelRgbaX(id, -1, mode);
+void SzEffect_SetModelRgba2(s32 id, s32 color) {
+    SzEffect_SetModelRgbaX(id, -1, color);
 }
 
+/* Sets the colour (`mode`, `value`) of unit `id`'s model (side in the high byte, slot in the low byte). */
 s32 SzEffect_SetModelRgbaX(s32 id, s32 mode, s32 value) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side;
@@ -199,6 +200,7 @@ s32 SzEffect_GetModelRgba2(s32 id, u8 *out) {
     return 0;
 }
 
+/* The colour of unit `id`'s model into `out` (side in the high byte, slot in the low byte). */
 s32 SzEffect_GetModelRgbaX(s32 id, u8 *out) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side = id >> 8;
@@ -224,10 +226,11 @@ void SzEffect_SetModelFilter(s32 arg0) {
 }
 
 /* Sets the colour filter of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
-void SzEffect_SetModelFilter2(s32 id, s32 mode) {
-    SzEffect_SetModelFilterX(id, -1, mode);
+void SzEffect_SetModelFilter2(s32 id, s32 color) {
+    SzEffect_SetModelFilterX(id, -1, color);
 }
 
+/* Sets the colour filter of unit `id`'s model (side in the high byte, slot in the low byte). */
 s32 SzEffect_SetModelFilterX(s32 id, s32 mode, s32 value) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 side;
@@ -512,7 +515,7 @@ static inline s32 player_001F6EF0(void) {
     return D_0031BE9C;
 }
 
-/* How the duel ended, for the end-of-duel effects. */
+/* Whether the side being watched won the 3D battle (play motion 4). */
 s32 SzEffect_InqDuelResult(void) {
     if (SzEffect_GetPlayMotion((SzBattle_InqEntry(0) == player_001F6EF0()) ? 0 : 1) == 4) {
         return 1;

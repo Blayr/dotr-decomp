@@ -1644,8 +1644,8 @@ typedef struct {
     u64 extra[4];
 } Sprite_001A9F50;
 
-/* Debug: draws `texture` at (x, y), optionally loading it first. */
-void lSzGame_TEXTURE_TEST(void *tex, s32 posX, s32 posY, s32 load) {
+/* Debug: loads TIM2 picture `tex` into GS memory and draws it centred at (posX, posY), at twice its size if `doubleSize`. */
+void lSzGame_TEXTURE_TEST(void *tex, s32 posX, s32 posY, s32 doubleSize) {
     Sprite_001A9F50 sprite __attribute__((aligned(8)));
     s32 centerX;
     s32 centerY;
@@ -1653,7 +1653,7 @@ void lSzGame_TEXTURE_TEST(void *tex, s32 posX, s32 posY, s32 load) {
     s32 halfHeight;
     u16 width;
     u16 height;
-    s32 texture;
+    s32 gsAddress;
     u16 textureWidth;
     u16 textureHeight;
     extern s32 SzText_InitClutManage();
@@ -1664,14 +1664,14 @@ void lSzGame_TEXTURE_TEST(void *tex, s32 posX, s32 posY, s32 load) {
     centerY = posY + 0x800;
     halfWidth = width >> 1;
     halfHeight = height >> 1;
-    if (load != 0) {
+    if (doubleSize != 0) {
         halfWidth *= 2;
         halfHeight *= 2;
     }
     ExFlushTexture();
-    texture = RhBase_GetUserGsAddress();
-    texture += SzText_InitClutManage(texture, 1);
-    SzText_Load((s32)tex, texture, 0);
+    gsAddress = RhBase_GetUserGsAddress();
+    gsAddress += SzText_InitClutManage(gsAddress, 1);
+    SzText_Load((s32)tex, gsAddress, 0);
     ExFlushTexture();
     ((Tag_001A9F50 *)&sprite.tag)->primitive = 0x26;
     ((Tag_001A9F50 *)&sprite.tag)->loops = 5;

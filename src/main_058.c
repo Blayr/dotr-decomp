@@ -501,8 +501,7 @@ void RhGeom_GetScreenMatrix(f32 *out, f32 fparg0, f32 fparg1, f32 fparg2, f32 fp
     RhGeom_MulMatrix((s32) out, matrix);
 }
 
-/* Loads the directional-light matrix into VU0. */
-/* normalize the current matrix (RhGeomEx_SetMatrixForPointLight), then multiply it by m */
+/* Loads the point-light matrix into VU0, then multiplies it by the light matrix `lights`. */
 void RhGeomEx_SetMatrixForStraightLight(void *lights) {
     register void *m = lights;
 
@@ -1557,7 +1556,7 @@ typedef struct Transform_0020F4E0 {
 
 extern s32 require_coordinate_index;
 
-/* Draws model `model` with transform `transform` through VU1. */
+/* Draws model `model` through VU1 (fast or normal method, by its view-volume test and the point light). */
 void *RhModel_Draw(void *packet, void *model) {
     extern s32 RhView_GetSampleZ(void *, f32);
     s32 temp_v1;

@@ -551,6 +551,7 @@ static inline void set_xyz_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y, u8 *state)
     v->fog = 0;
 }
 
+/* Sets one corner of a drawing rectangle. */
 static inline void set_corner_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y) {
     v->x = x << 4;
     v->y = y << 4;
@@ -1893,7 +1894,8 @@ extern s32 (*g_aLogFunc[])(u16, void *);
 extern s8 practiceDuelFlag; /* original: Rensyu_flg */
 extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
-/* The buttons side `side` presses this frame (`mode` = pad check mode): the pad, or the tutorial's scripted input. */
+/* The buttons side `side` presses this frame (`mode` = pad check mode): the first/second pad for a human
+   (ids 100/101), else what its logic function g_aLogFunc[id] returns (computer duelists and the tutorial). */
 s32 lSzDuel_GetControl(s32 side, s32 mode) {
     u8 *base = duelState.b;
     s32 ret = 0;

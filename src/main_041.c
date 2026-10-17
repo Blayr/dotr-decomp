@@ -3034,6 +3034,7 @@ static inline void set_xyz_001CA7C0(Vertex_001CA7C0 *v, s32 x, s32 y, u8 *state)
     v->fog = 0;
 }
 
+/* Sets one corner of a drawing rectangle. */
 static inline void set_corner_001CA7C0(Vertex_001CA7C0 *v, s32 x, s32 y) {
     v->x = x << 4;
     v->y = y << 4;

@@ -1,19 +1,20 @@
 #include "common.h"
 
-s32 Ta_GetSummonRev(s32 arg0, s32 arg1) {
+/* The summon-cost change for card `cNo` of side `nSide` (the leader's level bonus). */
+s32 Ta_GetSummonRev(s32 nSide, s32 cNo) {
     s32 temp_s0;
     u8 *temp_v0;
     u8 temp_s1;
 
-    temp_v0 = SzDuel_GetCardConstInfo(arg1);
+    temp_v0 = SzDuel_GetCardConstInfo(cNo);
     if (temp_v0 == NULL) {
         return 0;
     }
     temp_s1 = *temp_v0;
     temp_s0 = temp_s1 & 0x1F;
-    if (temp_s0 == (SzDuel_GetUnitKind(arg0, 0) & 0x1F)) {
+    if (temp_s0 == (SzDuel_GetUnitKind(nSide, 0) & 0x1F)) {
         if (((s32) temp_s1 >> 5) == 0) {
-            return Ta_GetLDLvRev(arg0);
+            return Ta_GetLDLvRev(nSide);
         }
     }
     return 0;
@@ -78,6 +79,7 @@ struct jp_86d82 {
     int nEffHandle : 6;
 };
 
+/* The result of combining hand cards `nCardNo` and `nCardNo2` of side `nSide` (fusion or equip). */
 int Ta_GetComboResult(int nSide, int nCardNo, int nCardNo2)
 {
     int Ret;
@@ -196,15 +198,17 @@ int Ta_GetComboResult(int nSide, int nCardNo, int nCardNo2)
     return Ret;
 }
 
-s32 Ta_Do_HandDestroyEfc(void *arg0, s32 arg1, s32 arg2) {
-    ((s32 *)arg0)[0] = 0x96;
-    ((s32 *)arg0)[1] = 0;
-    ((s32 *)arg0)[2] = (arg1 << 8) | arg2;
-    ((s32 *)arg0)[3] = 0;
+/* The effect of a hand card being destroyed (none in this version). */
+s32 Ta_Do_HandDestroyEfc(void *eInfo, s32 nSide, s32 nID) {
+    ((s32 *)eInfo)[0] = 0x96;
+    ((s32 *)eInfo)[1] = 0;
+    ((s32 *)eInfo)[2] = (nSide << 8) | nID;
+    ((s32 *)eInfo)[3] = 0;
     return 1;
 }
 
-s32 Ta_IsDestinyDraw(s32 arg0) {
+/* Whether side `nSide` may get a destiny draw this turn (rank, leader, life points). */
+s32 Ta_IsDestinyDraw(s32 nSide) {
     extern s32 SzDuel_GetPlayer();
     extern s32 SzData_GetRank();
     extern s32 TaHand_IsDestinyCondition(s32);
@@ -215,12 +219,12 @@ s32 Ta_IsDestinyDraw(s32 arg0) {
     if (state < 0x20 && state != 0x13 && state != 1) {
         return -1;
     }
-    value = SzData_GetRank(arg0, SzData_GetLeader(arg0, SzData_GetCurrentDeck(arg0)));
-    if (state > 99 && Ta_IsLDAbl(3, arg0) == 0) {
+    value = SzData_GetRank(nSide, SzData_GetLeader(nSide, SzData_GetCurrentDeck(nSide)));
+    if (state > 99 && Ta_IsLDAbl(3, nSide) == 0) {
         return -1;
     }
-    if (SzDuel_GetLP(arg0) < 1000) {
-        if ((state = TaHand_IsDestinyCondition(arg0)) >= 0) {
+    if (SzDuel_GetLP(nSide) < 1000) {
+        if ((state = TaHand_IsDestinyCondition(nSide)) >= 0) {
             return state | (GetCap(0, value - 8) << 4);
         }
     }
@@ -236,6 +240,7 @@ extern unsigned *func_00250740_b(int a, int b, int n);
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
+/* Whether side `nSide`'s board is bad enough for a destiny draw. */
 int TaHand_IsDestinyCondition(int nSide)
 {
     int i;
@@ -367,29 +372,31 @@ int TaHand_IsDestinyCondition(int nSide)
 #undef MAX
 #undef MIN
 
-s32 Ta_SetDestinyEffect(s32 arg0, s32 *arg1) {
+/* Sets the destiny-draw effect for side `nSide`, into `eInfo`. */
+s32 Ta_SetDestinyEffect(s32 nSide, s32 *eInfo) {
     extern s32 SzDuel_InqDestinyFlag(s32);
     s32 flags;
 
-    flags = SzDuel_InqDestinyFlag(arg0);
-    arg1[0] = 0x3E7;
-    arg1[1] = 0;
-    arg1[2] = 0;
-    arg1[3] = 0;
-    if (!(flags & 0x80) && SzDuel_GetHandCount(arg0) < 5) {
-        if (arg1 != NULL) {
-            arg1[0] = 0x72;
-            arg1[1] = SzDuel_GetTurnOwner();
-            arg1[2] = 0;
-            arg1[3] = 0;
+    flags = SzDuel_InqDestinyFlag(nSide);
+    eInfo[0] = 0x3E7;
+    eInfo[1] = 0;
+    eInfo[2] = 0;
+    eInfo[3] = 0;
+    if (!(flags & 0x80) && SzDuel_GetHandCount(nSide) < 5) {
+        if (eInfo != NULL) {
+            eInfo[0] = 0x72;
+            eInfo[1] = SzDuel_GetTurnOwner();
+            eInfo[2] = 0;
+            eInfo[3] = 0;
         }
         return 1;
     }
     return 0;
 }
 
-s32 Ta_GetDestinyDraw(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3) {
-    extern u16 Destiny_Tab[];
+/* The card drawn by side `nSide`'s destiny draw into `wDrawCardNo`, and its bonus into `wDestinyOfs`. */
+s32 Ta_GetDestinyDraw(s32 nSide, u16 *wDrawCardNo, s16 *wDestinyOfs, s32 eInfo) {
+    extern u16 destinyDrawTable[];
     extern u16 D_002B8702[];
     extern u16 D_002B8704[];
     extern void SzDuel_SetDestinyFlag(s32, u8);
@@ -399,147 +406,148 @@ s32 Ta_GetDestinyDraw(s32 arg0, u16 *arg1, s16 *arg2, s32 arg3) {
     s32 bonus;
     s32 index;
 
-    flags = SzDuel_InqDestinyFlag(arg0);
-    kind = SzDuel_GetUnitKind(arg0, 0) & 0x1F;
+    flags = SzDuel_InqDestinyFlag(nSide);
+    kind = SzDuel_GetUnitKind(nSide, 0) & 0x1F;
     bonus = (flags & 0xF0) * 5;
-    arg1[0] = 999;
-    arg1[1] = 999;
-    arg1[2] = 999;
+    wDrawCardNo[0] = 999;
+    wDrawCardNo[1] = 999;
+    wDrawCardNo[2] = 999;
     switch (kind) {
     case 0:
-        arg2[0] = 0;
-        arg2[1] = 0;
-        arg2[2] = 0;
+        wDestinyOfs[0] = 0;
+        wDestinyOfs[1] = 0;
+        wDestinyOfs[2] = 0;
         break;
     case 1:
-        arg2[0] = 2;
-        arg2[1] = 1;
-        arg2[2] = -3;
+        wDestinyOfs[0] = 2;
+        wDestinyOfs[1] = 1;
+        wDestinyOfs[2] = -3;
         break;
     case 2:
-        arg2[0] = 12;
-        arg2[1] = 6;
-        arg2[2] = -18;
+        wDestinyOfs[0] = 12;
+        wDestinyOfs[1] = 6;
+        wDestinyOfs[2] = -18;
         break;
     case 3:
-        arg2[0] = 2;
-        arg2[1] = 1;
-        arg2[2] = -3;
+        wDestinyOfs[0] = 2;
+        wDestinyOfs[1] = 1;
+        wDestinyOfs[2] = -3;
         break;
     case 4:
-        arg2[0] = 5;
-        arg2[1] = 3;
-        arg2[2] = -8;
+        wDestinyOfs[0] = 5;
+        wDestinyOfs[1] = 3;
+        wDestinyOfs[2] = -8;
         break;
     case 5:
-        arg2[0] = 8;
-        arg2[1] = 4;
-        arg2[2] = -12;
+        wDestinyOfs[0] = 8;
+        wDestinyOfs[1] = 4;
+        wDestinyOfs[2] = -12;
         break;
     case 6:
-        arg2[0] = 6;
-        arg2[1] = 3;
-        arg2[2] = -9;
+        wDestinyOfs[0] = 6;
+        wDestinyOfs[1] = 3;
+        wDestinyOfs[2] = -9;
         break;
     case 7:
-        arg2[0] = 0;
-        arg2[1] = 0;
-        arg2[2] = 0;
+        wDestinyOfs[0] = 0;
+        wDestinyOfs[1] = 0;
+        wDestinyOfs[2] = 0;
         break;
     case 8:
-        arg2[0] = 12;
-        arg2[1] = 6;
-        arg2[2] = -18;
+        wDestinyOfs[0] = 12;
+        wDestinyOfs[1] = 6;
+        wDestinyOfs[2] = -18;
         break;
     case 9:
-        arg2[0] = 10;
-        arg2[1] = 5;
-        arg2[2] = -15;
+        wDestinyOfs[0] = 10;
+        wDestinyOfs[1] = 5;
+        wDestinyOfs[2] = -15;
         break;
     case 10:
-        arg2[0] = 14;
-        arg2[1] = 7;
-        arg2[2] = -21;
+        wDestinyOfs[0] = 14;
+        wDestinyOfs[1] = 7;
+        wDestinyOfs[2] = -21;
         break;
     case 11:
-        arg2[0] = 15;
-        arg2[1] = 8;
-        arg2[2] = -23;
+        wDestinyOfs[0] = 15;
+        wDestinyOfs[1] = 8;
+        wDestinyOfs[2] = -23;
         break;
     case 12:
-        arg2[0] = 8;
-        arg2[1] = 4;
-        arg2[2] = -12;
+        wDestinyOfs[0] = 8;
+        wDestinyOfs[1] = 4;
+        wDestinyOfs[2] = -12;
         break;
     case 13:
-        arg2[0] = 14;
-        arg2[1] = 7;
-        arg2[2] = -21;
+        wDestinyOfs[0] = 14;
+        wDestinyOfs[1] = 7;
+        wDestinyOfs[2] = -21;
         break;
     case 14:
-        arg2[0] = 3;
-        arg2[1] = 1;
-        arg2[2] = -4;
+        wDestinyOfs[0] = 3;
+        wDestinyOfs[1] = 1;
+        wDestinyOfs[2] = -4;
         break;
     case 15:
-        arg2[0] = 10;
-        arg2[1] = 5;
-        arg2[2] = -15;
+        wDestinyOfs[0] = 10;
+        wDestinyOfs[1] = 5;
+        wDestinyOfs[2] = -15;
         break;
     case 16:
-        arg2[0] = 2;
-        arg2[1] = 1;
-        arg2[2] = -3;
+        wDestinyOfs[0] = 2;
+        wDestinyOfs[1] = 1;
+        wDestinyOfs[2] = -3;
         break;
     case 17:
-        arg2[0] = 13;
-        arg2[1] = 6;
-        arg2[2] = -19;
+        wDestinyOfs[0] = 13;
+        wDestinyOfs[1] = 6;
+        wDestinyOfs[2] = -19;
         break;
     case 18:
-        arg2[0] = 10;
-        arg2[1] = 5;
-        arg2[2] = -15;
+        wDestinyOfs[0] = 10;
+        wDestinyOfs[1] = 5;
+        wDestinyOfs[2] = -15;
         break;
     case 19:
-        arg2[0] = 10;
-        arg2[1] = 5;
-        arg2[2] = -15;
+        wDestinyOfs[0] = 10;
+        wDestinyOfs[1] = 5;
+        wDestinyOfs[2] = -15;
         break;
     case 20:
-        arg2[0] = -5;
-        arg2[1] = -2;
-        arg2[2] = 7;
+        wDestinyOfs[0] = -5;
+        wDestinyOfs[1] = -2;
+        wDestinyOfs[2] = 7;
         break;
     default:
         return -1;
     }
     if (!(flags & 0x80)) {
         index = (flags & 0xF) * 3;
-        arg1[0] = Destiny_Tab[index];
-        arg1[1] = D_002B8702[index];
-        arg1[2] = D_002B8704[index];
-        arg2[0] += bonus;
-        arg2[1] += (s16)(bonus >> 1);
-        arg2[2] = -(arg2[0] + arg2[1]);
-        arg2[0] += 10;
-        arg2[1] += 20;
-        arg2[2] += 70;
+        wDrawCardNo[0] = destinyDrawTable[index];
+        wDrawCardNo[1] = D_002B8702[index];
+        wDrawCardNo[2] = D_002B8704[index];
+        wDestinyOfs[0] += bonus;
+        wDestinyOfs[1] += (s16)(bonus >> 1);
+        wDestinyOfs[2] = -(wDestinyOfs[0] + wDestinyOfs[1]);
+        wDestinyOfs[0] += 10;
+        wDestinyOfs[1] += 20;
+        wDestinyOfs[2] += 70;
         flags |= 0x80;
-        SzDuel_SetDestinyFlag(arg0, flags);
-        if (arg3 != 0) {
-            ((s32 *)arg3)[0] = 0x72;
-            ((s32 *)arg3)[1] = SzDuel_GetTurnOwner();
-            ((s32 *)arg3)[2] = 0;
-            ((s32 *)arg3)[3] = 0;
+        SzDuel_SetDestinyFlag(nSide, flags);
+        if (eInfo != 0) {
+            ((s32 *)eInfo)[0] = 0x72;
+            ((s32 *)eInfo)[1] = SzDuel_GetTurnOwner();
+            ((s32 *)eInfo)[2] = 0;
+            ((s32 *)eInfo)[3] = 0;
         }
         return 1;
     }
     return -1;
 }
 
-s32 TaHand_GetCardSummonCost(s32 arg0, s32 arg1) {
-    return TaHand_GetCardSummonCost2(arg0 & 0xFFF, arg1);
+/* The summon cost of hand card `nHand` of side `nSide`. */
+s32 TaHand_GetCardSummonCost(s32 nHand, s32 nSide) {
+    return TaHand_GetCardSummonCost2(nHand & 0xFFF, nSide);
 }
 
 typedef struct {
@@ -550,37 +558,40 @@ typedef struct {
 } Flags_0026FA80;
 
 
-s32 TaHand_GetCardSummonCost2(s32 arg0, s32 arg1) {
+/* The summon cost of card `nCardNo` for side `nSide` (its level, less the leader bonus). */
+s32 TaHand_GetCardSummonCost2(s32 nCardNo, s32 nSide) {
     s32 owner;
     s32 value;
     Flags_0026FA80 *data;
 
-    data = (Flags_0026FA80 *)SzDuel_GetCardConstInfo(arg0);
+    data = (Flags_0026FA80 *)SzDuel_GetCardConstInfo(nCardNo);
     if (data == NULL) {
         return 0xFF;
     }
     value = data->value;
     if ((data->flags >> 5) == 0) {
         owner = data->flags & 0x1F;
-        if (owner == (SzDuel_GetUnitKind(arg1, 0) & 0x1F)) {
-            value -= Ta_GetLDLvRev(arg1);
+        if (owner == (SzDuel_GetUnitKind(nSide, 0) & 0x1F)) {
+            value -= Ta_GetLDLvRev(nSide);
         }
     }
     return value;
 }
 
-s32 TaHand_IsCardSummon2(s32 arg0, s32 arg1) {
+/* Whether side `nSide` has the summon power for card `nCardNo`. */
+s32 TaHand_IsCardSummon2(s32 nSide, s32 nCardNo) {
     s32 temp_s0;
 
-    temp_s0 = TaHand_GetCardSummonCost2(arg1, arg0);
-    return (SzDuel_GetSummonPower(arg0) < temp_s0) ? 0 : 1;
+    temp_s0 = TaHand_GetCardSummonCost2(nCardNo, nSide);
+    return (SzDuel_GetSummonPower(nSide) < temp_s0) ? 0 : 1;
 }
 
-s32 TaHand_IsCardSummon(s32 arg0, s32 arg1) {
+/* Whether side `nSide` has the summon power for hand card `nHand`. */
+s32 TaHand_IsCardSummon(s32 nSide, s32 nHand) {
     s32 temp_s0;
 
-    temp_s0 = TaHand_GetCardSummonCost2(arg1 & 0xFFF, arg0);
-    return (SzDuel_GetSummonPower(arg0) < temp_s0) ? 0 : 1;
+    temp_s0 = TaHand_GetCardSummonCost2(nHand & 0xFFF, nSide);
+    return (SzDuel_GetSummonPower(nSide) < temp_s0) ? 0 : 1;
 }
 
 typedef struct CardStats_0026FBB0 {
@@ -589,26 +600,28 @@ typedef struct CardStats_0026FBB0 {
     u16 defense;
 } CardStats_0026FBB0;
 
-u32 TaHand_GetCardAPDP(s32 arg0) {
+/* Card `nCardNo`'s attack plus defence. */
+u32 TaHand_GetCardAPDP(s32 nCardNo) {
     CardStats_0026FBB0 *card;
 
-    if (arg0 == 0x3E7) {
+    if (nCardNo == 0x3E7) {
         return 0U;
     }
-    card = (CardStats_0026FBB0 *)SzDuel_GetCardConstInfo(arg0);
+    card = (CardStats_0026FBB0 *)SzDuel_GetCardConstInfo(nCardNo);
     if (card == NULL) {
         return 0U;
     }
     return ((card->attack & 0x1FFF) << 16) | (card->defense & 0x1FFF);
 }
 
-s32 TaHand_IsCardEffect(s32 arg0) {
+/* Whether card `nCardNo` has an effect. */
+s32 TaHand_IsCardEffect(s32 nCardNo) {
     u8 *p;
 
-    if (arg0 == 0x3E7) {
+    if (nCardNo == 0x3E7) {
         return 0;
     }
-    p = SzDuel_GetCardConstInfo(arg0);
+    p = SzDuel_GetCardConstInfo(nCardNo);
     if (p == NULL) {
         return 0;
     }
@@ -621,30 +634,33 @@ s32 TaHand_IsCardEffect(s32 arg0) {
     return 0;
 }
 
-void *TaHand_GetCardEffect(s32 arg0, s32 arg1) {
+/* Effect `EffIdxID` of card `nCardNo`. */
+void *TaHand_GetCardEffect(s32 nCardNo, s32 EffIdxID) {
     u8 data[0x60];
 
-    if (arg0 == 0x3E7) {
+    if (nCardNo == 0x3E7) {
         return NULL;
     }
-    SzDuel_InitCardInfo(data, arg0);
-    return data + 8 + arg1 * 8;
+    SzDuel_InitCardInfo(data, nCardNo);
+    return data + 8 + EffIdxID * 8;
 }
 
-s32 TaHand_GetCardKind(s32 arg0) {
+/* Card `nCardNo`'s kind. */
+s32 TaHand_GetCardKind(s32 nCardNo) {
     u8 *temp_v0;
 
-    if (arg0 == 0x3E7) {
+    if (nCardNo == 0x3E7) {
         return 0U;
     }
-    temp_v0 = SzDuel_GetCardConstInfo(arg0);
+    temp_v0 = SzDuel_GetCardConstInfo(nCardNo);
     if (temp_v0 == NULL) {
         return 0U;
     }
     return *temp_v0;
 }
 
-void TaHand_GetNextHand(s32 arg0, s32 *arg1) {
+/* Side `nSide`'s hand after the next draw, into `arNextHand`. */
+void TaHand_GetNextHand(s32 nSide, s32 *arNextHand) {
     s32 index;
     s32 count;
     s32 value;
@@ -652,28 +668,29 @@ void TaHand_GetNextHand(s32 arg0, s32 *arg1) {
     index = 0;
     count = 0;
     do {
-        value = SzDuel_InqHand(arg0, index) & 0xFFF;
+        value = SzDuel_InqHand(nSide, index) & 0xFFF;
         if (value != 0x3E7) {
-            arg1[count] = value;
+            arNextHand[count] = value;
             count++;
         }
         index++;
     } while (index < 5);
-    index = SzDuel_GetHandCount(arg0);
+    index = SzDuel_GetHandCount(nSide);
     count = 0;
-    while (index < TaHand_GetNextHandNum(arg0)) {
-        arg1[index] = SzDuel_InqDeck(arg0, count);
+    while (index < TaHand_GetNextHandNum(nSide)) {
+        arNextHand[index] = SzDuel_InqDeck(nSide, count);
         index++;
         count++;
     }
 }
 
-s32 TaHand_GetNextHandNum(s32 arg0) {
+/* How many cards side `nSide` will hold after the next draw. */
+s32 TaHand_GetNextHandNum(s32 nSide) {
     s32 temp_s0;
     s32 var_v0;
 
-    temp_s0 = SzDuel_GetHandCount(arg0);
-    var_v0 = temp_s0 + SzDuel_GetDeckCount(arg0);
+    temp_s0 = SzDuel_GetHandCount(nSide);
+    var_v0 = temp_s0 + SzDuel_GetDeckCount(nSide);
     if (var_v0 >= 5) {
         var_v0 = 5;
     }
@@ -698,6 +715,8 @@ typedef struct {
     s32 count;
 } Object_0026FE70;
 
+/* Effect script Hand_Fail, step `ID`: its camera, fades and effect module; it destroys units. */
+/* Runs the animation of a failed hand combination: the card is lost. */
 s32 Ta_Eff_Hand_Fail(void *src, void *obj, s32 mode) {
     extern void Ta_DelUnit2(u32, s32);
     s32 words[4];
@@ -791,6 +810,8 @@ typedef struct {
 } Object_00270030;
 
 
+/* Effect script Hand_Fusion, step `ID`: its camera, fades and effect module; it destroys units. */
+/* Runs the hand-fusion animation. */
 s32 Ta_Eff_Hand_Fusion(void *src, void *obj, s32 mode) {
     s32 words[4];
     s32 *message = words;
@@ -901,6 +922,7 @@ typedef struct Event_00270260 {
 } Event_00270260;
 
 
+/* The kind of the unit on board square `position`. */
 static inline s32 mode_00270260(u32 position) {
     if ((SzDuel_GetUnitKind(position >> 24, (position >> 16) & 0xFF) >> 5) == 0) {
         return 0;
@@ -909,6 +931,8 @@ static inline s32 mode_00270260(u32 position) {
     }
 }
 
+/* Effect script Hand_Enc, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+/* Runs the hand-equip animation: the unit's power changes. */
 s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
     extern s32 SzDuel_GetUnitOpenRate();
     extern s32 SzDuel_GetUnitCardNo();
@@ -1240,6 +1264,9 @@ extern void func_002610D0_b(unsigned char who, int packed, int add, int value);
 extern void func_00260A70_270c30(struct jp_8b3ce *Temp, unsigned char b);
 extern int func_00261570_b(int a, int b, unsigned char c, unsigned char d);
 
+/* Effect script Hand_Force, step `ID`: its camera, fades and effect module; it changes life points, turns cards
+   face up. */
+/* Runs the power-change animation of a hand equip. */
 int Ta_Eff_Hand_Force(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_8b329 * eInfo = eInfo_v;
@@ -1487,9 +1514,12 @@ typedef struct State_00271630 {
 } State_00271630;
 
 
-s32 Ta_Eff_Hand_Dest(void *arg0, void *arg1, s32 arg2) {
+/* Effect script Hand_Dest, step `ID`: its camera, fades and effect module; it destroys units, curses units, binds
+   units with a spell. */
+/* Runs the animation of a hand combination destroying a unit. */
+s32 Ta_Eff_Hand_Dest(void *eInfo, void *Temp, s32 ID) {
     s32 values[4];
-    State_00271630 *state = arg1;
+    State_00271630 *state = Temp;
     s32 *packet = values;
     u32 value;
 
@@ -1498,7 +1528,7 @@ s32 Ta_Eff_Hand_Dest(void *arg0, void *arg1, s32 arg2) {
     values[2] = 0;
     values[3] = 0;
 
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         TaEffect_LoadModule(state, 0x25B);
         return 1;
@@ -1509,7 +1539,7 @@ s32 Ta_Eff_Hand_Dest(void *arg0, void *arg1, s32 arg2) {
         if (TaEffect_IsLoadModule(state) == 1) {
             packet[0] = 0x25B;
             packet[1] = 0;
-            packet[2] = *(u32 *)((u8 *)arg0 + 8);
+            packet[2] = *(u32 *)((u8 *)eInfo + 8);
             packet[3] = 0;
             state->handle = Ta_Do_Effect(packet, state);
             state->count++;
@@ -1519,7 +1549,7 @@ s32 Ta_Eff_Hand_Dest(void *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->handle) != 0) {
             return 1;
         }
-        value = *(u32 *)((u8 *)arg0 + 8);
+        value = *(u32 *)((u8 *)eInfo + 8);
         Ta_DelUnit2(value >> 8, value & 0xFF);
         SzDuel_CloseMsgPopup();
         return 0;
@@ -1527,17 +1557,19 @@ s32 Ta_Eff_Hand_Dest(void *arg0, void *arg1, s32 arg2) {
     return 1;
 }
 
-s32 Ta_IsLDAbl(s32 arg0, s32 arg1) {
-    if (Ta_SearchUncTypeNaturalEffectUserNumWithSide(0x58, (arg1 == 0) ? 1 : 0) > 0) {
+/* Whether side `nSide`'s leader has ability `abID`. */
+s32 Ta_IsLDAbl(s32 abID, s32 nSide) {
+    if (Ta_SearchUncTypeNaturalEffectUserNumWithSide(0x58, (nSide == 0) ? 1 : 0) > 0) {
         return 0;
     }
-    return SzDuel_GetUnitLeaderAbility(arg1, 0, arg0, 0);
+    return SzDuel_GetUnitLeaderAbility(nSide, 0, abID, 0);
 }
 
-s32 Ta_GetLDChgLand(s32 arg0) {
+/* The field type a leader of race `Race` changes squares to. */
+s32 Ta_GetLDChgLand(s32 Race) {
     s32 ret;
 
-    switch (arg0) {
+    switch (Race) {
     case 1:
     case 7:
         ret = 5;
@@ -1562,19 +1594,20 @@ s32 Ta_GetLDChgLand(s32 arg0) {
     return ret;
 }
 
-s32 Ta_GetLDLvRev(s32 arg0) {
+/* The summon-level bonus side `nSide`'s leader gives (by its level). */
+s32 Ta_GetLDLvRev(s32 nSide) {
     extern s32 SzDuel_GetUnitLevel(s32, s32, s32);
 
-    if (Ta_IsLDAbl(8, arg0) != 0) {
-        switch (SzDuel_GetUnitConstKind(arg0, 0) & 0x1F) {
+    if (Ta_IsLDAbl(8, nSide) != 0) {
+        switch (SzDuel_GetUnitConstKind(nSide, 0) & 0x1F) {
         case 0:
         case 6:
         case 12:
         case 14:
-            return SzDuel_GetUnitLevel(arg0, 0, 0) > 6 ? 2 : 1;
+            return SzDuel_GetUnitLevel(nSide, 0, 0) > 6 ? 2 : 1;
         case 4:
         case 13:
-            if (SzDuel_GetUnitLevel(arg0, 0, 0) > 5) {
+            if (SzDuel_GetUnitLevel(nSide, 0, 0) > 5) {
                 return 2;
             }
             return 1;
@@ -1587,7 +1620,8 @@ s32 Ta_GetLDLvRev(s32 arg0) {
     return 0;
 }
 
-s32 Ta_IsSquareRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Whether square (nX, nZ) is within range `R` of square (mX, mZ). */
+s32 Ta_IsSquareRange(s32 nX, s32 nZ, s32 mX, s32 mZ, s32 R) {
     s32 x;
     s32 half;
     s32 xEnd;
@@ -1595,22 +1629,22 @@ s32 Ta_IsSquareRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 yEnd;
     s32 y;
 
-    half = arg4 >> 1;
-    x = GetCap(0, arg0 - half);
-    if (arg0 + half >= 7) {
+    half = R >> 1;
+    x = GetCap(0, nX - half);
+    if (nX + half >= 7) {
         xEnd = 6;
     } else {
-        xEnd = arg0 + half;
+        xEnd = nX + half;
     }
-    yStart = GetCap(0, arg1 - half);
-    if (arg1 + half >= 7) {
+    yStart = GetCap(0, nZ - half);
+    if (nZ + half >= 7) {
         yEnd = 6;
     } else {
-        yEnd = arg1 + half;
+        yEnd = nZ + half;
     }
     for (; x <= xEnd; x++) {
         for (y = yStart; y <= yEnd; y++) {
-            if (x == arg2 && y == arg3) {
+            if (x == mX && y == mZ) {
                 return 1;
             }
         }
@@ -1618,18 +1652,20 @@ s32 Ta_IsSquareRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return 0;
 }
 
-s32 Ta_IsLDRange(s32 arg0, s32 arg1, s32 arg2) {
+/* Whether square (nX, nZ) is within side `LDSide`'s leader's range. */
+s32 Ta_IsLDRange(s32 LDSide, s32 nX, s32 nZ) {
     s32 temp_s0;
 
-    temp_s0 = SzDuel_GetUnitLoc(arg0, 0);
-    if (Ta_IsLDAbl(9, arg0) != 0) {
-        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, arg1, arg2, 5) != 0) ? 1 : 0;
+    temp_s0 = SzDuel_GetUnitLoc(LDSide, 0);
+    if (Ta_IsLDAbl(9, LDSide) != 0) {
+        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, nX, nZ, 5) != 0) ? 1 : 0;
     } else {
-        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, arg1, arg2, 3) != 0) ? 1 : 0;
+        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, nX, nZ, 3) != 0) ? 1 : 0;
     }
 }
 
-s32 Ta_GetLDParamOfs2(void *arg0, s32 arg1, s32 arg2) {
+/* The power change a unit (record `vInfo`) on (nX, nZ) gets from leaders' abilities. */
+s32 Ta_GetLDParamOfs2(void *vInfo, s32 nX, s32 nZ) {
     extern s32 SzDuel_GetUnitLevel();
     s32 score;
     s32 kind;
@@ -1637,16 +1673,16 @@ s32 Ta_GetLDParamOfs2(void *arg0, s32 arg1, s32 arg2) {
     s32 other;
 
     score = 0;
-    if (arg0 == NULL) {
+    if (vInfo == NULL) {
         return 0;
     }
-    player = Ta_IsUnitControl2(arg0);
-    kind = ((u8 *)arg0)[0x3E] & 0x1F;
+    player = Ta_IsUnitControl2(vInfo);
+    kind = ((u8 *)vInfo)[0x3E] & 0x1F;
     other = player == 0 ? 1 : 0;
-    if (Ta_IsLDRangeAvilityFromLoc((arg2 << 8) | arg1, player, kind, 10)) {
+    if (Ta_IsLDRangeAvilityFromLoc((nZ << 8) | nX, player, kind, 10)) {
         score += SzDuel_GetUnitLevel(player, 0, 0) * 100 >= 500 ? 500 : SzDuel_GetUnitLevel(player, 0, 0) * 100;
     }
-    if (Ta_IsLDRange(other, arg1, arg2)) {
+    if (Ta_IsLDRange(other, nX, nZ)) {
         if (Ta_IsLDAbl(14, other) && Ta_IsLD_PDownObj(other, kind)) {
             score -= SzDuel_GetUnitLevel(other, 0, 0) * 100 >= 500 ? 500 : SzDuel_GetUnitLevel(other, 0, 0) * 100;
         }
@@ -1654,73 +1690,74 @@ s32 Ta_GetLDParamOfs2(void *arg0, s32 arg1, s32 arg2) {
     return score;
 }
 
-s32 Ta_IsLD_PDownObj(s32 arg0, s32 arg1) {
+/* Whether side `nSide`'s leader weakens units of race `bRace`. */
+s32 Ta_IsLD_PDownObj(s32 nSide, s32 bRace) {
     s32 result;
 
-    switch (SzDuel_GetUnitConstKind(arg0, 0) & 0x1F) {
+    switch (SzDuel_GetUnitConstKind(nSide, 0) & 0x1F) {
     case 1:
-        if (arg1 == 7) {
+        if (bRace == 7) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 2:
-        if (arg1 == 3) {
+        if (bRace == 3) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 3:
-        return ((u32)arg1 < 2) ? 1 : 0;
+        return ((u32)bRace < 2) ? 1 : 0;
     case 5:
-        if (arg1 == 12) {
+        if (bRace == 12) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 6:
-        if (arg1 == 9 || arg1 == 12) {
+        if (bRace == 9 || bRace == 12) {
             return 1;
         }
         return 0;
     case 7:
-        if (arg1 == 1) {
+        if (bRace == 1) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 9:
-        if (arg1 == 13) {
+        if (bRace == 13) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 11:
-        return ((u32)(arg1 - 5) < 2) ? 1 : 0;
+        return ((u32)(bRace - 5) < 2) ? 1 : 0;
     case 12:
-        if (arg1 == 15) {
+        if (bRace == 15) {
             result = 1;
         } else {
             result = 0;
         }
         return result;
     case 15:
-        if (arg1 == 2 || arg1 == 14) {
+        if (bRace == 2 || bRace == 14) {
             return 1;
         }
         return 0;
     case 16:
-        if (arg1 == 14 || arg1 == 17) {
+        if (bRace == 14 || bRace == 17) {
             return 1;
         }
         return 0;
     case 17:
-        if (arg1 == 4) {
+        if (bRace == 4) {
             result = 1;
         } else {
             result = 0;
@@ -1732,80 +1769,85 @@ s32 Ta_IsLD_PDownObj(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 Ta_IsLDRangeAvility(s32 arg0, s32 arg1, s32 arg2) {
+/* Whether unit (nSide, nID) is in a leader's range with ability `sKey` for it. */
+s32 Ta_IsLDRangeAvility(s32 nSide, s32 nID, s32 sKey) {
     s32 temp_s0;
     s32 temp_s1;
     s32 temp_s2;
 
-    temp_s0 = SzDuel_GetUnitLoc(arg0, arg1);
-    temp_s2 = Ta_GetCurrentSide(arg0, arg1);
-    temp_s1 = SzDuel_GetUnitKind(arg0, arg1) & 0x1F;
-    if (Ta_IsLDRange(temp_s2, temp_s0 & 0xFF, temp_s0 >> 8) != 0 && Ta_IsLDAbl(arg2, temp_s2) != 0 &&
+    temp_s0 = SzDuel_GetUnitLoc(nSide, nID);
+    temp_s2 = Ta_GetCurrentSide(nSide, nID);
+    temp_s1 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
+    if (Ta_IsLDRange(temp_s2, temp_s0 & 0xFF, temp_s0 >> 8) != 0 && Ta_IsLDAbl(sKey, temp_s2) != 0 &&
         temp_s1 == (SzDuel_GetUnitConstKind(temp_s2, 0) & 0x1F)) {
         return 1;
     }
     return 0;
 }
 
-s32 Ta_IsLDRangeAvilityFromLoc(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Whether square `LOC` is in a leader's range with ability `sKey` for race `bRace` (`Self` picks the side). */
+s32 Ta_IsLDRangeAvilityFromLoc(s32 LOC, s32 Self, s32 bRace, s32 sKey) {
 
-    if (Ta_IsLDRange(arg1, arg0 & 0xFF, arg0 >> 8) != 0 && Ta_IsLDAbl(arg3, arg1) != 0 &&
-        arg2 == (SzDuel_GetUnitConstKind(arg1, 0) & 0x1F)) {
+    if (Ta_IsLDRange(Self, LOC & 0xFF, LOC >> 8) != 0 && Ta_IsLDAbl(sKey, Self) != 0 &&
+        bRace == (SzDuel_GetUnitConstKind(Self, 0) & 0x1F)) {
         return 1;
     }
     return 0;
 }
 
-s32 Ta_IsLDRangeAvilityWithLocation(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Whether unit (nSide, nID) on square (nX, nZ) is in a leader's range with ability `sKey`. */
+s32 Ta_IsLDRangeAvilityWithLocation(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 sKey) {
     s32 temp_s0;
     s32 temp_s1;
 
-    temp_s1 = Ta_GetCurrentSide(arg0, arg1);
-    temp_s0 = SzDuel_GetUnitKind(arg0, arg1) & 0x1F;
-    if (Ta_IsLDRange(temp_s1, arg2, arg3) != 0 && Ta_IsLDAbl(arg4, temp_s1) != 0 &&
+    temp_s1 = Ta_GetCurrentSide(nSide, nID);
+    temp_s0 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
+    if (Ta_IsLDRange(temp_s1, nX, nZ) != 0 && Ta_IsLDAbl(sKey, temp_s1) != 0 &&
         temp_s0 == (SzDuel_GetUnitConstKind(temp_s1, 0) & 0x1F)) {
         return 1;
     }
     return 0;
 }
 
-s32 Ta_IsLD_CurseObj(s32 arg0, s32 arg1) {
+/* Whether side `nSide`'s leader curses units of race `bRace`. */
+s32 Ta_IsLD_CurseObj(s32 nSide, s32 bRace) {
 
-    switch (SzDuel_GetUnitConstKind(arg0, 0) & 0x1F) {
+    switch (SzDuel_GetUnitConstKind(nSide, 0) & 0x1F) {
     case 8:
-        return (arg1 == 2) ? 1 : 0;
+        return (bRace == 2) ? 1 : 0;
     case 11:
-        return (arg1 == 0x10) ? 1 : 0;
+        return (bRace == 0x10) ? 1 : 0;
     case 17:
-        return ((u32)(arg1 - 5) < 2U) ? 1 : 0;
+        return ((u32)(bRace - 5) < 2U) ? 1 : 0;
     case 19:
-        return (arg1 == 0) ? 1 : 0;
+        return (bRace == 0) ? 1 : 0;
     }
     return 0;
 }
 
-s32 Ta_IsLD_DestObj(s32 arg0, s32 arg1) {
+/* Whether side `nSide`'s leader destroys units of race `bRace`. */
+s32 Ta_IsLD_DestObj(s32 nSide, s32 bRace) {
     s32 result;
 
-    switch (SzDuel_GetUnitConstKind(arg0, 0) & 0x1F) {
+    switch (SzDuel_GetUnitConstKind(nSide, 0) & 0x1F) {
     case 8:
-        result = (arg1 == 7) ? 1 : 0;
+        result = (bRace == 7) ? 1 : 0;
         break;
     case 11:
-        result = (arg1 == 9) ? 1 : 0;
+        result = (bRace == 9) ? 1 : 0;
         break;
     case 17:
-        if (arg1 == 2 || arg1 == 19) {
+        if (bRace == 2 || bRace == 19) {
             result = 1;
         } else {
             result = 0;
         }
         break;
     case 18:
-        result = (arg1 == 10) ? 1 : 0;
+        result = (bRace == 10) ? 1 : 0;
         break;
     case 19:
-        result = (arg1 == 18) ? 1 : 0;
+        result = (bRace == 18) ? 1 : 0;
         break;
     default:
         result = 0;
@@ -1814,7 +1856,8 @@ s32 Ta_IsLD_DestObj(s32 arg0, s32 arg1) {
     return result;
 }
 
-u32 Ta_RemoveObjFromFlagLst(s32 arg0, s32 arg1) {
+/* Takes the units a leader protects or that resist all effects out of target list `eObj` (owner `sOwner`). */
+u32 Ta_RemoveObjFromFlagLst(s32 eObj, s32 sOwner) {
     s32 i;
     s32 count;
     s32 result;
@@ -1823,23 +1866,24 @@ u32 Ta_RemoveObjFromFlagLst(s32 arg0, s32 arg1) {
     s32 x;
     s32 position;
 
-    count = Ta_GetUnitNumFrom22bitFlagList(arg0);
-    result = arg0;
+    count = Ta_GetUnitNumFrom22bitFlagList(eObj);
+    result = eObj;
     for (i = 0; i < count; i++) {
-            position = Ta_GetUnitOwnerIDFromLstCount(arg0, i);
+            position = Ta_GetUnitOwnerIDFromLstCount(eObj, i);
             x = position >> 8;
             y = position & 0xFF;
             owner = Ta_GetCurrentSide(x, y);
-            if ((Ta_IsLDRangeAvility(x, y, 0xB) != 0) && (owner != arg1)) {
+            if ((Ta_IsLDRangeAvility(x, y, 0xB) != 0) && (owner != sOwner)) {
                 result = ConvUnitIDtoFlagList_OFF((u32) result, x, y);
-            } else if ((Ta_IsResistAll(x, y) != 0) && (owner != arg1)) {
+            } else if ((Ta_IsResistAll(x, y) != 0) && (owner != sOwner)) {
                 result = ConvUnitIDtoFlagList_OFF((u32) result, x, y);
             }
     }
     return (u32) result;
 }
 
-u32 Ta_RemoveObjFromFlagLst2(s32 arg0, s32 arg1) {
+/* Takes leader-protected units out of target list `eObj`, showing the message and range. */
+u32 Ta_RemoveObjFromFlagLst2(s32 eObj, s32 sOwner) {
     s32 i;
     s32 remaining;
     s32 card;
@@ -1849,20 +1893,20 @@ u32 Ta_RemoveObjFromFlagLst2(s32 arg0, s32 arg1) {
     s32 count;
     s32 packed;
 
-    count = Ta_GetUnitNumFrom22bitFlagList(arg0);
-    remaining = arg0;
+    count = Ta_GetUnitNumFrom22bitFlagList(eObj);
+    remaining = eObj;
     for (i = 0; i < count; i++) {
-            packed = Ta_GetUnitOwnerIDFromLstCount(arg0, i);
+            packed = Ta_GetUnitOwnerIDFromLstCount(eObj, i);
             x = packed >> 8;
             y = packed & 0xFF;
             card = Ta_GetCurrentSide(x, y);
             position = SzDuel_GetUnitLoc(card, 0);
-            if (Ta_IsLDRangeAvility(x, y, 0xB) != 0 && card != arg1) {
+            if (Ta_IsLDRangeAvility(x, y, 0xB) != 0 && card != sOwner) {
                 SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10E);
                 Ta_SetRangeVisual(position & 0xFF, position >> 8, 0,
                              Ta_IsLDAbl(9, card), 1, 1, 0xB);
                 remaining = ConvUnitIDtoFlagList_OFF((u32) remaining, x, y);
-            } else if (Ta_IsResistAll(x, y) != 0 && card != arg1) {
+            } else if (Ta_IsResistAll(x, y) != 0 && card != sOwner) {
                 SzDuel_OpenMsgPopup(0, 0, 0x50, SzDuel_GetMsgName(0x53));
                 remaining = ConvUnitIDtoFlagList_OFF((u32) remaining, x, y);
             }
@@ -1870,10 +1914,12 @@ u32 Ta_RemoveObjFromFlagLst2(s32 arg0, s32 arg1) {
     return (u32) remaining;
 }
 
-s32 Ta_GetLDRange(s32 arg0) {
-    return Ta_IsLDAbl(9, arg0) ? 5 : 3;
+/* Side `LDSide`'s leader's ability range. */
+s32 Ta_GetLDRange(s32 LDSide) {
+    return Ta_IsLDAbl(9, LDSide) ? 5 : 3;
 }
 
+/* Runs the end of a turn: curse and spell turns count down, into `res`. */
 s32 Ta_Do_EndPhase(s32 phase, s32 *res) {
     extern s32 SzDuel_GetUnitSpellRest();
     extern s32 SzDuel_GetUnitCurseRest();
@@ -2053,6 +2099,7 @@ s32 Ta_Do_EndPhase(s32 phase, s32 *res) {
 extern int func_001DEE50_b(int index);
 extern int func_001E1030_b(int a, int b);
 
+/* Ends the duel for side `nSide` by condition `bCond`: experience and results. */
 int Ta_Do_DuelEnd(int nSide, unsigned char bCond)
 {
     int i;
@@ -2179,7 +2226,8 @@ typedef struct Setup_00273460 {
 } Setup_00273460;
 
 
-s32 Ta_Eff_112(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 112, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+s32 Ta_Eff_112(void *eInfo, void *Temp, s32 ID) {
     Setup_00273460 setup;
     s32 complete;
     Setup_00273460 *config = &setup;
@@ -2187,8 +2235,8 @@ s32 Ta_Eff_112(void *arg0, void *arg1, s32 arg2) {
     u8 *id;
     s32 index;
     s32 card;
-    State_00273460 *state = arg1;
-    Context_00273460 *context = arg0;
+    State_00273460 *state = Temp;
+    Context_00273460 *context = eInfo;
 
     setup.card = 999;
     setup.x = 0;
@@ -2196,13 +2244,13 @@ s32 Ta_Eff_112(void *arg0, void *arg1, s32 arg2) {
     setup.z = 0;
     complete = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
-        Ta_AllUnitFade(context, state, arg2, -1, 1, 1);
+        Ta_AllUnitFade(context, state, ID, -1, 1, 1);
         state->alpha = 128;
         TaEffect_LoadModule(state, 612);
-        for (arg2 = 0; arg2 < Ta_GetUnitNumFrom22bitFlagList(context->cards); arg2++) {
-            card = Ta_GetUnitOwnerIDFromLstCount(context->cards, arg2);
+        for (ID = 0; ID < Ta_GetUnitNumFrom22bitFlagList(context->cards); ID++) {
+            card = Ta_GetUnitOwnerIDFromLstCount(context->cards, ID);
             SzEffect_SetBusyFlag2(card, 0);
             TaUtil_DoOpen(card >> 8, card & 255, 1);
         }
@@ -2211,12 +2259,12 @@ s32 Ta_Eff_112(void *arg0, void *arg1, s32 arg2) {
     }
     switch (state->phase) {
     case 0:
-        arg2 = 0;
+        ID = 0;
         if (state->alpha > 48) {
             state->alpha -= 15;
         } else {
-            for (arg2 = 0; arg2 < Ta_GetUnitNumFrom22bitFlagList(context->cards); arg2++) {
-                if (SzEffect_IsModelStandby2(Ta_GetUnitOwnerIDFromLstCount(context->cards, arg2)) != 0) {
+            for (ID = 0; ID < Ta_GetUnitNumFrom22bitFlagList(context->cards); ID++) {
+                if (SzEffect_IsModelStandby2(Ta_GetUnitOwnerIDFromLstCount(context->cards, ID)) != 0) {
                     complete++;
                 }
             }
@@ -2269,7 +2317,7 @@ s32 Ta_Eff_112(void *arg0, void *arg1, s32 arg2) {
             walk = (State_00273460 *)((u8 *)walk + 4);
         }
         if (complete >= state->count) {
-            Ta_AllUnitFade(context, state, arg2, 1, 0, 1);
+            Ta_AllUnitFade(context, state, ID, 1, 0, 1);
             state->timer = 0;
             SzDuel_CloseMsgPopup();
             TaView_RestoreOriginalView(state, 16);
@@ -2326,12 +2374,14 @@ typedef struct Command_002738B0 {
 } Command_002738B0;
 
 
-s32 Ta_Eff_113(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 113, step `ID`: its camera, fades and effect module; it destroys units, binds units with a spell,
+   turns cards face up. */
+s32 Ta_Eff_113(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_SetUnitSpellRest();
     Command_002738B0 command;
     Command_002738B0 *cmd = &command;
-    Masks_002738B0 *masks = arg0;
-    State_002738B0 *state = arg1;
+    Masks_002738B0 *masks = eInfo;
+    State_002738B0 *state = Temp;
     s32 position;
     s32 player;
     s32 position0;
@@ -2352,7 +2402,7 @@ s32 Ta_Eff_113(void *arg0, void *arg1, s32 arg2) {
     command.position = 0;
     command.argument = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
+    if (ID >= 0) {
         InitEffectTemp(state);
         if (((u32 *)masks)[3] >> 31) {
             player = (SzDuel_GetTurnOwner() == 0) ? 1 : 0;
@@ -2510,6 +2560,8 @@ extern int func_001E1030_b(int a, int b);
 extern int func_001E1E10_b(int a, int b);
 extern int func_001E1CB0_b(int a, int b);
 
+/* Effect script BTL_000, step `ID`: its camera, fades and effect module; it changes attack or defence, changes
+   life points. */
 int Ta_Eff_BTL_000(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c_273e60 * eInfo = eInfo_v;
@@ -2775,6 +2827,8 @@ extern int func_001E1E10_b(int a, int b);
 extern int func_001E1CB0_b(int a, int b);
 extern int func_001DE2A0_b(int side);
 
+/* Effect script BTL_001, step `ID`: its camera, fades and effect module; it destroys units, changes attack or
+   defence, changes life points. */
 int Ta_Eff_BTL_001(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c * eInfo = eInfo_v;
@@ -3124,6 +3178,7 @@ typedef struct {
 } Params_002755D0;
 
 
+/* One frame of battle effect script 002. */
 static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 arg2) {
     State_002755D0 *state = arg1;
     Source_002755D0 *source = arg0;
@@ -3164,6 +3219,7 @@ static inline s32 update_002755D0(void *arg0, void *arg1, void *params_arg, s32 
     return 0;
 }
 
+/* Clears battle effect script 002's work area. */
 static inline void init_params_002755D0(void *params_arg) {
     Params_002755D0 *values = params_arg;
 
@@ -3173,12 +3229,13 @@ static inline void init_params_002755D0(void *params_arg) {
     values->z = 0;
 }
 
-s32 Ta_Eff_BTL_002(void *arg0, void *arg1, s32 arg2) {
+/* Effect script BTL_002, step `ID`: its camera, fades and effect module. */
+s32 Ta_Eff_BTL_002(void *eInfo, void *Temp, s32 ID) {
     Params_002755D0 values;
     Params_002755D0 *params = &values;
 
     init_params_002755D0(params);
-    return update_002755D0(arg0, arg1, params, arg2);
+    return update_002755D0(eInfo, Temp, params, ID);
 }
 
 typedef struct State_00275740 {
@@ -3197,12 +3254,13 @@ typedef struct Request_00275740 {
 } Request_00275740;
 
 
-s32 Ta_Eff_070(u32 *arg0, void *arg1, s32 arg2) {
+/* Effect script 070, step `ID`: its camera, fades and effect module; it destroys units, turns cards face up. */
+s32 Ta_Eff_070(u32 *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
     extern s32 SzDuel_GetUnitCardNo();
     Request_00275740 data;
     Request_00275740 *request = &data;
-    State_00275740 *state = arg1;
+    State_00275740 *state = Temp;
     u32 cell;
 
     data.command = 999;
@@ -3210,27 +3268,27 @@ s32 Ta_Eff_070(u32 *arg0, void *arg1, s32 arg2) {
     data.cell = 0;
     data.flag = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x259);
-        TaEffect_LoadModule(arg1, 0x25A);
-        cell = arg0[1];
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x259);
+        TaEffect_LoadModule(Temp, 0x25A);
+        cell = eInfo[1];
         TaUtil_DoOpen(cell >> 8, cell & 0xFF, 1);
-        TaView_ReqFocusCamera(0, arg0[1], 100, 180);
+        TaView_ReqFocusCamera(0, eInfo[1], 100, 180);
         return 1;
     }
 
     switch (state->phase) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
-            cell = arg0[1];
+        if (TaEffect_IsLoadModule(Temp) == 1) {
+            cell = eInfo[1];
             if (SzDuel_GetUnitOpenRate(cell >> 8, cell & 0xFF) == 0xFF) {
                 SzDuel_OpenMsgPopup(0, -120, 80, 0x103);
                 request->command = 0x25A;
                 request->value = 0;
-                request->cell = arg0[1];
+                request->cell = eInfo[1];
                 request->flag = 0;
-                state->handle = Ta_Do_Effect((s32 *)request, arg1);
+                state->handle = Ta_Do_Effect((s32 *)request, Temp);
                 state->phase++;
             }
         }
@@ -3239,26 +3297,26 @@ s32 Ta_Eff_070(u32 *arg0, void *arg1, s32 arg2) {
         if (SzEffect_IsUse(state->handle) == 1) {
             return 1;
         }
-        cell = arg0[1];
+        cell = eInfo[1];
         SzDuel_SetUnitStatus(cell >> 8, cell & 0xFF, 0, 1);
-        cell = arg0[1];
+        cell = eInfo[1];
         SzDuel_OpenMsgPopup(0, -120, 80, SzDuel_GetMsgName(SzDuel_GetUnitCardNo(cell >> 8, cell & 0xFF)));
         request->command = 0x259;
         request->value = 0;
-        request->cell = arg0[1];
+        request->cell = eInfo[1];
         request->flag = 1;
-        state->handle = Ta_Do_Effect((s32 *)request, arg1);
+        state->handle = Ta_Do_Effect((s32 *)request, Temp);
         state->phase++;
         break;
     case 2:
         if (SzEffect_IsUse(state->handle) == 1) {
             return 1;
         }
-        cell = arg0[1];
+        cell = eInfo[1];
         Ta_DelUnit(cell >> 8, cell & 0xFF);
         state->phase++;
         SzDuel_CloseMsgPopup();
-        TaView_RestoreOriginalView(arg1, 16);
+        TaView_RestoreOriginalView(Temp, 16);
         break;
     default:
         if (state->timer++ > 16) {
@@ -3296,11 +3354,12 @@ typedef struct {
 } Command_002759D0;
 
 
-s32 Ta_Eff_071(void *arg0, void *arg1, s32 arg2) {
+/* Effect script 071, step `ID`: its camera, fades and effect module; it curses units, turns cards face up. */
+s32 Ta_Eff_071(void *eInfo, void *Temp, s32 ID) {
     Command_002759D0 storage;
     Command_002759D0 *command = &storage;
-    Data_002759D0 *data = arg0;
-    State_002759D0 *state = arg1;
+    Data_002759D0 *data = eInfo;
+    State_002759D0 *state = Temp;
     u32 position;
     u16 timer;
     extern s32 SzDuel_TrimUnitDir2();
@@ -3312,16 +3371,16 @@ s32 Ta_Eff_071(void *arg0, void *arg1, s32 arg2) {
     command->position = 0;
     command->flags = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
         position = data->source;
         TaUtil_DoOpen(position >> 8, position & 0xFF, 1);
         TaView_ReqFocusCamera(0, data->source, 0x64, 0xB4);
-        TaEffect_LoadModule(arg1, 0x25A);
+        TaEffect_LoadModule(Temp, 0x25A);
         if (data->flag != 0) {
-            TaEffect_LoadModule(arg1, 0x1F4);
+            TaEffect_LoadModule(Temp, 0x1F4);
         } else {
-            TaEffect_LoadModule(arg1, 0x201);
+            TaEffect_LoadModule(Temp, 0x201);
         }
         return 1;
     }
@@ -3329,13 +3388,13 @@ s32 Ta_Eff_071(void *arg0, void *arg1, s32 arg2) {
     case 0:
         position = data->source;
         if (SzDuel_GetUnitOpenRate(position >> 8, position & 0xFF) == 0xFF) {
-            if (TaEffect_IsLoadModule(arg1) == 1) {
+            if (TaEffect_IsLoadModule(Temp) == 1) {
                 SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x103);
                 command->code = 0x25A;
                 command->unused = 0;
                 command->position = data->source;
                 command->flags = 0;
-                state->id = Ta_Do_Effect((s32 *)command, arg1);
+                state->id = Ta_Do_Effect((s32 *)command, Temp);
                 state->phase++;
             }
         }
@@ -3361,7 +3420,7 @@ s32 Ta_Eff_071(void *arg0, void *arg1, s32 arg2) {
         position = data->source;
         SzDuel_OpenMsgPopup(0, -0x78, 0x50,
             SzDuel_GetMsgName(SzDuel_GetUnitCardNo(position >> 8, position & 0xFF)));
-        state->id = Ta_Do_Effect((s32 *)command, arg1);
+        state->id = Ta_Do_Effect((s32 *)command, Temp);
         state->phase++;
         return 1;
     case 2:
@@ -3379,7 +3438,7 @@ s32 Ta_Eff_071(void *arg0, void *arg1, s32 arg2) {
         }
         state->phase++;
         SzDuel_CloseMsgPopup();
-        TaView_RestoreOriginalView(arg1, 0x10);
+        TaView_RestoreOriginalView(Temp, 0x10);
         break;
     default:
         timer = state->timer;
@@ -3417,12 +3476,13 @@ typedef struct Data_00275D00 {
     u16 count;
 } Data_00275D00;
 
-s32 TaLogic_InitLogicData(s32 arg0, void *arg1) {
-    Data_00275D00 *data = arg1;
+/* Sets up side `nSide`'s computer-opponent data `pCtl` (the tutorial has its own). */
+s32 TaLogic_InitLogicData(s32 nSide, void *pCtl) {
+    Data_00275D00 *data = pCtl;
     s32 i;
 
-    if (TaTuto_IsTuto(arg0) == 1) {
-        TaTuto_InitTutorial(SzDuel_GetPlayer(arg0) & 0xFF, (s32) arg1);
+    if (TaTuto_IsTuto(nSide) == 1) {
+        TaTuto_InitTutorial(SzDuel_GetPlayer(nSide) & 0xFF, (s32) pCtl);
         return 1;
     }
     if (data != NULL) {
@@ -3439,19 +3499,20 @@ s32 TaLogic_InitLogicData(s32 arg0, void *arg1) {
         data->idx = 0;
         data->sel = 0;
         data->count = 0;
-        data->entries[0].id = arg0 << 8;
-        data->entries[0].value = SzDuel_GetUnitSummonOrder(arg0, 0);
+        data->entries[0].id = nSide << 8;
+        data->entries[0].value = SzDuel_GetUnitSummonOrder(nSide, 0);
         return 1;
     }
     return -1;
 }
 
-s32 TaLogic_AdjustLogicData(void *arg0) {
+/* Updates the computer opponent's data `pCtl` for this turn. */
+s32 TaLogic_AdjustLogicData(void *pCtl) {
     if (TaTuto_IsTuto(SzDuel_GetTurnOwner()) == 1) {
         return 1;
     }
-    *(s16 *)((u8 *)arg0 + 0x1A2) = 0;
-    return TaLogic_DoAdjustLogicData(arg0);
+    *(s16 *)((u8 *)pCtl + 0x1A2) = 0;
+    return TaLogic_DoAdjustLogicData(pCtl);
 }
 
 typedef struct Entry_00275E80 {
@@ -3472,8 +3533,9 @@ typedef struct Data_00275E80 {
     u8 pad1A0 : 3;
 } Data_00275E80;
 
-s32 TaLogic_DoAdjustLogicData(void *arg0) {
-    Data_00275E80 *data = arg0;
+/* Assigns the computer opponent's units to tasks and sorts the task list. */
+s32 TaLogic_DoAdjustLogicData(void *pCtl) {
+    Data_00275E80 *data = pCtl;
     s32 owner;
     s32 i;
 
@@ -3522,6 +3584,7 @@ s32 TaLogic_DoAdjustLogicData(void *arg0) {
     return -1;
 }
 
+/* Whether unit `value` is already in task list `entries`. */
 s32 TaLogic_IsUnitAssign(u16 value, u16 *entries) {
     s32 i = 0;
 

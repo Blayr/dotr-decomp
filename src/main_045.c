@@ -1,5 +1,9 @@
 #include "common.h"
 
+/* Match note for this file: many unit getters below are written `(void)` or with parameters they never read,
+   and call SzDuel_GetCardInfo() without arguments. Their callers pass (side, unit); the values go straight
+   through in a0/a1 to SzDuel_GetCardInfo. Kept that way because it is what makes the bytes match. */
+
 /* Unit `unit` of side `side` (0 = the leader, 1..10 the cards on the board), or 0 if there is none. */
 s32 SzDuel_GetUnit(s32 side, s32 unit) {
     extern void *SzDuel_GetCardInfo();
@@ -911,7 +915,7 @@ s32 SzDuel_CalcUnitDP2(void *unitInfo, s32 operation, s32 amount) {
 typedef struct Entry_001E0690 {
     u8 *data;
     u8 padding[0x41];
-    u8 kind;
+    u8 slot; /* the unit's slot: 0 leader, 1..10 cards; 0xB and up = not on the board */
 } Entry_001E0690;
 
 /* The unit record SzDuel_GetUnitConstKind reads, or NULL. */
@@ -922,14 +926,14 @@ static inline void *lookup_001E0690(void) {
     if (entry == NULL) {
         return NULL;
     }
-    if (entry->kind >= 0xB) {
+    if (entry->slot >= 0xB) {
         return NULL;
     }
     return entry;
 }
 
-/* A unit's card kind from its constant card data, or -1. */
-s32 SzDuel_GetUnitConstKind(s32 unused0, s32 unused1) {
+/* Unit (side, unit)'s card kind from its constant card data, or -1 (side, unit pass through to SzDuel_GetCardInfo). */
+s32 SzDuel_GetUnitConstKind(s32 side, s32 unit) {
     Entry_001E0690 *entry = lookup_001E0690();
 
     if (entry == NULL) {
@@ -1538,8 +1542,8 @@ static inline void *lookup_001E1360(void) {
     return ptr;
 }
 
-/* A unit's model slot, or -1. */
-s32 SzDuel_GetUnitModelID(s32 unused0, s32 unused1) {
+/* Unit (side, unit)'s model slot, or -1 (side, unit pass through to SzDuel_GetCardInfo). */
+s32 SzDuel_GetUnitModelID(s32 side, s32 unit) {
     void *ptr;
 
     ptr = lookup_001E1360();
@@ -1551,21 +1555,21 @@ s32 SzDuel_GetUnitModelID(s32 unused0, s32 unused1) {
 
 typedef struct Entry_001E13C0 {
     u8 padding[0x45];
-    u8 type;
+    u8 slot; /* the unit's slot: 0 leader, 1..10 cards; 0xB and up = not on the board */
     u8 padding46;
     u8 value;
 } Entry_001E13C0;
 
 
-/* The order in which a unit was summoned, or -1. */
-s32 SzDuel_GetUnitSummonOrder(s32 unused0, s32 unused1) {
+/* The order in which unit (side, unit) was summoned, or -1 (side, unit pass through to SzDuel_GetCardInfo). */
+s32 SzDuel_GetUnitSummonOrder(s32 side, s32 unit) {
     extern void *SzDuel_GetCardInfo();
     Entry_001E13C0 *entry;
 
     entry = SzDuel_GetCardInfo();
     if (entry == NULL) {
         entry = NULL;
-    } else if (entry->type >= 0xB) {
+    } else if (entry->slot >= 0xB) {
         entry = NULL;
     }
     if (entry != NULL) {

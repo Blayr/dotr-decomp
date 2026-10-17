@@ -10,6 +10,7 @@ typedef struct Result_00252EC0 {
     s32 extra;
 } Result_00252EC0;
 
+/* Runs the magic card on square (x, y) in `phase`: its targets, effect and destruction, into `info`. */
 s32 Ta_Do_Magic(s32 x, s32 y, void *arg2, u8 *tail, s32 phase, u32 *info) {
     extern void Ta_DelUnit(s32, s32);
     extern s32 SzDuel_GetUnitCardNo(s32, s32);

@@ -63,6 +63,7 @@ asm void func_001000B8(void) {
     .word 0x00002025 /* or a0, zero, zero: the assembler would write paddub */
 }
 
+/* Kernel call 0x23 (ExitThread): ends the calling thread. */
 asm void func_001000C0(void) {
     .set noreorder
     addiu v1, zero, 0x23

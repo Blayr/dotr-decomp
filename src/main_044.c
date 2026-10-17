@@ -90,38 +90,38 @@ typedef struct {
 /* Which battle animation (3, 4 or 6) the attack of unit (attackerSide, attackerUnit) on unit (defenderSide,
    defenderUnit) uses, from their attack and defence on field square (fieldX, fieldZ). */
 s32 SzDuel_GetPlayMotion(s32 attackerSide, s32 attackerUnit, s32 defenderSide, s32 defenderUnit, s32 fieldX, s32 fieldZ, s32 noTieWin) {
-    s32 self;
-    s32 other;
+    s32 attacker;
+    s32 defender;
     s32 result;
-    s32 base;
-    s32 attack;
-    s32 power;
-    s32 defense;
-    s32 guard;
+    s32 attackerBonus;
+    s32 attackerAttack;
+    s32 defenderAttack;
+    s32 defenderBonus;
+    s32 defenderDefence;
 
-    self = SzDuel_GetUnit(attackerSide, attackerUnit);
-    other = SzDuel_GetUnit(defenderSide, defenderUnit);
+    attacker = SzDuel_GetUnit(attackerSide, attackerUnit);
+    defender = SzDuel_GetUnit(defenderSide, defenderUnit);
     result = 0;
-    if (self != 0 && other != 0) {
-        base = Ta_GetParamOfs(self, fieldX, fieldZ, 1);
-        power = Ta_GetParamOfs(other, fieldX, fieldZ, 1);
-        defense = Ta_GetParamOfs(other, fieldX, fieldZ, 0);
-        attack = base + SzDuel_GetUnitAP2((void *)self, 0);
-        power += SzDuel_GetUnitAP2((void *)other, 0);
-        guard = defense + SzDuel_GetUnitDP2((void *)other, 0);
-        attack = MIN_001DE2B0(MAX_001DE2B0(attack, 0), 9999);
-        power = MIN_001DE2B0(MAX_001DE2B0(power, 0), 9999);
-        guard = MIN_001DE2B0(MAX_001DE2B0(guard, 0), 9999);
+    if (attacker != 0 && defender != 0) {
+        attackerBonus = Ta_GetParamOfs(attacker, fieldX, fieldZ, 1);
+        defenderAttack = Ta_GetParamOfs(defender, fieldX, fieldZ, 1);
+        defenderBonus = Ta_GetParamOfs(defender, fieldX, fieldZ, 0);
+        attackerAttack = attackerBonus + SzDuel_GetUnitAP2((void *)attacker, 0);
+        defenderAttack += SzDuel_GetUnitAP2((void *)defender, 0);
+        defenderDefence = defenderBonus + SzDuel_GetUnitDP2((void *)defender, 0);
+        attackerAttack = MIN_001DE2B0(MAX_001DE2B0(attackerAttack, 0), 9999);
+        defenderAttack = MIN_001DE2B0(MAX_001DE2B0(defenderAttack, 0), 9999);
+        defenderDefence = MIN_001DE2B0(MAX_001DE2B0(defenderDefence, 0), 9999);
         result = 4;
-        if (((Flags_001DE2B0 *)((u8 *)other + 0x57))->flag) {
-            if (guard >= attack) {
+        if (((Flags_001DE2B0 *)((u8 *)defender + 0x57))->flag) {
+            if (defenderDefence >= attackerAttack) {
                 result = 6;
             }
-        } else if (power == attack) {
+        } else if (defenderAttack == attackerAttack) {
             if (noTieWin == 0 && attackerSide == SzDuel_GetTurnOwner()) {
                 result = 3;
             }
-        } else if (attack < power) {
+        } else if (attackerAttack < defenderAttack) {
             result = 3;
         }
     }
@@ -217,6 +217,7 @@ u8 SzDuel_GetSummonCharge(s32 player) {
     return DUEL_PLAYER(player)->summonCharge;
 }
 
+/* Sets side `player`'s summon charge. */
 void SzDuel_SetSummonCharge(s32 player, s8 charge) {
     DUEL_PLAYER(player)->summonCharge = charge;
 }
@@ -226,6 +227,7 @@ s32 SzDuel_InqHandPhase(s32 player) {
     return DUEL_PLAYER(player)->flags346.handPhase ? 1 : 0;
 }
 
+/* Sets side `player`'s hand phase. */
 void SzDuel_SetHandPhase(s32 player, s32 on) {
     DuelPlayer *side = DUEL_PLAYER(player);
 
@@ -234,11 +236,12 @@ void SzDuel_SetHandPhase(s32 player, s32 on) {
 
 /* Side `player`'s destiny-draw flag. */
 u8 SzDuel_InqDestinyFlag(s32 player) {
-    return DUEL_PLAYER(player)->destinyFlag;
+    return DUEL_PLAYER(player)->destinyDraw;
 }
 
+/* Sets side `player`'s destiny-draw byte (bits 0-3 destinyDrawTable entry, 4-6 bonus level, 7 used this duel). */
 void SzDuel_SetDestinyFlag(s32 player, s8 flag) {
-    DUEL_PLAYER(player)->destinyFlag = flag;
+    DUEL_PLAYER(player)->destinyDraw = flag;
 }
 
 /* Whether the duel's info windows are shown. */
@@ -246,18 +249,21 @@ s32 SzDuel_GetWindowDisp(void) {
     return duelState.s.f66.b7 ? 1 : 0;
 }
 
+/* Shows or hides the duel windows. */
 void SzDuel_SetWindowDisp(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
     duel->f66.b7 = (s8) (on ? 1 : 0);
 }
 
+/* Turns drawing of the duel windows on or off. */
 void SzDuel_SetWindowDraw(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
     duel->f67.b0 = (s8)(on ? 1 : 0);
 }
 
+/* Marks the duel windows busy or free. */
 void SzDuel_SetWindowBusy(s32 on) {
     DuelState *duel = DUEL_STATE; /* a local pointer, not DUEL_STATE->: needed for the match */
 
@@ -303,6 +309,7 @@ void SzDuel_InitDeck(s32 player) {
     deck->count = 0;
 }
 
+/* How many cards side `player`'s deck holds. */
 s32 SzDuel_GetDeckCount(s32 player) {
     return DUEL_PLAYER(player)->deck.count;
 }
@@ -325,7 +332,7 @@ s32 SzDuel_AddDeck(s32 player, s32 card) {
     s32 index;
 
     deck = &DUEL_PLAYER(player)->deck;
-    if (card == CARD_STORED_AS_NONE) {
+    if (card == CARD_REJECTED) {
         card = CARD_NONE;
     }
     if (card < 0 || card >= CARD_COUNT) {
@@ -385,7 +392,7 @@ s32 SzDuel_SetDeck(s32 player, s32 slot, s32 card) {
     if ((slot < 0) || (slot >= 40)) {
         return 0;
     }
-    if (card == CARD_STORED_AS_NONE) {
+    if (card == CARD_REJECTED) {
         card = CARD_NONE;
     }
     if ((card < 0) || (card >= CARD_COUNT)) {
@@ -471,6 +478,7 @@ s32 SzDuel_InqGrave(s32 player, s32 slot) {
     return ret;
 }
 
+/* How many cards side `player`'s graveyard holds. */
 u8 SzDuel_GetGraveCount(s32 player) {
     return DUEL_PLAYER(player)->grave.count;
 }
@@ -481,7 +489,7 @@ s32 SzDuel_AddGrave(s32 player, s32 card) {
     DuelGrave *grave;
 
     grave = &DUEL_PLAYER(player)->grave;
-    if (card == CARD_STORED_AS_NONE) {
+    if (card == CARD_REJECTED) {
         card = CARD_NONE;
     }
     if (card < 0 || card >= CARD_COUNT) {
@@ -586,6 +594,7 @@ s32 SzDuel_InqHand(s32 player, s32 slot) {
     return result;
 }
 
+/* How many cards side `player`'s hand holds. */
 s32 SzDuel_GetHandCount(s32 player) {
     return DUEL_PLAYER(player)->hand.count;
 }
@@ -596,7 +605,7 @@ s32 SzDuel_AddHand(s32 player, s32 card) {
     DuelHand *hand;
 
     hand = &DUEL_PLAYER(player)->hand;
-    if (card == CARD_STORED_AS_NONE) {
+    if (card == CARD_REJECTED) {
         card = CARD_NONE;
     }
     if (card < 0 || card >= CARD_COUNT) {

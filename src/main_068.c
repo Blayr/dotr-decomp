@@ -473,12 +473,12 @@ void *Taku_Camp_Card_Get(void *packet, f32 x, s32 card, f32 y, s32 depth) {
         (s32)&draw));
 }
 
-/* Whether the fifth campaign duel's flag is set. */
+/* How many duels since the last reincarnation (reincarnation needs 5; campaignState + 0xCA). */
 s32 Taku_Get_Duel5_flg(void) {
     return D_00299EDA;
 }
 
-/* Sets the fifth campaign duel's flag. */
+/* Starts that count again (after a reincarnation). */
 void Taku_Set_Duel5_flg(void) {
     D_00299EDA = 0;
 }
@@ -552,7 +552,7 @@ typedef struct State_0023C170 {
 s32 TakuCard_inti(s32 mode) {
     extern void *memCardTrunkData;
     extern void *D_0034FAEC;
-    extern s8 memCardJob;
+    extern s8 saveFileHeader;
     extern State_0023C170 D_0034FB00;
     extern s32 func_00194248(s32, s32 *, s32 *);
     extern s32 func_00194380(s32, s32, s32 *, s32 *, s32 *);
@@ -563,7 +563,7 @@ s32 TakuCard_inti(s32 mode) {
 
     memCardTrunkData = SzData_GetData(0);
     D_0034FAEC = SzData_GetData(1);
-    memCardJob = 1;
+    saveFileHeader = 1;
     func_00195108((s32)&D_0034FB00, 0x840);
     D_0034FB00.field30 = 0;
     D_0034FB00.field34 = 0;
@@ -1790,7 +1790,7 @@ typedef struct Tail_0023DE90 {
 s32 TakuSave_card_file_kakikomi(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 *memCardTrunkData;
-    extern Header_0023DE90 memCardJob;
+    extern Header_0023DE90 saveFileHeader;
     Data_0023DE90 *data = (Data_0023DE90 *)&D_0034FB00;
     Header_0023DE90 *header;
     s32 *saveData;
@@ -1900,7 +1900,7 @@ s32 TakuSave_card_file_kakikomi(void) {
             dst += 2;
         } while (count > 0);
         header = &((Buffer_0023DE90 *)0x01E10000)[data->port].header;
-        *header = memCardJob;
+        *header = saveFileHeader;
         *(Tail_0023DE90 *)((Buffer_0023DE90 *)0x01E10000)[data->port].table = *(Tail_0023DE90 *)saveData;
         LkCheckData((u16 *)&((Buffer_0023DE90 *)0x01E10000)[data->port]);
         FlushCache(0);
@@ -2697,7 +2697,7 @@ typedef struct Tail_0023F5A0 {
 
 extern u8 D_0029B1BE[];
 extern s32 *memCardTrunkData; /* original: p_kaban_data */
-extern Header_0023F5A0 memCardJob; /* original: Taku_card_info */
+extern Header_0023F5A0 saveFileHeader; /* original: Taku_card_info */
 extern s16 D_0034FB34;
 
 /* Reads the save file from the memory card and checks it. */
@@ -2854,7 +2854,7 @@ s32 TakuLoad_card_file_open(void) {
                         dst[1] = second;
                         dst += 2;
                     } while (count > 0);
-                    memCardJob = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
+                    saveFileHeader = ((Save_0023F5A0 *)0x1E10000)[state->index].header;
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((Save_0023F5A0 *)0x1E10000)[state->index].tail;
                     if (LkCheckData((u16 *)&((Save_0023F5A0 *)0x1E10000)[state->index]) != 0) {
                         TakuLoad_Name_Set(state->parameter);
@@ -3230,7 +3230,7 @@ s32 TakuCustom_card_file_open(void) {
                                 dst += 2;
                             } while (count > 0);
                         }
-                        memCardJob = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                        saveFileHeader = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                         *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                         if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                             TakuLoad_Name_Set(state->port);
@@ -3262,7 +3262,7 @@ s32 TakuCustom_card_file_open(void) {
                             dst += 2;
                         } while (count > 0);
                     }
-                    memCardJob = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
+                    saveFileHeader = *(Header_0023F5A0 *)((u8 *)0x01E10000 + state->port * 0x100F0);
                     *(Tail_0023F5A0 *)destination = *(Tail_0023F5A0 *)((u8 *)0x01E1FFA4 + state->port * 0x100F0);
                     if (LkCheckData((u16 *)((u8 *)0x01E10000 + state->port * 0x100F0)) != 0) {
                         TakuLoad_Name_Set(state->port);

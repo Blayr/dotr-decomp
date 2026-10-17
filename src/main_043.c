@@ -432,14 +432,14 @@ static inline Slot_001D8880 *lookup_001D8880(s32 index) {
     return (Slot_001D8880 *) (cardControls + index * 0xA0);
 }
 
-/* Dims the hand cards side `side` cannot summon with its summon power (`dim` = 0 lights them all). */
+/* Dims the hand cards whose level is above side `side`'s summon power (`dim` = 0 lights them all). */
 s32 lSzDuel_InitHandDark(s32 side, s32 dim) {
     extern s32 SzDuel_GetPlayer();
     s32 i;
     Slot_001D8880 *slot;
     Model_001D8880 *model;
-    s32 level;
-    s32 limit;
+    s32 summonPower;
+    s32 cardLevel;
     s32 other;
     s32 bits;
     s32 flag;
@@ -459,9 +459,9 @@ s32 lSzDuel_InitHandDark(s32 side, s32 dim) {
         slot = lookup_001D8880(i);
         if (slot != NULL && slot->model != NULL) {
             model = slot->model;
-            level = SzDuel_GetSummonPower(side);
-            limit = SzDuel_GetUnitLevel2(slot->model->unk90, 0);
-            if (dim != 0 && level < limit) {
+            summonPower = SzDuel_GetSummonPower(side);
+            cardLevel = SzDuel_GetUnitLevel2(slot->model->unk90, 0);
+            if (dim != 0 && summonPower < cardLevel) {
                 model->r = 0x40;
                 model->g = 0x40;
                 model->b = 0x40;
@@ -1443,9 +1443,9 @@ typedef struct Vertex_001DA5E0 {
     u8 pad28[8];
 } Vertex_001DA5E0;
 
-/* The corners of a card drawn flat on screen at (x, y) into `vertices`, scaled by `scale`. */
-s32 SzDuel_GetCardNodeUnitOnScreen(s32 large, f32 x, f32 y, void *vertices, void *scaleOut) {
-    f32 *scale = scaleOut;
+/* The corners of a card drawn flat on screen at (x, y) into `vertices`, scaled by `scaleIn` (two floats; NULL = 1.0). */
+s32 SzDuel_GetCardNodeUnitOnScreen(s32 large, f32 x, f32 y, void *vertices, void *scaleIn) {
+    f32 *scale = scaleIn;
     f32 width;
     f32 height;
     f32 halfWidth;

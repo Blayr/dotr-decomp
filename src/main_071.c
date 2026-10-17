@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* A random roll for the equips that work by chance. */
 s32 TaEnc_GetRandomElf(void) {
     s32 roll;
 
@@ -21,32 +22,35 @@ s32 TaEnc_GetRandomElf(void) {
     }
 }
 
-s32 TaEnc_IsActReflexEnc(s32 arg0) {
-    return (D_0029D1F0[arg0 & 0xFFFF] == 0) ? 1 : 0;
+/* Whether equip effect `eNo` reflects an attack. */
+s32 TaEnc_IsActReflexEnc(s32 eNo) {
+    return (D_0029D1F0[eNo & 0xFFFF] == 0) ? 1 : 0;
 }
 
-u8 TaEnc_GetEncID(s32 arg0) {
-    return D_0029D1F0[arg0 & 0xFFFF];
+/* The equip effect of card `nCardNo`. */
+u8 TaEnc_GetEncID(s32 nCardNo) {
+    return D_0029D1F0[nCardNo & 0xFFFF];
 }
 
-u32 Fusion(s32 arg0, s32 arg1) {
+/* The fusion result of cards `No1` and `No2`, or none. */
+u32 Fusion(s32 No1, s32 No2) {
     s32 i;
     u32 *entry;
     u32 packed;
     s32 temp;
 
-    if (arg0 < arg1) {
-        temp = arg0;
-        arg0 = arg1;
-        arg1 = temp;
+    if (No1 < No2) {
+        temp = No1;
+        No1 = No2;
+        No2 = temp;
     }
-    entry = FusionDat;
+    entry = fusionTable;
     i = 0;
     do {
         packed = *entry;
-        if ((arg0 == (packed & 0x3FF)) &&
-            (arg1 == ((packed & 0xFFC00) >> 10))) {
-            return (FusionDat[i] & 0x3FF00000) >> 20;
+        if ((No1 == (packed & 0x3FF)) &&
+            (No2 == ((packed & 0xFFC00) >> 10))) {
+            return (fusionTable[i] & 0x3FF00000) >> 20;
         }
         i++;
         entry++;
@@ -54,10 +58,11 @@ u32 Fusion(s32 arg0, s32 arg1) {
     return 0x3E7U;
 }
 
-s32 WallFusion(s32 arg0, s32 arg1) {
+/* The fusion result of unit (nSide, nID) with a wall card, or none. */
+s32 WallFusion(s32 nSide, s32 nID) {
     void *temp_v0;
 
-    temp_v0 = Ta_GetUnitEffect(arg0, arg1, 1);
+    temp_v0 = Ta_GetUnitEffect(nSide, nID, 1);
     if ((temp_v0 != NULL) && ((*(u32 *)temp_v0 >> 8) == 9)) {
         return *(u16 *)((u8 *)temp_v0 + 4);
     }
