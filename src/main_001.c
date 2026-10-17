@@ -1,17 +1,18 @@
 #include "common.h"
 
-void ShFx_BlackBG(u16 *arg0, s32 arg1) {
+/* Fades the battle black-out in and out around an effect's two key frames `frames` at frame `frame`. */
+void ShFx_BlackBG(u16 *frames, s32 frame) {
     s32 d;
     s32 e;
 
-    d = ((arg1 - arg0[0]) + 1) & 0xFFFF;
+    d = ((frame - frames[0]) + 1) & 0xFFFF;
     if (d != 0) {
         e = d & 0xFFFF;
         if (e < 6) {
             SzEffect_SetBlackOutForBattle((0x80 - (e * 0x10)) & 0xFF);
         }
     }
-    d = ((arg1 - arg0[1]) + 1) & 0xFFFF;
+    d = ((frame - frames[1]) + 1) & 0xFFFF;
     if (d != 0) {
         e = d & 0xFFFF;
         if (e < 6) {
@@ -20,74 +21,81 @@ void ShFx_BlackBG(u16 *arg0, s32 arg1) {
     }
 }
 
-s32 LkInitTex2(s32 *arg0) {
+/* Asks for the second effect texture set (category 4) into `out`. */
+s32 LkInitTex2(s32 *out) {
     extern s32 SzText_LoadRequest();
 
-    *arg0 = SzText_LoadRequest(4);
+    *out = SzText_LoadRequest(4);
     return 0;
 }
 
-s32 LkInitTexBtl(s32 *arg0) {
+/* Asks for the battle effect texture set into `out`. */
+s32 LkInitTexBtl(s32 *out) {
     extern s32 SzText_LoadRequest();
 
-    *arg0 = SzText_LoadRequest(5);
+    *out = SzText_LoadRequest(5);
     return 0;
 }
 
-s32 LkIncrBYTE(u8 *arg0, u8 arg1, u8 arg2) {
-    u8 temp_a3;
+/* Steps byte `p` up by `step` towards `target`; 0 once it got there. */
+s32 LkIncrBYTE(u8 *p, u8 target, u8 step) {
+    u8 value;
 
-    temp_a3 = *arg0;
-    if (temp_a3 <= (arg1 - arg2)) {
-        *arg0 = temp_a3 + arg2;
+    value = *p;
+    if (value <= (target - step)) {
+        *p = value + step;
         return 1;
     }
-    *arg0 = arg1;
+    *p = target;
     return 0;
 }
 
-s32 LkIncrSHORT(s16 *arg0, s32 arg1, s32 arg2) {
-    s16 temp_a3;
+/* Steps a short `p` up by `step` towards `target`; 0 once it got there. */
+s32 LkIncrSHORT(s16 *p, s32 target, s32 step) {
+    s16 value;
     s32 result;
 
-    temp_a3 = *arg0;
-    if (temp_a3 <= ((s16) arg1 - (s16) arg2)) {
-        *arg0 = temp_a3 + arg2;
+    value = *p;
+    if (value <= ((s16) target - (s16) step)) {
+        *p = value + step;
         result = 1;
     } else {
-        *arg0 = (s16) arg1;
+        *p = (s16) target;
         result = 0;
     }
     return result;
 }
 
-s32 LkIncrINT(s32 *arg0, s32 arg1, s32 arg2) {
-    s32 temp_v1;
+/* Steps an int `p` up by `step` towards `target`; 0 once it got there. */
+s32 LkIncrINT(s32 *p, s32 target, s32 step) {
+    s32 value;
     s32 result;
 
-    temp_v1 = *arg0;
-    if (temp_v1 <= (arg1 - arg2)) {
-        *arg0 = temp_v1 + arg2;
+    value = *p;
+    if (value <= (target - step)) {
+        *p = value + step;
         result = 1;
     } else {
-        *arg0 = arg1;
+        *p = target;
         result = 0;
     }
     return result;
 }
 
-s32 LkIncrFLOAT(f32 *arg0, f32 fparg0, f32 fparg1) {
-    f32 temp_f1;
+/* Steps a float `p` up by `step` towards `target`; 0 once it got there. */
+s32 LkIncrFLOAT(f32 *p, f32 target, f32 step) {
+    f32 value;
 
-    temp_f1 = *arg0;
-    if (temp_f1 <= (fparg0 - fparg1)) {
-        *arg0 = temp_f1 + fparg1;
+    value = *p;
+    if (value <= (target - step)) {
+        *p = value + step;
         return 1;
     }
-    *arg0 = fparg0;
+    *p = target;
     return 0;
 }
 
+/* Steps the three values of `values` up by `step` towards `target`; 0 once all got there. */
 s32 LkIncrVec(f32 *values, f32 target, f32 step) {
     f32 limit = target - step;
     s32 flags = 0;
@@ -116,148 +124,160 @@ s32 LkIncrVec(f32 *values, f32 target, f32 step) {
     return flags;
 }
 
-s32 LkDecrBYTE(u8 *arg0, u8 arg1, s32 arg2) {
-    u8 temp_a3;
+/* Steps byte `p` down by `step` towards `target`; 0 once it got there. */
+s32 LkDecrBYTE(u8 *p, u8 target, s32 step) {
+    u8 value;
 
-    temp_a3 = *arg0;
-    if ((s32) temp_a3 >= ((arg1 & 0xFF) + (arg2 & 0xFF))) {
-        *arg0 = temp_a3 - arg2;
+    value = *p;
+    if ((s32) value >= ((target & 0xFF) + (step & 0xFF))) {
+        *p = value - step;
         return 1;
     }
-    *arg0 = arg1;
+    *p = target;
     return 0;
 }
 
-s32 LkDecrSHORT(s16 *arg0, s16 arg1, s16 arg2) {
-    s16 temp_a3;
+/* Steps a short `p` down by `step` towards `target`; 0 once it got there. */
+s32 LkDecrSHORT(s16 *p, s16 target, s16 step) {
+    s16 value;
 
-    temp_a3 = *arg0;
-    if (temp_a3 >= arg1 + arg2) {
-        *arg0 = temp_a3 - arg2;
+    value = *p;
+    if (value >= target + step) {
+        *p = value - step;
         return 1;
     }
-    *arg0 = (s16) arg1;
+    *p = (s16) target;
     return 0;
 }
 
-s32 LkDecrINT(s32 *arg0, s32 arg1, s32 arg2) {
-    s32 temp_v1;
+/* Steps an int `p` down by `step` towards `target`; 0 once it got there. */
+s32 LkDecrINT(s32 *p, s32 target, s32 step) {
+    s32 value;
 
-    temp_v1 = *arg0;
-    if (temp_v1 >= (arg1 + arg2)) {
-        *arg0 = temp_v1 - arg2;
+    value = *p;
+    if (value >= (target + step)) {
+        *p = value - step;
         return 1;
     }
-    *arg0 = arg1;
+    *p = target;
     return 0;
 }
 
-s32 LkDecrFLOAT(f32 *arg0, f32 fparg0, f32 fparg1) {
-    f32 temp_f1;
+/* Steps a float `p` down by `step` towards `target`; 0 once it got there. */
+s32 LkDecrFLOAT(f32 *p, f32 target, f32 step) {
+    f32 value;
 
-    temp_f1 = *arg0;
-    if (!(temp_f1 < (fparg0 + fparg1))) {
-        *arg0 = temp_f1 - fparg1;
+    value = *p;
+    if (!(value < (target + step))) {
+        *p = value - step;
         return 1;
     }
-    *arg0 = fparg0;
+    *p = target;
     return 0;
 }
 
-s32 LkDecrVec(void *arg0, f32 fparg0, f32 fparg1) {
-    f32 *values = (f32 *)arg0;
-    f32 threshold = fparg0 + fparg1;
+/* Steps the three values of `values` down by `step` towards `target`; 0 once all got there. */
+s32 LkDecrVec(void *valuesIn, f32 target, f32 step) {
+    f32 *values = (f32 *)valuesIn;
+    f32 threshold = target + step;
     s32 flags = 0;
 
     if (!(values[0] < threshold)) {
         flags |= 1;
-        values[0] -= fparg1;
+        values[0] -= step;
     } else {
-        values[0] = fparg0;
+        values[0] = target;
         flags &= ~1;
     }
     if (!(values[1] < threshold)) {
         flags |= 2;
-        values[1] -= fparg1;
+        values[1] -= step;
     } else {
-        values[1] = fparg0;
+        values[1] = target;
         flags &= ~2;
     }
     if (!(values[2] < threshold)) {
         flags |= 4;
-        values[2] -= fparg1;
+        values[2] -= step;
     } else {
-        values[2] = fparg0;
+        values[2] = target;
         flags &= ~4;
     }
     return flags;
 }
 
-void LkAddVector(void *arg0, void *arg1) {
-    ((f32 *)arg0)[0] += ((f32 *)arg1)[0];
-    ((f32 *)arg0)[1] += ((f32 *)arg1)[1];
-    ((f32 *)arg0)[2] += ((f32 *)arg1)[2];
+/* dst += src (3 floats). */
+void LkAddVector(void *dst, void *src) {
+    ((f32 *)dst)[0] += ((f32 *)src)[0];
+    ((f32 *)dst)[1] += ((f32 *)src)[1];
+    ((f32 *)dst)[2] += ((f32 *)src)[2];
 }
 
-void LkSubVector(void *arg0, void *arg1) {
-    f32 *dst = arg0;
-    f32 *src = arg1;
+/* dst -= src (3 floats). */
+void LkSubVector(void *dstVec, void *srcVec) {
+    f32 *dst = dstVec;
+    f32 *src = srcVec;
 
     dst[0] -= src[0];
     dst[1] -= src[1];
     dst[2] -= src[2];
 }
 
-void LkMulVector(void *arg0, void *arg1) {
-    f32 *dst = arg0;
-    const f32 *src = arg1;
+/* dst *= src (3 floats, one by one). */
+void LkMulVector(void *dstVec, void *srcVec) {
+    f32 *dst = dstVec;
+    const f32 *src = srcVec;
 
     dst[0] *= src[0];
     dst[1] *= src[1];
     dst[2] *= src[2];
 }
 
-void LkGetCenter(f32 *arg0, f32 *arg1, f32 *arg2) {
+/* The point halfway between a and b into `out`. */
+void LkGetCenter(f32 *a, f32 *b, f32 *out) {
     f32 delta[3];
 
-    delta[0] = arg1[0];
-    delta[1] = arg1[1];
-    delta[2] = arg1[2];
-    delta[0] -= arg0[0];
-    delta[1] -= arg0[1];
-    delta[2] -= arg0[2];
+    delta[0] = b[0];
+    delta[1] = b[1];
+    delta[2] = b[2];
+    delta[0] -= a[0];
+    delta[1] -= a[1];
+    delta[2] -= a[2];
     delta[0] /= 2.0f;
     delta[1] /= 2.0f;
     delta[2] /= 2.0f;
-    arg2[0] = arg0[0];
-    arg2[1] = arg0[1];
-    arg2[2] = arg0[2];
-    arg2[0] += delta[0];
-    arg2[1] += delta[1];
-    arg2[2] += delta[2];
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[0] += delta[0];
+    out[1] += delta[1];
+    out[2] += delta[2];
 }
 
-void LkSetAngleXY_m90(void *arg0) {
-    f32 *vector = arg0;
+/* The angle of a 2D vector, turned by 90 degrees. */
+void LkSetAngleXY_m90(void *vec) {
+    f32 *vector = vec;
 
     func_001A22C0(90.0f + (360.0f / (6.2831855f / func_001A6C18(vector[1], vector[0]))));
 }
 
-s32 LkSetAngleW2S(u8 *arg0, s32 arg1, s32 arg2) {
+/* The screen angle (0..0xFFFF) from world point `to` to world point `from`, projected through the object's matrix. */
+s32 LkSetAngleW2S(u8 *object, s32 from, s32 to) {
     extern s32 func_001A22C0(f32);
     u16 point1[4];
     u16 point2[4];
     s32 depth;
 
-    Ex3d_RotTransPers(arg1, arg0 + 0x30, point1, &depth);
-    Ex3d_RotTransPers(arg2, arg0 + 0x30, point2, &depth);
+    Ex3d_RotTransPers(from, object + 0x30, point1, &depth);
+    Ex3d_RotTransPers(to, object + 0x30, point2, &depth);
     return func_001A22C0(65536.0f *
         (func_001A6C18((f32)((s32)(point1[0] - point2[0]) >> 4),
                       (f32)((s32)(point1[1] - point2[1]) >> 4)) / 6.2831855f)) % 65536;
 }
 
-void LkInitCoordinate(void *arg0) {
-    f32 *values = arg0;
+/* Sets a coordinate record to scale 1, no rotation, no move. */
+void LkInitCoordinate(void *coord) {
+    f32 *values = coord;
 
     values[3] = 1.0f;
     values[2] = 1.0f;
@@ -285,8 +305,9 @@ typedef struct {
     Matrix_001038D0 matrix;
 } Camera_001038D0;
 
-void LkSetCoordinate(void *arg0) {
-    Camera_001038D0 *camera = arg0;
+/* Builds a camera record's matrix: world-to-screen times its scale, rotation and position. */
+void LkSetCoordinate(void *coordinate) {
+    Camera_001038D0 *camera = coordinate;
     Matrix_001038D0 matrix;
 
     RhView_GetWorldScreenMatrix(&camera->matrix);
@@ -302,13 +323,14 @@ typedef struct Transform_00103920 {
     f32 field30[16];
 } Transform_00103920;
 
-s32 LkChange2D(void *arg0, f32 fparg0, f32 fparg1) {
-    Transform_00103920 *transform = arg0;
+/* Places an object at screen point (x, y), facing the camera, and builds its matrix. */
+s32 LkChange2D(void *object, f32 x, f32 y) {
+    Transform_00103920 *transform = object;
     f32 vector[4];
     f32 matrix[16];
 
-    Ex3d_GetPointOnScreen(vector, fparg0, fparg1);
-    LkRotSF(arg0);
+    Ex3d_GetPointOnScreen(vector, x, y);
+    LkRotSF(object);
     transform->field20[0] = vector[0];
     transform->field20[1] = vector[1];
     transform->field20[2] = vector[2];
@@ -334,10 +356,11 @@ typedef struct Object_001039A0 {
 } Object_001039A0;
 
 
-s32 LkRotSF(void *arg0) {
+/* Turns an object to face the camera and builds its matrix; returns its heading. */
+s32 LkRotSF(void *obj) {
     s32 vector[4];
     f32 matrix[4][4];
-    Object_001039A0 *object = arg0;
+    Object_001039A0 *object = obj;
 
     Ex3d_GetLookVector((s32) &vector);
     object->values10.y = vector[1] % 0x10000;
@@ -349,54 +372,58 @@ s32 LkRotSF(void *arg0) {
     return vector[1];
 }
 
-s32 LkVec2Rot(f32 *arg0, s32 *arg1) {
-    arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
-    arg1[0] = (s32)(65536.0f * (func_001A6C18(arg0[2], arg0[1]) / 6.2831855f)) % 65536;
-    arg1[2] = (s32)(65536.0f * (func_001A6C18(arg0[1], arg0[0]) / 6.2831855f)) % 65536;
-    arg1[3] = 0;
+/* The rotation (pitch, heading) that points along `vec`. */
+s32 LkVec2Rot(f32 *vec, s32 *rot) {
+    rot[1] = (s32)(65536.0f * (func_001A6C18(vec[0], vec[2]) / 6.2831855f)) % 65536;
+    rot[0] = (s32)(65536.0f * (func_001A6C18(vec[2], vec[1]) / 6.2831855f)) % 65536;
+    rot[2] = (s32)(65536.0f * (func_001A6C18(vec[1], vec[0]) / 6.2831855f)) % 65536;
+    rot[3] = 0;
     return 0;
 }
 
-s32 LkVec2RotXY(f32 *arg0, s32 *arg1) {
-    arg1[1] = (s32)(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f)) % 65536;
-    arg1[0] = (s32)(65536.0f * (func_001A6C18(func_001A6C60(arg0[0] * arg0[0] + arg0[2] * arg0[2]), arg0[1]) / 6.2831855f)) % 65536;
-    arg1[3] = 0;
-    arg1[2] = 0;
+/* The rotation in the x/y plane that points along `vec`. */
+s32 LkVec2RotXY(f32 *vec, s32 *rot) {
+    rot[1] = (s32)(65536.0f * (func_001A6C18(vec[0], vec[2]) / 6.2831855f)) % 65536;
+    rot[0] = (s32)(65536.0f * (func_001A6C18(func_001A6C60(vec[0] * vec[0] + vec[2] * vec[2]), vec[1]) / 6.2831855f)) % 65536;
+    rot[3] = 0;
+    rot[2] = 0;
     return 0;
 }
 
-s32 LkVec2Mat(Vec4f *arg0, void *arg1) {
+/* The rotation matrix that points along `vec` into `out`. */
+s32 LkVec2Mat(Vec4f *vec, void *out) {
     Vec4f sp20;
     Vec4f sp30;
     Vec4f sp40;
     void RhGeom_GetRotVectorMatrix();
 
-    sp20 = *arg0;
+    sp20 = *vec;
     RhGeom_NormalizeVector(&sp20.x);
     sp30.z = 0.0f;
     sp30.x = 0.0f;
     sp30.y = 1.0f;
     RhGeom_NormalizeVector(&sp30.x);
     RhGeom_OuterProduct(&sp40.x, &sp30.x, &sp20.x);
-    RhGeom_GetRotVectorMatrix(arg1, &sp40, func_001A22C0(65536.0f * (func_001A6C00(RhGeom_GetVectorScalor(&sp40.x)) / 6.2831855f)));
+    RhGeom_GetRotVectorMatrix(out, &sp40, func_001A22C0(65536.0f * (func_001A6C00(RhGeom_GetVectorScalor(&sp40.x)) / 6.2831855f)));
     return 0;
 }
 
-s32 LkRegulateRotBorder(s32 arg0, s32 arg1) {
+/* The signed shortest difference between two angles (0..0xFFFF). */
+s32 LkRegulateRotBorder(s32 a, s32 b) {
     s32 result;
 
-    if (arg1 < arg0) {
-        if ((arg0 - arg1) % 0x10000 <= 0x8000) {
-            result = arg0 - arg1;
+    if (b < a) {
+        if ((a - b) % 0x10000 <= 0x8000) {
+            result = a - b;
         } else {
-            result = -((0x10000 - arg0) + arg1);
+            result = -((0x10000 - a) + b);
         }
     } else {
-        if (arg0 < arg1) {
-            if ((arg1 - arg0) % 0x10000 <= 0x8000) {
-                result = -(arg1 - arg0);
+        if (a < b) {
+            if ((b - a) % 0x10000 <= 0x8000) {
+                result = -(b - a);
             } else {
-                result = (0x10000 - arg1) + arg0;
+                result = (0x10000 - b) + a;
             }
         } else {
             result = 0;
@@ -405,28 +432,31 @@ s32 LkRegulateRotBorder(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 LkChangeAxisY(f32 *arg0, f32 *arg1, s32 *arg2) {
+/* The rotation (pitch, heading) from `to` towards `from` into `rot`. */
+s32 LkChangeAxisY(f32 *from, f32 *to, s32 *rot) {
     extern s32 func_001A22C0(f32);
     f32 x;
     f32 y;
     f32 z;
 
-    x = arg0[0] - arg1[0];
-    y = arg0[1] - arg1[1];
-    z = arg0[2] - arg1[2];
-    arg2[1] = func_001A22C0(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536;
-    arg2[0] = func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(x * x + z * z), y) / 6.2831855f)) % 65536;
-    arg2[3] = 0;
-    arg2[2] = 0;
+    x = from[0] - to[0];
+    y = from[1] - to[1];
+    z = from[2] - to[2];
+    rot[1] = func_001A22C0(65536.0f * (func_001A6C18(x, z) / 6.2831855f)) % 65536;
+    rot[0] = func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(x * x + z * z), y) / 6.2831855f)) % 65536;
+    rot[3] = 0;
+    rot[2] = 0;
     return 0;
 }
 
 
+/* The game angle of a 2D direction. */
 static inline s32 angle_00103EC0(f32 a, f32 b) {
     extern s32 func_001A22C0(f32);
     return func_001A22C0(65536.0f * (func_001A6C18(a, b) / 6.2831855f)) % 65536;
 }
 
+/* The signed shortest difference between two angles. */
 static inline s32 difference_00103EC0(s32 target, s32 current) {
     s32 difference;
 
@@ -449,6 +479,7 @@ static inline s32 difference_00103EC0(s32 target, s32 current) {
     }
 }
 
+/* Moves `position` towards `target` like a homing missile, turning `velocity` by at most `limit`. */
 s32 LkMoveHoming(f32 *position, f32 *target, f32 *velocity, s32 limit) {
     f32 matrix[4][4];
     s32 rotation[4];
@@ -509,48 +540,51 @@ typedef struct {
 
 extern Vec4_001043F0 D_0028C220;
 
-s32 LkGetRandVec(void *arg0, f32 fparg0) {
+/* A random direction of length `length` into `out`. */
+s32 LkGetRandVec(void *out, f32 length) {
     f32 matrix[4][4];
     Vec4_001043F0 vector;
     s32 angles[3];
 
     vector = D_0028C220;
-    vector.y = fparg0;
+    vector.y = length;
     angles[0] = func_0019A5C8() % 0x10000;
     angles[1] = func_0019A5C8() % 0x10000;
     angles[2] = 0;
     RhGeom_GetRotXYZMatrix(matrix, angles);
-    RhGeom_MulMatrixVector(arg0, matrix, &vector);
+    RhGeom_MulMatrixVector(out, matrix, &vector);
     return 0;
 }
 
-void LkOBJ_TransitVector(f32 *arg0, f32 *arg1, s32 arg2) {
+/* Moves `pos` a 1/`steps` part of the way to `target` (all the way for 0). */
+void LkOBJ_TransitVector(f32 *pos, f32 *target, s32 steps) {
     f32 x;
     f32 y;
     f32 z;
 
-    if (arg2 != 0) {
-        x = arg1[0];
-        y = arg1[1];
-        z = arg1[2];
-        x -= arg0[0];
-        y -= arg0[1];
-        z -= arg0[2];
-        x /= (f32)arg2;
-        arg0[0] += x;
-        y /= (f32)arg2;
-        arg0[1] += y;
-        z /= (f32)arg2;
-        arg0[2] += z;
+    if (steps != 0) {
+        x = target[0];
+        y = target[1];
+        z = target[2];
+        x -= pos[0];
+        y -= pos[1];
+        z -= pos[2];
+        x /= (f32)steps;
+        pos[0] += x;
+        y /= (f32)steps;
+        pos[1] += y;
+        z /= (f32)steps;
+        pos[2] += z;
     } else {
-        arg0[0] = arg1[0];
-        arg0[1] = arg1[1];
-        arg0[2] = arg1[2];
+        pos[0] = target[0];
+        pos[1] = target[1];
+        pos[2] = target[2];
     }
 }
 
-s32 LkCheckFlag(s32 arg0, s32 arg1) {
-    return !(arg0 & (1 << arg1)) ? 0 : 1;
+/* Whether bit `bit` of `flags` is set. */
+s32 LkCheckFlag(s32 flags, s32 bit) {
+    return !(flags & (1 << bit)) ? 0 : 1;
 }
 
 typedef struct {
@@ -579,12 +613,13 @@ typedef struct {
     s16 h;
 } Rect_00104540;
 
-s32 LkAssignUV(void *arg0, void *arg1, s32 arg2) {
-    Sprite_00104540 *s = arg0;
-    Rect_00104540 *r = arg1;
+/* Sets an effect sprite's texture coordinates for its animation frame `frame`. */
+s32 LkAssignUV(void *prim, void *anim, s32 frame) {
+    Sprite_00104540 *s = prim;
+    Rect_00104540 *r = anim;
 
     s->flags |= 0x800;
-    switch (arg2) {
+    switch (frame) {
     case 0:
         s->v[0].x.val = r->x << 4;
         s->v[0].y.val = r->y << 4;
@@ -730,13 +765,15 @@ typedef struct {
     s16 loop;
 } Anim_00104DC0;
 
+/* Whether an animation flag bit is set. */
 static inline s32 flag_00104DC0(Anim_00104DC0 *anim, s32 bit) {
     return (anim->flags & bit) ? 1 : 0;
 }
 
-void LkAssignUVST(void *arg0, void *arg1) {
-    Sprite_00104DC0 *sprite = arg0;
-    Anim_00104DC0 *anim = arg1;
+/* Sets an effect sprite's texture coordinates (ST form) for its current animation frame. */
+void LkAssignUVST(void *prim, void *animIn) {
+    Sprite_00104DC0 *sprite = prim;
+    Anim_00104DC0 *anim = animIn;
 
     if (flag_00104DC0(anim, 1)) {
         if (flag_00104DC0(anim, 2)) {
@@ -830,25 +867,27 @@ typedef struct State_00105260 {
     s16 rewind;
 } State_00105260;
 
+/* Whether a state flag bit is set. */
 static inline s32 flag_00105260(State_00105260 *s, s32 bit) {
     return (s->flags & bit) ? 1 : 0;
 }
 
-void LkAssignUVST3(void *arg0, void *arg1, s32 arg2) {
-    State_00105260 *state = arg1;
-    u8 *packet = arg0;
+/* Sets a triangle effect sprite's texture coordinates (ST form) for frame `frame`. */
+void LkAssignUVST3(void *prim, void *anim, s32 frame) {
+    State_00105260 *state = anim;
+    u8 *packet = prim;
 
     if (flag_00105260(state, 1)) {
         if (flag_00105260(state, 2)) {
             state->uv.fixed.u = state->uv.fixed.baseU + state->uv.fixed.width *
-                (state->frames[arg2].index % (state->uv.fixed.imageWidth / state->uv.fixed.width));
+                (state->frames[frame].index % (state->uv.fixed.imageWidth / state->uv.fixed.width));
             state->uv.fixed.v = state->uv.fixed.baseV + state->uv.fixed.height *
-                (state->frames[arg2].index / (state->uv.fixed.imageWidth / state->uv.fixed.width));
+                (state->frames[frame].index / (state->uv.fixed.imageWidth / state->uv.fixed.width));
         } else {
             state->uv.fixed.u = state->uv.fixed.baseU + state->uv.fixed.width *
-                (state->frames[arg2].index / (state->uv.fixed.imageHeight / state->uv.fixed.height));
+                (state->frames[frame].index / (state->uv.fixed.imageHeight / state->uv.fixed.height));
             state->uv.fixed.v = state->uv.fixed.baseV + state->uv.fixed.height *
-                (state->frames[arg2].index % (state->uv.fixed.imageHeight / state->uv.fixed.height));
+                (state->frames[frame].index % (state->uv.fixed.imageHeight / state->uv.fixed.height));
         }
         *(u16 *)(packet + 2) |= 0x800;
         ((UV_00105260 *)(packet + 0x18))->u = state->uv.fixed.u << 4;
@@ -862,14 +901,14 @@ void LkAssignUVST3(void *arg0, void *arg1, s32 arg2) {
     } else {
         if (flag_00105260(state, 2)) {
             state->uv.floating.u = state->uv.floating.width *
-                (state->frames[arg2].index % (s16)(1.0f / state->uv.floating.width));
+                (state->frames[frame].index % (s16)(1.0f / state->uv.floating.width));
             state->uv.floating.v = state->uv.floating.height *
-                (state->frames[arg2].index / (s16)(1.0f / state->uv.floating.width));
+                (state->frames[frame].index / (s16)(1.0f / state->uv.floating.width));
         } else {
             state->uv.floating.u = state->uv.floating.width *
-                (state->frames[arg2].index / (s16)(1.0f / state->uv.floating.height));
+                (state->frames[frame].index / (s16)(1.0f / state->uv.floating.height));
             state->uv.floating.v = state->uv.floating.height *
-                (state->frames[arg2].index % (s16)(1.0f / state->uv.floating.height));
+                (state->frames[frame].index % (s16)(1.0f / state->uv.floating.height));
         }
         *(f32 *)(packet + 0x18) = state->uv.floating.u;
         *(f32 *)(packet + 0x1C) = state->uv.floating.v;
@@ -881,28 +920,28 @@ void LkAssignUVST3(void *arg0, void *arg1, s32 arg2) {
         *(f32 *)(packet + 0x64) = state->uv.floating.v + state->uv.floating.height;
     }
 
-    state->frames[arg2].timer++;
-    if (state->frames[arg2].timer > state->delay) {
-        state->frames[arg2].timer = 0;
-        state->frames[arg2].index++;
-        if (state->frames[arg2].index > state->end) {
+    state->frames[frame].timer++;
+    if (state->frames[frame].timer > state->delay) {
+        state->frames[frame].timer = 0;
+        state->frames[frame].index++;
+        if (state->frames[frame].index > state->end) {
             if (flag_00105260(state, 4)) {
                 s16 range;
-                state->frames[arg2].x = state->x;
-                state->frames[arg2].y = state->y;
+                state->frames[frame].x = state->x;
+                state->frames[frame].y = state->y;
                 range = state->randomX;
                 if (range != 0) {
-                    state->frames[arg2].x = state->x + (func_0019A5C8() % (range * 2) - range);
+                    state->frames[frame].x = state->x + (func_0019A5C8() % (range * 2) - range);
                 }
                 range = state->randomY;
                 if (range != 0) {
-                    state->frames[arg2].y = state->y + (func_0019A5C8() % (range * 2) - range);
+                    state->frames[frame].y = state->y + (func_0019A5C8() % (range * 2) - range);
                 }
                 if (state->randomY < 0) {
-                    state->frames[arg2].y = state->y + func_0019A5C8() % state->randomY;
+                    state->frames[frame].y = state->y + func_0019A5C8() % state->randomY;
                 }
             }
-            state->frames[arg2].index -= state->rewind;
+            state->frames[frame].index -= state->rewind;
         }
     }
 }
@@ -933,9 +972,10 @@ typedef struct {
     Coordinate_00105830 x3, y3;
 } Packet_00105830;
 
-void LkAssignUV2(void *arg0, void *arg1, s32 arg2) {
-    Packet_00105830 *packet = arg0;
-    Animation_00105830 *anim = arg1;
+/* Sets an effect sprite's texture coordinates (second layout) for frame `frame`. */
+void LkAssignUV2(void *prim, void *animIn, s32 frame) {
+    Packet_00105830 *packet = prim;
+    Animation_00105830 *anim = animIn;
 
     if ((!(anim->flags & 2) ? 0 : 1) != 0) {
         anim->x = anim->origin_x + anim->width * (anim->frame % (anim->sheet_width / anim->width));
@@ -945,7 +985,7 @@ void LkAssignUV2(void *arg0, void *arg1, s32 arg2) {
         anim->y = anim->origin_y + anim->height * (anim->frame % (anim->sheet_height / anim->height));
     }
 
-    if (arg2 == 0) {
+    if (frame == 0) {
         packet->flags |= 0x800;
         packet->x0.value = anim->x * 16;
         packet->y0.value = anim->y * 16;
@@ -967,7 +1007,7 @@ void LkAssignUV2(void *arg0, void *arg1, s32 arg2) {
         packet->y3.value = (anim->y + anim->height - 1) * 16;
     }
 
-    if (arg2 == 1) {
+    if (frame == 1) {
         anim->tick++;
         if (anim->tick > anim->delay) {
             anim->tick = 0;
@@ -983,8 +1023,9 @@ void LkAssignUV2(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-s32 LkAssignFrameST(void *arg0) {
-    Vec4f *v = arg0;
+/* Advances an effect's texture animation frame. */
+s32 LkAssignFrameST(void *anim) {
+    Vec4f *v = anim;
     f32 x_ratio;
     f32 y_ratio;
     f32 inverse;
@@ -1014,6 +1055,7 @@ typedef struct Rect_00105D00 {
     s32 padding[2];
 } Rect_00105D00;
 
+/* Fills effect record `dst` with the built-in data of `kind` number `index`. */
 void RH2_DATA_IN(void *dst, s16 kind, s16 index) {
     Rect_00105D00 rect;
 
@@ -1107,318 +1149,325 @@ typedef struct Rect_00106080 {
     s32 unkC;
 } Rect_00106080;
 
-void RH2_DATA_IN2(void *arg0, s16 arg1, s16 arg2) {
+/* Fills effect record `dst` with the built-in data of `kind` number `index` (second table). */
+void RH2_DATA_IN2(void *dst, s16 kind, s16 index) {
     Rect_00106080 rect;
 
-    if (arg1 == 0x8C) {
-        if (arg2 == 0) {
+    if (kind == 0x8C) {
+        if (index == 0) {
             rect.x = 1;
             rect.y = 1;
             rect.w = 0x1E;
             rect.h = 0x7E;
         }
-    } else if (arg1 == 0x8D) {
-        if (arg2 == 0) {
+    } else if (kind == 0x8D) {
+        if (index == 0) {
             rect.x = 0;
             rect.y = 0x80;
-        } else if (arg2 == 1) {
+        } else if (index == 1) {
             rect.x = 0x20;
             rect.y = 0x80;
-        } else if (arg2 == 2) {
+        } else if (index == 2) {
             rect.x = 0x40;
             rect.y = 0x80;
         }
         rect.w = 0x1F;
         rect.h = 0x7F;
-    } else if (arg1 == 0x8E) {
-        if (arg2 < 4) {
+    } else if (kind == 0x8E) {
+        if (index < 4) {
             rect.x = 0x21;
-            rect.y = (arg2 << 5) + 1;
+            rect.y = (index << 5) + 1;
         } else {
             rect.x = 0x41;
-            rect.y = ((arg2 - 4) << 5) + 1;
+            rect.y = ((index - 4) << 5) + 1;
         }
         rect.w = 0x1E;
         rect.h = 0x1E;
-    } else if (arg1 == 0x8F) {
+    } else if (kind == 0x8F) {
         rect.x = 0x60;
         rect.y = 0xF0;
         rect.w = 0x9F;
         rect.h = 0xF;
-    } else if (arg1 == 0x96) {
-        rect.x = (arg2 * 0x2C) + 0xA;
+    } else if (kind == 0x96) {
+        rect.x = (index * 0x2C) + 0xA;
         rect.y = 0;
         rect.w = 0x2B;
         rect.h = 0x7F;
-    } else if (arg1 == 0x97) {
+    } else if (kind == 0x97) {
         rect.x = 0x8F;
         rect.y = 0;
         rect.w = 0x1F;
         rect.h = 0x7F;
-    } else if (arg1 == 0x98) {
+    } else if (kind == 0x98) {
         rect.x = 0xB0;
         rect.y = 0;
         rect.w = 0x3B;
         rect.h = 0x1F;
-    } else if (arg1 == 0x99) {
+    } else if (kind == 0x99) {
         rect.x = 0xF1;
-        rect.y = arg2 * 0x10;
+        rect.y = index * 0x10;
         rect.w = 0xE;
         rect.h = 0xF;
-    } else if (arg1 == 0x9A) {
-        rect.x = (arg2 << 5) + 0xB1;
+    } else if (kind == 0x9A) {
+        rect.x = (index << 5) + 0xB1;
         rect.y = 0x21;
         rect.w = 0x1E;
         rect.h = 0x1E;
-    } else if (arg1 == 0x9B) {
-        if (arg2 < 2) {
-            rect.x = (arg2 << 5) + 0xB1;
+    } else if (kind == 0x9B) {
+        if (index < 2) {
+            rect.x = (index << 5) + 0xB1;
             rect.y = 0x41;
         } else {
-            rect.x = ((arg2 - 2) << 5) + 0xB1;
+            rect.x = ((index - 2) << 5) + 0xB1;
             rect.y = 0x61;
         }
         rect.w = 0x1E;
         rect.h = 0x1E;
-    } else if (arg1 == 0x9C) {
+    } else if (kind == 0x9C) {
         rect.x = 0x80;
         rect.y = 0x81;
         rect.w = 0x7F;
         rect.h = 0x3F;
-    } else if (arg1 == 0x9D) {
-        if (arg2 < 4) {
-            rect.x = (arg2 << 5) + 0x80;
+    } else if (kind == 0x9D) {
+        if (index < 4) {
+            rect.x = (index << 5) + 0x80;
             rect.y = 0xC1;
         } else {
-            rect.x = ((arg2 - 4) << 5) + 0x80;
+            rect.x = ((index - 4) << 5) + 0x80;
             rect.y = 0xE1;
         }
         rect.w = 0x1F;
         rect.h = 0x1F;
-    } else if (arg1 == 0x9E) {
+    } else if (kind == 0x9E) {
         rect.x = 1;
-        rect.y = (arg2 * 0xA) + 0xD1;
+        rect.y = (index * 0xA) + 0xD1;
         rect.w = 8;
         rect.h = 8;
-    } else if (arg1 == 0x9F) {
-        if (arg2 < 2) {
-            rect.x = (arg2 * 0x3B) + 0xB;
+    } else if (kind == 0x9F) {
+        if (index < 2) {
+            rect.x = (index * 0x3B) + 0xB;
             rect.y = 0x81;
         } else {
-            rect.x = ((arg2 - 2) * 0x3B) + 0xB;
+            rect.x = ((index - 2) * 0x3B) + 0xB;
             rect.y = 0xC1;
         }
         rect.w = 0x38;
         rect.h = 0x3F;
-    } else if (arg1 == 0x64) {
+    } else if (kind == 0x64) {
         rect.w = 0x12;
         rect.h = 0x1F;
-        if (arg2 == 0) {
+        if (index == 0) {
             rect.x = 1;
             rect.y = 1;
-        } else if (arg2 == 1) {
+        } else if (index == 1) {
             rect.x = 0x15;
             rect.y = 1;
-        } else if (arg2 == 2) {
+        } else if (index == 2) {
             rect.x = 0x29;
             rect.y = 1;
-        } else if (arg2 == 3) {
+        } else if (index == 3) {
             rect.x = 0x3D;
             rect.y = 1;
-        } else if (arg2 == 4) {
+        } else if (index == 4) {
             rect.x = 1;
             rect.y = 0x21;
-        } else if (arg2 == 5) {
+        } else if (index == 5) {
             rect.x = 0x15;
             rect.y = 0x21;
-        } else if (arg2 == 6) {
+        } else if (index == 6) {
             rect.x = 0x29;
             rect.y = 0x21;
-        } else if (arg2 == 7) {
+        } else if (index == 7) {
             rect.x = 0x3D;
             rect.y = 0x21;
         }
-    } else if (arg1 == 0x65) {
+    } else if (kind == 0x65) {
         rect.x = 0x50;
         rect.y = 0;
         rect.w = 0x2F;
         rect.h = 0x3F;
-    } else if (arg1 == 0x6E) {
-        rect.x = arg2 << 6;
+    } else if (kind == 0x6E) {
+        rect.x = index << 6;
         rect.y = 0;
         rect.w = 0x3F;
         rect.h = 0x3F;
-    } else if (arg1 == 0x3C) {
-        rect.x = arg2 << 6;
+    } else if (kind == 0x3C) {
+        rect.x = index << 6;
         rect.y = 0;
         rect.w = 0x3F;
         rect.h = 0x3F;
-    } else if (arg1 == 0x3D) {
+    } else if (kind == 0x3D) {
         rect.w = 0x1F;
         rect.h = 0x1F;
-        if (arg2 == 0) {
+        if (index == 0) {
             rect.x = 0x21;
             rect.y = 0;
-        } else if (arg2 == 1) {
+        } else if (index == 1) {
             rect.x = 0x21;
             rect.y = 0x21;
-        } else if (arg2 == 2) {
+        } else if (index == 2) {
             rect.x = 0x41;
             rect.y = 0;
-        } else if (arg2 == 3) {
+        } else if (index == 3) {
             rect.x = 0x41;
             rect.y = 0x21;
         }
-    } else if (arg1 == 0x5A) {
-        rect.x = arg2 << 6;
+    } else if (kind == 0x5A) {
+        rect.x = index << 6;
         rect.y = 1;
         rect.w = 0x3F;
         rect.h = 0x3F;
-    } else if (arg1 == 0x14) {
-        if (arg2 < 4) {
-            rect.x = arg2 << 5;
+    } else if (kind == 0x14) {
+        if (index < 4) {
+            rect.x = index << 5;
             rect.y = 1;
         } else {
-            rect.x = (arg2 - 4) << 5;
+            rect.x = (index - 4) << 5;
             rect.y = 0x21;
         }
         rect.w = 0x1F;
         rect.h = 0x1F;
-    } else if (arg1 == 0x82) {
+    } else if (kind == 0x82) {
         rect.w = 0x12;
         rect.h = 0x1F;
-        if (arg2 == 0) {
+        if (index == 0) {
             rect.x = 1;
             rect.y = 0x41;
-        } else if (arg2 == 1) {
+        } else if (index == 1) {
             rect.x = 0x15;
             rect.y = 0x41;
-        } else if (arg2 == 2) {
+        } else if (index == 2) {
             rect.x = 0x29;
             rect.y = 0x41;
-        } else if (arg2 == 3) {
+        } else if (index == 3) {
             rect.x = 0x3D;
             rect.y = 0x41;
-        } else if (arg2 == 4) {
+        } else if (index == 4) {
             rect.x = 1;
             rect.y = 0x61;
-        } else if (arg2 == 5) {
+        } else if (index == 5) {
             rect.x = 0x15;
             rect.y = 0x61;
-        } else if (arg2 == 6) {
+        } else if (index == 6) {
             rect.x = 0x29;
             rect.y = 0x61;
-        } else if (arg2 == 7) {
+        } else if (index == 7) {
             rect.x = 0x3D;
             rect.y = 0x61;
         }
-    } else if (arg1 == 0x83) {
-        if (arg2 < 2) {
-            rect.x = (arg2 * 0x18) + 0x51;
+    } else if (kind == 0x83) {
+        if (index < 2) {
+            rect.x = (index * 0x18) + 0x51;
             rect.y = 0x51;
         } else {
-            rect.x = ((arg2 - 2) * 0x18) + 0x51;
+            rect.x = ((index - 2) * 0x18) + 0x51;
             rect.y = 0x51;
         }
         rect.w = 0x17;
         rect.h = 0x16;
-    } else if (arg1 == 0x50) {
+    } else if (kind == 0x50) {
         rect.x = 1;
-        rect.y = (arg2 * 0xA) + 1;
+        rect.y = (index * 0xA) + 1;
         rect.w = 8;
         rect.h = 8;
-    } else if (arg1 == 0xA) {
-        if (arg2 < 5) {
-            rect.x = (arg2 * 0x18) + 1;
+    } else if (kind == 0xA) {
+        if (index < 5) {
+            rect.x = (index * 0x18) + 1;
             rect.y = 1;
         } else {
-            rect.x = ((arg2 - 5) * 0x18) + 1;
+            rect.x = ((index - 5) * 0x18) + 1;
             rect.y = 0x21;
         }
         rect.w = 0x17;
         rect.h = 0x1F;
-    } else if (arg1 == 0x1E) {
-        if (arg2 < 4) {
-            rect.x = arg2 * 0x10;
+    } else if (kind == 0x1E) {
+        if (index < 4) {
+            rect.x = index * 0x10;
             rect.y = 0;
-        } else if (arg2 < 8) {
-            rect.x = (arg2 - 4) * 0x10;
+        } else if (index < 8) {
+            rect.x = (index - 4) * 0x10;
             rect.y = 0x10;
-        } else if (arg2 < 0xC) {
-            rect.x = (arg2 - 8) * 0x10;
+        } else if (index < 0xC) {
+            rect.x = (index - 8) * 0x10;
             rect.y = 0x20;
-        } else if (arg2 < 0x10) {
-            rect.x = (arg2 - 0xC) * 0x10;
+        } else if (index < 0x10) {
+            rect.x = (index - 0xC) * 0x10;
             rect.y = 0x30;
         }
         rect.w = 0x10;
         rect.h = 0x10;
     }
 
-    *(Rect_00106080 *)arg0 = rect;
+    *(Rect_00106080 *)dst = rect;
 }
 
-s32 SHOKI_OBJ(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Takes a free object slot (of `count`) from an effect's work area and clears it; returns it, or 0. */
+s32 SHOKI_OBJ(s32 work, s32 arg1, s32 count, s32 noReuse) {
     s32 i;
     s32 offset;
     u8 *slot;
 
-    for (i = 0; i < arg2; i++) {
-        if ((arg3 == 0) && (*(s16 *)((u8 *)arg0 + i * 0xC0 + 0xD04) == 0)) {
+    for (i = 0; i < count; i++) {
+        if ((noReuse == 0) && (*(s16 *)((u8 *)work + i * 0xC0 + 0xD04) == 0)) {
             offset = i * 0xC0;
-            slot = (u8 *)arg0 + offset + 0xC60;
+            slot = (u8 *)work + offset + 0xC60;
             func_00195108((s32)slot, 0xC0);
-            *(s16 *)(offset + (s32)arg0 + 0xD04) = i + 1;
+            *(s16 *)(offset + (s32)work + 0xD04) = i + 1;
             return (s32)slot;
         }
     }
     return 0;
 }
 
-void PV_IN_(s16 *arg0, f32 *arg1, s32 arg2) {
-    if (arg2 == 0) {
-        arg0[0] = func_001A22C0(arg1[0]);
-        arg0[1] = func_001A22C0(arg1[1]);
-        arg0[2] = func_001A22C0(arg1[2]);
-        arg0[3] = func_001A22C0(arg1[3]);
+/* Stores a float vector as integers into the first or (`second`) the second half of `out`. */
+void PV_IN_(s16 *out, f32 *vec, s32 second) {
+    if (second == 0) {
+        out[0] = func_001A22C0(vec[0]);
+        out[1] = func_001A22C0(vec[1]);
+        out[2] = func_001A22C0(vec[2]);
+        out[3] = func_001A22C0(vec[3]);
     } else {
-        arg0[4] = func_001A22C0(arg1[0]);
-        arg0[5] = func_001A22C0(arg1[1]);
-        arg0[6] = func_001A22C0(arg1[2]);
-        arg0[7] = func_001A22C0(arg1[3]);
+        out[4] = func_001A22C0(vec[0]);
+        out[5] = func_001A22C0(vec[1]);
+        out[6] = func_001A22C0(vec[2]);
+        out[7] = func_001A22C0(vec[3]);
     }
 }
 
-void POS_POS(void *arg0, void *arg1) {
-    f32 *dst = arg0;
-    f32 *src = arg1;
+/* dst += src (3 floats). */
+void POS_POS(void *dstVec, void *srcVec) {
+    f32 *dst = dstVec;
+    f32 *src = srcVec;
 
     dst[0] += src[0];
     dst[1] += src[1];
     dst[2] += src[2];
 }
 
-s32 OBJECT_RGB_A_OFF(void *arg0, s32 arg1, s32 arg2) {
-    ((u8 *)arg0)[0xAF] = (u8)(((u8 *)arg0)[0xAF] - arg1);
-    ((u8 *)arg0)[0xB3] = (u8)(((u8 *)arg0)[0xB3] - arg1);
-    return (((u8 *)arg0)[0xAF] < (arg2 & 0xFF)) ? 1 : 0;
+/* Fades an object's two alphas down by `step`; 1 once below `limit`. */
+s32 OBJECT_RGB_A_OFF(void *obj, s32 step, s32 limit) {
+    ((u8 *)obj)[0xAF] = (u8)(((u8 *)obj)[0xAF] - step);
+    ((u8 *)obj)[0xB3] = (u8)(((u8 *)obj)[0xB3] - step);
+    return (((u8 *)obj)[0xAF] < (limit & 0xFF)) ? 1 : 0;
 }
 
-s32 OBJECT_RGB_A_ON(void *arg0, s32 arg1, s32 arg2) {
-    *((u8 *)arg0 + 0xAF) = (u8)(*((u8 *)arg0 + 0xAF) + arg1);
-    *((u8 *)arg0 + 0xB3) = (u8)(*((u8 *)arg0 + 0xB3) + arg1);
-    return *((u8 *)arg0 + 0xAF) > (arg2 & 0xFF) ? 1 : 0;
+/* Fades an object's two alphas up by `step`; 1 once above `limit`. */
+s32 OBJECT_RGB_A_ON(void *obj, s32 step, s32 limit) {
+    *((u8 *)obj + 0xAF) = (u8)(*((u8 *)obj + 0xAF) + step);
+    *((u8 *)obj + 0xB3) = (u8)(*((u8 *)obj + 0xB3) + step);
+    return *((u8 *)obj + 0xAF) > (limit & 0xFF) ? 1 : 0;
 }
 
-s32 OBJECT_RGB_INOFF(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (arg3 == 0) {
-        arg0[0] += arg1;
-        arg0[1] += arg1;
-        arg0[2] += arg1;
+/* Brightens (`darken` 0) or darkens an RGB colour by `step`. */
+s32 OBJECT_RGB_INOFF(u8 *rgb, s32 step, s32 arg2, s32 darken) {
+    if (darken == 0) {
+        rgb[0] += step;
+        rgb[1] += step;
+        rgb[2] += step;
     } else {
-        arg0[0] -= arg1;
-        arg0[1] -= arg1;
-        arg0[2] -= arg1;
+        rgb[0] -= step;
+        rgb[1] -= step;
+        rgb[2] -= step;
     }
     return 0;
 }
@@ -1428,22 +1477,23 @@ typedef struct Data_00106C50 {
     u8 value;
 } Data_00106C50;
 
-s32 OBJECT_RGBA_INOFF(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Data_00106C50 *data = arg0;
-    u8 temp_v1;
-    u8 temp_v1_2;
+/* Fades an object's alpha up (`down` 0) or down by `step` towards `limit`; 1 once there. */
+s32 OBJECT_RGBA_INOFF(void *obj, s32 step, s32 limit, s32 down) {
+    Data_00106C50 *data = obj;
+    u8 alpha;
+    u8 alpha2;
 
-    if (arg3 == 0) {
-        temp_v1 = data->value;
-        if ((s32) temp_v1 < (arg2 & 0xFF)) {
-            data->value = temp_v1 + arg1;
+    if (down == 0) {
+        alpha = data->value;
+        if ((s32) alpha < (limit & 0xFF)) {
+            data->value = alpha + step;
         } else {
             return 1;
         }
     } else {
-        temp_v1_2 = data->value;
-        if ((arg2 & 0xFF) < (s32) temp_v1_2) {
-            data->value = temp_v1_2 - arg1;
+        alpha2 = data->value;
+        if ((limit & 0xFF) < (s32) alpha2) {
+            data->value = alpha2 - step;
         } else {
             return 1;
         }
@@ -1451,27 +1501,31 @@ s32 OBJECT_RGBA_INOFF(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-s32 OBJ_ADDRESS_IN(s32 arg0, s32 arg1) {
-    func_00195108(arg0, (s16)arg1);
-    return arg0;
+/* Clears `size` bytes at `address` and returns it. */
+s32 OBJ_ADDRESS_IN(s32 address, s32 size) {
+    func_00195108(address, (s16)size);
+    return address;
 }
 
-s32 XC_ZS_IN(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    ((f32 *)arg0)[0] = (f32)arg2 * SIN_COS_INRAD(arg3, arg1, 1);
-    ((f32 *)arg0)[2] = (f32)arg2 * SIN_COS_INRAD(arg3, arg1, 0);
+/* Sets the x and z of a point on a circle of radius `radius` at `degrees` (from `sinTable`). */
+s32 XC_ZS_IN(void *out, s32 degrees, s32 radius, s32 sinTable) {
+    ((f32 *)out)[0] = (f32)radius * SIN_COS_INRAD(sinTable, degrees, 1);
+    ((f32 *)out)[2] = (f32)radius * SIN_COS_INRAD(sinTable, degrees, 0);
     return 0;
 }
 
-s32 RAD_IN_360_(s32 arg0, s16 *arg1) {
-    *arg1 += arg0;
-    if (*arg1 >= 360 || *arg1 < -359) {
-        *arg1 %= 360;
+/* Adds `step` to an angle in degrees, kept within -359..359. */
+s32 RAD_IN_360_(s32 step, s16 *angle) {
+    *angle += step;
+    if (*angle >= 360 || *angle < -359) {
+        *angle %= 360;
     }
     return 0;
 }
 
-void OBJ_SCL2(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
-    ((f32 *)arg0)[0] = fparg0;
-    ((f32 *)arg0)[1] = fparg1;
-    ((f32 *)arg0)[2] = fparg2;
+/* Sets a 3-float vector to (x, y, z). */
+void OBJ_SCL2(void *out, f32 x, f32 y, f32 z) {
+    ((f32 *)out)[0] = x;
+    ((f32 *)out)[1] = y;
+    ((f32 *)out)[2] = z;
 }

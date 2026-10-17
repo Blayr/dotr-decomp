@@ -1,7 +1,8 @@
 #include "common.h"
 
-s32 videoDecGetState(void *arg0) {
-    return *(s32 *)((u8 *)arg0 + 0xA8);
+/* The movie video decoder's state. */
+s32 videoDecGetState(void *vd) {
+    return *(s32 *)((u8 *)vd + 0xA8);
 }
 
 typedef struct Values_00245160 {
@@ -13,13 +14,14 @@ typedef struct Values_00245160 {
 
 extern u8 D_003506C8[];
 
-void videoDecPutTs(void *arg0, s64 arg1, s64 arg2, s32 arg3, s32 arg4) {
+/* Records a video timestamp (pts, dts) for stream position `pos` of `len` bytes. */
+void videoDecPutTs(void *vd, s64 pts, s64 dts, s32 pos, s32 len) {
     Values_00245160 values;
 
-    values.first = arg1;
-    values.second = arg2;
-    values.offset = arg3 - *(s32 *)((u8 *)arg0 + 0x48);
-    values.fourth = arg4;
+    values.first = pts;
+    values.second = dts;
+    values.offset = pos - *(s32 *)((u8 *)vd + 0x48);
+    values.fourth = len;
     viBufPutTs(D_003506C8, &values);
 }
 
@@ -36,8 +38,9 @@ typedef struct {
 extern Flt_002451A0 D_0029B300;
 extern u8 D_003506C8[];
 
-s32 videoDecFlush(void *arg0) {
-    Obj_002451A0 *p = (Obj_002451A0 *)arg0;
+/* Flushes the movie video decoder's data. */
+s32 videoDecFlush(void *vd) {
+    Obj_002451A0 *p = (Obj_002451A0 *)vd;
     s32 sp2C;
     s32 sp30;
     Flt_002451A0 sp34;
@@ -57,26 +60,28 @@ s32 videoDecFlush(void *arg0) {
     return 1;
 }
 
-s32 videoDecIsFlushed(void *arg0) {
+/* Whether the movie video decoder has flushed. */
+s32 videoDecIsFlushed(void *vd) {
     s32 result;
 
     result = 0;
-    if (viBufCount((u8 *)arg0 + 0x48) == 0) {
-        if (sceMpegIsRefBuffEmpty(arg0) != 0) {
+    if (viBufCount((u8 *)vd + 0x48) == 0) {
+        if (sceMpegIsRefBuffEmpty(vd) != 0) {
             result = 1;
         }
     }
     return result;
 }
 
-void videoDecMain(void *arg0) {
-    viBufReset((u8 *)arg0 + 0x48);
+/* The movie video decoder's thread: decodes pictures until the end. */
+void videoDecMain(void *vd) {
+    viBufReset((u8 *)vd + 0x48);
     voBufReset(voBuf);
-    decBs0(arg0);
+    decBs0(vd);
     do {
 
     } while (D_0035060C != 0);
-    *(s32 *)((u8 *)arg0 + 0xA8) = 3;
+    *(s32 *)((u8 *)vd + 0xA8) = 3;
 }
 
 extern int func_00199B50_b(const char *format, ...);
@@ -107,6 +112,7 @@ extern int func_0018EE78_b(struct DotrSoundVideoDec *dec);
 extern void func_00242CF0_b(DotrSoundAddress text);
 extern void func_00241E80_b(unsigned int *tags, void *image, int index, int w, int h);
 
+/* Decodes the movie's video stream (one call of the MPEG library). */
 int decBs0(void *dec_v)
 {
     struct DotrSoundVideoDec * dec = dec_v;
@@ -144,22 +150,26 @@ int decBs0(void *dec_v)
     return ret;
 }
 
-s32 mpegError(void *arg0, void *arg1) {
-    func_00199B50(&D_0030F8E9, *(s32 *)((u8 *)arg1 + 4));
+/* The MPEG library's error callback. */
+s32 mpegError(void *mp, void *data) {
+    func_00199B50(&D_0030F8E9, *(s32 *)((u8 *)data + 4));
     return 1;
 }
 
+/* The MPEG library's no-data callback: waits for input. */
 s32 mpegNodata(void) {
     switchThread();
     viBufAddDMA(D_003506C8);
     return 1;
 }
 
+/* The MPEG library's stop-DMA callback. */
 s32 mpegStopDMA(void) {
     viBufStopDMA(D_003506C8);
     return 1;
 }
 
+/* The MPEG library's restart-DMA callback. */
 s32 mpegRestartDMA(void) {
     viBufRestartDMA(D_003506C8);
     return 1;
@@ -172,40 +182,43 @@ typedef struct Entry_002455E0 {
 } Entry_002455E0;
 
 
-s32 mpegTS(s32 arg0, void *arg1) {
+/* The MPEG library's timestamp callback: hands it the next video timestamp. */
+s32 mpegTS(s32 mp, void *cbData) {
     Entry_002455E0 entry;
 
     viBufGetTs(D_003506C8, &entry);
-    *(s64 *)((u8 *)arg1 + 8) = entry.values[0];
-    *(s64 *)((u8 *)arg1 + 0x10) = entry.values[1];
+    *(s64 *)((u8 *)cbData + 8) = entry.values[0];
+    *(s64 *)((u8 *)cbData + 0x10) = entry.values[1];
     return 1;
 }
 
-s32 cpy2area(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                  void *arg4, s32 arg5, s32 arg6, s32 arg7) {
-    s32 temp_fp;
-    s32 temp_s0;
+/* Copies two source areas into two destination areas (the decoded pictures' ring); returns the size copied, 0 if
+   it does not fit. */
+s32 cpy2area(s32 pd0, s32 d0, s32 pd1, s32 d1,
+                  void *ps0, s32 s0, s32 ps1, s32 s1) {
+    s32 rest;
+    s32 total;
 
-    temp_s0 = arg5 + arg7;
-    if ((arg1 + arg3) < temp_s0) {
+    total = s0 + s1;
+    if ((d0 + d1) < total) {
         return 0;
     }
-    if (arg5 >= arg1) {
-        func_00198790((u8 *)arg0, arg4, arg1);
-        func_00198790((u8 *)arg2, (u8 *)arg4 + arg1, arg5 - arg1);
-        func_00198790(((u8 *)arg2 + arg5) - arg1, (u8 *)arg6, arg7);
+    if (s0 >= d0) {
+        func_00198790((u8 *)pd0, ps0, d0);
+        func_00198790((u8 *)pd1, (u8 *)ps0 + d0, s0 - d0);
+        func_00198790(((u8 *)pd1 + s0) - d0, (u8 *)ps1, s1);
     } else {
-        temp_fp = arg1 - arg5;
-        if (arg7 >= temp_fp) {
-            func_00198790((u8 *)arg0, arg4, arg5);
-            func_00198790((u8 *)arg0 + arg5, (u8 *)arg6, temp_fp);
-            func_00198790((u8 *)arg2, ((u8 *)arg6 + arg1) - arg5, arg7 - temp_fp);
+        rest = d0 - s0;
+        if (s1 >= rest) {
+            func_00198790((u8 *)pd0, ps0, s0);
+            func_00198790((u8 *)pd0 + s0, (u8 *)ps1, rest);
+            func_00198790((u8 *)pd1, ((u8 *)ps1 + d0) - s0, s1 - rest);
         } else {
-            func_00198790((u8 *)arg0, arg4, arg5);
-            func_00198790((u8 *)arg0 + arg5, (u8 *)arg6, arg7);
+            func_00198790((u8 *)pd0, ps0, s0);
+            func_00198790((u8 *)pd0 + s0, (u8 *)ps1, s1);
         }
     }
-    return temp_s0;
+    return total;
 }
 
 typedef struct State_00245770 {
@@ -216,29 +229,32 @@ typedef struct State_00245770 {
     s32 count;
 } State_00245770;
 
-void voBufCreate(void *arg0, s32 arg1, void *arg2, s32 arg3) {
-    State_00245770 *state = arg0;
+/* Sets up the decoded-picture buffer: `count` pictures at `data`, with `tag`. */
+void voBufCreate(void *f, s32 tag, void *data, s32 count) {
+    State_00245770 *state = f;
     s32 *temp_a2;
-    s32 var_t0;
+    s32 i;
 
-    state->value = arg1;
-    state->entries = arg2;
-    state->count = arg3;
+    state->value = tag;
+    state->entries = data;
+    state->count = count;
     state->fieldC = 0;
     state->field8 = 0;
-    for (var_t0 = 0; var_t0 < arg3; var_t0++) {
-        temp_a2 = (s32 *)(state->entries + var_t0 * 0x4CE40);
+    for (i = 0; i < count; i++) {
+        temp_a2 = (s32 *)(state->entries + i * 0x4CE40);
         *temp_a2 = 0;
     }
 }
 
+/* Frees the decoded-picture buffer (nothing to do). */
 void voBufDelete(void) {
 
 }
 
-void voBufReset(void *arg0) {
-    *(s32 *)((u8 *)arg0 + 0xC) = 0;
-    *(s32 *)((u8 *)arg0 + 0x8) = 0;
+/* Empties the decoded-picture buffer. */
+void voBufReset(void *f) {
+    *(s32 *)((u8 *)f + 0xC) = 0;
+    *(s32 *)((u8 *)f + 0x8) = 0;
 }
 
 typedef struct {
@@ -247,8 +263,9 @@ typedef struct {
     s32 field_10;
 } Fields_002457E0;
 
-s32 voBufIsFull(void *arg0) {
-    return ((Fields_002457E0 *)arg0)->field_C == ((Fields_002457E0 *)arg0)->field_10;
+/* Whether the decoded-picture buffer is full. */
+s32 voBufIsFull(void *f) {
+    return ((Fields_002457E0 *)f)->field_C == ((Fields_002457E0 *)f)->field_10;
 }
 
 typedef struct {
@@ -260,8 +277,9 @@ typedef struct {
 } Queue_00245800;
 
 
-void voBufIncCount(void *arg0) {
-    Queue_00245800 *queue = (Queue_00245800 *)arg0;
+/* Adds one decoded picture. */
+void voBufIncCount(void *f) {
+    Queue_00245800 *queue = (Queue_00245800 *)f;
 
     func_001843E0();
     *(s32 *)(queue->data + queue->index * 0x4CE40) = 2;
@@ -278,14 +296,16 @@ typedef struct State_00245890 {
     s32 end;
 } State_00245890;
 
+/* Whether the decoded-picture buffer is empty. */
 static inline u8 empty_00245890(void *arg0) {
     State_00245890 *state = arg0;
 
     return state->current == state->end;
 }
 
-s32 voBufGetData(void *arg0) {
-    State_00245890 *state = arg0;
+/* The next decoded picture, or 0. */
+s32 voBufGetData(void *f) {
+    State_00245890 *state = f;
 
     if (empty_00245890(state)) {
         return 0;
@@ -301,15 +321,17 @@ typedef struct Buffer_002458E0 {
     s32 capacity;
 } Buffer_002458E0;
 
+/* Whether the decoded-picture buffer is empty. */
 static inline u8 is_empty_002458E0(void *arg0) {
     return ((Buffer_002458E0 *)arg0)->count == 0;
 }
 
-s32 voBufGetTag(void *arg0) {
+/* The next decoded picture's DMA tag, or 0. */
+s32 voBufGetTag(void *f) {
     s32 capacity;
-    Buffer_002458E0 *buffer = arg0;
+    Buffer_002458E0 *buffer = f;
 
-    if (is_empty_002458E0(arg0)) {
+    if (is_empty_002458E0(f)) {
         return 0;
     }
     capacity = buffer->capacity;
@@ -321,8 +343,9 @@ typedef struct Counter_00245960 {
     volatile s32 count;
 } Counter_00245960;
 
-void voBufDecCount(void *arg0) {
-    Counter_00245960 *counter = arg0;
+/* Drops the oldest decoded picture. */
+void voBufDecCount(void *f) {
+    Counter_00245960 *counter = f;
 
     if (counter->count > 0) {
         counter->count--;
@@ -336,18 +359,20 @@ typedef struct Quad_00245980 {
     s16 w;
 } Quad_00245980;
 
-extern Quad_00245980 **gpShFaceIndex[];
+extern Quad_00245980 **faceSetIndex[]; /* original: gpShFaceIndex */
 
-void ShAnime_GetPartsRect(s32 arg0, s32 arg1, void *arg2) {
-    *(Quad_00245980 *)arg2 = (*gpShFaceIndex[(u8)arg0])[(u8)arg1];
+/* The texture rectangle of part `part` of face set `face` into `out`. */
+void ShAnime_GetPartsRect(s32 face, s32 part, void *out) {
+    *(Quad_00245980 *)out = (*faceSetIndex[(u8)face])[(u8)part];
 }
 
 typedef struct Name_002459D0 {
     u8 text[8];
 } Name_002459D0;
 
-void ShAnime_GetPatInfo(u8 arg0, u8 arg1, void *arg2) {
-    *(Name_002459D0 *)arg2 = ((Name_002459D0 **)gpShFaceIndex[arg0])[1][arg1];
+/* Pattern `pattern` of face set `face` into `out`. */
+void ShAnime_GetPatInfo(u8 face, u8 pattern, void *out) {
+    *(Name_002459D0 *)out = ((Name_002459D0 **)faceSetIndex[face])[1][pattern];
 }
 
 typedef struct Record_00245A30 {
@@ -363,27 +388,28 @@ typedef struct Data_00245A30 {
     Record_00245A30 *records;
 } Data_00245A30;
 
-void ShAnime_GetFixInfo(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
-    extern struct Quad_00245980 **gpShFaceIndex[];
-    u8 var_a1;
-    u8 temp_a0;
+/* The fixed record of animation `anim` of face set `face`, `step` links on, into `out`. */
+void ShAnime_GetFixInfo(s32 face, s32 anim, s32 step, void *out) {
+    extern struct Quad_00245980 **faceSetIndex[];
+    u8 link;
+    u8 next;
     Record_00245A30 *records;
-    s32 var_t1;
+    s32 i;
 
-    var_t1 = 0;
-    var_a1 = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
-    if (arg2 != 0) {
-        records = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->records;
-        while (var_t1 != (arg2 & 0xFF)) {
-            temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
-            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+    i = 0;
+    link = ((Data_00245A30 *)faceSetIndex[face & 0xFF])->indices[anim & 0xFF][1];
+    if (step != 0) {
+        records = ((Data_00245A30 *)faceSetIndex[face & 0xFF])->records;
+        while (i != (step & 0xFF)) {
+            next = *(u8 *)&records[link & 0xFF];
+            if (next == 0 || next == 0xFF) {
                 break;
             }
-            var_t1 += 1;
-            var_a1 = temp_a0 & 0xFF;
+            i += 1;
+            link = next & 0xFF;
         }
     }
-    *(Record_00245A30 *)arg3 = ((Data_00245A30 *)gpShFaceIndex[arg0 & 0xFF])->records[var_a1 & 0xFF];
+    *(Record_00245A30 *)out = ((Data_00245A30 *)faceSetIndex[face & 0xFF])->records[link & 0xFF];
 }
 
 typedef struct Record_00245AE0 {
@@ -402,42 +428,43 @@ typedef struct Data_00245AE0 {
     } u;
 } Data_00245AE0;
 
-void ShAnime_GetAnmDat(s32 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4) {
-    extern struct Quad_00245980 **gpShFaceIndex[];
+/* The animation record of animation `anim` of face set `face`, `step` and then `frame` links on, into `out`. */
+void ShAnime_GetAnmDat(s32 face, s32 anim, s32 step, s32 frame, void *out) {
+    extern struct Quad_00245980 **faceSetIndex[];
     Record_00245AE0 *table;
-    u8 var_a1;
-    u8 temp_a0;
+    u8 link;
+    u8 next;
     Record_00245AE0 *records;
-    s32 var_t1;
+    s32 i;
     s32 count;
 
-    var_t1 = 0;
-    var_a1 = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->indices[arg1 & 0xFF][1];
-    if (arg2 != 0) {
-        records = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.records;
-        while (var_t1 != (arg2 & 0xFF)) {
-            temp_a0 = *(u8 *)&records[var_a1 & 0xFF];
-            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+    i = 0;
+    link = ((Data_00245AE0 *)faceSetIndex[face & 0xFF])->indices[anim & 0xFF][1];
+    if (step != 0) {
+        records = ((Data_00245AE0 *)faceSetIndex[face & 0xFF])->u.records;
+        while (i != (step & 0xFF)) {
+            next = *(u8 *)&records[link & 0xFF];
+            if (next == 0 || next == 0xFF) {
                 break;
             }
-            var_t1 += 1;
-            var_a1 = temp_a0 & 0xFF;
+            i += 1;
+            link = next & 0xFF;
         }
     }
-    var_t1 = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.links[var_a1 & 0xFF][6];
-    table = ((Data_00245AE0 *)gpShFaceIndex[arg0 & 0xFF])->u.records;
+    i = ((Data_00245AE0 *)faceSetIndex[face & 0xFF])->u.links[link & 0xFF][6];
+    table = ((Data_00245AE0 *)faceSetIndex[face & 0xFF])->u.records;
     count = 0;
-    if (arg3 != 0) {
-        while (count != (arg3 & 0xFF)) {
-            temp_a0 = *(u8 *)&table[var_t1 & 0xFF];
-            if (temp_a0 == 0 || temp_a0 == 0xFF) {
+    if (frame != 0) {
+        while (count != (frame & 0xFF)) {
+            next = *(u8 *)&table[i & 0xFF];
+            if (next == 0 || next == 0xFF) {
                 break;
             }
             count += 1;
-            var_t1 = temp_a0 & 0xFF;
+            i = next & 0xFF;
         }
     }
-    *(Record_00245AE0 *)arg4 = table[var_t1 & 0xFF];
+    *(Record_00245AE0 *)out = table[i & 0xFF];
 }
 
 typedef struct Request_00245BE0 {
@@ -463,15 +490,16 @@ typedef struct Slot_00245BE0 {
     u8 pad30[4];
 } Slot_00245BE0;
 
-s32 ShFace_Request(void *arg0) {
-    Request_00245BE0 *req = arg0;
+/* Shows (or updates) a duelist face from request `reqIn` in one of the 8 face slots. Returns 0 if none is free. */
+s32 ShFace_Request(void *reqIn) {
+    Request_00245BE0 *req = reqIn;
     Slot_00245BE0 *entry;
     s32 i;
-    extern Slot_00245BE0 gSh_Face[];
+    extern Slot_00245BE0 faceSlots[];
 
     if (req->slot == 0xFF) {
         for (i = 0; i < 8; i++) {
-            if (gSh_Face[i].value == 0) {
+            if (faceSlots[i].value == 0) {
                 break;
             }
         }
@@ -479,17 +507,17 @@ s32 ShFace_Request(void *arg0) {
             return 0;
         }
         req->slot = i;
-        gSh_Face[req->slot].value = 1;
-        gSh_Face[req->slot].b = 0xFF;
+        faceSlots[req->slot].value = 1;
+        faceSlots[req->slot].b = 0xFF;
     }
-    entry = &gSh_Face[req->slot];
+    entry = &faceSlots[req->slot];
     if (entry->value == 0) {
         return 0;
     }
     if (entry->b != req->b) {
         for (i = 0; i < 16; i++) {
-            gSh_Face[req->slot].y[i] = 0;
-            gSh_Face[req->slot].x[i] = 0;
+            faceSlots[req->slot].y[i] = 0;
+            faceSlots[req->slot].x[i] = 0;
         }
     }
     entry->a = req->a;
@@ -505,10 +533,11 @@ typedef struct {
     u8 padding[0x30];
 } Entry_00245D80;
 
-extern Entry_00245D80 gSh_Face[];
+extern Entry_00245D80 faceSlots[]; /* original: gSh_Face */
 
-void ShFace_Close(u8 *arg0) {
-    gSh_Face[*arg0].value = 0;
+/* Closes the face slot of request `req`. */
+void ShFace_Close(u8 *req) {
+    faceSlots[*req].value = 0;
 }
 
 typedef struct {
@@ -552,10 +581,11 @@ typedef struct {
     void *texture;
 } Object_00245DB0;
 
-void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
-    extern s32 gSh_pbVif1;
-    Object_00245DB0 *object = arg0;
-    u16 *rect = arg1;
+/* Draws one part `rectIn` of a face at its position plus (dx, dy). */
+void ShFace_Prim(void *face, void *rectIn, s32 dx, s32 dy) {
+    extern s32 facePacket;
+    Object_00245DB0 *object = face;
+    u16 *rect = rectIn;
     u32 shift;
     u16 y;
     Packet_00245DB0 packet __attribute__((aligned(8)));
@@ -569,8 +599,8 @@ void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     packet.q = 1.0f;
     y = object->y + 0x720;
     packet.vertex[2].xyz.x = packet.vertex[0].xyz.x =
-        ((object->x + 0x6C0) << 4) + (arg2 << shift);
-    packet.vertex[1].xyz.y = packet.vertex[0].xyz.y = (y << 4) + (arg3 << shift);
+        ((object->x + 0x6C0) << 4) + (dx << shift);
+    packet.vertex[1].xyz.y = packet.vertex[0].xyz.y = (y << 4) + (dy << shift);
     packet.vertex[3].xyz.x = packet.vertex[1].xyz.x =
         packet.vertex[0].xyz.x + ((rect[3] - rect[1]) << shift);
     packet.vertex[3].xyz.y = packet.vertex[2].xyz.y =
@@ -592,8 +622,8 @@ void ShFace_Prim(void *arg0, void *arg1, s32 arg2, s32 arg3) {
     ExAssignClamp(packet.tag, ((u64)rect[1] << 4) | 0xA | ((u64)rect[3] << 14) |
                                   ((u64)rect[0] << 24) | ((u64)rect[2] << 34));
     ExAssignAlpha(packet.tag, 0x44);
-    if (gSh_pbVif1 != 0) {
-        gSh_pbVif1 = ExSortPrim_Pipe(gSh_pbVif1, (s32)packet.tag, 0, 0);
+    if (facePacket != 0) {
+        facePacket = ExSortPrim_Pipe(facePacket, (s32)packet.tag, 0, 0);
     }
 }
 
@@ -628,7 +658,8 @@ typedef struct {
     u8 frame[16];
 } State_002460F0;
 
-void ShFace_DrawOne(void *arg0) {
+/* Draws one face: its parts for the current frame of its animation. */
+void ShFace_DrawOne(void *face) {
     extern void ShAnime_GetFixInfo(u8, u8, u8, void *);
     extern void ShAnime_GetPartsRect(u8, u8, void *);
     extern void ShFace_Prim(void *, void *, u16, u16);
@@ -636,7 +667,7 @@ void ShFace_DrawOne(void *arg0) {
     Buffer_002460F0 entry;
     Frame_002460F0 frame;
     u8 image[8];
-    State_002460F0 *state = (State_002460F0 *)arg0;
+    State_002460F0 *state = (State_002460F0 *)face;
     s32 randomSum;
 
     randomSum = ((func_0019A5C8() >> 4) & 0x3F) + ((func_0019A5C8() >> 4) & 0x3F);
@@ -647,7 +678,7 @@ void ShFace_DrawOne(void *arg0) {
     s32 randomSmall;
 
     randomSmall = (func_0019A5C8() >> 4) & 7;
-    if (arg0 != NULL) {
+    if (face != NULL) {
         ShAnime_GetPatInfo(state->resource, state->object, header);
         slot = 0;
         for (part = 0; part < header[0]; part++) {
@@ -670,7 +701,7 @@ void ShFace_DrawOne(void *arg0) {
                 if (data->length != 0) {
                     ShAnime_GetAnmDat(state->resource, state->object, (u8)part, state->frame[slot], &frame);
                     ShAnime_GetPartsRect(state->resource, frame.image, image);
-                    ShFace_Prim(arg0, image, frame.x, frame.y);
+                    ShFace_Prim(face, image, frame.x, frame.y);
                     if (state->delay[slot] == 0) {
                         switch (data->mode) {
                         case 0:
@@ -692,7 +723,7 @@ void ShFace_DrawOne(void *arg0) {
                 slot++;
             } else {
                 ShAnime_GetPartsRect(state->resource, entry.record.mode, image);
-                ShFace_Prim(arg0, image, entry.record.length, entry.record.value);
+                ShFace_Prim(face, image, entry.record.length, entry.record.value);
             }
         }
     }
@@ -706,60 +737,65 @@ typedef struct {
     s32 handle;
 } Entry_00246340;
 
-s32 ShFace_Draw_Pipe(s32 arg0) {
-    extern s32 gSh_pbVif1;
+/* Draws every shown face. */
+s32 ShFace_Draw_Pipe(s32 packet) {
+    extern s32 facePacket;
     extern s32 ShFace_DrawOne();
     extern s32 SzText_InitClutManage();
     Entry_00246340 *entry;
     s32 i;
     s32 base;
 
-    gSh_pbVif1 = arg0;
+    facePacket = packet;
     for (i = 0; i < 8; i++) {
-        if (((Entry_00246340 *)gSh_Face)[i].value != 0) {
-            ((Entry_00246340 *)gSh_Face)[i].handle = SzText_LoadRequest(7, ((Entry_00246340 *)gSh_Face)[i].kind);
+        if (((Entry_00246340 *)faceSlots)[i].value != 0) {
+            ((Entry_00246340 *)faceSlots)[i].handle = SzText_LoadRequest(7, ((Entry_00246340 *)faceSlots)[i].kind);
         }
     }
     base = RhBase_GetUserGsAddress();
     base += SzText_InitClutManage(base, 2);
-    gSh_pbVif1 = SzText_DoRequest_Pipe(gSh_pbVif1, 7, base, NULL);
-    gSh_pbVif1 = RhText_SetTextureFlush(gSh_pbVif1);
+    facePacket = SzText_DoRequest_Pipe(facePacket, 7, base, NULL);
+    facePacket = RhText_SetTextureFlush(facePacket);
     SzText_FreeRequest(7, -1);
-    entry = (Entry_00246340 *)gSh_Face;
+    entry = (Entry_00246340 *)faceSlots;
     for (i = 0; i < 8; i++, entry++) {
         if (entry->value != 0 && entry->handle != 0) {
             ShFace_DrawOne(entry);
         }
     }
-    return gSh_pbVif1;
+    return facePacket;
 }
 
-void ShFace_Init(s32 arg0) {
-    extern s32 gSh_pbVif1;
+/* Starts the face system for game mode `mode`. */
+void ShFace_Init(s32 mode) {
+    extern s32 facePacket;
     s32 i;
     Entry_00245D80 *entry;
 
-    gSh_FaceMode = arg0;
-    entry = gSh_Face;
+    gSh_FaceMode = mode;
+    entry = faceSlots;
     i = 0;
     do {
         i += 1;
         entry->value = 0;
         entry++;
     } while (i < 8);
-    gSh_pbVif1 = 0;
+    facePacket = 0;
 }
 
+/* Draws every shown face. */
 void ShFace_Draw(void) {
     RhBase_SetVifPacketArea(ShFace_Draw_Pipe(RhBase_GetVifPacketArea()));
 }
 
+/* Advances the faces' animations. */
 void ShFace_Act(void) {
     if (gSh_FaceMode) {
         return;
     }
 }
 
+/* Ends the face system (nothing to do). */
 void ShFace_Term(void) {
 
 }

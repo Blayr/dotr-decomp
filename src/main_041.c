@@ -829,7 +829,7 @@ static inline s32 rectangle_001C3E20(s32 cursor, Packet_001C3E20 *packet,
 #pragma opt_propagation off
 
 /* Draws side `arg1`'s trade list at (left, top): title, counts, sort keys, cards and scroll bar. */
-s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
+s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 topIn) {
     extern s32 lSzDuel_DrawWindow_ExBoard_Pipe();
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
     extern s32 SzDuel_DrawWindow_Font_Pipe();
@@ -923,50 +923,50 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
     sortText = sortKeyNames[*sortData];
     flags = 3;
     textX = left + SIDE_001C3E20(0x10, 0x240);
-    textY = arg3 + 0x10;
+    textY = topIn + 0x10;
     out = lSzDuel_DrawWindow_Frame_Pipe(out, 0xC, -1, 0xB, textX, textY, -0x30, -0x30, 1);
     textX = left + SIDE_001C3E20(0x10, 0x240) + 0x18;
-    textY = arg3 + 0x1F;
+    textY = topIn + 0x1F;
     cursor = text_001C3E20(out, textX, textY, 2, 3, titleText, NULL);
     x = left + SIDE_001C3E20(0x40, 0x1B0);
-    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 6, x, arg3 + 0x10, -0x8C, -0x2C, 1);
+    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 6, x, topIn + 0x10, -0x8C, -0x2C, 1);
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x48;
-    textY = arg3 + 0x15;
+    textY = topIn + 0x15;
     cursor = text_001C3E20(cursor, textX, textY, 1, 3, subText, NULL);
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x24;
-    textY = arg3 + 0x23;
+    textY = topIn + 0x23;
     cursor = text_001C3E20(cursor, textX, textY, 1, 3, work.labels.text[1], NULL);
-    textY = arg3 + 0x31;
+    textY = topIn + 0x31;
     cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, textX, textY, 1, 2, 4, total_001C3E20(arg1));
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x6C;
-    textY = arg3 + 0x23;
+    textY = topIn + 0x23;
     cursor = text_001C3E20(cursor, textX, textY, 1, 3, work.labels.text[2], NULL);
-    textY = arg3 + 0x31;
+    textY = topIn + 0x31;
     cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, textX, textY, 1, 2, 4, total_001C3E20(arg1 ^ 1));
     x = left + SIDE_001C3E20(0x10, 0x230);
-    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 5, x, arg3 + 0x40, -0x40, -0x14, 1);
+    cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 5, x, topIn + 0x40, -0x40, -0x14, 1);
     x = left + 0x6C2 + SIDE_001C3E20(0x10, 0x230);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_0029086E, x, arg3 + 0x762, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_0029086E, x, topIn + 0x762, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     {
         s32 c = cursor;
         s32 x = left + SIDE_001C3E20(0x10, 0x230) + 0x17;
-        s32 y = arg3 + 0x44;
+        s32 y = topIn + 0x44;
         cursor = number_001C3E20(c, x, y, arg1);
     }
     x = left + SIDE_001C3E20(0x10, 0x230);
-    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, arg3 + 0x54, -0x40, -0x1C, -1, 0);
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, topIn + 0x54, -0x40, -0x1C, -1, 0);
     x = left + 0x6C0 + SIDE_001C3E20(0x15, 0x255);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AA8, x, arg3 + 0x77D, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AA8, x, topIn + 0x77D, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + 0x6C0 + SIDE_001C3E20(0x2C, 0x234);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290828, x, arg3 + 0x77C, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290828, x, topIn + 0x77C, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + SIDE_001C3E20(0x50, 0x140);
-    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, arg3 + 0x40, -0xF0, -0x30, -1, 0);
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, topIn + 0x40, -0xF0, -0x30, -1, 0);
     x = left + 0x6CE + SIDE_001C3E20(0x50, 0x140);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290896, x, arg3 + 0x765, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290896, x, topIn + 0x765, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + 0x6C7 + SIDE_001C3E20(0x50, 0x140);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290ABC, x, arg3 + 0x77E, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290ABC, x, topIn + 0x77E, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     sortX = left + 0x6E8 + SIDE_001C3E20(0x50, 0x140);
-    sortY = arg3 + 0x769;
+    sortY = topIn + 0x769;
     sortIndex = 0;
     do {
         style = -1;
@@ -979,17 +979,17 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
         sortX += 0x10;
     } while (sortIndex < 10);
     x = left + 0x78A + SIDE_001C3E20(0x50, 0x140);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_002908A0, x, arg3 + 0x765, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_002908A0, x, topIn + 0x765, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + 0x793 + SIDE_001C3E20(0x50, 0x140);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AC6, x, arg3 + 0x77E, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AC6, x, topIn + 0x77E, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     sortX = left + SIDE_001C3E20(0x50, 0x140) + 0x78;
-    sortY = arg3 + 0x5E;
+    sortY = topIn + 0x5E;
     if (color != NULL) {
         flags |= 8;
     }
     cursor = text_001C3E20(cursor, sortX, sortY, 0, flags, sortText, color);
     textX = left + SIDE_001C3E20(8, 0x148);
-    sortY = arg3 + 0x70;
+    sortY = topIn + 0x70;
     sortIndex = 0;
     do {
         cursor = lSzDuel_DrawTrade_Card_Pipe(cursor, arg1, list[top + sortIndex], textX, sortY, 1);
@@ -997,21 +997,21 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
         sortIndex++;
     } while (sortIndex < 5);
     x = left + SIDE_001C3E20(0x10, 0x184);
-    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, arg3 + 0x17E, -0xEC, -0x32, -1, 0);
+    cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, topIn + 0x17E, -0xEC, -0x32, -1, 0);
     x = left + 0x6C0 + SIDE_001C3E20(0x2C, 0x234);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290832, x, arg3 + 0x8A2, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290832, x, topIn + 0x8A2, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + 0x6C0 + SIDE_001C3E20(0x15, 0x255);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AB2, x, arg3 + 0x8A7, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290AB2, x, topIn + 0x8A7, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     x = left + 0x6C0 + SIDE_001C3E20(0x17, 0x259);
-    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290A6C, x, arg3 + 0x8BA, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
+    cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290A6C, x, topIn + 0x8BA, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     {
         s32 c = cursor;
         s32 x = left + SIDE_001C3E20(0x2C, 0x231);
-        s32 y = arg3 + 0x19D;
+        s32 y = topIn + 0x19D;
         cursor = text_001C3E20(c, x, y, 1, 0, (s8 *)descText, NULL);
     }
     labelX = left + SIDE_001C3E20(0x7E, 0x18A);
-    labelY = arg3 + 0x182;
+    labelY = topIn + 0x182;
     labelPtr = work.labels.text;
     sortIndex = 0;
     state = data + arg1;
@@ -1030,12 +1030,12 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 arg3) {
         labelPtr++;
     } while (sortIndex < 3);
     sortX = left + SIDE_001C3E20(0xFC, 0x148);
-    sortY = arg3 + 0x17E;
+    sortY = topIn + 0x17E;
     cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, sortX, sortY, -0x3C, -0x32, -1, 0);
     if (count) {
         cursor = rectangle_001C3E20(cursor, &work.packet, sortX, sortY, data);
         pageX = left + SIDE_001C3E20(0xFC, 0x148) + 0x1E;
-        pageY = arg3 + 0x186;
+        pageY = topIn + 0x186;
         cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, pageX, pageY, 1, 2, 3, top + pos + 1);
         cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, pageX, pageY + 0x17, 1, 2, 3, count);
     }

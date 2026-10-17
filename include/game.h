@@ -202,7 +202,7 @@ extern u8 D_003506C8[];
 
 
 extern u8 GSI[];
-extern u8 gRhBase_dl[];
+extern u8 screenState[]; /* original: gRhBase_dl */
 extern s32 D_003261BC;
 
 
@@ -251,13 +251,13 @@ extern s16 clutState; /* original: gSzText_tl */
 extern u16 D_00322992;
 extern s16 D_00322994;
 
-extern u8 gEx3d_aPlane[];
+extern u8 viewClipPlanes[]; /* original: gEx3d_aPlane */
 
-extern u8 gMyOT[];
+extern u8 mainDrawList[]; /* original: gMyOT */
 
-extern s32 gRhView_nStackIndex;
+extern s32 viewStackIndex; /* original: gRhView_nStackIndex */
 
-extern s32 gRhZSort_zsl;
+extern s32 zSortList; /* original: gRhZSort_zsl */
 extern s32 D_0032F784;
 extern s32 D_0032F788;
 extern s32 D_0032F78C;
@@ -276,7 +276,7 @@ extern u16 D_002CE4A4[];
 
 
 
-extern s64 gExPrim_aqwAlpha[];
+extern s64 alphaBlendModes[]; /* original: gExPrim_aqwAlpha */
 
 
 extern s8 Move_END_flg;
@@ -367,7 +367,7 @@ extern u32 FusionDat[];
 
 
 
-extern u64 g_aqwExDitherMatrix[];
+extern u64 ditherMatrices[]; /* original: g_aqwExDitherMatrix */
 
 
 
@@ -400,7 +400,7 @@ extern cdstream_t D_0030FFA0;
 
 
 
-extern s32 gRhVu1Mac_State;
+extern s32 vu1DrawMethod; /* original: gRhVu1Mac_State */
 extern s32 D_00325E2C;
 
 
@@ -558,7 +558,7 @@ extern u8 InvertView[];
 extern u8 D_0032A784[];
 
 
-extern f32 gRhVu1Mac_matDir;
+extern f32 vu1LightDirs; /* original: gRhVu1Mac_matDir */
 extern f32 D_00325D54;
 extern f32 D_00325D58;
 extern f32 D_00325D60;
@@ -567,7 +567,7 @@ extern f32 D_00325D68;
 extern f32 D_00325D70;
 extern f32 D_00325D74;
 extern f32 D_00325D78;
-extern f32 gRhVu1Mac_matCol;
+extern f32 vu1LightColors; /* original: gRhVu1Mac_matCol */
 extern f32 D_00325D94;
 extern f32 D_00325D98;
 extern f32 D_00325DA0;
@@ -1006,7 +1006,7 @@ extern u8 cardTestState[]; /* original: gSzDuel_dt */
 
 extern s32 isFrameEnd;
 
-extern s32 gRhGeom_rgl;
+extern s32 matrixStack; /* original: gRhGeom_rgl */
 
 
 extern s32 vecNormal;

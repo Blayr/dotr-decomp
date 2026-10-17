@@ -261,16 +261,17 @@ s32 func_0027FDA0(s32 nMsgID) {
     return nMsgID;
 }
 
-void TaView_ReqHalfFarView(s32 arg0) {
-    void *temp_s0;
-    f32 *temp_v0;
+/* Asks for the half-far camera view over side `side`'s leader. */
+void TaView_ReqHalfFarView(s32 side) {
+    void *leader;
+    f32 *pos;
 
     SzView_FreeRequest(0, 0);
-    temp_s0 = (void *)SzView_GetCP(0);
-    temp_v0 = SzView_GetLook(0);
-    *temp_v0 = 2.0f * *temp_v0;
-    SzView_ReqCamera(0, 0, 3, (u8)arg0 & 0xFF, 0, temp_s0);
-    SzView_ReqCamera(0, 0, 4, (u8)arg0, 0, temp_v0);
+    leader = (void *)SzView_GetCP(0);
+    pos = SzView_GetLook(0);
+    *pos = 2.0f * *pos;
+    SzView_ReqCamera(0, 0, 3, (u8)side & 0xFF, 0, leader);
+    SzView_ReqCamera(0, 0, 4, (u8)side, 0, pos);
 }
 
 typedef struct Constants_00280060 {
@@ -323,14 +324,15 @@ typedef struct Particle_00280060 {
 } Particle_00280060;
 
 extern Constants_00280060 D_002B8760;
-extern s32 gSh_pbVif1_Slot;
+extern s32 slotPacket; /* original: gSh_pbVif1_Slot */
 
 #pragma optimization_level 0
 
-s32 ShSlot_Flear(void *arg0, s32 arg1) {
+/* Draws `count` flare particles of the slot machine (growing rings of triangles) and ticks their timers. */
+s32 ShSlot_Flear(void *particles, s32 count) {
     extern s32 func_001A22C0(f32);
     extern s32 ExSortPrim_Pipe(s32, void *, s32, s32);
-    Particle_00280060 *particle = arg0;
+    Particle_00280060 *particle = particles;
     Constants_00280060 constants = D_002B8760;
     Packet_00280060 packet;
     f32 depth;
@@ -343,7 +345,7 @@ s32 ShSlot_Flear(void *arg0, s32 arg1) {
     s32 i;
     u8 remaining;
 
-    for (i = 0; i < arg1; i++) {
+    for (i = 0; i < count; i++) {
         if (i != 0) {
             particle++;
         }
@@ -401,7 +403,7 @@ s32 ShSlot_Flear(void *arg0, s32 arg1) {
                 packet.vertex[1].position.coordinates.y = (u16)(func_001A22C0(particle->y + previousY) << 4);
                 packet.vertex[2].position.coordinates.x = (u16)(func_001A22C0(particle->x + offsetX) << 4);
                 packet.vertex[2].position.coordinates.y = (u16)(func_001A22C0(particle->y + offsetY) << 4);
-                gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet, 0, func_001A23B0(depth));
+                slotPacket = ExSortPrim_Pipe(slotPacket, &packet, 0, func_001A23B0(depth));
             }
         }
     }
@@ -446,35 +448,36 @@ typedef struct {
     u8 padding28[8];
 } Object_00280670;
 
-extern Object_00280670 gSh_Flear[];
-extern Flags_00280670 gSh_SlotInfo[];
+extern Object_00280670 slotFlares[]; /* original: gSh_Flear */
+extern Flags_00280670 slotReels[]; /* original: gSh_SlotInfo */
 extern u8 D_00351241;
 extern u8 D_00351242;
 extern u16 D_00351246;
 
 #pragma optimization_level 0
 
+/* Starts the slot machine's three reels spinning, with their flares and sound. */
 void ShSlot_Start(void) {
     extern s32 ShFx_initTimer();
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        gSh_SlotInfo[i].enabled = 1;
+        slotReels[i].enabled = 1;
     }
-    gSh_SlotInfo[0].state = 1;
+    slotReels[0].state = 1;
     SzSound_PlaySE(0, 0x1E);
     for (i = 0; i < 3; i++) {
-        ShFx_initTimer(&gSh_Flear[i], 0x28, 0, 0xFF);
-        gSh_Flear[i].intensity = 0x80;
-        gSh_Flear[i].mode = 9;
-        gSh_Flear[i].width = 40.0f;
-        gSh_Flear[i].height = 0.0f;
-        gSh_Flear[i].blue = gSh_Flear[i].green = gSh_Flear[i].red = gSh_Flear[i].alpha = 0xF0;
-        gSh_Flear[i].field0A = 0x40;
-        gSh_Flear[i].field09 = 0x10;
-        gSh_Flear[i].field08 = 0x80;
-        gSh_Flear[i].x = (f32) (i * 0x70 + 0x78E);
-        gSh_Flear[i].y = 2249.0f;
+        ShFx_initTimer(&slotFlares[i], 0x28, 0, 0xFF);
+        slotFlares[i].intensity = 0x80;
+        slotFlares[i].mode = 9;
+        slotFlares[i].width = 40.0f;
+        slotFlares[i].height = 0.0f;
+        slotFlares[i].blue = slotFlares[i].green = slotFlares[i].red = slotFlares[i].alpha = 0xF0;
+        slotFlares[i].field0A = 0x40;
+        slotFlares[i].field09 = 0x10;
+        slotFlares[i].field08 = 0x80;
+        slotFlares[i].x = (f32) (i * 0x70 + 0x78E);
+        slotFlares[i].y = 2249.0f;
     }
     D_00351242 = D_00351241;
     D_00351246 = 0;
@@ -495,9 +498,10 @@ typedef struct Board_00280920 {
 
 #pragma optimization_level 0
 
+/* Asks for the card shown on the stopped reels. */
 void ShSlot_HitCardRequest(void) {
-    extern Board_00280920 gSh_Flash;
-    extern Reel_00280920 *gSh_SlotOrderPT;
+    extern Board_00280920 slotFlash;
+    extern Reel_00280920 *slotReelCards;
     extern s32 D_002B8780[];
     extern s16 D_00351252;
     extern u16 D_00351258;
@@ -511,25 +515,25 @@ void ShSlot_HitCardRequest(void) {
 
     D_0035117C = 0xFFFF;
     while (D_0035117A < 8) {
-        id = gSh_SlotInfo[D_0035117A].center;
+        id = slotReels[D_0035117A].center;
         switch (D_0035117A) {
         case 0:
             if (id != 0xFFFF) {
-                D_0035117C = gSh_SlotInfo[D_0035117A].center;
+                D_0035117C = slotReels[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
             break;
         case 1:
             if (id != 0xFFFF && id != D_00351258) {
-                D_0035117C = gSh_SlotInfo[D_0035117A].center;
+                D_0035117C = slotReels[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
             break;
         case 2:
             if (id != 0xFFFF && id != D_00351258 && id != D_00351292) {
-                D_0035117C = gSh_SlotInfo[D_0035117A].center;
+                D_0035117C = slotReels[D_0035117A].center;
                 D_0035117A++;
                 return;
             }
@@ -540,12 +544,12 @@ void ShSlot_HitCardRequest(void) {
         case 6:
         case 7:
             slot = D_0035117A - 3;
-            if (gSh_Flash.slots[slot]) {
-                if (gSh_SlotOrderPT->stops[slot] == 0xFFFE) {
+            if (slotFlash.slots[slot]) {
+                if (slotReelCards->stops[slot] == 0xFFFE) {
                     base = D_00351252 / 0x70;
-                    D_0035117C = TaSlot_GetFeverGain(gSh_SlotInfo[0].symbols[(base + D_002B8780[slot]) % gSh_SlotOrderPT->count], slot);
+                    D_0035117C = TaSlot_GetFeverGain(slotReels[0].symbols[(base + D_002B8780[slot]) % slotReelCards->count], slot);
                 } else {
-                    D_0035117C = gSh_SlotOrderPT->stops[D_0035117A - 3];
+                    D_0035117C = slotReelCards->stops[D_0035117A - 3];
                 }
                 D_0035117A++;
                 return;
@@ -560,8 +564,9 @@ void ShSlot_HitCardRequest(void) {
 
 #pragma optimization_level 0
 
-void ShSlot_CheckLine(s32 arg0) {
-    extern u8 *gSh_SlotOrderPT;
+/* Checks the slot machine's line `line` when a reel stops. */
+void ShSlot_CheckLine(s32 line) {
+    extern u8 *slotReelCards;
     u16 symbols[3][3];
     s32 row;
     s32 column;
@@ -569,12 +574,12 @@ void ShSlot_CheckLine(s32 arg0) {
     s32 clear;
 
     for (row = 0; row < 3; row++) {
-        if (gSh_SlotInfo[row].enabled != 4) {
+        if (slotReels[row].enabled != 4) {
             symbols[row][0] = symbols[row][1] = symbols[row][2] = 0xFFFF;
         } else {
-            offset = gSh_SlotInfo[row].position / 0x70;
+            offset = slotReels[row].position / 0x70;
             for (column = 0; column < 3; column++) {
-                symbols[row][column] = gSh_SlotInfo[row].symbols[(offset + column) % *gSh_SlotOrderPT];
+                symbols[row][column] = slotReels[row].symbols[(offset + column) % *slotReelCards];
             }
         }
     }
@@ -583,10 +588,10 @@ void ShSlot_CheckLine(s32 arg0) {
             clear = 0;
             switch (column) {
             case 0:
-                if ((symbols[arg0][1]) == 0x334) {
+                if ((symbols[line][1]) == 0x334) {
                     clear = 1;
                 }
-                switch (arg0) {
+                switch (line) {
                 case 0:
                     if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][1]) != (symbols[1][1]))) {
                         clear = 1;
@@ -614,10 +619,10 @@ void ShSlot_CheckLine(s32 arg0) {
                 }
                 break;
             case 1:
-                if ((symbols[arg0][2]) == 0x334) {
+                if ((symbols[line][2]) == 0x334) {
                     clear = 1;
                 }
-                switch (arg0) {
+                switch (line) {
                 case 0:
                     if (((symbols[1][2]) != 0xFFFF) && ((symbols[0][2]) != (symbols[1][2]))) {
                         clear = 1;
@@ -645,10 +650,10 @@ void ShSlot_CheckLine(s32 arg0) {
                 }
                 break;
             case 2:
-                if ((symbols[arg0][0]) == 0x334) {
+                if ((symbols[line][0]) == 0x334) {
                     clear = 1;
                 }
-                switch (arg0) {
+                switch (line) {
                 case 0:
                     if (((symbols[1][0]) != 0xFFFF) && ((symbols[0][0]) != (symbols[1][0]))) {
                         clear = 1;
@@ -676,10 +681,10 @@ void ShSlot_CheckLine(s32 arg0) {
                 }
                 break;
             case 3:
-                if ((symbols[arg0][2 - arg0]) == 0x334) {
+                if ((symbols[line][2 - line]) == 0x334) {
                     clear = 1;
                 }
-                switch (arg0) {
+                switch (line) {
                 case 0:
                     if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][2]) != (symbols[1][1]))) {
                         clear = 1;
@@ -707,10 +712,10 @@ void ShSlot_CheckLine(s32 arg0) {
                 }
                 break;
             case 4:
-                if ((symbols[arg0][arg0]) == 0x334) {
+                if ((symbols[line][line]) == 0x334) {
                     clear = 1;
                 }
-                switch (arg0) {
+                switch (line) {
                 case 0:
                     if (((symbols[1][1]) != 0xFFFF) && ((symbols[0][0]) != (symbols[1][1]))) {
                         clear = 1;
@@ -743,7 +748,7 @@ void ShSlot_CheckLine(s32 arg0) {
             }
         }
     }
-    gSh_SlotInfo[arg0].center = symbols[arg0][1];
+    slotReels[line].center = symbols[line][1];
 }
 #pragma optimization_level reset
 
@@ -755,19 +760,20 @@ typedef struct {
 
 #pragma optimization_level 0
 
+/* Whether the slot machine's flash has finished. */
 s32 ShSlot_IsFlashStop(void) {
-    extern Board_002817C0 gSh_Flash;
+    extern Board_002817C0 slotFlash;
     s32 i;
     s32 j;
 
     for (i = 0; i < 5; i++) {
-        if (gSh_Flash.slots[i] > 1) {
+        if (slotFlash.slots[i] > 1) {
             return 0;
         }
     }
     for (j = 0; j < 3; j++) {
         for (i = 0; i < 3; i++) {
-            if (gSh_Flash.cells[j][i] > 1) {
+            if (slotFlash.cells[j][i] > 1) {
                 return 0;
             }
         }
@@ -843,13 +849,14 @@ typedef struct {
 
 #pragma optimization_level 0
 
-void ShSlot_DrawParts(s32 arg0) {
+/* Draws the slot machine's frame parts (layer `layer`). */
+void ShSlot_DrawParts(s32 layer) {
     extern s32 func_00202E00();
     extern s32 func_00207650();
     extern Items_002818A0 D_002B87A0;
     extern Pulse_002818A0 D_002B8E30;
-    extern struct { u8 pad[4]; u8 lv[12]; } gSh_Flash;
-    extern u8 gSh_Lamp[];
+    extern struct { u8 pad[4]; u8 lv[12]; } slotFlash;
+    extern u8 slotLamps[];
     s32 i;
     s32 bit;
     s32 skip;
@@ -861,7 +868,7 @@ void ShSlot_DrawParts(s32 arg0) {
 
     items = D_002B87A0;
     pulse = D_002B8E30;
-    switch (arg0) {
+    switch (layer) {
     case 0:
         i = 0;
         break;
@@ -876,8 +883,8 @@ void ShSlot_DrawParts(s32 arg0) {
     handles[1] = (void *)func_00202BF0(9, 1);
     tmp = func_00209E50();
     tmp += func_00202E00(tmp, 1);
-    gSh_pbVif1_Slot = func_00202B00(gSh_pbVif1_Slot, 9, tmp, NULL);
-    gSh_pbVif1_Slot = func_0020F290(gSh_pbVif1_Slot);
+    slotPacket = func_00202B00(slotPacket, 9, tmp, NULL);
+    slotPacket = func_0020F290(slotPacket);
     func_00202D60(9, -1);
     while (items.items[i].x != -1) {
         skip = 0;
@@ -918,7 +925,7 @@ void ShSlot_DrawParts(s32 arg0) {
         case 6:
         case 7:
         case 8:
-            if (gSh_SlotInfo[0].state == 1) {
+            if (slotReels[0].state == 1) {
                 bit = items.items[i].kind - 4;
                 if (D_00351242 & (1 << bit)) {
                     packet.color.r = packet.color.g = packet.color.b = pulse.values[(D_00351246 >> 1) & 0xF] + 0x40;
@@ -961,16 +968,16 @@ void ShSlot_DrawParts(s32 arg0) {
         case 21:
             tmp = items.items[i].kind - 0x11;
             bit = tmp;
-            if (gSh_Flash.lv[bit]) {
-                packet.color.r = packet.color.g = packet.color.b = gSh_Lamp[gSh_Flash.lv[bit]];
+            if (slotFlash.lv[bit]) {
+                packet.color.r = packet.color.g = packet.color.b = slotLamps[slotFlash.lv[bit]];
                 packet.color.a = packet.color.r >> 1;
                 func_00208700(&packet.header[0], handles[items.items[i].tex], 1);
                 func_00208CB0(&packet.header[0], CLAMP_002818A0(2, 2, items.items[i].u, items.items[i].uw,
                                                               items.items[i].v, items.items[i].vh));
                 func_002086D0(&packet.header[0], 0x44);
-                gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+                slotPacket = func_00207650(slotPacket, &packet.header[0], 0, -1);
                 func_002086D0(&packet.header[0], 0x49);
-                gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+                slotPacket = func_00207650(slotPacket, &packet.header[0], 0, -1);
             }
             skip = 1;
             break;
@@ -978,7 +985,7 @@ void ShSlot_DrawParts(s32 arg0) {
         if (!skip) {
             func_00208700(&packet.header[0], handles[items.items[i].tex], 1);
             func_002086D0(&packet.header[0], 0x44);
-            gSh_pbVif1_Slot = func_00207650(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+            slotPacket = func_00207650(slotPacket, &packet.header[0], 0, -1);
         }
         i++;
     }
@@ -1031,6 +1038,7 @@ typedef struct {
 
 #pragma optimization_level 0
 
+/* Draws the slot machine's eye. */
 void ShSlot_DrawEye(void) {
     extern s32 SzText_LoadRequest();
     extern s32 SzText_InitClutManage();
@@ -1049,8 +1057,8 @@ void ShSlot_DrawEye(void) {
     handle = SzText_LoadRequest(3, 7);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 3, size, NULL);
-    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
+    slotPacket = SzText_DoRequest_Pipe(slotPacket, 3, size, NULL);
+    slotPacket = RhText_SetTextureFlush(slotPacket);
     SzText_FreeRequest(3, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
@@ -1065,7 +1073,7 @@ void ShSlot_DrawEye(void) {
     x = (pulse.values[D_00351246 & 0xF] >> 2) + 0x77E;
     width = 0x20 - (pulse.values[D_00351246 & 0xF] >> 1);
     for (i = 0; i < 3; i++) {
-        if (gSh_SlotInfo[i].enabled != 4) {
+        if (slotReels[i].enabled != 4) {
             packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
             packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
             packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + (width << 4);
@@ -1105,15 +1113,15 @@ void ShSlot_DrawEye(void) {
             }
             ExAssignTexture(&packet.header[0], (void *)handle, 0);
             ExAssignAlpha(&packet.header[0], 0x44);
-            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+            slotPacket = ExSortPrim_Pipe(slotPacket, &packet.header[0], 0, -1);
         }
     }
 
     handle = SzText_LoadRequest(9, 0);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, size, NULL);
-    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
+    slotPacket = SzText_DoRequest_Pipe(slotPacket, 9, size, NULL);
+    slotPacket = RhText_SetTextureFlush(slotPacket);
     SzText_FreeRequest(9, -1);
     ((Tag_002825F0 *)&packet.header[0])->flags = 0x24;
     ((Tag_002825F0 *)&packet.header[0])->count = 9;
@@ -1128,7 +1136,7 @@ void ShSlot_DrawEye(void) {
     y = 0x8B7;
     x = 0x77D;
     for (i = 0; i < 3; i++) {
-        if (gSh_SlotInfo[i].enabled != 4) {
+        if (slotReels[i].enabled != 4) {
             packet.v2.xyz.x = packet.v0.xyz.x = (x + i * 0x70) << 4;
             packet.v1.xyz.y = packet.v0.xyz.y = y << 4;
             packet.v3.xyz.x = packet.v1.xyz.x = packet.v0.xyz.x + 0x220;
@@ -1144,7 +1152,7 @@ void ShSlot_DrawEye(void) {
             ((UV_002825F0 *)&packet.v3.texture)->v = 0x780;
             ExAssignTexture(&packet.header[0], (void *)handle, 0);
             ExAssignAlpha(&packet.header[0], 0x48);
-            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+            slotPacket = ExSortPrim_Pipe(slotPacket, &packet.header[0], 0, -1);
         }
     }
 }
@@ -1198,13 +1206,14 @@ typedef struct {
 
 #pragma optimization_level 0
 
+/* Draws the flashing box around the winning line. */
 void ShSlot_FlashBox(void) {
     extern s32 SzText_LoadRequest();
     extern s32 SzText_InitClutManage();
     extern s32 ExSortPrim_Pipe();
-    extern u8 gSh_Lamp[];
-    extern State_002831A0 gSh_Flash;
-    extern s32 gSh_pbVif1_Slot;
+    extern u8 slotLamps[];
+    extern State_002831A0 slotFlash;
+    extern s32 slotPacket;
     Packet_002831A0 packet;
     s32 y;
     s32 x;
@@ -1217,20 +1226,20 @@ void ShSlot_FlashBox(void) {
     handle = SzText_LoadRequest(9, 1);
     size = RhBase_GetUserGsAddress();
     size += SzText_InitClutManage(size, 1);
-    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, size, NULL);
-    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
+    slotPacket = SzText_DoRequest_Pipe(slotPacket, 9, size, NULL);
+    slotPacket = RhText_SetTextureFlush(slotPacket);
     SzText_FreeRequest(9, -1);
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            if (gSh_Flash.cells[i][j]) {
+            if (slotFlash.cells[i][j]) {
                 x = i * 0x70 + 0x760;
                 y = 0x840 - j * 0x70;
                 ((Header_002831A0 *)&packet.header[0])->flags = 0x24;
                 ((Header_002831A0 *)&packet.header[0])->id = 9;
                 ((Header_002831A0 *)&packet.header[0])->command = 0x424242421LL;
                 ((Header_002831A0 *)&packet.header[0])->reserved = 0;
-                packet.color.r = packet.color.g = packet.color.b = gSh_Lamp[gSh_Flash.cells[i][j]];
+                packet.color.r = packet.color.g = packet.color.b = slotLamps[slotFlash.cells[i][j]];
                 packet.color.a = packet.color.r >> 1;
                 packet.color.q = 1.0f;
                 packet.v0.position.z = packet.v1.position.z = packet.v2.position.z = packet.v3.position.z = 0xFFFFF8;
@@ -1275,9 +1284,9 @@ void ShSlot_FlashBox(void) {
                     ExAssignClamp(&packet.header[0], 0x1C4391F044ALL);
                     ExAssignTexture(&packet.header[0], (void *)handle, 1);
                     ExAssignAlpha(&packet.header[0], 0x44);
-                    gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+                    slotPacket = ExSortPrim_Pipe(slotPacket, &packet.header[0], 0, -1);
                     ExAssignAlpha(&packet.header[0], 0x49);
-                    gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &packet.header[0], 0, -1);
+                    slotPacket = ExSortPrim_Pipe(slotPacket, &packet.header[0], 0, -1);
                 }
             }
         }
@@ -1346,14 +1355,15 @@ typedef struct {
 
 #pragma optimization_level 0
 
-void ShSlot_DrawReel(s32 arg0) {
+/* Draws reel `reel` of the slot machine: its cards scrolling. */
+void ShSlot_DrawReel(s32 reel) {
     extern s32 SzText_LoadRequest();
     extern s32 SzText_InitClutManage();
     extern s32 ExSortPrim_Pipe();
     extern s32 SzText_GetReadyItem();
     extern s32 SzText_Load_Pipe();
-    extern s32 gSh_pbVif1_Slot;
-    extern u8 *gSh_SlotOrderPT;
+    extern s32 slotPacket;
+    extern u8 *slotReelCards;
 
     s32 i;
     s32 u0;
@@ -1376,10 +1386,10 @@ void ShSlot_DrawReel(s32 arg0) {
     work.background = (s32 *) SzText_LoadRequest(9, 0);
     position = RhBase_GetUserGsAddress();
     position += SzText_InitClutManage(position, 1);
-    gSh_pbVif1_Slot = SzText_DoRequest_Pipe(gSh_pbVif1_Slot, 9, position, NULL);
-    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
+    slotPacket = SzText_DoRequest_Pipe(slotPacket, 9, position, NULL);
+    slotPacket = RhText_SetTextureFlush(slotPacket);
     SzText_FreeRequest(9, -1);
-    scroll = gSh_SlotInfo[arg0].angle % 176;
+    scroll = slotReels[reel].angle % 176;
 
     ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
     ((Tag_00283880 *) &work.textured.header[0])->count = 9;
@@ -1392,7 +1402,7 @@ void ShSlot_DrawReel(s32 arg0) {
     work.textured.v0.xyz.f = work.textured.v1.xyz.f = work.textured.v2.xyz.f = work.textured.v3.xyz.f = 0;
 
     backgroundY = 0x750;
-    backgroundX = arg0 * 0x70 + 0x75C;
+    backgroundX = reel * 0x70 + 0x75C;
     for (i = 0; i < 3; i++) {
         switch (i) {
         case 0:
@@ -1401,7 +1411,7 @@ void ShSlot_DrawReel(s32 arg0) {
             work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
             work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + 0xB00;
             ((Tag_00283880 *) &work.textured.header[0])->flags |= 0x800;
-            if (gSh_SlotInfo[arg0].angle < 176) {
+            if (slotReels[reel].angle < 176) {
                 u0 = 0x30;
                 u1 = 0x98;
             } else {
@@ -1423,7 +1433,7 @@ void ShSlot_DrawReel(s32 arg0) {
             work.textured.v1.xyz.y = work.textured.v0.xyz.y = backgroundY << 4;
             work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x680;
             work.textured.v3.xyz.y = work.textured.v2.xyz.y = work.textured.v0.xyz.y + (scroll << 4);
-            if (gSh_SlotInfo[arg0].angle < 176) {
+            if (slotReels[reel].angle < 176) {
                 u0 = 0x98;
                 u1 = 0x100;
             } else {
@@ -1459,21 +1469,21 @@ void ShSlot_DrawReel(s32 arg0) {
         ExAssignClamp(&work.textured.header[0], ((s64) u0 << 4) | 0xA | ((s64) u1 << 14) | 0x50000000 | ((u64) 0x3FC << 32));
         ExAssignTexture(&work.textured.header[0], work.background, 1);
         ExAssignAlpha(&work.textured.header[0], 0x44);
-        gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.textured.header[0], 0, -1);
+        slotPacket = ExSortPrim_Pipe(slotPacket, &work.textured.header[0], 0, -1);
     }
 
-    imageIndex = gSh_SlotInfo[arg0].position / 112;
-    scroll = gSh_SlotInfo[arg0].position % 112;
+    imageIndex = slotReels[reel].position / 112;
+    scroll = slotReels[reel].position % 112;
     position = RhBase_GetUserGsAddress();
     position += SzText_InitClutManage(position, 1);
     for (i = 0; i < 4; i++) {
-        work.images[i] = SzText_GetReadyItem(1, gSh_SlotInfo[arg0].symbols[(imageIndex + i) % *gSh_SlotOrderPT]);
+        work.images[i] = SzText_GetReadyItem(1, slotReels[reel].symbols[(imageIndex + i) % *slotReelCards]);
         if (work.images[i] != NULL) {
-            gSh_pbVif1_Slot = SzText_Load_Pipe(gSh_pbVif1_Slot, *(s32 *) work.images[i], position, &size);
+            slotPacket = SzText_Load_Pipe(slotPacket, *(s32 *) work.images[i], position, &size);
             position += size;
         }
     }
-    gSh_pbVif1_Slot = RhText_SetTextureFlush(gSh_pbVif1_Slot);
+    slotPacket = RhText_SetTextureFlush(slotPacket);
     for (i = 0; i < 4; i++) {
         if (work.images[i] != NULL) {
             ((Tag_00283880 *) &work.textured.header[0])->flags = 0x24;
@@ -1485,7 +1495,7 @@ void ShSlot_DrawReel(s32 arg0) {
             work.textured.v0.xyz.z = work.textured.v1.xyz.z = work.textured.v2.xyz.z = work.textured.v3.xyz.z = 0xFFFFF8;
             work.textured.v0.xyz.f = work.textured.v1.xyz.f = work.textured.v2.xyz.f = work.textured.v3.xyz.f = 0;
 
-            x = arg0 * 0x70 + 0xA0;
+            x = reel * 0x70 + 0xA0;
             work.textured.v2.xyz.x = work.textured.v0.xyz.x = (x + 0x6C0) << 4;
             work.textured.v3.xyz.x = work.textured.v1.xyz.x = work.textured.v0.xyz.x + 0x600;
             y = scroll + (0x120 - i * 0x70);
@@ -1516,14 +1526,14 @@ void ShSlot_DrawReel(s32 arg0) {
             ((UV_00283880 *) &work.textured.v3.texture)->v = (u16) (bottom << 4);
             ExAssignClamp(&work.textured.header[0], ((s64) top << 24) | 0x20000A | ((s64) bottom << 34));
             ExAssignTexture(&work.textured.header[0], *(void **) work.images[i], 1);
-            gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.textured.header[0], 0, -1);
+            slotPacket = ExSortPrim_Pipe(slotPacket, &work.textured.header[0], 0, -1);
         }
     }
     ((Tag_00283880 *) &work.gradient.header[0])->flags = 0x14;
     ((Tag_00283880 *) &work.gradient.header[0])->count = 8;
     ((Tag_00283880 *) &work.gradient.header[0])->registers = 0x41414141LL;
     ((Tag_00283880 *) &work.gradient.header[0])->reserved = 0;
-    x = arg0 * 0x70 + 0x9C;
+    x = reel * 0x70 + 0x9C;
     for (i = 0; i < 4; i++) {
         switch (i) {
         case 0:
@@ -1568,7 +1578,7 @@ void ShSlot_DrawReel(s32 arg0) {
         work.gradient.v3.xyz.x = work.gradient.v1.xyz.x = work.gradient.v0.xyz.x + 0x680;
         work.gradient.v3.xyz.y = work.gradient.v2.xyz.y = work.gradient.v0.xyz.y + (shadeHeight << 4);
         ExAssignAlpha(&work.gradient.header[0], 0x42 | ((u64) 0x80 << 32));
-        gSh_pbVif1_Slot = ExSortPrim_Pipe(gSh_pbVif1_Slot, &work.gradient.header[0], 0, -1);
+        slotPacket = ExSortPrim_Pipe(slotPacket, &work.gradient.header[0], 0, -1);
     }
 }
 
@@ -1588,8 +1598,9 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-s32 ShSlot_Draw_Pipe(s32 arg0) {
-    extern Timers_00284D30 gSh_Flash;
+/* Draws the slot machine: frame, reels, eye, flash and flares. */
+s32 ShSlot_Draw_Pipe(s32 packet) {
+    extern Timers_00284D30 slotFlash;
     s32 i;
     s32 j;
     s32 speed;
@@ -1597,96 +1608,96 @@ s32 ShSlot_Draw_Pipe(s32 arg0) {
     s32 segment;
 
     for (i = 0; i < 3; i++) {
-        switch (gSh_SlotInfo[i].enabled) {
+        switch (slotReels[i].enabled) {
         case 0:
         case 4:
             break;
         case 1:
-            if (gSh_SlotInfo[i].velocity < 32) {
-                gSh_SlotInfo[i].velocity++;
+            if (slotReels[i].velocity < 32) {
+                slotReels[i].velocity++;
             } else {
-                gSh_SlotInfo[i].enabled = 2;
+                slotReels[i].enabled = 2;
             }
         case 2:
-            speed = gSh_SlotInfo[i].velocity;
-            gSh_SlotInfo[i].position += (s16)speed;
-            if (gSh_SlotInfo[i].position > D_00351248) {
-                gSh_SlotInfo[i].position -= D_00351248;
-            } else if (gSh_SlotInfo[i].position < 0) {
-                gSh_SlotInfo[i].position += D_00351248;
+            speed = slotReels[i].velocity;
+            slotReels[i].position += (s16)speed;
+            if (slotReels[i].position > D_00351248) {
+                slotReels[i].position -= D_00351248;
+            } else if (slotReels[i].position < 0) {
+                slotReels[i].position += D_00351248;
             }
-            gSh_SlotInfo[i].angle += (s16)speed;
-            if (gSh_SlotInfo[i].angle > 351) {
-                gSh_SlotInfo[i].angle -= 351;
-            } else if (gSh_SlotInfo[i].angle < 0) {
-                gSh_SlotInfo[i].angle += 351;
+            slotReels[i].angle += (s16)speed;
+            if (slotReels[i].angle > 351) {
+                slotReels[i].angle -= 351;
+            } else if (slotReels[i].angle < 0) {
+                slotReels[i].angle += 351;
             }
             break;
         case 3:
-            if (gSh_SlotInfo[i].countdown < 6) {
-                switch (gSh_SlotInfo[i].countdown) {
+            if (slotReels[i].countdown < 6) {
+                switch (slotReels[i].countdown) {
                 case 5:
-                    segment = gSh_SlotInfo[i].position / 112;
-                    gSh_SlotInfo[i].position = (s16)((segment + 1) * 112);
-                    gSh_SlotInfo[i].velocity = 16;
+                    segment = slotReels[i].position / 112;
+                    slotReels[i].position = (s16)((segment + 1) * 112);
+                    slotReels[i].velocity = 16;
                     break;
                 case 4:
                 case 3:
-                    gSh_SlotInfo[i].velocity = -12;
+                    slotReels[i].velocity = -12;
                     break;
                 case 2:
                 case 1:
-                    gSh_SlotInfo[i].velocity = 4;
+                    slotReels[i].velocity = 4;
                     break;
                 }
             }
-            brakingSpeed = gSh_SlotInfo[i].velocity;
-            gSh_SlotInfo[i].position += (s16)brakingSpeed;
-            if (gSh_SlotInfo[i].position > D_00351248) {
-                gSh_SlotInfo[i].position -= D_00351248;
-            } else if (gSh_SlotInfo[i].position < 0) {
-                gSh_SlotInfo[i].position += D_00351248;
+            brakingSpeed = slotReels[i].velocity;
+            slotReels[i].position += (s16)brakingSpeed;
+            if (slotReels[i].position > D_00351248) {
+                slotReels[i].position -= D_00351248;
+            } else if (slotReels[i].position < 0) {
+                slotReels[i].position += D_00351248;
             }
-            gSh_SlotInfo[i].angle += (s16)brakingSpeed;
-            if (gSh_SlotInfo[i].angle > 351) {
-                gSh_SlotInfo[i].angle -= 351;
-            } else if (gSh_SlotInfo[i].angle < 0) {
-                gSh_SlotInfo[i].angle += 351;
+            slotReels[i].angle += (s16)brakingSpeed;
+            if (slotReels[i].angle > 351) {
+                slotReels[i].angle -= 351;
+            } else if (slotReels[i].angle < 0) {
+                slotReels[i].angle += 351;
             }
-            gSh_SlotInfo[i].countdown--;
-            if (!gSh_SlotInfo[i].countdown) {
-                gSh_SlotInfo[i].velocity = 0;
-                gSh_SlotInfo[i].enabled = 4;
+            slotReels[i].countdown--;
+            if (!slotReels[i].countdown) {
+                slotReels[i].velocity = 0;
+                slotReels[i].enabled = 4;
                 ShSlot_CheckLine(i);
             }
             break;
         }
     }
-    gSh_pbVif1_Slot = arg0;
-    if (gSh_pbVif1_Slot != 0) {
+    slotPacket = packet;
+    if (slotPacket != 0) {
         ShSlot_DrawParts(0);
         ShSlot_DrawEye();
         for (j = 0; j < 3; j++) {
             ShSlot_DrawReel(j);
         }
-        if (gSh_Flash.enabled != 0) {
+        if (slotFlash.enabled != 0) {
             ShSlot_FlashBox();
             ShSlot_DrawParts(2);
             for (i = 0; i < 5; i++) {
-                if (gSh_Flash.counters[i] > 1) {
-                    gSh_Flash.counters[i]--;
+                if (slotFlash.counters[i] > 1) {
+                    slotFlash.counters[i]--;
                 }
             }
             for (j = 0; j < 3; j++) {
                 for (i = 0; i < 3; i++) {
-                    if (gSh_Flash.grid[j][i] > 1) {
-                        gSh_Flash.grid[j][i]--;
+                    if (slotFlash.grid[j][i] > 1) {
+                        slotFlash.grid[j][i]--;
                     }
                 }
             }
         }
         ShSlot_DrawParts(1);
-        if (gSh_SlotInfo[0].state == 3) {
+        if (slotReels[0].state == 3) {
             switch (gSh_DlgInfo) {
             case 1:
                 ShSlot_HitCardRequest();
@@ -1710,10 +1721,10 @@ s32 ShSlot_Draw_Pipe(s32 arg0) {
                 break;
             }
         }
-        ShSlot_Flear(gSh_Flear, 3);
+        ShSlot_Flear(slotFlares, 3);
     }
     D_00351246++;
-    return gSh_pbVif1_Slot;
+    return slotPacket;
 }
 #pragma optimization_level reset
 
@@ -1740,13 +1751,13 @@ typedef struct Counters_00285880 {
     u8 rows[3][3];
 } Counters_00285880;
 
-extern Counters_00285880 gSh_Flash;
+extern Counters_00285880 slotFlash; /* original: gSh_Flash */
 extern u8 D_00351214;
 extern u8 D_00351215;
 extern u8 D_00351216;
 extern u8 D_00351217;
 extern u8 D_00351218;
-extern Deck_00285880 *gSh_SlotOrderPT;
+extern Deck_00285880 *slotReelCards; /* original: gSh_SlotOrderPT */
 extern u8 D_00351241;
 extern u8 D_00351242;
 extern u8 D_00351244;
@@ -1755,7 +1766,8 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-void ShSlot_Init(s32 arg0) {
+/* Starts the slot machine (`withDeck`: the reels are built from the player's deck). */
+void ShSlot_Init(s32 withDeck) {
     s32 i;
     s32 j;
     s32 a;
@@ -1763,13 +1775,13 @@ void ShSlot_Init(s32 arg0) {
     u16 temp;
     Deck_00285880 *deck;
     s32 k;
-    extern Flags_00280670 gSh_SlotInfo[];
+    extern Flags_00280670 slotReels[];
     extern s32 ShSlot_Start();
 
-    D_00351244 = arg0;
-    gSh_SlotOrderPT = (Deck_00285880 *)0x01ED0000;
+    D_00351244 = withDeck;
+    slotReelCards = (Deck_00285880 *)0x01ED0000;
     if (D_00351244) {
-        deck = gSh_SlotOrderPT;
+        deck = slotReelCards;
         deck->count = 0x10;
         deck->extra[0] = deck->extra[1] = deck->extra[2] = deck->extra[3] = deck->extra[4] = 0xFFFE;
         for (k = 0; k < deck->count; k++) {
@@ -1778,48 +1790,48 @@ void ShSlot_Init(s32 arg0) {
         deck->cards[0][deck->count >> 1] = 0x334;
         deck->flags = 2;
     }
-    gSh_SlotOrderPT->extra[0] = 0xFFFE;
+    slotReelCards->extra[0] = 0xFFFE;
     D_00351241 = D_00351242 = 0;
     for (i = 0; i < 5; i++) {
-        if (gSh_SlotOrderPT->extra[i] != 0xFFFF) {
+        if (slotReelCards->extra[i] != 0xFFFF) {
             D_00351241 |= (u8)(1 << i);
         }
     }
-    gSh_SlotInfo[0].state = 0;
-    D_00351248 = gSh_SlotOrderPT->count * 0x70;
+    slotReels[0].state = 0;
+    D_00351248 = slotReelCards->count * 0x70;
     D_00351246 = 0;
-    gSh_Flash.state = 0;
+    slotFlash.state = 0;
     for (j = 0; j < 3; j++) {
-        gSh_Flash.rows[j][0] = gSh_Flash.rows[j][1] = gSh_Flash.rows[j][2] = 0;
+        slotFlash.rows[j][0] = slotFlash.rows[j][1] = slotFlash.rows[j][2] = 0;
     }
     D_00351214 = D_00351215 = D_00351216 = D_00351217 = D_00351218 = 0;
     for (j = 0; j < 3; j++) {
-        ((Row_00285880 *)&gSh_SlotInfo[j])->field12 = 0;
-        ((Row_00285880 *)&gSh_SlotInfo[j])->field16 = 0;
-        ((Row_00285880 *)&gSh_SlotInfo[j])->field18 = 0xFFFF;
-        gSh_SlotInfo[j].enabled = 0;
+        ((Row_00285880 *)&slotReels[j])->field12 = 0;
+        ((Row_00285880 *)&slotReels[j])->field16 = 0;
+        ((Row_00285880 *)&slotReels[j])->field18 = 0xFFFF;
+        slotReels[j].enabled = 0;
         switch (j) {
         case 0:
-            for (i = 0; i < gSh_SlotOrderPT->count; i++) {
-                ((Row_00285880 *)&(&gSh_SlotInfo[0].state)[i * 2])->cards[0] = gSh_SlotOrderPT->cards[0][i];
+            for (i = 0; i < slotReelCards->count; i++) {
+                ((Row_00285880 *)&(&slotReels[0].state)[i * 2])->cards[0] = slotReelCards->cards[0][i];
             }
             break;
         case 1:
         case 2:
-            if (gSh_SlotOrderPT->flags & 1) {
-                for (i = 0; i < gSh_SlotOrderPT->count; i++) {
-                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[i * 2])->cards[0] = gSh_SlotOrderPT->cards[j][i];
+            if (slotReelCards->flags & 1) {
+                for (i = 0; i < slotReelCards->count; i++) {
+                    ((Row_00285880 *)&(&slotReels[j].state)[i * 2])->cards[0] = slotReelCards->cards[j][i];
                 }
             } else {
-                for (i = 0; i < gSh_SlotOrderPT->count; i++) {
-                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[i * 2])->cards[0] = ((Row_00285880 *)&(&gSh_SlotInfo[0].state)[i * 2])->cards[0];
+                for (i = 0; i < slotReelCards->count; i++) {
+                    ((Row_00285880 *)&(&slotReels[j].state)[i * 2])->cards[0] = ((Row_00285880 *)&(&slotReels[0].state)[i * 2])->cards[0];
                 }
-                for (i = 0; i < gSh_SlotOrderPT->count * 2; i++) {
-                    a = (func_0019A5C8() >> 4) % gSh_SlotOrderPT->count;
-                    b = (func_0019A5C8() >> 4) % gSh_SlotOrderPT->count;
-                    temp = ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[a * 2])->cards[0];
-                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[a * 2])->cards[0] = ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[b * 2])->cards[0];
-                    ((Row_00285880 *)&(&gSh_SlotInfo[j].state)[b * 2])->cards[0] = temp;
+                for (i = 0; i < slotReelCards->count * 2; i++) {
+                    a = (func_0019A5C8() >> 4) % slotReelCards->count;
+                    b = (func_0019A5C8() >> 4) % slotReelCards->count;
+                    temp = ((Row_00285880 *)&(&slotReels[j].state)[a * 2])->cards[0];
+                    ((Row_00285880 *)&(&slotReels[j].state)[a * 2])->cards[0] = ((Row_00285880 *)&(&slotReels[j].state)[b * 2])->cards[0];
+                    ((Row_00285880 *)&(&slotReels[j].state)[b * 2])->cards[0] = temp;
                 }
             }
             break;
@@ -1836,22 +1848,26 @@ void ShSlot_Init(s32 arg0) {
 
 s32 ShSlot_Draw_Pipe(s32);                             /* extern */
 
+/* Draws the slot machine. */
 void ShSlot_Draw(void) {
     RhBase_SetVifPacketArea(ShSlot_Draw_Pipe(RhBase_GetVifPacketArea()));
 }
 
 #pragma optimization_level reset
 
+/* A slot-machine reel object. */
 static inline Object_00280670 *object_00285F20(s32 index) {
-    return &gSh_Flear[index];
+    return &slotFlares[index];
 }
 
+/* A slot-machine reel's flags. */
 static inline Flags_00280670 *row_00285F20(s32 index) {
-    return &gSh_SlotInfo[index];
+    return &slotReels[index];
 }
 
 #pragma optimization_level 0
 
+/* Runs the slot machine: spins the reels, stops them on button presses, checks the line. */
 void ShSlot_Act(void) {
     extern s32 SzDuel_CloseMsgPopup();
     extern s32 SzGame_Pop();
@@ -1875,7 +1891,7 @@ void ShSlot_Act(void) {
             SzGame_Pop();
         }
     }
-    switch (gSh_SlotInfo[0].state) {
+    switch (slotReels[0].state) {
     case 0:
         if (SzPad_Check(0, 0, 0x4000) != 0 ||
             (SzPad_IsAnalog(0) != 0 && (SzPad_GetAnalogInfo(0, 3) & 0xFF) > 0xF0)) {
@@ -1884,7 +1900,7 @@ void ShSlot_Act(void) {
         }
         break;
     case 1:
-        if (gSh_SlotInfo[0].enabled == 2 && SzPad_Check(0, 0, 0x80) != 0) {
+        if (slotReels[0].enabled == 2 && SzPad_Check(0, 0, 0x80) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(0), 0x10, 0, 0xFF);
             object_00285F20(0)->width = 40.0f;
@@ -1892,12 +1908,12 @@ void ShSlot_Act(void) {
             row_00285F20(0)->enabled = 3;
             remainder1 = row_00285F20(0)->position % 112;
             row_00285F20(0)->countdown = (u8)((0x70 - remainder1) / row_00285F20(0)->velocity + 5);
-            if (gSh_SlotOrderPT->flags & 2) {
+            if (slotReelCards->flags & 2) {
                 row_00285F20(0)->countdown +=
                     (u8)((0x70 / row_00285F20(0)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (gSh_SlotInfo[1].enabled == 2 && SzPad_Check(0, 0, 0x10) != 0) {
+        if (slotReels[1].enabled == 2 && SzPad_Check(0, 0, 0x10) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(1), 0x10, 0, 0xFF);
             object_00285F20(1)->width = 40.0f;
@@ -1905,12 +1921,12 @@ void ShSlot_Act(void) {
             row_00285F20(1)->enabled = 3;
             remainder2 = row_00285F20(1)->position % 112;
             row_00285F20(1)->countdown = (u8)((0x70 - remainder2) / row_00285F20(1)->velocity + 5);
-            if (gSh_SlotOrderPT->flags & 2) {
+            if (slotReelCards->flags & 2) {
                 row_00285F20(1)->countdown +=
                     (u8)((0x70 / row_00285F20(1)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (gSh_SlotInfo[2].enabled == 2 && SzPad_Check(0, 0, 0x20) != 0) {
+        if (slotReels[2].enabled == 2 && SzPad_Check(0, 0, 0x20) != 0) {
             SzSound_PlaySE(0, 0x21);
             ShFx_initTimer(object_00285F20(2), 0x10, 0, 0xFF);
             object_00285F20(2)->width = 40.0f;
@@ -1918,20 +1934,20 @@ void ShSlot_Act(void) {
             row_00285F20(2)->enabled = 3;
             remainder3 = row_00285F20(2)->position % 112;
             row_00285F20(2)->countdown = (u8)((0x70 - remainder3) / row_00285F20(2)->velocity + 5);
-            if (gSh_SlotOrderPT->flags & 2) {
+            if (slotReelCards->flags & 2) {
                 row_00285F20(2)->countdown +=
                     (u8)((0x70 / row_00285F20(2)->velocity) * ((func_0019A5C8() >> 4) % 3));
             }
         }
-        if (gSh_SlotInfo[0].enabled == 4 && gSh_SlotInfo[1].enabled == 4 && gSh_SlotInfo[2].enabled == 4) {
-            gSh_SlotInfo[0].state = 2;
+        if (slotReels[0].enabled == 4 && slotReels[1].enabled == 4 && slotReels[2].enabled == 4) {
+            slotReels[0].state = 2;
             SzSound_StopSE(0, 0x1E);
         }
         break;
     case 2:
         if (ShSlot_IsFlashStop() != 0) {
             if ((D_00351242 & 0x1F) == 0) {
-                gSh_SlotInfo[0].state = 3;
+                slotReels[0].state = 3;
                 gSh_DlgInfo = 0;
                 D_00351179 = 0x10;
             } else {
@@ -1939,24 +1955,24 @@ void ShSlot_Act(void) {
                     if (D_00351242 & (1 << i)) {
                         switch (i) {
                         case 0:
-                            gSh_Flash.state = 1;
-                            D_00351214 = gSh_Flash.rows[0][1] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][1] = 0x10;
+                            slotFlash.state = 1;
+                            D_00351214 = slotFlash.rows[0][1] = slotFlash.rows[1][1] = slotFlash.rows[2][1] = 0x10;
                             break;
                         case 1:
-                            gSh_Flash.state = 1;
-                            D_00351215 = gSh_Flash.rows[0][2] = gSh_Flash.rows[1][2] = gSh_Flash.rows[2][2] = 0x10;
+                            slotFlash.state = 1;
+                            D_00351215 = slotFlash.rows[0][2] = slotFlash.rows[1][2] = slotFlash.rows[2][2] = 0x10;
                             break;
                         case 2:
-                            gSh_Flash.state = 1;
-                            D_00351216 = gSh_Flash.rows[0][0] = gSh_Flash.rows[1][0] = gSh_Flash.rows[2][0] = 0x10;
+                            slotFlash.state = 1;
+                            D_00351216 = slotFlash.rows[0][0] = slotFlash.rows[1][0] = slotFlash.rows[2][0] = 0x10;
                             break;
                         case 3:
-                            gSh_Flash.state = 1;
-                            D_00351217 = gSh_Flash.rows[0][2] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][0] = 0x10;
+                            slotFlash.state = 1;
+                            D_00351217 = slotFlash.rows[0][2] = slotFlash.rows[1][1] = slotFlash.rows[2][0] = 0x10;
                             break;
                         case 4:
-                            gSh_Flash.state = 1;
-                            D_00351218 = gSh_Flash.rows[0][0] = gSh_Flash.rows[1][1] = gSh_Flash.rows[2][2] = 0x10;
+                            slotFlash.state = 1;
+                            D_00351218 = slotFlash.rows[0][0] = slotFlash.rows[1][1] = slotFlash.rows[2][2] = 0x10;
                             break;
                         }
                         D_00351242 &= (u8)~(1 << i);
@@ -1989,7 +2005,7 @@ void ShSlot_Act(void) {
             if (D_00351179) {
                 D_00351179--;
             } else {
-                gSh_SlotInfo[0].state = 4;
+                slotReels[0].state = 4;
             }
             break;
         }
@@ -2004,13 +2020,15 @@ void ShSlot_Act(void) {
 
 #pragma optimization_level reset
 
+/* Ends the slot machine (nothing to do). */
 void ShSlot_Term(void) {
 
 }
 
-void __initialize_cpp_rts(void *arg0, void *arg1) {
-    Callback_00286910 *current = arg0;
-    Callback_00286910 *end = arg1;
+/* The compiler's C++ run-time start-up (runs the static constructors between `start` and `endIn`). */
+void __initialize_cpp_rts(void *start, void *endIn) {
+    Callback_00286910 *current = start;
+    Callback_00286910 *end = endIn;
 
     if (current < end) {
         do {

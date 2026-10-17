@@ -1,12 +1,14 @@
 #include "common.h"
 
-s32 movie(s32 arg0) {
+/* Plays movie file `name` (Sony's ezmpeg sample player): sets everything up, plays until the end or a button
+   press, then tears down. */
+s32 movie(s32 name) {
     s32 temp_a1;
 
     temp_a1 = D_003503B8;
     D_003503B8 = temp_a1 + 1;
     func_00199B50(D_0030F354, temp_a1);
-    initAll(arg0);
+    initAll(name);
     readMpeg((void *)videoDec, (void *)readBuf, (void *)infile);
     termAll();
     return controller_val;
@@ -37,6 +39,7 @@ extern int func_00242D00_b(void);
 extern int func_00243DE0_b(struct DotrMpegFile *file, char *buffer, int byte_count, int position);
 extern int func_0018DEE8_b(struct DotrMpegDecoder *vd, char *data, int size, struct DotrMpegReadBuf *ring, int ring_size);
 
+/* The movie's read thread: reads the file into the read buffer and passes video and audio packets on. */
 int readMpeg(void *vd_v, void *rb_v, void *file_v)
 {
     struct DotrMpegDecoder * vd = vd_v;
@@ -113,10 +116,12 @@ int readMpeg(void *vd_v, void *rb_v, void *file_v)
     return 1;
 }
 
+/* Lets the other movie threads run. */
 void switchThread(void) {
     RotateThreadReadyQueue(0x20);
 }
 
+/* Whether the movie's audio has been set up. */
 s32 isAudioOK(void) {
     if (isWithAudio != 0) {
         return audioDecIsPreset(audioDec);
@@ -143,7 +148,8 @@ extern s32 D_00350734;
 extern s32 defaultTh;
 extern s32 videoDecTh;
 
-void initAll(s32 arg0) {
+/* Sets up the movie player for file `name`: buffers, decoders, threads, the display. */
+void initAll(s32 name) {
     ThreadParams_00242950 thread;
     extern s32 func_00190810();
     extern s32 videoDecCreate();
@@ -182,10 +188,10 @@ void initAll(s32 arg0) {
     thread.option = 0;
     videoDecTh = CreateThread(&thread);
     StartThread(videoDecTh, videoDec);
-    if (strFileOpen(infile, arg0) == 0) {
+    if (strFileOpen(infile, name) == 0) {
         do {
-            func_00199B50(D_0030F39A, arg0);
-        } while (strFileOpen(infile, arg0) == 0);
+            func_00199B50(D_0030F39A, name);
+        } while (strFileOpen(infile, name) == 0);
     }
     D_00350734 = AddIntcHandler(2, vblankHandler, 0);
     func_0017C428(2);
@@ -193,6 +199,7 @@ void initAll(s32 arg0) {
     func_0017C4F8(2);
 }
 
+/* Tears the movie player down. */
 void termAll(void) {
     extern void readBufDelete();
     extern void voBufDelete();
@@ -222,16 +229,19 @@ void termAll(void) {
     strFileClose(infile);
 }
 
+/* The movie player's default thread (waits). */
 void defMain(void) {
 loop_1:
     RotateThreadReadyQueue(0x20);
     goto loop_1;
 }
 
-void ErrMessage(s8 *arg0) {
-    func_00199B50(D_0030F3AE, arg0);
+/* Prints a movie player error. */
+void ErrMessage(s8 *message) {
+    func_00199B50(D_0030F3AE, message);
 }
 
+/* Sends decoded movie audio on to the IOP. */
 void proceedAudio(void) {
     audioDecSendToIOP(audioDec);
 }
@@ -250,7 +260,8 @@ typedef struct Ring_00242D10 {
     s32 capacity;
 } Ring_00242D10;
 
-s32 videoCallback(s32 arg0, void *arg1, u8 *arg2) {
+/* The MPEG library's video-stream callback: queues the stream data for the video decoder. */
+s32 videoCallback(s32 mp, void *str, u8 *dataIn) {
     extern s32 videoDecPutTs();
     extern char D_0030F5E0[];
     Ring_00242D10 *ring;
@@ -265,19 +276,19 @@ s32 videoCallback(s32 arg0, void *arg1, u8 *arg2) {
     s32 dstSize2;
     s32 result;
 
-    ring = (Ring_00242D10 *)arg2;
-    buffer = (Buffer_00242D10 *)arg1;
+    ring = (Ring_00242D10 *)dataIn;
+    buffer = (Buffer_00242D10 *)str;
     data = buffer->data;
     avail = (u8 *)ring + ring->capacity - data;
     first = buffer->size;
     first = (first < avail) ? first : avail;
-    rest = ((Buffer_00242D10 *)arg1)->size - first;
+    rest = ((Buffer_00242D10 *)str)->size - first;
     videoDecBeginPut(videoDec, &dst1, &dstSize1, &dst2, &dstSize2);
     result = copy2area((void *)((dst1 & 0x0FFFFFFF) | 0x20000000), dstSize1,
                            (void *)((dst2 & 0x0FFFFFFF) | 0x20000000), dstSize2,
                            data, first, ring, rest);
-    if (result > 0 && videoDecPutTs(videoDec, ((Buffer_00242D10 *)arg1)->unk10,
-                                    ((Buffer_00242D10 *)arg1)->unk18, dst1, result) == 0) {
+    if (result > 0 && videoDecPutTs(videoDec, ((Buffer_00242D10 *)str)->unk10,
+                                    ((Buffer_00242D10 *)str)->unk18, dst1, result) == 0) {
         ErrMessage(D_0030F5E0);
     }
     videoDecEndPut(videoDec, result);
@@ -297,7 +308,8 @@ typedef struct Ring_00242E40 {
 } Ring_00242E40;
 
 
-s32 pcmCallback(s32 arg0, void *arg1, u8 *arg2) {
+/* The MPEG library's PCM-stream callback: queues the audio data for the audio decoder. */
+s32 pcmCallback(s32 mp, void *str, u8 *dataIn) {
     u8 *data;
     s32 size;
     s32 firstSize;
@@ -309,20 +321,20 @@ s32 pcmCallback(s32 arg0, void *arg1, u8 *arg2) {
     u8 *end;
     s32 result;
 
-    data = ((Buffer_00242E40 *)arg1)->data + 4;
-    capacity = ((Ring_00242E40 *)arg2)->capacity;
-    end = arg2 + capacity;
+    data = ((Buffer_00242E40 *)str)->data + 4;
+    capacity = ((Ring_00242E40 *)dataIn)->capacity;
+    end = dataIn + capacity;
     if (data >= end) {
         data -= capacity;
     }
-    size = ((Buffer_00242E40 *)arg1)->size - 4;
+    size = ((Buffer_00242E40 *)str)->size - 4;
     firstSize = end - data;
     if (size < firstSize) {
         firstSize = size;
     }
     audioDecBeginPut(audioDec, &dst1, &dstSize1, &dst2, &dstSize2);
     result = copy2area(dst1, dstSize1, dst2, dstSize2,
-                          data, firstSize, arg2, size - firstSize);
+                          data, firstSize, dataIn, size - firstSize);
     audioDecEndPut(audioDec, result);
     if (result > 0) {
         return 1;
@@ -330,29 +342,30 @@ s32 pcmCallback(s32 arg0, void *arg1, u8 *arg2) {
     return 0;
 }
 
-s32 copy2area(void *arg0, s32 arg1, void *arg2, s32 arg3,
-                  void *arg4, s32 arg5, void *arg6, s32 arg7) {
+/* Copies two source areas (ps0/s0, ps1/s1) into two destination areas (pd0/d0, pd1/d1), as far as they fit. */
+s32 copy2area(void *pd0, s32 d0, void *pd1, s32 d1,
+                  void *ps0, s32 s0, void *ps1, s32 s1) {
     s32 gap;
 
-    if ((arg1 + arg3) < (arg5 + arg7)) {
+    if ((d0 + d1) < (s0 + s1)) {
         return 0;
     }
-    if (arg5 >= arg1) {
-        func_00198790(arg0, arg4, arg1);
-        func_00198790(arg2, (const u8 *)arg4 + arg1, arg5 - arg1);
-        func_00198790((u8 *)arg2 + arg5 - arg1, arg6, arg7);
+    if (s0 >= d0) {
+        func_00198790(pd0, ps0, d0);
+        func_00198790(pd1, (const u8 *)ps0 + d0, s0 - d0);
+        func_00198790((u8 *)pd1 + s0 - d0, ps1, s1);
     } else {
-        gap = arg1 - arg5;
-        if (arg7 >= gap) {
-            func_00198790(arg0, arg4, arg5);
-            func_00198790((u8 *)arg0 + arg5, arg6, gap);
-            func_00198790(arg2, (const u8 *)arg6 + arg1 - arg5, arg7 - gap);
+        gap = d0 - s0;
+        if (s1 >= gap) {
+            func_00198790(pd0, ps0, s0);
+            func_00198790((u8 *)pd0 + s0, ps1, gap);
+            func_00198790(pd1, (const u8 *)ps1 + d0 - s0, s1 - gap);
         } else {
-            func_00198790(arg0, arg4, arg5);
-            func_00198790((u8 *)arg0 + arg5, arg6, arg7);
+            func_00198790(pd0, ps0, s0);
+            func_00198790((u8 *)pd0 + s0, ps1, s1);
         }
     }
-    return arg5 + arg7;
+    return s0 + s1;
 }
 
 typedef struct {
@@ -376,29 +389,30 @@ extern char D_0030F600[];
 extern char D_0030F61C[];
 extern u8 _0_buf[];
 
-s32 audioDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    State_00243060 *state = arg0;
+/* Sets up the movie's audio decoder with buffer `buff` of `buffSize` and an IOP buffer of `iopBuffSize`. */
+s32 audioDecCreate(void *ad, s32 buff, s32 buffSize, s32 iopBuffSize) {
+    State_00243060 *state = ad;
     s32 temp_a1;
     s32 temp_a1_2;
 
     state->unk0 = 0;
     state->unk2C = 0;
-    state->unk30 = arg1;
+    state->unk30 = buff;
     state->unk34 = 0;
     state->unk38 = 0;
-    state->unk3C = arg2;
+    state->unk3C = buffSize;
     state->unk40 = 0;
     state->unk54 = 0;
-    state->unk48 = arg3;
+    state->unk48 = iopBuffSize;
     state->unk4C = 0;
     state->unk50 = 0;
-    state->unk44 = sceSifAllocIopHeap(arg3);
+    state->unk44 = sceSifAllocIopHeap(iopBuffSize);
     temp_a1 = state->unk44;
     if (temp_a1 < 0) {
         func_00199B50(D_0030F600, temp_a1);
         return 0;
     }
-    func_00199B50(D_0030F61C, temp_a1, arg3);
+    func_00199B50(D_0030F61C, temp_a1, iopBuffSize);
     state->unk58 = sceSifAllocIopHeap(0x800);
     temp_a1_2 = state->unk58;
     if (temp_a1_2 < 0) {
@@ -412,15 +426,17 @@ s32 audioDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-s32 audioDecDelete(void *arg0) {
-    func_00182A28(*(s32 *)((u8 *)arg0 + 0x44));
-    func_00182A28(*(s32 *)((u8 *)arg0 + 0x58));
+/* Frees the movie's audio decoder. */
+s32 audioDecDelete(void *ad) {
+    func_00182A28(*(s32 *)((u8 *)ad + 0x44));
+    func_00182A28(*(s32 *)((u8 *)ad + 0x58));
     changeMasterVolume(0);
     return 1;
 }
 
-void audioDecPause(void *arg0) {
-    s32 *p = (s32 *)arg0;
+/* Pauses the movie's audio. */
+void audioDecPause(void *ad) {
+    s32 *p = (s32 *)ad;
     s32 func_00190810(s32, ...);
 
     p[0] = 3;
@@ -429,24 +445,27 @@ void audioDecPause(void *arg0) {
     func_00190810(1, 0x80D0, 0, 0, p[0x16], 0x4000, 0x800);
 }
 
-void audioDecResume(void *arg0) {
-    s32 *p = (s32 *)arg0;
+/* Resumes the movie's audio. */
+void audioDecResume(void *ad) {
+    s32 *p = (s32 *)ad;
     s32 func_00190810(s32, s32, s32, s32, s32, s32, s32);
     changeInputVolume(0x7FFF);
     func_00190810(1, 0x80E0, 0, 0x13, p[0x11], (p[0x12] >> 10) << 10, p[0x11] + p[0x14]);
-    *(s32 *)arg0 = 2;
+    *(s32 *)ad = 2;
 }
 
-void audioDecStart(void *arg0) {
-    s32 *p = (s32 *)arg0;
+/* Starts the movie's audio. */
+void audioDecStart(void *ad) {
+    s32 *p = (s32 *)ad;
     s32 func_00190810(s32, s32, s32, s32, s32, s32, s32);
     changeInputVolume(0x7FFF);
     func_00190810(1, 0x80E0, 0, 0x13, p[0x11], (p[0x12] >> 10) << 10, p[0x11] + p[0x14]);
-    *(s32 *)arg0 = 2;
+    *(s32 *)ad = 2;
 }
 
-void audioDecReset(void *arg0) {
-    s32 *p = (s32 *)arg0;
+/* Resets the movie's audio decoder. */
+void audioDecReset(void *ad) {
+    s32 *p = (s32 *)ad;
     s32 func_00190810(s32, ...);
 
     p[0] = 3;
@@ -473,30 +492,31 @@ typedef struct {
     s32 capacity;
 } Buffer_00243390;
 
-void audioDecBeginPut(void *arg0, void **arg1, s32 *arg2, void **arg3, s32 *arg4) {
+/* Where the next audio data can go (two areas: ptr0/len0, ptr1/len1). */
+void audioDecBeginPut(void *ad, void **ptr0, s32 *len0, void **ptr1, s32 *len1) {
     s32 available;
     s32 capacity;
     s32 start;
-    Buffer_00243390 *buffer = arg0;
+    Buffer_00243390 *buffer = ad;
 
     if (buffer->mode == 0) {
-        *arg1 = (void *)((u32)buffer->data + buffer->offset);
-        *arg2 = 0x28 - buffer->offset;
-        *arg3 = buffer->buffer;
-        *arg4 = buffer->capacity;
+        *ptr0 = (void *)((u32)buffer->data + buffer->offset);
+        *len0 = 0x28 - buffer->offset;
+        *ptr1 = buffer->buffer;
+        *len1 = buffer->capacity;
     } else {
         available = (capacity = buffer->capacity) - buffer->end;
         start = buffer->start;
         if ((capacity - start) >= available) {
-            *arg1 = buffer->buffer + start;
-            *arg2 = available;
-            *arg3 = 0;
-            *arg4 = 0;
+            *ptr0 = buffer->buffer + start;
+            *len0 = available;
+            *ptr1 = 0;
+            *len1 = 0;
         } else {
-            *arg1 = buffer->buffer + start;
-            *arg2 = buffer->capacity - buffer->start;
-            *arg3 = buffer->buffer;
-            *arg4 = available - (buffer->capacity - buffer->start);
+            *ptr0 = buffer->buffer + start;
+            *len0 = buffer->capacity - buffer->start;
+            *ptr1 = buffer->buffer;
+            *len1 = available - (buffer->capacity - buffer->start);
         }
     }
 }
@@ -519,14 +539,15 @@ extern char D_0030F645[];
 extern char D_0030F676[];
 extern char D_0030F7B1[];
 
-void audioDecEndPut(void *arg0, u32 arg1) {
+/* Marks `size` bytes of audio data as put. */
+void audioDecEndPut(void *ad, u32 size) {
     u32 amount;
     State_00243450 *state;
 
-    state = arg0;
+    state = ad;
     if (state->printed == 0) {
         amount = 0x28 - state->delay;
-        amount = amount < arg1 ? amount : arg1;
+        amount = amount < size ? amount : size;
         state->delay += amount;
         if (state->delay >= 0x28U) {
             state->printed = 1;
@@ -543,15 +564,16 @@ void audioDecEndPut(void *arg0, u32 arg1) {
                 state->moreByteParams[2], state->moreByteParams[3],
                 state->moreWordParam);
         }
-        arg1 -= amount;
+        size -= amount;
     }
-    state->position = (s32)(state->position + arg1) % state->period;
-    state->elapsed += arg1;
-    state->total += arg1;
+    state->position = (s32)(state->position + size) % state->period;
+    state->elapsed += size;
+    state->total += size;
 }
 
-s32 audioDecIsPreset(void *arg0) {
-    return *(s32 *)((u8 *)arg0 + 0x54) >= *(s32 *)((u8 *)arg0 + 0x48);
+/* Whether the audio buffer has filled enough to start. */
+s32 audioDecIsPreset(void *ad) {
+    return *(s32 *)((u8 *)ad + 0x54) >= *(s32 *)((u8 *)ad + 0x48);
 }
 
 typedef struct Stream_002435A0 {
@@ -569,7 +591,8 @@ typedef struct Stream_002435A0 {
     s32 f54;
 } Stream_002435A0;
 
-s32 audioDecSendToIOP(void *arg0) {
+/* Sends decoded audio to the IOP's buffer. */
+s32 audioDecSendToIOP(void *ad) {
     s32 sp30;
     s32 sp34;
     s32 sp38;
@@ -583,7 +606,7 @@ s32 audioDecSendToIOP(void *arg0) {
 
     extern s32 func_00190810(s32, ...);
 
-    st = arg0;
+    st = ad;
     switch (st->kind) {
     case 0:
         return 0;
@@ -623,94 +646,99 @@ typedef struct Range_00243750 {
     s32 cursor;
 } Range_00243750;
 
-void iopGetArea(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 offset) {
-    Range_00243750 *range = arg4;
+/* The free areas of the IOP audio buffer from position `offset` (pd0/d0, pd1/d1). */
+void iopGetArea(s32 *pd0, s32 *d0, s32 *pd1, s32 *d1, void *ad, s32 offset) {
+    Range_00243750 *range = ad;
     s32 length = range->length;
     s32 cursor = range->cursor;
 
     offset = (((offset + length - cursor - 0x400) % length) >> 10) << 10;
     if (length - cursor >= offset) {
-        *arg0 = range->start + cursor;
-        *arg1 = offset;
-        *arg2 = 0;
-        *arg3 = 0;
+        *pd0 = range->start + cursor;
+        *d0 = offset;
+        *pd1 = 0;
+        *d1 = 0;
     } else {
-        *arg0 = range->start + cursor;
-        *arg1 = range->length - range->cursor;
-        *arg2 = range->start;
-        *arg3 = offset - (range->length - range->cursor);
+        *pd0 = range->start + cursor;
+        *d0 = range->length - range->cursor;
+        *pd1 = range->start;
+        *d1 = offset - (range->length - range->cursor);
     }
 }
 
-s32 sendToIOP2area(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                  s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+/* Sends two source areas into two IOP areas. */
+s32 sendToIOP2area(s32 pd0, s32 d0, s32 pd1, s32 d1,
+                  s32 ps0, s32 s0, s32 ps1, s32 s1) {
     s32 temp_s0;
     s32 temp_v0;
     s32 temp_v1;
     s32 temp_v1_2;
 
-    temp_v0 = arg1 + arg3;
-    temp_v1 = arg5 + arg7;
+    temp_v0 = d0 + d1;
+    temp_v1 = s0 + s1;
     if (temp_v0 < temp_v1) {
         temp_v1_2 = temp_v1 - temp_v0;
-        if (temp_v1_2 >= arg7) {
-            arg5 -= temp_v1_2 - arg7;
-            arg7 = 0;
+        if (temp_v1_2 >= s1) {
+            s0 -= temp_v1_2 - s1;
+            s1 = 0;
         } else {
-            arg7 -= temp_v1_2;
+            s1 -= temp_v1_2;
         }
     }
-    if (arg5 >= arg1) {
-        sendToIOP(arg0, arg4, arg1);
-        sendToIOP(arg2, arg4 + arg1, arg5 - arg1);
-        sendToIOP((arg2 + arg5) - arg1, arg6, arg7);
+    if (s0 >= d0) {
+        sendToIOP(pd0, ps0, d0);
+        sendToIOP(pd1, ps0 + d0, s0 - d0);
+        sendToIOP((pd1 + s0) - d0, ps1, s1);
     } else {
-        temp_s0 = arg1 - arg5;
-        if (arg7 >= temp_s0) {
-            sendToIOP(arg0, arg4, arg5);
-            sendToIOP(arg0 + arg5, arg6, temp_s0);
-            sendToIOP(arg2, (arg6 + arg1) - arg5, arg7 - temp_s0);
+        temp_s0 = d0 - s0;
+        if (s1 >= temp_s0) {
+            sendToIOP(pd0, ps0, s0);
+            sendToIOP(pd0 + s0, ps1, temp_s0);
+            sendToIOP(pd1, (ps1 + d0) - s0, s1 - temp_s0);
         } else {
-            sendToIOP(arg0, arg4, arg5);
-            sendToIOP(arg0 + arg5, arg6, arg7);
+            sendToIOP(pd0, ps0, s0);
+            sendToIOP(pd0 + s0, ps1, s1);
         }
     }
-    return arg5 + arg7;
+    return s0 + s1;
 }
 
-s32 sendToIOP(s32 arg0, s32 arg1, s32 arg2) {
+/* Sends `size` bytes from `src` to IOP address `dst`. */
+s32 sendToIOP(s32 dst, s32 src, s32 size) {
     s32 request[4];
     s32 id;
 
-    if (arg2 <= 0) {
+    if (size <= 0) {
         return 0;
     }
-    request[0] = arg1;
-    request[1] = arg0;
-    request[2] = arg2;
+    request[0] = src;
+    request[1] = dst;
+    request[2] = size;
     request[3] = 0;
     FlushCache(0);
     id = sceSifSetDma(request, 1);
     do {
 
     } while (sceSifDmaStat(id) >= 0);
-    return arg2;
+    return size;
 }
 
-void changeMasterVolume(s32 arg0) {
+/* Sets the movie's master volume. */
+void changeMasterVolume(s32 val) {
     s32 var_s0;
 
     var_s0 = 0;
     do {
-        func_00190810(1, 0x8010, var_s0 | 0x980, arg0);
-        func_00190810(1, 0x8010, var_s0 | 0xA80, arg0);
+        func_00190810(1, 0x8010, var_s0 | 0x980, val);
+        func_00190810(1, 0x8010, var_s0 | 0xA80, val);
         var_s0 += 1;
     } while (var_s0 < 2);
 }
 
-void changeInputVolume(s32 arg0) {
-    func_00190810(1, 0x8010, 0xF80, arg0);
-    func_00190810(1, 0x8010, 0x1080, arg0);
+/* Sets the movie's audio input volume. */
+void changeInputVolume(s32 val) {
+    func_00190810(1, 0x8010, 0xF80, val);
+    func_00190810(1, 0x8010, 0x1080, val);
 }
 
 typedef struct File_00243A90 {
@@ -734,20 +762,21 @@ extern char D_0030F839[];
 extern char D_0030F854[];
 extern char D_0030F86F[];
 
-s32 strFileOpen(void *arg0, s32 arg1) {
+/* Opens movie stream file `filename` (from the CD). */
+s32 strFileOpen(void *fileIn, s32 filename) {
     extern void func_0019B648();
     char path[256];
     char prefix[76];
     u8 mode[3];
     char *separator;
-    File_00243A90 *file = arg0;
+    File_00243A90 *file = fileIn;
 
-    separator = func_001976D8((char *)arg1, ':');
+    separator = func_001976D8((char *)filename, ':');
     if (separator != NULL) {
         s32 prefix_length;
 
-        prefix_length = separator - (char *)arg1;
-        func_0019C2B8(prefix, (char *)arg1, prefix_length);
+        prefix_length = separator - (char *)filename;
+        func_0019C2B8(prefix, (char *)filename, prefix_length);
         prefix[prefix_length] = 0;
         if (func_0019BC90(prefix, D_0030F7F0) == 0) {
             s32 i;
@@ -764,7 +793,7 @@ s32 strFileOpen(void *arg0, s32 arg1) {
                 }
                 *current = func_0019D9E0(*current);
             }
-            suffix = func_001976D8((char *)arg1, ';') ? D_0030F7F7 : D_0030F7F8;
+            suffix = func_001976D8((char *)filename, ';') ? D_0030F7F7 : D_0030F7F8;
             func_0019B648(path, D_0030F7F8 + 3, separator + 1, suffix);
         } else {
             file->disc = 0;
@@ -773,7 +802,7 @@ s32 strFileOpen(void *arg0, s32 arg1) {
     } else {
         func_0019BDD8(prefix, D_0030F806);
         file->disc = 0;
-        func_0019B648(path, D_0030F800, prefix, arg1);
+        func_0019B648(path, D_0030F800, prefix, filename);
     }
     func_00199B50(D_0030F80C, path);
     if (file->disc != 0) {
@@ -819,8 +848,9 @@ typedef struct {
 } Obj_00243D90;
 
 
-s32 strFileClose(void *arg0) {
-    Obj_00243D90 *p = (Obj_00243D90 *)arg0;
+/* Closes the movie stream file. */
+s32 strFileClose(void *file) {
+    Obj_00243D90 *p = (Obj_00243D90 *)file;
 
     if (p->unk00 != 0) {
         sceCdStStop();
@@ -837,16 +867,17 @@ typedef struct {
 
 extern Float_00243DE0 D_0029B2F8;
 
-s32 strFileRead(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Reads `size` bytes of the movie stream into `buff`. */
+s32 strFileRead(s32 *file, s32 buff, s32 size, s32 arg3) {
     Float_00243DE0 sp48;
     s32 sp4C;
     s32 result;
 
-    if (*arg0 != 0) {
+    if (*file != 0) {
         sp48 = D_0029B2F8;
         while (1) {
             FlushCache(0);
-            result = sceCdStRead(arg2 >> 11, arg1, 1, &sp4C);
+            result = sceCdStRead(size >> 11, buff, 1, &sp4C);
             if (sp4C == 0) {
                 break;
             }
@@ -862,7 +893,7 @@ s32 strFileRead(s32 *arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
         result <<= 11;
     } else {
-        result = func_001800D8(arg0[12], arg1, arg2);
+        result = func_001800D8(file[12], buff, size);
     }
     return result;
 }
@@ -877,20 +908,21 @@ typedef struct {
 } Sema_00243EE0;
 
 
-s32 viBufCreate(void *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Sets up the video input FIFO: `data` and `tag` areas of `size`, timestamps `ts` (n of them). */
+s32 viBufCreate(void *f, s32 data, u32 tag, s32 size, s32 ts, s32 n_ts) {
     Sema_00243EE0 sema;
 
-    *(s32 *)arg0 = arg1;
-    *(s32 *)((u8 *)arg0 + 4) = (arg2 & 0x0FFFFFFF) | 0x20000000;
-    *(s32 *)((u8 *)arg0 + 8) = arg3;
-    *(s32 *)((u8 *)arg0 + 0x18) = arg3 << 11;
-    *(s32 *)((u8 *)arg0 + 0x50) = arg4;
-    *(s32 *)((u8 *)arg0 + 0x54) = arg5;
+    *(s32 *)f = data;
+    *(s32 *)((u8 *)f + 4) = (tag & 0x0FFFFFFF) | 0x20000000;
+    *(s32 *)((u8 *)f + 8) = size;
+    *(s32 *)((u8 *)f + 0x18) = size << 11;
+    *(s32 *)((u8 *)f + 0x50) = ts;
+    *(s32 *)((u8 *)f + 0x54) = n_ts;
     sema.init_count = 1;
     sema.max_count = 1;
-    *(s32 *)((u8 *)arg0 + 0x40) = CreateSema(&sema);
-    viBufReset(arg0);
-    *(s64 *)((u8 *)arg0 + 0x48) = 0;
+    *(s32 *)((u8 *)f + 0x40) = CreateSema(&sema);
+    viBufReset(f);
+    *(s64 *)((u8 *)f + 0x48) = 0;
     return 1;
 }
 
@@ -923,8 +955,9 @@ typedef struct {
 } Obj_00243F60;
 
 
-s32 viBufReset(void *arg0) {
-    Obj_00243F60 *obj = arg0;
+/* Resets the video input FIFO. */
+s32 viBufReset(void *f) {
+    Obj_00243F60 *obj = f;
     s32 i;
 
     obj->f0C = 0;
@@ -966,8 +999,9 @@ typedef struct Buffer_002440F0 {
     s32 semaphore;
 } Buffer_002440F0;
 
-void viBufBeginPut(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
-    Buffer_002440F0 *buffer = arg0;
+/* Where the next video data can go (ptr0/len0, ptr1/len1). */
+void viBufBeginPut(void *f, s32 *ptr0, s32 *len0, s32 *ptr1, s32 *len1) {
+    Buffer_002440F0 *buffer = f;
     s32 byteOffset;
     s32 start;
     s32 offset;
@@ -979,15 +1013,15 @@ void viBufBeginPut(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
     offset = (start + byteOffset) % buffer->capacity;
     length = ((buffer->blockCount - 2 - buffer->reservedBlocks) << 11) - byteOffset;
     if (buffer->capacity - offset >= length) {
-        *arg1 = buffer->base + offset;
-        *arg2 = length;
-        *arg3 = 0;
-        *arg4 = 0;
+        *ptr0 = buffer->base + offset;
+        *len0 = length;
+        *ptr1 = 0;
+        *len1 = 0;
     } else {
-        *arg1 = buffer->base + offset;
-        *arg2 = buffer->capacity - offset;
-        *arg3 = buffer->base;
-        *arg4 = length - (buffer->capacity - offset);
+        *ptr0 = buffer->base + offset;
+        *len0 = buffer->capacity - offset;
+        *ptr1 = buffer->base;
+        *len1 = length - (buffer->capacity - offset);
     }
     SignalSema(buffer->semaphore);
 }
@@ -1002,12 +1036,13 @@ typedef struct Counter_002441F0 {
 } Counter_002441F0;
 
 
-void viBufEndPut(void *arg0, s32 arg1) {
-    Counter_002441F0 *counter = arg0;
+/* Marks `size` bytes of video data as put. */
+void viBufEndPut(void *f, s32 size) {
+    Counter_002441F0 *counter = f;
 
     WaitSema(counter->semaphore);
-    counter->count += arg1;
-    counter->total += arg1;
+    counter->count += size;
+    counter->total += size;
     SignalSema(counter->semaphore);
 }
 
@@ -1025,11 +1060,13 @@ typedef struct Ring_00244250 {
 
 extern s8 D_0030F890;
 
+/* A DMA tag. */
 static inline u64 tag_00244250(u32 address, u32 id) {
     return ((u64)address << 32) | ((u64)id << 28) | 0x80;
 }
 
-s32 viBufAddDMA(void *arg0) {
+/* Feeds the video input FIFO's data to the IPU by DMA. */
+s32 viBufAddDMA(void *f) {
     s32 chcr;
     s32 patched;
     u32 current;
@@ -1041,7 +1078,7 @@ s32 viBufAddDMA(void *arg0) {
     s32 last;
     s32 i;
     s32 id;
-    Ring_00244250 *ring = arg0;
+    Ring_00244250 *ring = f;
 
     patched = 0;
     WaitSema(ring->sema);
@@ -1101,18 +1138,19 @@ s32 viBufAddDMA(void *arg0) {
     return 1;
 }
 
-s32 viBufStopDMA(u8 *arg0) {
-    WaitSema(*(s32 *)(arg0 + 0x40));
-    *(s32 *)(arg0 + 0x44) = 0;
+/* Stops the video input DMA. */
+s32 viBufStopDMA(u8 *f) {
+    WaitSema(*(s32 *)(f + 0x40));
+    *(s32 *)(f + 0x44) = 0;
     func_001843E0();
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
     *(volatile u32 *)0x1000B400 = 5;
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
     func_00184428();
-    *(s32 *)(arg0 + 0x1C) = *(volatile u32 *)0x1000B410;
-    *(s32 *)(arg0 + 0x20) = *(volatile u32 *)0x1000B430;
-    *(s32 *)(arg0 + 0x24) = *(volatile u32 *)0x1000B420;
-    *(s32 *)(arg0 + 0x28) = *(volatile u32 *)0x1000B400;
+    *(s32 *)(f + 0x1C) = *(volatile u32 *)0x1000B410;
+    *(s32 *)(f + 0x20) = *(volatile u32 *)0x1000B430;
+    *(s32 *)(f + 0x24) = *(volatile u32 *)0x1000B420;
+    *(s32 *)(f + 0x28) = *(volatile u32 *)0x1000B400;
     do {
     } while (*(volatile u32 *)0x10002010 & 0xF0);
     func_001843E0();
@@ -1120,12 +1158,12 @@ s32 viBufStopDMA(u8 *arg0) {
     *(volatile u32 *)0x1000B000 = 0;
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
     func_00184428();
-    *(s32 *)(arg0 + 0x2C) = *(volatile u32 *)0x1000B010;
-    *(s32 *)(arg0 + 0x30) = *(volatile u32 *)0x1000B020;
-    *(s32 *)(arg0 + 0x34) = *(volatile u32 *)0x1000B000;
-    *(s32 *)(arg0 + 0x38) = *(volatile u32 *)0x10002020;
-    *(s32 *)(arg0 + 0x3C) = *(volatile u32 *)0x10002010;
-    SignalSema(*(s32 *)(arg0 + 0x40));
+    *(s32 *)(f + 0x2C) = *(volatile u32 *)0x1000B010;
+    *(s32 *)(f + 0x30) = *(volatile u32 *)0x1000B020;
+    *(s32 *)(f + 0x34) = *(volatile u32 *)0x1000B000;
+    *(s32 *)(f + 0x38) = *(volatile u32 *)0x10002020;
+    *(s32 *)(f + 0x3C) = *(volatile u32 *)0x10002010;
+    SignalSema(*(s32 *)(f + 0x40));
     return 1;
 }
 
@@ -1174,6 +1212,7 @@ struct DotrSoundViBuf {
 #define DataAddr(f, i) ((f)->data + VIBUF_ELM_SIZE * (i))
 #define TagAddr(f, i) ((f)->tag + 16 * (i))
 #define IsInRegion(i, start, len, n) (0 <= ((i) + (n) - (start)) % (n) && ((i) + (n) - (start)) % (n) < (len))
+/* The FIFO index of a DMA address. */
 static inline int getFIFOindex(struct DotrSoundViBuf *f, unsigned addr)
 {
     if (addr == DmaAddr(TagAddr(f, f->n + 1))) {
@@ -1182,6 +1221,7 @@ static inline int getFIFOindex(struct DotrSoundViBuf *f, unsigned addr)
         return (addr - f->data) / VIBUF_ELM_SIZE;
     }
 }
+/* Sets DMA channel 3's control register. */
 static inline void setD3_CHCR(unsigned val)
 {
     func_001843E0_b();
@@ -1190,6 +1230,7 @@ static inline void setD3_CHCR(unsigned val)
     DOTR_SOUND_REG(0x1000f590) = DOTR_SOUND_REG(0x1000f520) & ~0x10000;
     func_00184428_b();
 }
+/* Sets DMA channel 4's control register. */
 static inline void setD4_CHCR(unsigned val)
 {
     func_001843E0_b();
@@ -1199,6 +1240,7 @@ static inline void setD4_CHCR(unsigned val)
     func_00184428_b();
 }
 
+/* Restarts the video input DMA where it stopped. */
 int viBufRestartDMA(void *p_v)
 {
     struct DotrSoundStream * p = p_v;
@@ -1267,7 +1309,8 @@ int viBufRestartDMA(void *p_v)
 #undef TagAddr
 #undef IsInRegion
 
-s32 viBufDelete(void *arg0) {
+/* Frees the video input FIFO. */
+s32 viBufDelete(void *f) {
     func_001843E0();
     *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
     *(volatile u32 *)0x1000B400 = 5;
@@ -1276,7 +1319,7 @@ s32 viBufDelete(void *arg0) {
     *(volatile u32 *)0x1000B420 = 0;
     *(volatile u32 *)0x1000B410 = 0;
     *(volatile u32 *)0x1000B430 = 0;
-    DeleteSema(*(s32 *)((u8 *)arg0 + 0x40));
+    DeleteSema(*(s32 *)((u8 *)f + 0x40));
     return 1;
 }
 
@@ -1289,8 +1332,9 @@ typedef struct Data_00244AD0 {
 } Data_00244AD0;
 
 
-s32 viBufCount(void *arg0) {
-    Data_00244AD0 *data = arg0;
+/* How much data the video input FIFO holds. */
+s32 viBufCount(void *f) {
+    Data_00244AD0 *data = f;
     s32 temp_s0;
 
     WaitSema(data->field_40);
@@ -1307,8 +1351,9 @@ typedef struct State_00244B20 {
     s32 field_40;
 } State_00244B20;
 
-void viBufFlush(void *arg0) {
-    State_00244B20 *state = arg0;
+/* Empties the video input FIFO. */
+void viBufFlush(void *f) {
+    State_00244B20 *state = f;
 
     WaitSema(state->field_40);
     state->field_14 = ((state->field_14 + 0x7FF) >> 11) << 11;
@@ -1332,6 +1377,7 @@ typedef struct Queue_00244B70 {
     s32 tail;
 } Queue_00244B70;
 
+/* Clamps a count. */
 static inline s32 clamp_00244B70(s32 count) {
     if (count < 0) {
         return 0;
@@ -1339,9 +1385,10 @@ static inline s32 clamp_00244B70(s32 count) {
     return count;
 }
 
-s32 viBufModifyPts(void *arg0, void *arg1) {
-    Queue_00244B70 *queue = arg0;
-    Entry_00244B70 *request = arg1;
+/* Moves the video timestamps to `new_ts`. */
+s32 viBufModifyPts(void *f, void *new_ts) {
+    Queue_00244B70 *queue = f;
+    Entry_00244B70 *request = new_ts;
     s32 index;
     s32 repeat;
     s32 bufferSize;
@@ -1409,9 +1456,10 @@ typedef struct Queue_00244CB0 {
 } Queue_00244CB0;
 
 
-s32 viBufPutTs(void *arg0, void *arg1) {
-    Record_00244CB0 *record = arg1;
-    Queue_00244CB0 *queue = arg0;
+/* Adds a video timestamp. */
+s32 viBufPutTs(void *f, void *ts) {
+    Record_00244CB0 *record = ts;
+    Queue_00244CB0 *queue = f;
     s32 result = 0;
 
     WaitSema(queue->semaphore);
@@ -1466,7 +1514,8 @@ typedef struct ViBuf_00244DE0 {
 
 #pragma opt_dead_assignments off
 
-s32 viBufGetTs(void *arg0, void *arg1)
+/* Takes the next video timestamp. */
+s32 viBufGetTs(void *fIn, void *tsIn)
 {
     ViBuf_00244DE0 *f;
     s32 count;
@@ -1481,8 +1530,8 @@ s32 viBufGetTs(void *arg0, void *arg1)
     s32 isEnd;
     s32 wt;
     s32 stop;
-    f = arg0;
-    ts = arg1;
+    f = fIn;
+    ts = tsIn;
 
     d4madr = *(volatile u32 *)0x1000B410;
     isEnd = 0;
@@ -1515,18 +1564,20 @@ s32 viBufGetTs(void *arg0, void *arg1)
 }
 #pragma opt_dead_assignments reset
 
-s32 videoDecCreate(void *arg0, s32 arg1, s32 arg2, s32 arg3, u32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    sceMpegCreate(arg0, arg1, arg2);
-    sceMpegAddCallback(arg0, 0, mpegError, 0);
-    sceMpegAddCallback(arg0, 1, mpegNodata, 0);
-    sceMpegAddCallback(arg0, 2, mpegStopDMA, 0);
-    sceMpegAddCallback(arg0, 3, mpegRestartDMA, 0);
-    sceMpegAddCallback(arg0, 5, (s32 (*)()) mpegTS, 0);
-    videoDecReset(arg0);
-    viBufCreate((u8 *)arg0 + 0x48, arg3, arg4, arg5, arg6, arg7);
+/* Sets up the movie's video decoder with its MPEG work area, the input FIFO areas and timestamps. */
+s32 videoDecCreate(void *vd, s32 mpegWork, s32 mpegWorkSize, s32 data, u32 tag, s32 tagSize, s32 pts, s32 n_pts) {
+    sceMpegCreate(vd, mpegWork, mpegWorkSize);
+    sceMpegAddCallback(vd, 0, mpegError, 0);
+    sceMpegAddCallback(vd, 1, mpegNodata, 0);
+    sceMpegAddCallback(vd, 2, mpegStopDMA, 0);
+    sceMpegAddCallback(vd, 3, mpegRestartDMA, 0);
+    sceMpegAddCallback(vd, 5, (s32 (*)()) mpegTS, 0);
+    videoDecReset(vd);
+    viBufCreate((u8 *)vd + 0x48, data, tag, tagSize, pts, n_pts);
     return 1;
 }
 
+/* Hooks the video and audio streams to the decoders. */
 s32 videoDecSetStream(void) {
     extern s32 sceMpegAddStrCallback();
 
@@ -1534,26 +1585,31 @@ s32 videoDecSetStream(void) {
     return 1;
 }
 
-void videoDecBeginPut(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
-    viBufBeginPut((u8 *)arg0 + 0x48, arg1, arg2, arg3, arg4);
+/* Where the next video data can go (ptr0/len0, ptr1/len1). */
+void videoDecBeginPut(void *vd, s32 *ptr0, s32 *len0, s32 *ptr1, s32 *len1) {
+    viBufBeginPut((u8 *)vd + 0x48, ptr0, len0, ptr1, len1);
 }
 
-void videoDecEndPut(void *arg0, s32 arg1) {
-    viBufEndPut((u8 *)arg0 + 0x48, arg1);
+/* Marks `size` bytes of video data as put. */
+void videoDecEndPut(void *vd, s32 size) {
+    viBufEndPut((u8 *)vd + 0x48, size);
 }
 
-void videoDecReset(void *arg0) {
-    *(s32 *)((u8 *)arg0 + 0xA8) = 0;
+/* Resets the movie's video decoder. */
+void videoDecReset(void *vd) {
+    *(s32 *)((u8 *)vd + 0xA8) = 0;
 }
 
-s32 videoDecDelete(u8 *arg0) {
+/* Frees the movie's video decoder. */
+s32 videoDecDelete(u8 *vd) {
     s32 sceMpegDelete(void *);
 
-    viBufDelete(arg0 + 0x48);
-    sceMpegDelete(arg0);
+    viBufDelete(vd + 0x48);
+    sceMpegDelete(vd);
     return 1;
 }
 
-void videoDecAbort(void *arg0) {
-    *(s32 *)((u8 *)arg0 + 0xA8) = 1;
+/* Stops the movie's video decoder. */
+void videoDecAbort(void *vd) {
+    *(s32 *)((u8 *)vd + 0xA8) = 1;
 }

@@ -14,8 +14,9 @@ typedef struct {
 
 extern u8 gRhModel_mlsmSwapArea[];
 
-void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
-    Flags_0020F780 *obj = arg0;
+/* Picks the VU1 draw method of a model part (lit, fogged, clipped; `noClip` turns clipping off). */
+void *lRhModel_DrawNormalMethod(void *part, s32 noClip) {
+    Flags_0020F780 *obj = part;
     s32 flags;
     s32 result;
     u32 flag5;
@@ -25,7 +26,7 @@ void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
     flag5 = obj->flag5_2 ? 0x40 : 0;
     flag4 = (obj->flag4_1 != 0) ? 0x10 : 0;
     flags |= flag4 | flag5;
-    flags |= arg1 ? 2 : 0;
+    flags |= noClip ? 2 : 0;
     RhGeomEx_SetMatrixForPointLight();
     if (!obj->flag4_2) {
         if (*(s32 *)0x700000B0 & 4) {
@@ -57,7 +58,7 @@ void *lRhModel_DrawNormalMethod(void *arg0, s32 arg1) {
     }
     if (*(s32 *)0x700000B0 & 4) {
         flags |= 0x20;
-    } else if (arg1 == 0) {
+    } else if (noClip == 0) {
         RhView_GetViewScreenMatrix((void *)0x70000000);
         lRhModel_ChangeL2VtoL2S(*(s32 *)0x700000B4 + 0x10, 0x70000000,
                      ((*(s32 *)0x700000D8 - 0x10) >> 4) / 7);
@@ -82,15 +83,16 @@ typedef struct {
     u8 unused5_3 : 5;
 } Flags_0020FA10;
 
-void *lRhModel_DrawFastMethod(void *arg0) {
+/* Picks the fast VU1 draw method of a model part. */
+void *lRhModel_DrawFastMethod(void *part) {
     u32 mode = 1;
-    u32 flag5 = ((Flags_0020FA10 *)arg0)->flag5 ? 0x40 : 0;
-    u32 flag4 = (((Flags_0020FA10 *)arg0)->flag4 != 0) ? 0x10 : 0;
+    u32 flag5 = ((Flags_0020FA10 *)part)->flag5 ? 0x40 : 0;
+    u32 flag4 = (((Flags_0020FA10 *)part)->flag4 != 0) ? 0x10 : 0;
     mode |= flag4 | flag5;
     *(void **)0x700000C4 = RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, mode);
     RhView_GetViewScreenMatrix((void *)0x70000000);
     RhGeomEx_SetMatrixForStraightLight((void *)0x70000000);
-    lRhModel_DrawCommonPart(arg0);
+    lRhModel_DrawCommonPart(part);
     if (*(u8 **)0x700000B4 == (u8 *)0x700000F0) {
         RhMem_CopyMemory16(*(u8 **)0x700000C4 + 0x10, (void *)0x70000100, (*(s32 *)0x700000D8 - 0x10) >> 4);
     }
@@ -138,8 +140,9 @@ typedef struct {
 } Data_0020FAF0;
 
 
-void lRhModel_DrawCommonPart(void *arg0) {
-    Args_0020FAF0 *arg = arg0;
+/* Sends what every draw method of a model part shares. */
+void lRhModel_DrawCommonPart(void *part) {
+    Args_0020FAF0 *arg = part;
     s32 value24;
 
     if ((*(s32 *)0x700000D8 + ((*(Data_0020FAF0 **)0x700000DC)->value58 << 8)) > 0x3F10) {
@@ -216,7 +219,8 @@ typedef struct Header_0020FED0 {
     s32 offset1;
 } Header_0020FED0;
 
-void lRhModel_DynamicAddressBind(void *arg0, void *arg1, void *arg2, s32 arg3) {
+/* Relocates a model's dynamic packet addresses against `base` (`second` picks the other table). */
+void lRhModel_DynamicAddressBind(void *model, void *base, void *packets, s32 second) {
     Header_0020FED0 *header;
     s32 i;
     s32 value;
@@ -224,22 +228,22 @@ void lRhModel_DynamicAddressBind(void *arg0, void *arg1, void *arg2, s32 arg3) {
     s32 *entry;
     s32 tagged;
 
-    header = (Header_0020FED0 *)((u8 *)arg0 + 0x10);
-    if (arg3 != 0) {
-        table = (s32 *)((u8 *)arg0 + header->offset1);
+    header = (Header_0020FED0 *)((u8 *)model + 0x10);
+    if (second != 0) {
+        table = (s32 *)((u8 *)model + header->offset1);
     } else {
-        table = (s32 *)((u8 *)arg0 + header->offset0);
+        table = (s32 *)((u8 *)model + header->offset0);
     }
     for (i = 0; (value = *table) != -1; i++) {
         switch (value & ~0x0FFFFFFF) {
         case 0x20000000:
         case 0x40000000:
-            entry = (s32 *)((u32)arg2 + (value & 0x0FFFFFFF));
+            entry = (s32 *)((u32)packets + (value & 0x0FFFFFFF));
             tagged = *entry;
             switch (tagged & ~0x0FFFFFFF) {
             case 0x20000000:
             case 0x40000000:
-                *entry = (u32)arg1 + (tagged & 0x0FFFFFFF);
+                *entry = (u32)base + (tagged & 0x0FFFFFFF);
                 break;
             }
             break;
@@ -263,9 +267,10 @@ extern void *gRhModel_dwStack;
 extern u8 D_70004000[];
 extern u8 gRhModel_vecScale[];
 
-s32 lRhModel_SetupNoMotion(void *arg0) {
+/* Builds a model's node matrices from its rest pose (no motion). */
+s32 lRhModel_SetupNoMotion(void *model) {
     Spr_0020FF80 *spr = (Spr_0020FF80 *)0x70000000;
-    u8 *data = (u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x10);
+    u8 *data = (u8 *)model + *(s32 *)((u8 *)model + 0x10);
 
     if (spr->dst != NULL) {
         *spr->dst = *(V4_0020FF80 *)(data + 0x20);
@@ -318,7 +323,8 @@ extern u32 require_coordinate_no;
 extern s32 require_coordinate_index;
 
 
-void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
+/* Builds one node's matrix from its rest pose, then its children's and siblings'. */
+void lRhModel_SetupNoMotionRecursive(void *modelIn, void *node, void *parentScaleIn) {
     extern Entry_00210010 require_coordinate[];
     u8 buffer[0x20];
     Vec3_00210010 translation;
@@ -330,29 +336,29 @@ void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
     Entry_00210010 *entry;
     u32 i;
     u32 offset;
-    Model_00210010 *model = arg0;
-    Vec3_00210010 *parentScale = arg2;
+    Model_00210010 *model = modelIn;
+    Vec3_00210010 *parentScale = parentScaleIn;
 
     scale = (Vec3_00210010 *)(((u32)buffer + 15) & ~15);
     for (;;) {
         RhMem_CopyMemory16(scale, parentScale, 1);
-        flags = ((Node_00210010 *)arg1)->flags;
+        flags = ((Node_00210010 *)node)->flags;
         mode = flags & 3;
         if (mode != 3) {
             translation = D_00295080;
-            translation.x = ((Node_00210010 *)arg1)->translation.x * parentScale->x;
-            translation.y = ((Node_00210010 *)arg1)->translation.y * parentScale->y;
-            translation.z = ((Node_00210010 *)arg1)->translation.z * parentScale->z;
+            translation.x = ((Node_00210010 *)node)->translation.x * parentScale->x;
+            translation.y = ((Node_00210010 *)node)->translation.y * parentScale->y;
+            translation.z = ((Node_00210010 *)node)->translation.z * parentScale->z;
             RhGeomEx_PushMatrix();
-            RhGeomEx_ScaleRotXYZTransMatrix(NULL, (flags & 2) ? NULL : &((Node_00210010 *)arg1)->rotation,
+            RhGeomEx_ScaleRotXYZTransMatrix(NULL, (flags & 2) ? NULL : &((Node_00210010 *)node)->rotation,
                          (flags & 1) ? NULL : &translation);
         }
         if (!(flags & 4)) {
-            scale->x *= ((Node_00210010 *)arg1)->scale.x;
-            scale->y *= ((Node_00210010 *)arg1)->scale.y;
-            scale->z *= ((Node_00210010 *)arg1)->scale.z;
+            scale->x *= ((Node_00210010 *)node)->scale.x;
+            scale->y *= ((Node_00210010 *)node)->scale.y;
+            scale->z *= ((Node_00210010 *)node)->scale.z;
         }
-        matrixIndex = ((Node_00210010 *)arg1)->matrix;
+        matrixIndex = ((Node_00210010 *)node)->matrix;
         if (matrixIndex != 0) {
             matrix = model->matrices[matrixIndex];
             RhGeomEx_GetMatrix(matrix);
@@ -367,18 +373,18 @@ void lRhModel_SetupNoMotionRecursive(void *arg0, void *arg1, void *arg2) {
             }
         }
         require_coordinate_index++;
-        offset = ((Node_00210010 *)arg1)->child;
+        offset = ((Node_00210010 *)node)->child;
         if (offset != 0) {
             lRhModel_SetupNoMotionRecursive(model, model->nodes + (offset & 0x0FFFFFFF), scale);
         }
         if (mode != 3) {
             RhGeomEx_PopMatrix();
         }
-        offset = ((Node_00210010 *)arg1)->next;
+        offset = ((Node_00210010 *)node)->next;
         if (offset == 0) {
             break;
         }
-        arg1 = model->nodes + (offset & 0x0FFFFFFF);
+        node = model->nodes + (offset & 0x0FFFFFFF);
     }
 }
 
@@ -407,6 +413,7 @@ extern void *gRhModel_dwStack;
 extern u8 D_70004000[];
 extern u8 gRhModel_vecScale[];
 
+/* Builds a model's node matrices from two motions blended at their frames and weights. */
 s32 lRhModel_SetupMultiMotion(void *arg0, void *arg1, void *arg2, f32 frame, f32 frame2, f32 value, f32 value2) {
     Spr_00210260 *spr = (Spr_00210260 *)0x70000000;
     Motion_00210260 *m1 = arg1;
@@ -495,6 +502,7 @@ extern u32 require_coordinate_no;
 extern s32 require_coordinate_index;
 
 
+/* One node of lRhModel_SetupMultiMotion, then its children and siblings. */
 s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern Slot_00210310 require_coordinate[];
     Spr_00210310 *spr = (Spr_00210310 *)0x70000000;
@@ -598,6 +606,7 @@ s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2) {
     }
 }
 
+/* One node's position, rotation and scale from two motions blended. */
 s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f32 weight0, f32 time1, f32 weight1,
                   void *pos, void *rot, void *scl, f32 multiplier) {
     f32 *position = pos;
@@ -624,6 +633,7 @@ s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f3
 /* lRhModel_SetupPulseMotion's twin: fill the scratchpad header for a float-motion walk, then run
    lRhModel_SetupFloatMotionRecursive with the stack on the scratchpad (0x70004000). */
 
+/* Builds a model's node matrices from a key-framed (float) motion at `time`. */
 s32 lRhModel_SetupFloatMotion(u8 *model, u8 *motion, f32 time) {
     u8 *spr = (u8 *)0x70000000;
     register void **saved;
@@ -700,6 +710,7 @@ extern u32 require_coordinate_no;
 extern s32 require_coordinate_index;
 
 
+/* One node of lRhModel_SetupFloatMotion, then its children and siblings. */
 s32 lRhModel_SetupFloatMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern s32 lRhModel_GetInterpolateMotionItem(void *, u16, f32, void *, void *, void *, f32);
     extern Slot_00210940 require_coordinate[];
@@ -804,6 +815,7 @@ typedef struct IntKey_00210CF0 {
     s32 value[3];
 } IntKey_00210CF0;
 
+/* One node's position, rotation and scale from a key-framed motion at `time`, interpolated between keys. */
 s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *position,
                   void *rotation, void *scale, f32 multiplier) {
     extern s32 RhGeom_RotationInterpolate(s32, s32, f32, f32);
@@ -963,6 +975,7 @@ extern u8 gRhModel_vecScale[];
 /* Fill the scratchpad header for a pulse-motion walk, then run lRhModel_SetupPulseMotionRecursive with the
    stack on the scratchpad (0x70004000), the real stack pointer kept in gRhModel_dwStack. */
 
+/* Builds a model's node matrices from a per-frame (pulse) motion at `time`. */
 s32 lRhModel_SetupPulseMotion(u8 *model, u8 *motion, f32 time) {
     u8 *spr = (u8 *)0x70000000;
     register void **saved;
@@ -1042,6 +1055,7 @@ extern s32 require_coordinate_index;
 extern Slot_00211530 require_coordinate[];
 
 
+/* One node of lRhModel_SetupPulseMotion, then its children and siblings. */
 s32 lRhModel_SetupPulseMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern s32 lRhModel_GetPulseMotionItem(void *, s64, u16, void *, void *, void *, f32);
     Spr_00211530 *spr = (Spr_00211530 *)0x70000000;
@@ -1151,6 +1165,7 @@ typedef struct Tracks_002118F0 {
     FloatKey_002118F0 *scale;
 } Tracks_002118F0;
 
+/* One node's position, rotation and scale from a per-frame motion at frame `time`. */
 s32 lRhModel_GetPulseMotionItem(void *src, u32 time, s32 flags, f32 *position,
                   s32 *rotation, f32 *scale, f32 factor) {
     extern s32 RhGeom_RotationInterpolate(s32, s32, f32, f32);
@@ -1305,7 +1320,8 @@ s32 lRhModel_GetPulseMotionItem(void *src, u32 time, s32 flags, f32 *position,
     return flags;
 }
 
-void lRhModel_SetupTexture(void *arg0, void *arg1, void *arg2, s32 arg3) {
+/* Points a model's texture packets at its loaded textures (`bank` picks the set). */
+void lRhModel_SetupTexture(void *model, void *textures0, void *textures1, s32 bank) {
     u8 *spA0;
     u8 *spB0;
     u8 *spC0;
@@ -1319,9 +1335,9 @@ void lRhModel_SetupTexture(void *arg0, void *arg1, void *arg2, s32 arg3) {
 
     extern s32 RhMem_CopyMemory16();
 
-    temp_a1 = (u8 *)arg0 + 0x10;
-    spDC = arg3;
-    if (*(s32 *)((u8 *)arg0 + 0x3C) != 0) {
+    temp_a1 = (u8 *)model + 0x10;
+    spDC = bank;
+    if (*(s32 *)((u8 *)model + 0x3C) != 0) {
         s32 *var_s0;
         s32 *var_s1;
         s32 temp_s2;
@@ -1332,11 +1348,11 @@ void lRhModel_SetupTexture(void *arg0, void *arg1, void *arg2, s32 arg3) {
         s32 temp_v0;
 
         temp_a2 = *(s32 *)(temp_a1 + 0x48);
-        temp_fp = (u8 *)arg0 + *(s32 *)(temp_a1 + 0x28);
+        temp_fp = (u8 *)model + *(s32 *)(temp_a1 + 0x28);
         if (temp_a2 == 0 || *(s32 *)(temp_a1 + 0x4C) == 0) {
             spA0 = NULL;
         } else {
-            spA0 = (u8 *)arg0 + temp_a2;
+            spA0 = (u8 *)model + temp_a2;
         }
         spB0 = temp_fp + 0x10;
         var_s7 = 0;
@@ -1357,11 +1373,11 @@ void lRhModel_SetupTexture(void *arg0, void *arg1, void *arg2, s32 arg3) {
                 switch (temp_a0_2) {
                 case 0x20000000:
                     temp_v0 = *var_s0 + 0x10;
-                    RhMem_CopyMemory16((u8 *)arg1 + (temp_a1_3 & 0x0FFFFFFF), (u32)temp_v0 + 0x20, 2);
+                    RhMem_CopyMemory16((u8 *)textures0 + (temp_a1_3 & 0x0FFFFFFF), (u32)temp_v0 + 0x20, 2);
                     break;
                 case 0x40000000:
                     temp_v0 = *var_s0 + 0x10;
-                    RhMem_CopyMemory16((u8 *)arg2 + (temp_a1_3 & 0x0FFFFFFF), (u32)temp_v0 + 0x20, 2);
+                    RhMem_CopyMemory16((u8 *)textures1 + (temp_a1_3 & 0x0FFFFFFF), (u32)temp_v0 + 0x20, 2);
                     break;
                 }
                 var_s4 += 1;
@@ -1383,6 +1399,7 @@ typedef struct State_00212170 {
     s32 enabled;
 } State_00212170;
 
+/* Clears a word. */
 static inline void clear_00212170(u32 *target) {
     target[0] = 0x10000000;
     target[1] = 0;
@@ -1392,6 +1409,7 @@ static inline void clear_00212170(u32 *target) {
 
 #pragma conditional_move off
 
+/* Sets up a model's optional parts (shown by `mask`). */
 s32 lRhModel_SetupOptionObject(void *arg0, void *arg1, void *arg2, s32 arg3, s32 mask) {
     s32 ret;
     u8 *base;
@@ -1461,6 +1479,7 @@ typedef struct Flags_00212250 {
 #pragma optimization_level 2
 #pragma schedule on
 
+/* Scales a model's material colours by its light intensity. */
 void lRhModel_SetMaterialIntensity(u8 *arg0, u8 *arg1, u8 *arg2, u8 *arg3, u8 *arg4) {
     if (arg0 < arg1) {
     do {
@@ -1707,27 +1726,30 @@ void lRhModel_SetMaterialIntensity(u8 *arg0, u8 *arg1, u8 *arg2, u8 *arg3, u8 *a
 
 #pragma optimization_level reset
 
-void lRhModel_ChangeL2VtoL2S(s32 arg0, s32 arg1, s32 arg2) {
+/* Turns `count` local-to-view matrices into local-to-screen ones. */
+void lRhModel_ChangeL2VtoL2S(s32 matrices, s32 viewScreen, s32 count) {
     s32 var_s0;
     s32 var_s1;
 
     var_s0 = 0;
-    if (var_s0 < arg2) {
-        var_s1 = arg0;
+    if (var_s0 < count) {
+        var_s1 = matrices;
         do {
-            RhGeom_MulMatrixRev(var_s1, arg1);
+            RhGeom_MulMatrixRev(var_s1, viewScreen);
             var_s0 += 1;
             var_s1 += 0x70;
-        } while (var_s0 < arg2);
+        } while (var_s0 < count);
     }
 }
 
+/* Empties the table of booked node coordinates. */
 void GetAnyCoordinateInit(void) {
     extern u32 require_coordinate_no;
 
     require_coordinate_no = 0;
 }
 
+/* Books node coordinate `id` to be recorded when its model next draws. */
 s32 BookingGetAnyCoordinate(s32 id) {
     if (require_coordinate_no >= 0x100) {
         return 0;
@@ -1738,7 +1760,8 @@ s32 BookingGetAnyCoordinate(s32 id) {
     return 1;
 }
 
-s32 GetAnyCoordinate(s32 arg0, void *arg1) {
+/* The recorded matrix of booked node coordinate `id` into `out`. Returns 0 if not recorded. */
+s32 GetAnyCoordinate(s32 id, void *out) {
     u32 i;
     s32 *state;
     s32 offset;
@@ -1746,12 +1769,12 @@ s32 GetAnyCoordinate(s32 arg0, void *arg1) {
     Slot_00211530 *record;
     u8 temporary[0x40];
 
-    if ((require_coordinate_no == 0) || (arg0 <= 0) || (arg1 == NULL)) {
+    if ((require_coordinate_no == 0) || (id <= 0) || (out == NULL)) {
         return 0;
     }
     record = require_coordinate;
     for (i = 0; i < require_coordinate_no; record++, i++) {
-        if (arg0 == record->id) {
+        if (id == record->id) {
             offset = i * 0x50;
             state = (s32 *)(D_0032A784 + offset);
             if (*state == -1) {
@@ -1765,7 +1788,7 @@ s32 GetAnyCoordinate(s32 arg0, void *arg1) {
                 func_00198790(payload, temporary, 0x40);
             }
             if (*state == 0) {
-                func_00198790(arg1, (u8 *)require_coordinate + offset + 0x10, 0x40);
+                func_00198790(out, (u8 *)require_coordinate + offset + 0x10, 0x40);
             }
             break;
         }
@@ -1776,23 +1799,24 @@ s32 GetAnyCoordinate(s32 arg0, void *arg1) {
     return 1;
 }
 
-u8 *RhModelCpu_DrawAlpha(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Draws a model part's translucent polygons on the CPU (sorted back to front) into the packet. */
+u8 *RhModelCpu_DrawAlpha(u8 *packet, s32 data, s32 size, s32 global) {
     u8 *temp_s1;
     u8 *temp_v0;
 
-    lRhModelCpu_SetupGlobal(arg3);
-    *(s32 *)(arg0 + 0) = 0x10000002;
-    *(s32 *)(arg0 + 4) = 0;
-    *(s32 *)(arg0 + 8) = 0x11000000;
-    *(s32 *)(arg0 + 0xC) = 0x51000002;
-    *(s64 *)(arg0 + 0x10) = 0x1000000000008001LL;
-    *(s64 *)(arg0 + 0x18) = 0xE;
-    *(s64 *)(arg0 + 0x20) = 0x73;
-    temp_s1 = arg0 + 0x30;
-    *(s64 *)(arg0 + 0x28) = 0;
-    temp_v0 = lRhModelCpu_TraceDynamicBlock(temp_s1, arg1, arg2);
+    lRhModelCpu_SetupGlobal(global);
+    *(s32 *)(packet + 0) = 0x10000002;
+    *(s32 *)(packet + 4) = 0;
+    *(s32 *)(packet + 8) = 0x11000000;
+    *(s32 *)(packet + 0xC) = 0x51000002;
+    *(s64 *)(packet + 0x10) = 0x1000000000008001LL;
+    *(s64 *)(packet + 0x18) = 0xE;
+    *(s64 *)(packet + 0x20) = 0x73;
+    temp_s1 = packet + 0x30;
+    *(s64 *)(packet + 0x28) = 0;
+    temp_v0 = lRhModelCpu_TraceDynamicBlock(temp_s1, data, size);
     if (temp_v0 == NULL) {
-        return arg0;
+        return packet;
     }
     lRhModelCpu_SortPolygon(temp_s1, temp_v0);
     lRhModelCpu_CleanupPacket(temp_s1, temp_v0);
@@ -1816,7 +1840,8 @@ typedef struct Spr_002130A0 {
     f32 f114;
 } Spr_002130A0;
 
-s32 lRhModelCpu_SetupGlobal(s32 arg0) {
+/* Sets up the CPU drawer's matrices and lights (`withLight`). */
+s32 lRhModelCpu_SetupGlobal(s32 withLight) {
     Spr_002130A0 *spr = (Spr_002130A0 *)0x70000000;
     u8 e[4];
     f32 near;
@@ -1848,7 +1873,7 @@ s32 lRhModelCpu_SetupGlobal(s32 arg0) {
     spr->f104 = sceDmaGetChan(8);
     spr->f5C = 1.0f;
     RhView_GetFogParameter(&near, &far, &c, &d, e);
-    if (arg0 != 0) {
+    if (withLight != 0) {
         spr->f110 = 255.0f * far / (far - near);
         spr->f114 = 255.0f / (far - near);
     } else {
@@ -1860,6 +1885,7 @@ s32 lRhModelCpu_SetupGlobal(s32 arg0) {
 
 #define P_002131D0 ((u8 *)data)
 
+/* Transforms a model part's dynamic block on the CPU into `out`. */
 u8 *lRhModelCpu_TraceDynamicBlock(u8 *out, s32 data, s32 size) {
     u8 *spr = (u8 *)0x70000000;
     u32 cmd;
@@ -1935,6 +1961,7 @@ u8 *lRhModelCpu_TraceDynamicBlock(u8 *out, s32 data, s32 size) {
 
 #undef P_002131D0
 
+/* Transforms a model part's static block on the CPU. */
 s32 lRhModelCpu_TraceStaticBlock(s32 arg0, u32 cursor, s32 size) {
     u32 end = cursor + size;
     u32 *scratchpad = (u32 *)0x70000000;
@@ -1980,6 +2007,7 @@ typedef struct {
 
 #define prim ((Prim_002134D0 *)arg0)
 
+/* Transforms a strip of separate vertices on the CPU. */
 s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
     u8 *scratch;
     u8 *var_s1;
@@ -2055,6 +2083,7 @@ typedef struct In_00213680 {
 #define OUT_00213680 ((Out_00213680 *)arg0)
 #define IN_00213680 ((In_00213680 *)arg1)
 
+/* Transforms one separate vertex on the CPU. */
 s8 lRhModelCpu_CalcIndepPoint(s32 arg0, s32 *arg1) {
     Spr_00213680 *spr = (Spr_00213680 *)0x70000000;
     register f32 *src = spr->in;
@@ -2125,6 +2154,7 @@ typedef struct {
 
 #pragma opt_lifetimes off
 
+/* Transforms a strip of shared vertices on the CPU. */
 s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
     extern s8 lRhModelCpu_CalcSharedPoint(s32, s32 *);
     u8 *scratch;
@@ -2205,6 +2235,7 @@ typedef struct In_00213A40 {
 #define OUT_00213A40 ((Out_00213A40 *)arg0)
 #define IN_00213A40 ((In_00213A40 *)arg1)
 
+/* Transforms one shared vertex on the CPU. */
 s8 lRhModelCpu_CalcSharedPoint(s32 arg0, s32 *arg1) {
     Spr_00213A40 *spr = (Spr_00213A40 *)0x70000000;
     register Weight_00213A40 *rec;
@@ -2301,6 +2332,7 @@ struct DotrWalkSortPad {
 #define DOTR_SORT_AT(i) (first + (i) - 1)
 #define DOTR_SORT_COPY(k) ((struct DotrWalkPolygon *)(((k) << 7) + (DotrWalkAddr)first - 128))
 
+/* Sorts the CPU drawer's polygons back to front. */
 void lRhModelCpu_SortPolygon(void *first_v, void *end_v)
 {
     struct DotrWalkPolygon * first = first_v;
@@ -2359,6 +2391,7 @@ void lRhModelCpu_SortPolygon(void *first_v, void *end_v)
 #undef DOTR_SORT_AT
 #undef DOTR_SORT_COPY
 
+/* Finishes the CPU drawer's packet. */
 void lRhModelCpu_CleanupPacket(u8 *start, u8 *end) {
     s32 *field;
     s32 previous;
@@ -2384,13 +2417,15 @@ void lRhModelCpu_CleanupPacket(u8 *start, u8 *end) {
     }
 }
 
-void RhZSort_Start(s32 arg0, s32 arg1) {
-    gRhZSort_zsl = arg0;
-    D_0032F784 = arg1;
-    D_0032F78C = arg1;
+/* Starts a depth-sorted polygon list at `list` with room for `count`. */
+void RhZSort_Start(s32 list, s32 count) {
+    zSortList = list;
+    D_0032F784 = count;
+    D_0032F78C = count;
     D_0032F788 = 1;
 }
 
+/* Sorts and sends the depth-sorted polygon list. */
 void RhZSort_Finish(void) {
     RhBase_SetVifPacketArea(RhZSort_Finish_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -2408,13 +2443,14 @@ typedef struct {
 } State_00213FC0;
 
 
-s32 RhZSort_Finish_Pipe(s32 arg0) {
-    State_00213FC0 *state = (State_00213FC0 *)&gRhZSort_zsl;
-    s32 *output = (s32 *)arg0;
+/* Sorts the depth-sorted polygon list and writes it into the packet. */
+s32 RhZSort_Finish_Pipe(s32 packet) {
+    State_00213FC0 *state = (State_00213FC0 *)&zSortList;
+    s32 *output = (s32 *)packet;
     Record_00213FC0 *record;
 
     if (D_0032F78C == D_0032F784) {
-        return arg0;
+        return packet;
     }
 
     RhMath_HeapSortStruct(state->begin, state->end - state->begin, 8, lRhZSort_ZCompare);
@@ -2432,8 +2468,9 @@ s32 RhZSort_Finish_Pipe(s32 arg0) {
     return (s32)output;
 }
 
-s32 lRhZSort_ZCompare(s32 *arg0, s32 *arg1) {
-    return *arg0 - *arg1;
+/* Compares two polygons by depth. */
+s32 lRhZSort_ZCompare(s32 *a, s32 *b) {
+    return *a - *b;
 }
 
 typedef struct Flags_00214090 {
@@ -2451,8 +2488,9 @@ typedef struct Header_00214090 {
     u32 extra;
 } Header_00214090;
 
-s32 NjaReloc_Adjust_M3DMOT(void *arg0) {
-    Header_00214090 *header = arg0;
+/* Relocates a motion file (its offsets become pointers). */
+s32 NjaReloc_Adjust_M3DMOT(void *motion) {
+    Header_00214090 *header = motion;
 
     if (header->magic != 0x1A544F4D) {
         return 0;
@@ -2463,73 +2501,76 @@ s32 NjaReloc_Adjust_M3DMOT(void *arg0) {
     return 1;
 }
 
-s32 lNjaReloc_AdjustMotion(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Relocates one motion's data against `base`. */
+s32 lNjaReloc_AdjustMotion(void *motion, s32 base, s32 count, s32 first) {
     s32 temp_v1;
     s32 temp_v0;
     s32 temp_v0_2;
 
-    if (arg3 != 0) {
-        *(s32 *)((u8 *)arg0 - 4) = arg1 + *(s32 *)((u8 *)arg0 - 4);
+    if (first != 0) {
+        *(s32 *)((u8 *)motion - 4) = base + *(s32 *)((u8 *)motion - 4);
     }
-    temp_v1 = *(u16 *)((u8 *)arg0 + 8) & 0x3F;
+    temp_v1 = *(u16 *)((u8 *)motion + 8) & 0x3F;
     if (temp_v1 == 3) {
-        temp_v0 = *(s32 *)arg0;
+        temp_v0 = *(s32 *)motion;
         if (temp_v0 != 0) {
-            *(s32 *)arg0 = arg1 + temp_v0;
-            lNjaReloc_AdjustMData2((u8 *)*(s32 *)arg0, arg1, arg2, arg3);
+            *(s32 *)motion = base + temp_v0;
+            lNjaReloc_AdjustMData2((u8 *)*(s32 *)motion, base, count, first);
         }
     } else if (temp_v1 == 7) {
-        temp_v0_2 = *(s32 *)arg0;
+        temp_v0_2 = *(s32 *)motion;
         if (temp_v0_2 != 0) {
-            *(s32 *)arg0 = arg1 + temp_v0_2;
-            lNjaReloc_AdjustMData3((u8 *)*(s32 *)arg0, arg1, arg2, arg3);
+            *(s32 *)motion = base + temp_v0_2;
+            lNjaReloc_AdjustMData3((u8 *)*(s32 *)motion, base, count, first);
         }
     }
     return 1;
 }
 
-s32 lNjaReloc_AdjustMData2(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Relocates a motion's two-channel key data. */
+s32 lNjaReloc_AdjustMData2(u8 *data, s32 base, s32 count, s32 first) {
     s32 i;
     s32 j;
     s32 *p;
 
-    if (arg3 != 0) {
-        *(s32 *)(arg0 - 4) = arg1 + *(s32 *)(arg0 - 4);
+    if (first != 0) {
+        *(s32 *)(data - 4) = base + *(s32 *)(data - 4);
     }
-    for (i = 0; i < arg2; i++) {
+    for (i = 0; i < count; i++) {
         j = 0;
-        p = (s32 *)arg0;
+        p = (s32 *)data;
         do {
             if (*p != 0) {
-                *p = arg1 + *p;
-                if (arg3 != 0) {
-                    *(s32 *)(*p - 4) = arg1 + *(s32 *)(*p - 4);
+                *p = base + *p;
+                if (first != 0) {
+                    *(s32 *)(*p - 4) = base + *(s32 *)(*p - 4);
                 }
             }
             j++;
             p++;
         } while (j < 2);
-        arg0 += 0x10;
+        data += 0x10;
     }
     return 1;
 }
 
-s32 lNjaReloc_AdjustMData3(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Relocates a motion's three-channel key data. */
+s32 lNjaReloc_AdjustMData3(u8 *data, s32 base, s32 count, s32 first) {
     s32 i;
     s32 j;
     s32 *p;
 
-    if (arg3 != 0) {
-        *(s32 *)(arg0 - 4) = arg1 + *(s32 *)(arg0 - 4);
+    if (first != 0) {
+        *(s32 *)(data - 4) = base + *(s32 *)(data - 4);
     }
-    for (i = 0; i < arg2; i++, arg0 += 0x18) {
+    for (i = 0; i < count; i++, data += 0x18) {
         j = 0;
-        p = (s32 *)arg0;
+        p = (s32 *)data;
         do {
             if (*p != 0) {
-                *p = arg1 + *p;
-                if (arg3 != 0) {
-                    *(s32 *)(*p - 4) = arg1 + *(s32 *)(*p - 4);
+                *p = base + *p;
+                if (first != 0) {
+                    *(s32 *)(*p - 4) = base + *(s32 *)(*p - 4);
                 }
             }
             j++;
@@ -3033,7 +3074,7 @@ s32 SzData_GetOption(s32 player, s32 option) {
 }
 
 /* The trunk entry of card `card` for side `side` of `type` with its flag set as `flag`, or NULL. */
-void *SzData_CheckBag(s32 player, s32 card, s32 arg2, s32 flag) {
+void *SzData_CheckBag(s32 player, s32 card, s32 typeIn, s32 flag) {
     typedef struct {
         u32 id : 31;
         u32 active : 1;
@@ -3061,7 +3102,7 @@ void *SzData_CheckBag(s32 player, s32 card, s32 arg2, s32 flag) {
     entry = (Entry_00214DD0 *)((u8 *)saveProfiles + side * 0xFFA0 + card * 0x4C);
     count = 9;
     while (count--) {
-        if (entry->id != 0 && entry->type == arg2 &&
+        if (entry->id != 0 && entry->type == typeIn &&
             (entry->active != 0) == (flag == 1)) {
             return entry;
         }

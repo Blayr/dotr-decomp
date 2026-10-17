@@ -706,7 +706,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
 }
 
 /* Draws the leave-custom-duel dialog (yes / no). */
-void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 arg1, s32 top) {
+void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
     s32 text = (s32)D_002BEF98;
@@ -714,11 +714,11 @@ void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 arg1, s32 top) {
     s8 *text3 = D_002BEF73;
     s32 id;
 
-    packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x91, arg1 + 0x140, top + 0x94, 0x140, 0x98,
+    packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x91, left + 0x140, top + 0x94, 0x140, 0x98,
                          func_0019BEF0((char *)text), text, 0);
-    id = SzDuel_DrawWindow_Font_Pipe(packet, arg1 + 0xF0, top + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
+    id = SzDuel_DrawWindow_Font_Pipe(packet, left + 0xF0, top + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
                        *(u8 *)0xA9C08E != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(id, arg1 + 0x190, top + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
+    SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
                   *(u8 *)0xA9C08E != 0 ? (s32)D_002BE944 : 0);
 }
 

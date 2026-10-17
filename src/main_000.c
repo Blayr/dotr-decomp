@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* The program's entry stub (jumps to the start-up code). */
 asm void func_00100000(void) {
     .set noreorder
     nop
@@ -14,6 +15,7 @@ extern s32 D_12000;
 extern s32 D_20000;
 extern s32 _stack;
 
+/* Start-up code: clears .bss, sets up the stack, the heap and the thread, calls main. */
 asm void func_00100008(void) {
     .set noreorder
     la v0, g_vec_temp
@@ -54,6 +56,7 @@ L_00100018:
 
 /* Hand-written tail jump (GCC-style move into the delay slot). */
 
+/* A start-up stub. */
 asm void func_001000B8(void) {
     .set noreorder
     j func_001847B0
@@ -66,6 +69,7 @@ asm void func_001000C0(void) {
     syscall 0
 }
 
+/* The program: starts everything (Main_Init), runs the main loop until it ends, then shuts down. */
 s32 main(void) {
     asm {
         la sp, D_912000
@@ -86,6 +90,7 @@ s32 main(void) {
     return 0;
 }
 
+/* Starts the hardware and every system: memory, files, pads, sound, renderer, models, text, the game. */
 s32 Main_Init(void) {
     SzFile_Init();
     if (RhBase_Init(0, 0xA, 0x31, 0x600000, 0x780000, 0x180000, 0x4000000) == 0) {
@@ -133,6 +138,7 @@ typedef struct {
 
 extern Entry_00100350 gMain_ModelData[];
 
+/* Starts the model and effect systems. */
 s32 lMain_InitModel2(void) {
     s32 index;
 
@@ -166,6 +172,7 @@ s32 lMain_InitModel2(void) {
     return 1;
 }
 
+/* Shuts the systems down. */
 void Main_Term(void) {
     s32 i;
 
@@ -179,6 +186,7 @@ void Main_Term(void) {
     SzPad_Term();
 }
 
+/* The main loop: one game frame per pass. */
 void Main_Loop(void) {
     RhBase_SetVSyncCallback(SzEffect_StoneProc);
     for (;;) {
@@ -189,6 +197,7 @@ void Main_Loop(void) {
     }
 }
 
+/* One game frame: pads, the current game mode, drawing, and waiting for the frame's vertical blanks. */
 void Main_LoopProc(void) {
     SzPad_Status();
     SzSound_VSync();
@@ -208,22 +217,24 @@ void Main_LoopProc(void) {
     SzPad_Act();
 }
 
-void func_00100610(s32 arg0) {
-    s32 sp20;
-    s32 sp24;
-    s32 sp28;
-    s32 sp2C;
+/* Sets the GS display registers for the screen size and buffer format; `dim` halves the brightness. */
+void func_00100610(s32 dim) {
+    s32 width;
+    s32 height;
+    s32 fbp;
+    s32 psm;
 
-    RhBase_GetScreenSize(&sp20, &sp24);
-    RhBase_GetBufferFormatEx(0, &sp28, &sp2C, NULL);
-    *(s64 *)0x12000000 = ((s64) (arg0 ? 0x7F : 0xFF) << 8) | 0x23;
-    *(s64 *)0x12000090 = ((s64) sp2C << 15) | ((s64) (sp28 >> 5) | ((s64) (sp20 >> 6) << 9));
-    *(s64 *)0x120000A0 = ((s64) (sp24 - 1) << 44) | (((s64) ((sp20 * 4) - 1) << 32) | 0x0183227C);
-    *(s64 *)0x12000070 = ((s64) sp2C << 15) | ((s64) (sp28 >> 5) | ((s64) (sp20 >> 6) << 9));
-    *(s64 *)0x12000080 = ((s64) (sp24 - 1) << 44) | (((s64) ((sp20 * 4) - 1) << 32) | 0x0183327C);
+    RhBase_GetScreenSize(&width, &height);
+    RhBase_GetBufferFormatEx(0, &fbp, &psm, NULL);
+    *(s64 *)0x12000000 = ((s64) (dim ? 0x7F : 0xFF) << 8) | 0x23;
+    *(s64 *)0x12000090 = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
+    *(s64 *)0x120000A0 = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183227C);
+    *(s64 *)0x12000070 = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
+    *(s64 *)0x12000080 = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183327C);
     *(s64 *)0x120000D0 = 0;
 }
 
+/* Loads the models every mode needs. */
 void lMain_LoadModel(void) {
     extern s32 SzModel_GetModelType(s32);
     s32 i;
@@ -243,6 +254,7 @@ void lMain_LoadModel(void) {
     }
 }
 
+/* The main program's vertical-blank handler. */
 s32 Main_VSync(void) {
     func_0019A5C8();
     SzPad_VSync();
@@ -258,6 +270,7 @@ typedef union {
     } color;
 } Color_00100850;
 
+/* Draws a frame: the 3D scene, the overlays, soft focus, then swaps the buffers. */
 void Main_Draw(void) {
     extern s32 SzGame_InqAutoBlur();
     extern s32 SzText_InitClutManage();
@@ -339,13 +352,14 @@ typedef struct Vec4_00100B00 {
 
 extern f32 g_vec_temp[];
 
-void GRotTransPers_3(void *arg0, void *arg1, void *arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Projects triangle (a, b, c) with Q values into the draw packet. */
+void GRotTransPers_3(void *a, void *b, void *c, s32 matrix, s32 packet, s32 average) {
     Vec4_00100B00 vertices[3];
 
-    vertices[0] = *(Vec4_00100B00 *)arg0;
-    vertices[1] = *(Vec4_00100B00 *)arg1;
-    vertices[2] = *(Vec4_00100B00 *)arg2;
-    Ex3d_RotTransPersAutoCalcQ(vertices, g_vec_temp, arg3, arg4, arg5);
+    vertices[0] = *(Vec4_00100B00 *)a;
+    vertices[1] = *(Vec4_00100B00 *)b;
+    vertices[2] = *(Vec4_00100B00 *)c;
+    Ex3d_RotTransPersAutoCalcQ(vertices, g_vec_temp, matrix, packet, average);
 }
 
 typedef struct Vec4_00100BA0 {
@@ -354,15 +368,16 @@ typedef struct Vec4_00100BA0 {
 
 extern f32 g_vec_temp[];
 
-void GRotTransPers_4(void *arg0, void *arg1, void *arg2, void *arg3,
-                   s32 arg4, s32 arg5, s32 arg6) {
+/* Projects quad (a, b, c, d) with Q values into the draw packet. */
+void GRotTransPers_4(void *a, void *b, void *c, void *d,
+                   s32 matrix, s32 packet, s32 average) {
     Vec4_00100BA0 vectors[4];
 
-    vectors[0] = *(Vec4_00100BA0 *)arg0;
-    vectors[1] = *(Vec4_00100BA0 *)arg1;
-    vectors[2] = *(Vec4_00100BA0 *)arg2;
-    vectors[3] = *(Vec4_00100BA0 *)arg3;
-    Ex3d_RotTransPersAutoCalcQ(vectors, g_vec_temp, arg4, arg5, arg6);
+    vectors[0] = *(Vec4_00100BA0 *)a;
+    vectors[1] = *(Vec4_00100BA0 *)b;
+    vectors[2] = *(Vec4_00100BA0 *)c;
+    vectors[3] = *(Vec4_00100BA0 *)d;
+    Ex3d_RotTransPersAutoCalcQ(vectors, g_vec_temp, matrix, packet, average);
 }
 
 typedef struct {
@@ -372,24 +387,25 @@ typedef struct {
     u16 flags_y : 2;
 } PackedCoordinates_00100C60;
 
-void GSet_WindowUv(void *arg0, void *arg1, s32 arg2, s32 arg3) {
-    s32 var_a1;
-    s32 var_a2;
+/* Sets a texture coordinate from a screen vertex moved by (dx, dy), kept inside the 640x448 screen. */
+void GSet_WindowUv(void *uv, void *vertex, s32 dx, s32 dy) {
+    s32 u;
+    s32 v;
 
-    var_a1 = ((s32) ((u16 *) arg1)[0] >> 4) - 0x6C0 + arg2;
-    var_a2 = ((s32) ((u16 *) arg1)[1] >> 4) - 0x720 + arg3;
-    if (var_a1 <= 0) {
-        var_a1 = 1;
-    } else if (var_a1 > 0x27F) {
-        var_a1 = 0x27F;
+    u = ((s32) ((u16 *) vertex)[0] >> 4) - 0x6C0 + dx;
+    v = ((s32) ((u16 *) vertex)[1] >> 4) - 0x720 + dy;
+    if (u <= 0) {
+        u = 1;
+    } else if (u > 0x27F) {
+        u = 0x27F;
     }
-    if (var_a2 <= 0) {
-        var_a2 = 1;
-    } else if (var_a2 > 0x1BF) {
-        var_a2 = 0x1BF;
+    if (v <= 0) {
+        v = 1;
+    } else if (v > 0x1BF) {
+        v = 0x1BF;
     }
-    ((PackedCoordinates_00100C60 *) arg0)->x = var_a1 << 4;
-    ((PackedCoordinates_00100C60 *) arg0)->y = var_a2 << 4;
+    ((PackedCoordinates_00100C60 *) uv)->x = u << 4;
+    ((PackedCoordinates_00100C60 *) uv)->y = v << 4;
 }
 
 typedef struct {
@@ -399,23 +415,25 @@ typedef struct {
 } Vec3_00100D00;
 
 
-s32 GGet_ModelPosZSign(s32 arg0) {
+/* Whether unit `id`'s model is in front of (1) or behind (-1) the board's centre line. */
+s32 GGet_ModelPosZSign(s32 id) {
     Vec3_00100D00 v;
     s32 ret;
 
     ret = 1;
-    SzEffect_GetModelPos2(arg0, &v);
+    SzEffect_GetModelPos2(id, &v);
     if (v.z < 0.0f) {
         ret = -1;
     }
     return ret;
 }
 
-f32 GCalc_Trans(s32 arg0, s32 arg1, s32 arg2) {
-    f32 temp_f20;
+/* A wave-shaped fade value (0..1) for frame `frame` of `length`, with power `power`. */
+f32 GCalc_Trans(s32 frame, s32 length, s32 power) {
+    f32 wave;
 
-    temp_f20 = func_001A6B70(6.2831855f * ((f32) ((s32) ((arg1 - arg0) << 0x10) / (s32) (arg1 * 5)) / 65536.0f));
-    return 1.0f - func_001A6C48(temp_f20 / func_001A6B70(1.2566179f), (f32) arg2);
+    wave = func_001A6B70(6.2831855f * ((f32) ((s32) ((length - frame) << 0x10) / (s32) (length * 5)) / 65536.0f));
+    return 1.0f - func_001A6C48(wave / func_001A6B70(1.2566179f), (f32) power);
 }
 
 typedef struct {
@@ -424,14 +442,15 @@ typedef struct {
 
 extern Config_00100E00 D_0028C210;
 
-void GRot_Matrix(s32 arg0, s32 arg1, s32 arg2) {
+/* Rotates matrix `matrix` by `angle` around axis `axis` (0 x, 1 y, 2 z). */
+void GRot_Matrix(s32 matrix, s32 angle, s32 axis) {
     Config_00100E00 values;
     u32 *words = (u32 *)&values;
 
     values = D_0028C210;
-    arg1 &= 0xFFFF;
-    words[arg2] = arg1;
-    RhGeom_RotXYZMatrix(arg0, words);
+    angle &= 0xFFFF;
+    words[axis] = angle;
+    RhGeom_RotXYZMatrix(matrix, words);
 }
 
 #ifndef GAME_H
@@ -445,6 +464,7 @@ extern Config_00100E00 D_0028C210;
 
 
 
+/* Builds a matrix turning the z axis onto `vector`. */
 void GVec2RotMat_Z(void *matrix, f32 *vector) {
     Config_00100E00 rotationZ;
     Config_00100E00 rotationY;
@@ -464,6 +484,7 @@ void GVec2RotMat_Z(void *matrix, f32 *vector) {
     RhGeom_RotXYZMatrix((s32)matrix, (u32 *)&rotationY);
 }
 
+/* The centre of triangle (a, b, c) into `out`. */
 void GGet_TriangleCenter(float *out, float *a, float *b, float *c)
 {
     float v[2][4];
@@ -475,37 +496,41 @@ void GGet_TriangleCenter(float *out, float *a, float *b, float *c)
     sceVu0AddVector(out, v[1], v[0]);
 }
 
-f32 GCalc_Decrease(f32 fparg0, f32 fparg1, f32 fparg2) {
-    f32 var_f0;
+/* 1 until `value` passes `end`, then falling from 1 as it nears `start` (a fade-out ramp). */
+f32 GCalc_Decrease(f32 value, f32 start, f32 end) {
+    f32 result;
 
-    var_f0 = 1.0f;
-    if (!(fparg0 <= fparg2)) {
-        var_f0 = (fparg0 - fparg1) / (fparg2 - fparg1);
+    result = 1.0f;
+    if (!(value <= end)) {
+        result = (value - start) / (end - start);
     }
-    return var_f0;
+    return result;
 }
 
-f32 GCalc_Increase(f32 fparg0, f32 fparg1) {
-    f32 var_f0;
+/* `value` / `length`, at most 1 (a fade-in ramp). */
+f32 GCalc_Increase(f32 value, f32 length) {
+    f32 result;
 
-    var_f0 = 1.0f;
-    if (fparg0 < fparg1) {
-        var_f0 = fparg0 / fparg1;
+    result = 1.0f;
+    if (value < length) {
+        result = value / length;
     }
-    return var_f0;
+    return result;
 }
 
-s32 GWithin_LimitsI(s32 arg0, s32 arg1, s32 arg2) {
-    if (arg0 < arg1) {
-        arg0 = arg1;
-    } else if (arg2 < arg0) {
-        arg0 = arg2;
+/* `value` clamped to low..high. */
+s32 GWithin_LimitsI(s32 value, s32 low, s32 high) {
+    if (value < low) {
+        value = low;
+    } else if (high < value) {
+        value = high;
     }
-    return arg0;
+    return value;
 }
 
 extern f32 g_rand_f[4][32][3];
 
+/* Rotates a matrix around one axis. */
 static inline void rotate_00101080(void *matrix, s32 angle, s32 axis) {
     Config_00100E00 values;
     u32 *words = (u32 *)&values;
@@ -516,6 +541,7 @@ static inline void rotate_00101080(void *matrix, s32 angle, s32 axis) {
     RhGeom_RotXYZMatrix((s32)matrix, words);
 }
 
+/* A random direction of length `scale` into `vector`. */
 void GSet_RandVector(f32 *vector, f32 scale) {
     f32 matrix[16];
     f32 *value;
@@ -553,10 +579,11 @@ typedef struct Vec4_00101430 {
     f32 w;
 } Vec4_00101430;
 
-s32 GJudge_FrontBack2(void *arg0, void *arg1, void *arg2) {
-    Point_00101430 *a = arg0;
-    Point_00101430 *b = arg1;
-    Point_00101430 *c = arg2;
+/* Whether screen triangle (a, b, c) faces the camera. */
+s32 GJudge_FrontBack2(void *aIn, void *bIn, void *cIn) {
+    Point_00101430 *a = aIn;
+    Point_00101430 *b = bIn;
+    Point_00101430 *c = cIn;
     s32 result = 1;
     f32 normal[4];
     Vec4_00101430 verts[3];
@@ -580,18 +607,19 @@ s32 GJudge_FrontBack2(void *arg0, void *arg1, void *arg2) {
     return result;
 }
 
-s32 ShFx_isClip(void *arg0) {
+/* Whether a screen vertex is inside the drawable area. */
+s32 ShFx_isClip(void *vertex) {
     u16 x;
     u16 y;
 
-    x = ((u16 *)arg0)[0];
+    x = ((u16 *)vertex)[0];
     if ((f32)x < 22528.0f) {
         return 0;
     }
     if (!((f32)x <= 43008.0f)) {
         return 0;
     }
-    y = ((u16 *)arg0)[1];
+    y = ((u16 *)vertex)[1];
     if ((f32)y < 25600.0f) {
         return 0;
     }
@@ -601,8 +629,9 @@ s32 ShFx_isClip(void *arg0) {
     return 1;
 }
 
-s32 ShFx_isClipSC(void *arg0) {
-    u16 *p = (u16 *)arg0;
+/* Whether a screen point is inside the drawable area. */
+s32 ShFx_isClipSC(void *point) {
+    u16 *p = (u16 *)point;
     if ((f32)(u32)p[0] < 27648.0f) return 0;
     if ((f32)(u32)p[0] > 37888.0f) return 0;
     if ((f32)(u32)p[1] < 29184.0f) return 0;
@@ -610,16 +639,19 @@ s32 ShFx_isClipSC(void *arg0) {
     return 1;
 }
 
-f32 ShFx_GetDrawSize(f32 fparg0, f32 fparg1) {
-    return (fparg0 / (fparg1 / 256.0f)) * (SzView_GetScreenDistance(0) / 800.0f);
+/* The screen size of an object of `size` at depth `w`, at the current lens. */
+f32 ShFx_GetDrawSize(f32 size, f32 w) {
+    return (size / (w / 256.0f)) * (SzView_GetScreenDistance(0) / 800.0f);
 }
 
-void ShFx_Vec2Rot(f32 *arg0, s32 *arg1) {
-    arg1[0] = (u16) func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(arg0[0] * arg0[0] + arg0[2] * arg0[2]), arg0[1]) / 6.2831855f));
-    arg1[1] = (u16) func_001A22C0(65536.0f * (func_001A6C18(arg0[0], arg0[2]) / 6.2831855f));
-    arg1[2] = 0;
+/* The rotation (pitch, heading) that points along `vec`. */
+void ShFx_Vec2Rot(f32 *vec, s32 *rot) {
+    rot[0] = (u16) func_001A22C0(65536.0f * (func_001A6C18(func_001A6C60(vec[0] * vec[0] + vec[2] * vec[2]), vec[1]) / 6.2831855f));
+    rot[1] = (u16) func_001A22C0(65536.0f * (func_001A6C18(vec[0], vec[2]) / 6.2831855f));
+    rot[2] = 0;
 }
 
+/* The rotation matrix that points along `src`. */
 void ShFx_Vec2Mat(f32 *src, void *dst) {
     extern void RhGeom_GetRotXYZMatrix(void *, s32 *);
     s32 angles[3];
@@ -630,11 +662,12 @@ void ShFx_Vec2Mat(f32 *src, void *dst) {
     RhGeom_GetRotXYZMatrix(dst, angles);
 }
 
-void ShFx_initTimer(s8 *arg0, s8 arg1, s8 arg2, s8 arg3) {
-    arg0[2] = arg1;
-    arg0[0] = arg1;
-    arg0[1] = arg2;
-    arg0[3] = arg3;
+/* Starts effect timer `timer`: `count` ticks after `delay`, with `step`. */
+void ShFx_initTimer(s8 *timer, s8 count, s8 delay, s8 step) {
+    timer[2] = count;
+    timer[0] = count;
+    timer[1] = delay;
+    timer[3] = step;
 }
 
 typedef struct Timer_00101AF0 {
@@ -642,28 +675,30 @@ typedef struct Timer_00101AF0 {
     u8 delay;
 } Timer_00101AF0;
 
-s32 ShFx_isTimer(void *arg0) {
-    Timer_00101AF0 *timer = arg0;
-    u8 temp_v0;
-    u8 temp_v1;
+/* Ticks an effect timer: 1 when a tick fires. */
+s32 ShFx_isTimer(void *timerIn) {
+    Timer_00101AF0 *timer = timerIn;
+    u8 delay;
+    u8 count;
 
-    temp_v1 = timer->count;
-    if (temp_v1 == 0) {
+    count = timer->count;
+    if (count == 0) {
         return 0;
     }
-    temp_v0 = timer->delay;
-    if (temp_v0 != 0) {
-        timer->delay = (u8) (temp_v0 - 1);
+    delay = timer->delay;
+    if (delay != 0) {
+        timer->delay = (u8) (delay - 1);
         return 0;
     }
-    timer->count = (u8) (temp_v1 - 1);
+    timer->count = (u8) (count - 1);
     return 1;
 }
 
-void ShFx_initPartsTimer(void *arg0, s8 arg1, s8 arg2) {
-    ((s8 *)arg0)[2] = arg1;
-    ((s8 *)arg0)[0] = arg1;
-    ((s8 *)arg0)[1] = arg2;
+/* Starts a particle timer: `count` ticks after `delay`. */
+void ShFx_initPartsTimer(void *timer, s8 count, s8 delay) {
+    ((s8 *)timer)[2] = count;
+    ((s8 *)timer)[0] = count;
+    ((s8 *)timer)[1] = delay;
 }
 
 typedef struct Counter_00101B50 {
@@ -671,8 +706,9 @@ typedef struct Counter_00101B50 {
     u8 delay;
 } Counter_00101B50;
 
-s32 ShFx_isPartsTimer(void *arg0) {
-    Counter_00101B50 *counter = arg0;
+/* Ticks a particle timer: 1 when a tick fires. */
+s32 ShFx_isPartsTimer(void *timer) {
+    Counter_00101B50 *counter = timer;
 
     if (counter->count == 0) {
         return 0;
@@ -685,44 +721,47 @@ s32 ShFx_isPartsTimer(void *arg0) {
     return 1;
 }
 
-void ShFx_AdjustPoint(void *arg0, s32 arg1) {
-    u8 temp_a0;
+/* Moves an effect point onto its anchor (the effect's source or target model), into `out`. */
+void ShFx_AdjustPoint(void *point, s32 out) {
+    u8 anchor;
 
-    temp_a0 = *((u8 *)arg0 + 5);
-    switch (temp_a0) {
+    anchor = *((u8 *)point + 5);
+    switch (anchor) {
     case 0:
         return;
     case 1:
-        SzEffect_GetRef2(SzEffect_GetFrom(temp_a0), *((u8 *)arg0 + 6), arg1);
+        SzEffect_GetRef2(SzEffect_GetFrom(anchor), *((u8 *)point + 6), out);
         return;
     case 2:
-        SzEffect_GetRef2(SzEffect_GetTarget(temp_a0), *((u8 *)arg0 + 6), arg1);
+        SzEffect_GetRef2(SzEffect_GetTarget(anchor), *((u8 *)point + 6), out);
         return;
     }
 }
 
-s32 ShFx_GetTempIndex(u8 *arg0, s32 arg1, s32 arg2) {
+/* The first free record of `count` records of `size` bytes, or -1. */
+s32 ShFx_GetTempIndex(u8 *records, s32 size, s32 count) {
     s32 offset;
     s32 i;
 
     i = 0;
-    if (i < arg2) {
+    if (i < count) {
         offset = 0;
         do {
-            if (arg0[offset] == 0) {
+            if (records[offset] == 0) {
                 return i;
             }
             i++;
-            offset += arg1;
-        } while (i < arg2);
+            offset += size;
+        } while (i < count);
     }
     return -1;
 }
 
-void ShFx_GetAlpha(void *arg0, void *arg1) {
-    s8 *out = (s8 *)arg1;
+/* The alpha blend words for an effect sprite's blend mode into `out`. */
+void ShFx_GetAlpha(void *sprite, void *outIn) {
+    s8 *out = (s8 *)outIn;
 
-    switch (((u8 *)arg0)[5]) {
+    switch (((u8 *)sprite)[5]) {
     case 1:
         out[0] = 0;
         out[1] = 1;
@@ -769,10 +808,11 @@ typedef struct Sprite_00101D20 {
     Vert_00101D20 v[4];
 } Sprite_00101D20;
 
-void ShFx_SetTexFT4(void *arg0, void *arg1, void *arg2) {
-    Sprite_00101D20 *dst = arg0;
-    s32 *src = arg1;
-    u8 sp4C[4];
+/* Fills a flat-shaded textured sprite from an effect's texture rectangle. */
+void ShFx_SetTexFT4(void *prim, void *rect, void *texture) {
+    Sprite_00101D20 *dst = prim;
+    s32 *src = rect;
+    u8 alpha[4];
 
     dst->flags |= 0x800;
     dst->v[0].x.val = src[2] << 4;
@@ -783,11 +823,11 @@ void ShFx_SetTexFT4(void *arg0, void *arg1, void *arg2) {
     dst->v[2].y.val = src[5] << 4;
     dst->v[3].x.val = src[3] << 4;
     dst->v[3].y.val = src[5] << 4;
-    ExAssignClamp(arg0, 0xA | ((s64)src[2] << 4) | ((s64)(src[3] - 1) << 14) | ((s64)src[4] << 24) |
+    ExAssignClamp(prim, 0xA | ((s64)src[2] << 4) | ((s64)(src[3] - 1) << 14) | ((s64)src[4] << 24) |
                             ((s64)(src[5] - 1) << 34));
-    ExAssignTexture(arg0, arg2, 1);
-    ShFx_GetAlpha(arg1, sp4C);
-    ExAssignAlpha(arg0, (s64)sp4C[0] | ((s64)sp4C[1] << 2) | ((s64)sp4C[2] << 4) | ((s64)sp4C[3] << 6));
+    ExAssignTexture(prim, texture, 1);
+    ShFx_GetAlpha(rect, alpha);
+    ExAssignAlpha(prim, (s64)alpha[0] | ((s64)alpha[1] << 2) | ((s64)alpha[2] << 4) | ((s64)alpha[3] << 6));
 }
 
 typedef struct Coord_00101EE0 {
@@ -809,10 +849,11 @@ typedef struct Sprite_00101EE0 {
     Vert_00101EE0 v[4];
 } Sprite_00101EE0;
 
-void ShFx_SetTexGT4(void *arg0, void *arg1, void *arg2) {
-    Sprite_00101EE0 *dst = arg0;
-    s32 *src = arg1;
-    u8 sp4C[4];
+/* Fills a Gouraud-shaded textured sprite from an effect's texture rectangle. */
+void ShFx_SetTexGT4(void *prim, void *rect, void *texture) {
+    Sprite_00101EE0 *dst = prim;
+    s32 *src = rect;
+    u8 alpha[4];
 
     dst->flags |= 0x800;
     dst->v[0].x.val = src[2] << 4;
@@ -823,15 +864,16 @@ void ShFx_SetTexGT4(void *arg0, void *arg1, void *arg2) {
     dst->v[2].y.val = src[5] << 4;
     dst->v[3].x.val = src[3] << 4;
     dst->v[3].y.val = src[5] << 4;
-    ExAssignClamp(arg0, 0xA | ((s64)src[2] << 4) | ((s64)(src[3] - 1) << 14) | ((s64)src[4] << 24) |
+    ExAssignClamp(prim, 0xA | ((s64)src[2] << 4) | ((s64)(src[3] - 1) << 14) | ((s64)src[4] << 24) |
                             ((s64)(src[5] - 1) << 34));
-    ExAssignTexture(arg0, arg2, 1);
-    if (((u8 *)arg1)[5] != 0) {
-        ShFx_GetAlpha(arg1, sp4C);
-        ExAssignAlpha(arg0, (s64)sp4C[0] | ((s64)sp4C[1] << 2) | ((s64)sp4C[2] << 4) | ((s64)sp4C[3] << 6));
+    ExAssignTexture(prim, texture, 1);
+    if (((u8 *)rect)[5] != 0) {
+        ShFx_GetAlpha(rect, alpha);
+        ExAssignAlpha(prim, (s64)alpha[0] | ((s64)alpha[1] << 2) | ((s64)alpha[2] << 4) | ((s64)alpha[3] << 6));
     }
 }
 
+/* Sets an effect sprite's texture rectangle for frame `index` of its animation `mode`. */
 void ShFx_SetUV(s32 *rect, s32 index, u32 mode, s32 width) {
     s32 height;
     s32 cols;
@@ -912,75 +954,79 @@ void ShFx_SetUV(s32 *rect, s32 index, u32 mode, s32 width) {
     rect[5] = rect[4] + height;
 }
 
-void ShFx_GetTexWidth(u32 arg0, s32 *arg1, s32 *arg2) {
-    switch (arg0) {
+/* The width and height of an effect texture of `kind` into `outW` / `outH`. */
+void ShFx_GetTexWidth(u32 kind, s32 *outW, s32 *outH) {
+    switch (kind) {
     case 0:
     case 4:
-        *arg1 = 0x43000000;
-        *arg2 = 0x42800000;
+        *outW = 0x43000000;
+        *outH = 0x42800000;
         return;
     case 1:
-        *arg1 = 0x42800000;
-        *arg2 = 0x43000000;
+        *outW = 0x42800000;
+        *outH = 0x43000000;
         return;
     case 2:
     case 5:
     case 8:
-        *arg2 = 0x43000000;
-        *arg1 = 0x43000000;
+        *outH = 0x43000000;
+        *outW = 0x43000000;
         return;
     case 3:
-        *arg1 = 0x43800000;
-        *arg2 = 0x42800000;
+        *outW = 0x43800000;
+        *outH = 0x42800000;
         return;
     case 6:
-        *arg1 = 0x42000000;
-        *arg2 = 0x43000000;
+        *outW = 0x42000000;
+        *outH = 0x43000000;
         return;
     case 7:
-        *arg1 = 0x43000000;
-        *arg2 = 0x42800000;
+        *outW = 0x43000000;
+        *outH = 0x42800000;
         return;
     case 9:
-        *arg2 = 0x42800000;
-        *arg1 = 0x42800000;
+        *outH = 0x42800000;
+        *outW = 0x42800000;
         return;
     default:
-        *arg2 = 0;
-        *arg1 = 0;
+        *outH = 0;
+        *outW = 0;
         return;
     }
 }
 
-s32 ShFx_GetAnmID(u32 arg0, s32 arg1) {
-    switch (arg0) {
+/* The animation frame to use for effect texture `kind` at frame `frame`. */
+s32 ShFx_GetAnmID(u32 kind, s32 frame) {
+    switch (kind) {
     case 0:
     case 1:
     case 3:
-        return arg1 & 7;
+        return frame & 7;
     case 4:
-        return arg1 & 1;
+        return frame & 1;
     case 2:
-        return arg1 & 0xF;
+        return frame & 0xF;
     case 5:
-        return arg1 & 3;
+        return frame & 3;
     case 9:
     default:
         return 0;
     }
 }
 
-void ShFx_MakeRnd(s8 *arg0, s32 arg1) {
-    s8 *var_s0;
-    s32 var_s1;
+/* Fills `count` random bytes. */
+void ShFx_MakeRnd(s8 *out, s32 count) {
+    s8 *p;
+    s32 i;
 
-    var_s0 = arg0;
-    for (var_s1 = 0; var_s1 < arg1; var_s1 += 1) {
-        *var_s0 = (s8) (func_0019A5C8() >> 4);
-        var_s0 += 1;
+    p = out;
+    for (i = 0; i < count; i += 1) {
+        *p = (s8) (func_0019A5C8() >> 4);
+        p += 1;
     }
 }
 
+/* Builds the second-derivative table of a cubic spline through n points. */
 void ShFx_Spline_MakeTable(s32 n, f32 *x, f32 *y, f32 *y2) {
     f32 h[8];
     f32 d[8];
@@ -1021,6 +1067,7 @@ typedef struct {
     Point_00102550 out[28];
 } Spline_00102550;
 
+/* A cubic spline's value at `u`. */
 static inline f32 sample_00102550(s32 n, f32 *t, f32 *p, f32 *m, f32 u) {
     s32 lo;
     s32 hi;
@@ -1047,8 +1094,9 @@ static inline f32 sample_00102550(s32 n, f32 *t, f32 *p, f32 *m, f32 u) {
                         d * (3.0f * m[lo] + d * (m[lo + 1] - m[lo]) / h));
 }
 
-s32 ShFx_Spline(void *arg0) {
-    Spline_00102550 *s = arg0;
+/* Moves an effect along its spline path. */
+s32 ShFx_Spline(void *effect) {
+    Spline_00102550 *s = effect;
     f32 t[8];
     f32 mx[8];
     f32 my[8];
@@ -1105,8 +1153,9 @@ typedef struct Arg_00102A50 {
     f32 *points;
 } Arg_00102A50;
 
-void ShFx_Vib2P(void *arg0) {
-    Arg_00102A50 *arg = arg0;
+/* Shakes an effect between its two points. */
+void ShFx_Vib2P(void *effect) {
+    Arg_00102A50 *arg = effect;
     extern s32 func_001A22C0(f32);
     f32 steps[3];
     f32 temp_f4;
@@ -1157,7 +1206,8 @@ typedef struct Curve_00102CB0 {
 } Curve_00102CB0;
 
 
-void ShFx_Spin2P(void *arg0) {
+/* Spins an effect around the line between its two points. */
+void ShFx_Spin2P(void *effect) {
     extern s32 func_001A22C0(f32);
     f32 matrix[16];
     Vec3_00102CB0 delta;
@@ -1169,7 +1219,7 @@ void ShFx_Spin2P(void *arg0) {
     f32 step;
     f32 angle;
     f32 horizontalDistance;
-    Curve_00102CB0 *curve = arg0;
+    Curve_00102CB0 *curve = effect;
 
     p = curve->points;
     *p = curve->start;
@@ -1212,20 +1262,22 @@ typedef struct {
     Vec3_00102F20 *points;
 } Curve_00102F20;
 
+/* Copies a vector and moves on. */
 static inline Vec3_00102F20 *append_00102F20(Vec3_00102F20 *dst,
                                            const Vec3_00102F20 *src) {
     *dst = *src;
     return dst + 1;
 }
 
-void ShFx_Hsin2P(void *arg0) {
+/* Moves an effect between its two points along a half sine. */
+void ShFx_Hsin2P(void *effect) {
     Vec3_00102F20 *point;
     s32 i;
     f32 matrix[4][4];
     f32 direction[4];
     f32 offset[4];
     s32 rotation[4];
-    Curve_00102F20 *curve = arg0;
+    Curve_00102F20 *curve = effect;
     f32 lengthStep;
     f32 angleStep;
     f32 radius;

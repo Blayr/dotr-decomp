@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* Converts a rotation in degrees (x, y, z) into the game's angle units into `out`. */
 void OBJ_ROT(f32 x, f32 y, f32 z, s32 *out) {
     extern s32 func_001A22C0(f32);
 
@@ -8,6 +9,7 @@ void OBJ_ROT(f32 x, f32 y, f32 z, s32 *out) {
     out[2] = func_001A22C0(z);
 }
 
+/* Converts a float vector into integers. */
 void OBJ_I_V_IN(s32 *dst, f32 *src) {
     extern s32 func_001A22C0(f32);
 
@@ -16,18 +18,20 @@ void OBJ_I_V_IN(s32 *dst, f32 *src) {
     dst[2] = func_001A22C0(src[2]);
 }
 
-void OBJ_VE_SCL_KAKE(void *arg0, void *arg1) {
-    f32 *dst = arg0;
-    f32 *src = arg1;
+/* dst *= src (3 floats, one by one). */
+void OBJ_VE_SCL_KAKE(void *dstVec, void *srcVec) {
+    f32 *dst = dstVec;
+    f32 *src = srcVec;
 
     dst[0] *= src[0];
     dst[1] *= src[1];
     dst[2] *= src[2];
 }
 
-void OBJ_VE_SCL_KAKE_4(void *arg0, void *arg1) {
-    f32 *matrix = (f32 *)arg0;
-    f32 *scale = (f32 *)arg1;
+/* Multiplies four vectors by `srcVec`, one by one. */
+void OBJ_VE_SCL_KAKE_4(void *dstVecs, void *srcVec) {
+    f32 *matrix = (f32 *)dstVecs;
+    f32 *scale = (f32 *)srcVec;
 
     matrix[0] *= scale[0];
     matrix[1] *= scale[1];
@@ -43,6 +47,7 @@ void OBJ_VE_SCL_KAKE_4(void *arg0, void *arg1) {
     matrix[14] *= scale[2];
 }
 
+/* Adds `src` to four vectors. */
 void POS_POS_4(f32 *dst, f32 *src) {
     dst[0] += src[0];
     dst[1] += src[1];
@@ -58,42 +63,45 @@ void POS_POS_4(f32 *dst, f32 *src) {
     dst[14] += src[2];
 }
 
-s32 XYZ_POS_4(void *arg0, s64 arg1, f32 fparg0) {
-    f32 (*matrix)[4] = (f32 (*)[4])arg0;
+/* Adds `amount` to axis `axis` (0 x, 1 y, 2 z) of four vectors. */
+s32 XYZ_POS_4(void *vecs, s64 axis, f32 amount) {
+    f32 (*matrix)[4] = (f32 (*)[4])vecs;
 
-    if (arg1 == 0) {
-        matrix[0][0] += fparg0;
-        matrix[1][0] += fparg0;
-        matrix[2][0] += fparg0;
-        matrix[3][0] += fparg0;
-    } else if ((s16)arg1 == 1) {
-        matrix[0][1] += fparg0;
-        matrix[1][1] += fparg0;
-        matrix[2][1] += fparg0;
-        matrix[3][1] += fparg0;
+    if (axis == 0) {
+        matrix[0][0] += amount;
+        matrix[1][0] += amount;
+        matrix[2][0] += amount;
+        matrix[3][0] += amount;
+    } else if ((s16)axis == 1) {
+        matrix[0][1] += amount;
+        matrix[1][1] += amount;
+        matrix[2][1] += amount;
+        matrix[3][1] += amount;
     } else {
-        matrix[0][2] += fparg0;
-        matrix[1][2] += fparg0;
-        matrix[2][2] += fparg0;
-        matrix[3][2] += fparg0;
+        matrix[0][2] += amount;
+        matrix[1][2] += amount;
+        matrix[2][2] += amount;
+        matrix[3][2] += amount;
     }
     return 0;
 }
 
-s32 POINT_IN_VECTOR_(void *arg0, void *arg1, s32 arg2) {
-    if (arg2 == 0) {
-        ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
-        ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
-        ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+/* Copies a vector a -> b, or b -> a when `reverse`. */
+s32 POINT_IN_VECTOR_(void *a, void *b, s32 reverse) {
+    if (reverse == 0) {
+        ((f32 *)a)[0] = ((f32 *)b)[0];
+        ((f32 *)a)[1] = ((f32 *)b)[1];
+        ((f32 *)a)[2] = ((f32 *)b)[2];
     } else {
-        ((f32 *)arg1)[0] = ((f32 *)arg0)[0];
-        ((f32 *)arg1)[1] = ((f32 *)arg0)[1];
-        ((f32 *)arg1)[2] = ((f32 *)arg0)[2];
+        ((f32 *)b)[0] = ((f32 *)a)[0];
+        ((f32 *)b)[1] = ((f32 *)a)[1];
+        ((f32 *)b)[2] = ((f32 *)a)[2];
     }
     return 0;
 }
 
 
+/* Shrinks a scale value by one step. */
 static inline void reduce_00107180(f32 *value) {
     *value -= 0.18f;
     if (*value < 0.0f) {
@@ -101,32 +109,34 @@ static inline void reduce_00107180(f32 *value) {
     }
 }
 
-s32 MODEL_OFF(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Shrinks unit `id`'s model by one step (when `on`). */
+s32 MODEL_OFF(s32 id, s32 arg1, s32 arg2, s32 on) {
     f32 values[3];
 
-    if ((SzEffect_IsModelStandby2(arg0) != 0) && (arg3 != 0)) {
-        SzEffect_GetModelScale2(arg0, values);
+    if ((SzEffect_IsModelStandby2(id) != 0) && (on != 0)) {
+        SzEffect_GetModelScale2(id, values);
         reduce_00107180(values);
         reduce_00107180(&values[1]);
         reduce_00107180(&values[2]);
-        SzEffect_SetModelScale2(arg0, values);
+        SzEffect_SetModelScale2(id, values);
     }
     return 0;
 }
 
-s32 CARD_OFF(s32 arg0) {
+/* Fades unit `id`'s card out by one step; 1 once it is gone. */
+s32 CARD_OFF(s32 id) {
     u8 data[4];
-    u8 temp_v0;
+    u8 alpha;
 
-    if (SzEffect_IsCardStandby2(arg0) != 0) {
-        SzEffect_GetCardRgba2(arg0, data);
-        temp_v0 = data[3];
-        if (temp_v0 > 0x14) {
-            data[3] = temp_v0 - 0x13;
+    if (SzEffect_IsCardStandby2(id) != 0) {
+        SzEffect_GetCardRgba2(id, data);
+        alpha = data[3];
+        if (alpha > 0x14) {
+            data[3] = alpha - 0x13;
         } else {
             data[3] = 0;
         }
-        SzEffect_SetCardRgba2(arg0, (s32) data);
+        SzEffect_SetCardRgba2(id, (s32) data);
         if (data[3] == 0) {
             return 1;
         }
@@ -134,19 +144,21 @@ s32 CARD_OFF(s32 arg0) {
     return 0;
 }
 
-s32 MODEL_ON(s32 arg0, s32 arg1, s32 arg2) {
+/* Gives unit `id`'s model its full size again (when `on`). */
+s32 MODEL_ON(s32 id, s32 arg1, s32 on) {
     f32 scale[3];
 
-    if ((SzEffect_IsModelStandby2(arg0) != 0) && (arg2 != 0)) {
+    if ((SzEffect_IsModelStandby2(id) != 0) && (on != 0)) {
         scale[0] = 1.0f;
         scale[1] = 1.0f;
         scale[2] = 1.0f;
-        SzEffect_SetModelScale2(arg0, scale);
+        SzEffect_SetModelScale2(id, scale);
     }
     return 0;
 }
 
 
+/* Grows a scale value by `amount`, up to 1. */
 static inline void add_clamped_00107370(f32 *value, f32 amount) {
     *value += amount;
     if (!(*value <= 1.0f)) {
@@ -154,20 +166,22 @@ static inline void add_clamped_00107370(f32 *value, f32 amount) {
     }
 }
 
-s32 MODEL_SCL_ON_1(s32 arg0, f32 fparg0) {
+/* Grows unit `id`'s model by `step`, up to full size. */
+s32 MODEL_SCL_ON_1(s32 id, f32 step) {
     f32 color[3];
 
-    if (SzEffect_IsModelStandby2(arg0) != 0) {
-        SzEffect_GetModelScale2(arg0, color);
-        add_clamped_00107370(&color[0], fparg0);
-        add_clamped_00107370(&color[1], fparg0);
-        add_clamped_00107370(&color[2], fparg0);
-        SzEffect_SetModelScale2(arg0, color);
+    if (SzEffect_IsModelStandby2(id) != 0) {
+        SzEffect_GetModelScale2(id, color);
+        add_clamped_00107370(&color[0], step);
+        add_clamped_00107370(&color[1], step);
+        add_clamped_00107370(&color[2], step);
+        SzEffect_SetModelScale2(id, color);
     }
     return 0;
 }
 
 
+/* Shrinks a scale value by `amount`. */
 static inline void subtract_00107450(f32 *value, f32 amount) {
     *value -= amount;
     if (*value < 0.0f) {
@@ -175,19 +189,21 @@ static inline void subtract_00107450(f32 *value, f32 amount) {
     }
 }
 
-s32 MODEL_SCL_OFF_1(s32 arg0, f32 fparg0) {
+/* Shrinks unit `id`'s model by `step`. */
+s32 MODEL_SCL_OFF_1(s32 id, f32 step) {
     f32 values[3];
 
-    if (SzEffect_IsModelStandby2(arg0) != 0) {
-        SzEffect_GetModelScale2(arg0, values);
-        subtract_00107450(&values[0], fparg0);
-        subtract_00107450(&values[1], fparg0);
-        subtract_00107450(&values[2], fparg0);
-        SzEffect_SetModelScale2(arg0, values);
+    if (SzEffect_IsModelStandby2(id) != 0) {
+        SzEffect_GetModelScale2(id, values);
+        subtract_00107450(&values[0], step);
+        subtract_00107450(&values[1], step);
+        subtract_00107450(&values[2], step);
+        SzEffect_SetModelScale2(id, values);
     }
     return 0;
 }
 
+/* Grows a scale value by `amount`, up to its limit. */
 static inline void add_limited_00107510(f32 *value, f32 amount) {
     *value += amount;
     if (*value > 0.1) {
@@ -195,29 +211,31 @@ static inline void add_limited_00107510(f32 *value, f32 amount) {
     }
 }
 
-s32 CARD_SCL_ON_1(s32 arg0, f32 fparg0) {
+/* Grows unit `id`'s card by `step`. */
+s32 CARD_SCL_ON_1(s32 id, f32 step) {
     f32 values[3];
 
-    if (SzEffect_IsCardStandby2(arg0) != 0) {
-        SzEffect_SetCardScale2(arg0, (s32)values);
-        add_limited_00107510(&values[0], fparg0);
-        add_limited_00107510(&values[1], fparg0);
-        add_limited_00107510(&values[2], fparg0);
-        SzEffect_SetCardScale2(arg0, (s32)values);
+    if (SzEffect_IsCardStandby2(id) != 0) {
+        SzEffect_SetCardScale2(id, (s32)values);
+        add_limited_00107510(&values[0], step);
+        add_limited_00107510(&values[1], step);
+        add_limited_00107510(&values[2], step);
+        SzEffect_SetCardScale2(id, (s32)values);
     }
     return 0;
 }
 
-s32 CARD_ON(s32 arg0, s32 arg1) {
+/* Fades unit `id`'s card in by `step`; 1 once it is fully shown. */
+s32 CARD_ON(s32 id, s32 step) {
     u8 color[4];
 
-    if (SzEffect_IsCardStandby2(arg0) != 0) {
-        SzEffect_GetCardRgba2(arg0, color);
-        color[3] += arg1;
+    if (SzEffect_IsCardStandby2(id) != 0) {
+        SzEffect_GetCardRgba2(id, color);
+        color[3] += step;
         if (color[3] >= 0x80) {
             color[3] = 0x80;
         }
-        SzEffect_SetCardRgba2(arg0, (s32) color);
+        SzEffect_SetCardRgba2(id, (s32) color);
         if (color[3] >= 0x80) {
             return 1;
         }
@@ -225,18 +243,20 @@ s32 CARD_ON(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 OBJ_RGB_IN(void *arg0, s8 arg1, s8 arg2, s8 arg3) {
-    ((s8 *)arg0)[0] = arg1;
-    ((s8 *)arg0)[1] = arg2;
-    ((s8 *)arg0)[2] = arg3;
+/* Sets an RGB colour. */
+s32 OBJ_RGB_IN(void *rgb, s8 r, s8 g, s8 b) {
+    ((s8 *)rgb)[0] = r;
+    ((s8 *)rgb)[1] = g;
+    ((s8 *)rgb)[2] = b;
     return 0;
 }
 
-s32 OBJ_GsRGB_RGB_IN(u8 *arg0, u8 *arg1) {
-    arg0[0] = arg1[0];
-    arg0[1] = arg1[1];
-    arg0[2] = arg1[2];
-    arg0[3] = arg1[3];
+/* Copies an RGBA colour. */
+s32 OBJ_GsRGB_RGB_IN(u8 *dstRgba, u8 *srcRgba) {
+    dstRgba[0] = srcRgba[0];
+    dstRgba[1] = srcRgba[1];
+    dstRgba[2] = srcRgba[2];
+    dstRgba[3] = srcRgba[3];
     return 0;
 }
 
@@ -253,16 +273,17 @@ typedef union {
     FloatPair_00107740 pair;
 } PackedPair_00107740;
 
-void OBJ_GsRGB_RGB_IN2(void *arg0, void *arg1) {
+/* Copies an RGBA colour into a GS colour word. */
+void OBJ_GsRGB_RGB_IN2(void *dstColor, void *srcColor) {
     PackedPair_00107740 temp;
-    u8 *src = arg1;
+    u8 *src = srcColor;
 
     temp.packed.bytes[0] = src[0];
     temp.packed.bytes[1] = src[1];
     temp.packed.bytes[2] = src[2];
     temp.packed.bytes[3] = src[3];
     temp.packed.value = 1.0f;
-    *(FloatPair_00107740 *)arg0 = temp.pair;
+    *(FloatPair_00107740 *)dstColor = temp.pair;
 }
 
 typedef struct {
@@ -284,6 +305,7 @@ typedef struct {
     Vertex_00107790 v[4];
 } Packet_00107790;
 
+/* An RGBAQ word for a colour. */
 static inline Rgbaq_00107790 rgbaq_00107790(u8 *color) {
     Rgbaq_00107790 c;
 
@@ -295,20 +317,21 @@ static inline Rgbaq_00107790 rgbaq_00107790(u8 *color) {
     return c;
 }
 
-s32 GT4_IN_RGBA(void *arg0, u8 *arg1, s32 arg2) {
-    Packet_00107790 *packet = arg0;
+/* Sets the colour of a textured quad's corners: all (`which` 0), the top two (1) or the bottom two (2). */
+s32 GT4_IN_RGBA(void *prim, u8 *color, s32 which) {
+    Packet_00107790 *packet = prim;
 
-    if (arg2 == 0) {
-        packet->v[0].rgbaq = rgbaq_00107790(arg1);
-        packet->v[1].rgbaq = rgbaq_00107790(arg1);
-        packet->v[2].rgbaq = rgbaq_00107790(arg1);
-        packet->v[3].rgbaq = rgbaq_00107790(arg1);
-    } else if (arg2 == 1) {
-        packet->v[0].rgbaq = rgbaq_00107790(arg1);
-        packet->v[1].rgbaq = rgbaq_00107790(arg1);
-    } else if (arg2 == 2) {
-        packet->v[2].rgbaq = rgbaq_00107790(arg1);
-        packet->v[3].rgbaq = rgbaq_00107790(arg1);
+    if (which == 0) {
+        packet->v[0].rgbaq = rgbaq_00107790(color);
+        packet->v[1].rgbaq = rgbaq_00107790(color);
+        packet->v[2].rgbaq = rgbaq_00107790(color);
+        packet->v[3].rgbaq = rgbaq_00107790(color);
+    } else if (which == 1) {
+        packet->v[0].rgbaq = rgbaq_00107790(color);
+        packet->v[1].rgbaq = rgbaq_00107790(color);
+    } else if (which == 2) {
+        packet->v[2].rgbaq = rgbaq_00107790(color);
+        packet->v[3].rgbaq = rgbaq_00107790(color);
     }
     return 0;
 }
@@ -331,6 +354,7 @@ typedef struct {
     Vertex_00107990 v[4];
 } Packet_00107990;
 
+/* An RGBAQ word for a colour. */
 static inline Rgbaq_00107990 rgbaq_00107990(u8 *color) {
     Rgbaq_00107990 c;
 
@@ -342,73 +366,78 @@ static inline Rgbaq_00107990 rgbaq_00107990(u8 *color) {
     return c;
 }
 
-s32 G4_IN_RGBA(void *arg0, u8 *arg1, s32 arg2) {
-    Packet_00107990 *packet = arg0;
+/* Sets the colour of a flat quad's corners: all (`which` 0), the top two (1) or the bottom two (2). */
+s32 G4_IN_RGBA(void *prim, u8 *color, s32 which) {
+    Packet_00107990 *packet = prim;
 
-    if (arg2 == 0) {
-        packet->v[0].rgbaq = rgbaq_00107990(arg1);
-        packet->v[1].rgbaq = rgbaq_00107990(arg1);
-        packet->v[2].rgbaq = rgbaq_00107990(arg1);
-        packet->v[3].rgbaq = rgbaq_00107990(arg1);
-    } else if (arg2 == 1) {
-        packet->v[0].rgbaq = rgbaq_00107990(arg1);
-        packet->v[1].rgbaq = rgbaq_00107990(arg1);
-    } else if (arg2 == 2) {
-        packet->v[2].rgbaq = rgbaq_00107990(arg1);
-        packet->v[3].rgbaq = rgbaq_00107990(arg1);
+    if (which == 0) {
+        packet->v[0].rgbaq = rgbaq_00107990(color);
+        packet->v[1].rgbaq = rgbaq_00107990(color);
+        packet->v[2].rgbaq = rgbaq_00107990(color);
+        packet->v[3].rgbaq = rgbaq_00107990(color);
+    } else if (which == 1) {
+        packet->v[0].rgbaq = rgbaq_00107990(color);
+        packet->v[1].rgbaq = rgbaq_00107990(color);
+    } else if (which == 2) {
+        packet->v[2].rgbaq = rgbaq_00107990(color);
+        packet->v[3].rgbaq = rgbaq_00107990(color);
     }
     return 0;
 }
 
-void CARD_X_Z_IN_(f32 *arg0, f32 *arg1, void *arg2, void *arg3) {
-    f32 temp_f0;
-    f32 temp_f0_2;
+/* The x and z distances from a card (its position plus offset) to a point. */
+void CARD_X_Z_IN_(f32 *outX, f32 *outZ, void *card, void *point) {
+    f32 dx;
+    f32 dz;
 
-    *arg0 = ((f32 *)arg3)[0] - (((f32 *)arg2)[0] + ((f32 *)arg2)[4]);
-    *arg1 = ((f32 *)arg3)[2] - (((f32 *)arg2)[2] + ((f32 *)arg2)[6]);
-    temp_f0 = *arg0;
-    *arg0 = func_001A6C60(temp_f0 * temp_f0);
-    temp_f0_2 = *arg1;
-    *arg1 = func_001A6C60(temp_f0_2 * temp_f0_2);
+    *outX = ((f32 *)point)[0] - (((f32 *)card)[0] + ((f32 *)card)[4]);
+    *outZ = ((f32 *)point)[2] - (((f32 *)card)[2] + ((f32 *)card)[6]);
+    dx = *outX;
+    *outX = func_001A6C60(dx * dx);
+    dz = *outZ;
+    *outZ = func_001A6C60(dz * dz);
 }
 
-void SIN_IN_PSYS(f32 *arg0) {
+/* Fills a sine table for 0..90 degrees. */
+void SIN_IN_PSYS(f32 *table) {
     s16 i;
     f32 *dst;
 
-    dst = arg0;
+    dst = table;
     for (i = 0; i < 91; i++) {
         *dst = func_001A6A88((3.1415927f * (f32)i) / 180.0f);
         dst++;
     }
 }
 
-void SIN_IN_PSYS2(void *arg0, s32 arg1, s32 arg2) {
+/* Fills `count` sine and cosine entries, `step` degrees apart (and one step ahead), for a particle system. */
+void SIN_IN_PSYS2(void *table, s32 step, s32 count) {
     s16 i;
     s32 angle;
     f32 *p;
     f32 radians;
 
-    p = arg0;
+    p = table;
     i = 0;
     angle = 0;
-    while (i < arg2) {
+    while (i < count) {
         radians = (3.1415927f * (f32)angle) / 180.0f;
         p[0] = func_001A6A88(radians);
         p[20] = func_001A6898(radians);
-        radians = (3.1415927f * (f32)(arg1 + angle)) / 180.0f;
+        radians = (3.1415927f * (f32)(step + angle)) / 180.0f;
         p[40] = func_001A6A88(radians);
         p[60] = func_001A6898(radians);
-        angle += arg1;
+        angle += step;
         p++;
         i++;
     }
 }
 
-s32 V0IN_V1_V2_XZ(void *arg0, void *arg1, void *arg2) {
-    f32 *dst = arg0;
-    f32 *src = arg1;
-    f32 *base = arg2;
+/* Moves two x/z pairs of `dst` by (src - base). */
+s32 V0IN_V1_V2_XZ(void *dstVec, void *srcVec, void *baseIn) {
+    f32 *dst = dstVec;
+    f32 *src = srcVec;
+    f32 *base = baseIn;
 
     dst[0] += src[0] - base[0];
     dst[2] += src[2] - base[2];
@@ -425,125 +454,129 @@ typedef struct Fields_00107E40 {
     s16 second;
 } Fields_00107E40;
 
-s32 OBJ_RR2H_IN(f32 fparg0, f32 fparg1, f32 fparg2, void *arg0) {
-    Fields_00107E40 *fields = arg0;
+/* Stores two angles and a height. */
+s32 OBJ_RR2H_IN(f32 angle0, f32 angle1, f32 height, void *out) {
+    Fields_00107E40 *fields = out;
 
-    fields->first = func_001A22C0(fparg0);
-    fields->second = func_001A22C0(fparg1);
-    fields->value = fparg2;
+    fields->first = func_001A22C0(angle0);
+    fields->second = func_001A22C0(angle1);
+    fields->value = height;
     return 0;
 }
 
-s32 PSYS_RR2H_IN(void *arg0, f32 fparg0, f32 fparg1, f32 fparg2) {
-    *(f32 *)((u8 *)arg0 + 0x449C) = fparg0;
-    *(f32 *)((u8 *)arg0 + 0x44A0) = fparg1;
-    *(f32 *)((u8 *)arg0 + 0x44A4) = fparg2;
+/* Stores two angles and a height in a particle system. */
+s32 PSYS_RR2H_IN(void *psys, f32 angle0, f32 angle1, f32 height) {
+    *(f32 *)((u8 *)psys + 0x449C) = angle0;
+    *(f32 *)((u8 *)psys + 0x44A0) = angle1;
+    *(f32 *)((u8 *)psys + 0x44A4) = height;
     return 0;
 }
 
-s32 OBJ_GsRGB_RGB_IN_DATA(u8 *arg0, s32 arg1, s16 arg2) {
-    if (arg2 == 0) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0xFF;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 1) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0;
-        arg0[2] = 0;
-    } else if (arg2 == 2) {
-        arg0[0] = 0;
-        arg0[1] = 0xFF;
-        arg0[2] = 0;
-    } else if (arg2 == 3) {
-        arg0[0] = 0;
-        arg0[1] = 0;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 4) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0xFF;
-        arg0[2] = 0;
-    } else if (arg2 == 5) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 6) {
-        arg0[0] = 0;
-        arg0[1] = 0xFF;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 7) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0x80;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 8) {
-        arg0[0] = 0x80;
-        arg0[1] = 0;
-        arg0[2] = 0xFF;
-    } else if (arg2 == 9) {
-        arg0[0] = 0xFF;
-        arg0[1] = 0x80;
-        arg0[2] = 0;
+/* Sets a colour from the built-in colour table, entry `index` of `kind`. */
+s32 OBJ_GsRGB_RGB_IN_DATA(u8 *out, s32 kind, s16 index) {
+    if (index == 0) {
+        out[0] = 0xFF;
+        out[1] = 0xFF;
+        out[2] = 0xFF;
+    } else if (index == 1) {
+        out[0] = 0xFF;
+        out[1] = 0;
+        out[2] = 0;
+    } else if (index == 2) {
+        out[0] = 0;
+        out[1] = 0xFF;
+        out[2] = 0;
+    } else if (index == 3) {
+        out[0] = 0;
+        out[1] = 0;
+        out[2] = 0xFF;
+    } else if (index == 4) {
+        out[0] = 0xFF;
+        out[1] = 0xFF;
+        out[2] = 0;
+    } else if (index == 5) {
+        out[0] = 0xFF;
+        out[1] = 0;
+        out[2] = 0xFF;
+    } else if (index == 6) {
+        out[0] = 0;
+        out[1] = 0xFF;
+        out[2] = 0xFF;
+    } else if (index == 7) {
+        out[0] = 0xFF;
+        out[1] = 0x80;
+        out[2] = 0xFF;
+    } else if (index == 8) {
+        out[0] = 0x80;
+        out[1] = 0;
+        out[2] = 0xFF;
+    } else if (index == 9) {
+        out[0] = 0xFF;
+        out[1] = 0x80;
+        out[2] = 0;
     } else {
-        arg0[0] = 0xFF;
-        arg0[1] = 0xFF;
-        arg0[2] = 0xFF;
+        out[0] = 0xFF;
+        out[1] = 0xFF;
+        out[2] = 0xFF;
     }
     return 0;
 }
 
-f32 SIN_COS_INRAD(s32 arg0, s32 arg1, s32 arg2) {
+/* The sine (`cosine` 0) or cosine of `degrees` from a 0..90 degree sine table. */
+f32 SIN_COS_INRAD(s32 tableIn, s32 degrees, s32 cosine) {
     f32 result;
-    f32 *table = (f32 *)arg0;
+    f32 *table = (f32 *)tableIn;
 
-    if (arg2 == 0) {
-        if ((s16)arg1 >= 360) {
-            arg1 = (s16)(arg1 % 360);
+    if (cosine == 0) {
+        if ((s16)degrees >= 360) {
+            degrees = (s16)(degrees % 360);
         }
-        if ((s16)arg1 <= -360) {
-            arg1 = (s16)(arg1 % 360);
+        if ((s16)degrees <= -360) {
+            degrees = (s16)(degrees % 360);
         }
-        if ((s16)arg1 < 0) {
-            arg1 = (s16)(arg1 + 360);
+        if ((s16)degrees < 0) {
+            degrees = (s16)(degrees + 360);
         }
 
-        if ((s16)arg1 < 90) {
-            table += (s16)arg1;
+        if ((s16)degrees < 90) {
+            table += (s16)degrees;
             result = *table;
-        } else if ((s16)arg1 < 180) {
-            table += 90 - (s16)(arg1 - 90);
+        } else if ((s16)degrees < 180) {
+            table += 90 - (s16)(degrees - 90);
             result = *table;
-        } else if ((s16)arg1 < 270) {
-            table += (s16)(arg1 - 180);
+        } else if ((s16)degrees < 270) {
+            table += (s16)(degrees - 180);
             result = *table;
             result *= -1.0f;
         } else {
-            table += 90 - (s16)(arg1 - 270);
+            table += 90 - (s16)(degrees - 270);
             result = *table;
             result *= -1.0f;
         }
     } else {
-        if ((s16)arg1 >= 360) {
-            arg1 = (s16)(arg1 % 360);
+        if ((s16)degrees >= 360) {
+            degrees = (s16)(degrees % 360);
         }
-        if ((s16)arg1 <= -360) {
-            arg1 = (s16)(arg1 % 360);
+        if ((s16)degrees <= -360) {
+            degrees = (s16)(degrees % 360);
         }
-        if ((s16)arg1 < 0) {
-            arg1 = (s16)(arg1 + 360);
+        if ((s16)degrees < 0) {
+            degrees = (s16)(degrees + 360);
         }
 
-        if ((s16)arg1 < 90) {
-            table += 90 - (s16)arg1;
+        if ((s16)degrees < 90) {
+            table += 90 - (s16)degrees;
             result = *table;
-        } else if ((s16)arg1 < 180) {
-            table += (s16)(arg1 - 90);
+        } else if ((s16)degrees < 180) {
+            table += (s16)(degrees - 90);
             result = *table;
             result *= -1.0f;
-        } else if ((s16)arg1 < 270) {
-            table += 90 - (s16)(arg1 - 180);
+        } else if ((s16)degrees < 270) {
+            table += 90 - (s16)(degrees - 180);
             result = *table;
             result *= -1.0f;
         } else {
-            table += (s16)(arg1 - 270);
+            table += (s16)(degrees - 270);
             result = *table;
         }
     }
@@ -551,6 +584,7 @@ f32 SIN_COS_INRAD(s32 arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
+/* The angle in degrees (0..359) of the direction (x, y). */
 s32 tanD_360_(s64 x, s64 y) {
     s64 ax;
     s64 ay;
@@ -616,49 +650,51 @@ typedef struct Rect_00108500 {
     s16 height;
 } Rect_00108500;
 
+/* A texture coordinate at the edge of a panel. */
 static inline s32 edge_uv_00108500(s32 extent, s32 origin) {
     return (origin + extent) << 4;
 }
 
-void POLPAN_UVIN_(void *arg0, void *arg1, s32 arg2) {
-    Rect_00108500 *rect = arg1;
+/* Sets a panel's texture coordinates for frame `frame`. */
+void POLPAN_UVIN_(void *prim, void *rectIn, s32 frame) {
+    Rect_00108500 *rect = rectIn;
 
-    if (arg2 == 0) {
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
-    } else if (arg2 == 1) {
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = edge_uv_00108500(rect->height, rect->y);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = (rect->y << 4);
-    } else if (arg2 == 10) {
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = edge_uv_00108500(rect->height, rect->y);
+    if (frame == 0) {
+        ((UV_00108500 *)((u8 *)prim + 0x18))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+    } else if (frame == 1) {
+        ((UV_00108500 *)((u8 *)prim + 0x18))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->v = (rect->y << 4);
+    } else if (frame == 10) {
+        ((UV_00108500 *)((u8 *)prim + 0x48))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->v = edge_uv_00108500(rect->height, rect->y);
     } else {
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x30))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x18))->v = (rect->y << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->u = (rect->x << 4);
-        ((UV_00108500 *)((u8 *)arg0 + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
-        ((UV_00108500 *)((u8 *)arg0 + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x30))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x18))->v = (rect->y << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->u = (rect->x << 4);
+        ((UV_00108500 *)((u8 *)prim + 0x60))->v = edge_uv_00108500(rect->height, rect->y);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->u = edge_uv_00108500(rect->width, rect->x);
+        ((UV_00108500 *)((u8 *)prim + 0x48))->v = edge_uv_00108500(rect->height, rect->y);
     }
 }
 
@@ -673,6 +709,7 @@ extern float func_00108030_b(int unit, short angle, int cosine);
 #define S_108950(a) func_00108030_b(unit, (a), 0)
 #define C_108950(a) func_00108030_b(unit, (a), 1)
 
+/* Transforms one vector by the rotation of `axis`. */
 int MATRIX_XYZ_ININ33(void *row_v, void *v_v, int axis, int unit)
 {
     struct DotrPaintVector * row = row_v;
@@ -710,27 +747,28 @@ typedef struct Vec4_00108BE0 {
     f32 x, y, z, w;
 } Vec4_00108BE0;
 
-void RAD_XYZ_IN(void *arg0, void *arg1, s64 arg2, f32 arg3, f32 arg4) {
+/* Rotates `srcVec` around axis `axis` (0 y, 1 x, 2 z) by the angle with cosine `c` and sine `s` into `outVec`. */
+void RAD_XYZ_IN(void *outVec, void *srcVec, s64 axis, f32 c, f32 s) {
     Vec4_00108BE0 input;
     Vec4_00108BE0 output;
 
-    input = *(Vec4_00108BE0 *)arg1;
-    if (arg2 == 0) {
-        output.x = arg3 * input.x + -arg4 * input.z;
-        output.z = arg4 * input.x + arg3 * input.z;
+    input = *(Vec4_00108BE0 *)srcVec;
+    if (axis == 0) {
+        output.x = c * input.x + -s * input.z;
+        output.z = s * input.x + c * input.z;
         output.y = input.y;
     }
-    if ((s16)arg2 == 1) {
+    if ((s16)axis == 1) {
         output.x = input.x;
-        output.y = arg4 * input.y + arg3 * input.z;
-        output.z = -arg3 * input.y + arg4 * input.z;
+        output.y = s * input.y + c * input.z;
+        output.z = -c * input.y + s * input.z;
     }
-    if ((s16)arg2 == 2) {
-        output.x = arg3 * input.x + arg4 * input.y;
-        output.y = -arg4 * input.x + arg3 * input.y;
+    if ((s16)axis == 2) {
+        output.x = c * input.x + s * input.y;
+        output.y = -s * input.x + c * input.y;
         output.z = input.z;
     }
-    *(Vec4_00108BE0 *)arg0 = output;
+    *(Vec4_00108BE0 *)outVec = output;
 }
 
 typedef struct Vec4_00108CE0 {
@@ -740,28 +778,30 @@ typedef struct Vec4_00108CE0 {
     f32 w;
 } Vec4_00108CE0;
 
-s32 PAINT_VECTOR_4TG_SET_IN(void *arg0, f32 fparg0, f32 fparg1) {
-    Vec4_00108CE0 *vertices = arg0;
+/* Sets four corners of a w x h rectangle centred on 0. */
+s32 PAINT_VECTOR_4TG_SET_IN(void *corners, f32 halfW, f32 halfH) {
+    Vec4_00108CE0 *vertices = corners;
     f32 negative_x;
     f32 negative_y;
 
-    negative_x = -fparg0;
+    negative_x = -halfW;
     vertices[0].x = negative_x;
-    vertices[0].y = fparg1;
+    vertices[0].y = halfH;
     vertices[0].z = 0.0f;
-    vertices[1].x = fparg0;
-    vertices[1].y = fparg1;
+    vertices[1].x = halfW;
+    vertices[1].y = halfH;
     vertices[1].z = 0.0f;
     vertices[2].x = negative_x;
-    negative_y = -fparg1;
+    negative_y = -halfH;
     vertices[2].y = negative_y;
     vertices[2].z = 0.0f;
-    vertices[3].x = fparg0;
+    vertices[3].x = halfW;
     vertices[3].y = negative_y;
     vertices[3].z = 0.0f;
     return 0;
 }
 
+/* Sets four corners of a rectangle lying flat in x and z. */
 s32 PAINT_VECTOR_4TG_SET_IN2(void *dst, f32 x, f32 z) {
     f32 (*vertices)[4] = dst;
 
@@ -780,14 +820,15 @@ s32 PAINT_VECTOR_4TG_SET_IN2(void *dst, f32 x, f32 z) {
     return 0;
 }
 
-s32 PAINT_VECTOR_4TG_SET_INMAP4(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
+/* Sets the four corners of board square (x, z) (`mode` picks the layout). */
+s32 PAINT_VECTOR_4TG_SET_INMAP4(void *corners, s32 xIn, s32 z, s16 mode) {
     f32 x;
     f32 y;
-    f32 *coords = arg0;
+    f32 *coords = corners;
 
-    if (arg3 == 0) {
-        x = (f32) -(s16) arg1;
-        y = (f32) arg2;
+    if (mode == 0) {
+        x = (f32) -(s16) xIn;
+        y = (f32) z;
         coords[0] = x;
         coords[1] = y;
         coords[2] = 0.0f;
@@ -800,9 +841,9 @@ s32 PAINT_VECTOR_4TG_SET_INMAP4(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
         coords[12] = 0.0f;
         coords[13] = 0.0f;
         coords[14] = 0.0f;
-    } else if (arg3 == 1) {
-        x = (f32) arg1;
-        y = (f32) arg2;
+    } else if (mode == 1) {
+        x = (f32) xIn;
+        y = (f32) z;
         coords[0] = x;
         coords[1] = y;
         coords[2] = 0.0f;
@@ -815,10 +856,10 @@ s32 PAINT_VECTOR_4TG_SET_INMAP4(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
         coords[12] = 0.0f;
         coords[13] = 0.0f;
         coords[14] = 0.0f;
-    } else if (arg3 == 2) {
-        x = (f32) -(s16) arg1;
+    } else if (mode == 2) {
+        x = (f32) -(s16) xIn;
         coords[0] = x;
-        y = (f32) -(s16) arg2;
+        y = (f32) -(s16) z;
         coords[1] = y;
         coords[2] = 0.0f;
         coords[4] = 0.0f;
@@ -830,10 +871,10 @@ s32 PAINT_VECTOR_4TG_SET_INMAP4(void *arg0, s32 arg1, s32 arg2, s16 arg3) {
         coords[12] = 0.0f;
         coords[13] = 0.0f;
         coords[14] = 0.0f;
-    } else if (arg3 == 3) {
-        x = (f32) arg1;
+    } else if (mode == 3) {
+        x = (f32) xIn;
         coords[0] = x;
-        y = (f32) -(s16) arg2;
+        y = (f32) -(s16) z;
         coords[1] = y;
         coords[2] = 0.0f;
         coords[4] = 0.0f;
@@ -853,31 +894,34 @@ typedef struct {
     s32 data[16];
 } Matrix_00108EF0;
 
-void S_I_P_IN(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Builds an object's matrix: world-to-screen times its scale, rotation and position. */
+void S_I_P_IN(void *outMatrix, s32 scale, s32 rot, s32 pos) {
     extern void RhGeom_GetScaleRotXYZTransMatrix(void *, s32, s32, s32);
-    Matrix_00108EF0 sp50;
-    Matrix_00108EF0 sp90;
+    Matrix_00108EF0 local;
+    Matrix_00108EF0 world;
 
-    RhView_GetWorldScreenMatrix(&sp90);
-    RhGeom_GetScaleRotXYZTransMatrix(&sp50, arg1, arg2, arg3);
-    RhGeom_MulMatrix((s32) &sp90, &sp50);
-    *(Matrix_00108EF0 *)arg0 = sp90;
+    RhView_GetWorldScreenMatrix(&world);
+    RhGeom_GetScaleRotXYZTransMatrix(&local, scale, rot, pos);
+    RhGeom_MulMatrix((s32) &world, &local);
+    *(Matrix_00108EF0 *)outMatrix = world;
 }
 
-s32 PAINT_PIRM_G4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Projects a flat quad's `count` corners and sorts it into the draw list at its depth. */
+s32 PAINT_PIRM_G4(s32 corners, s32 prim, s32 count, s32 ot) {
     f32 result[4];
 
-    if (Ex3d_RotTransPersAuto(arg0, 0x70000000, arg2, arg1, result) != 0) {
-        ExSortPrim(arg1, arg3, func_001A23B0(result[0]));
+    if (Ex3d_RotTransPersAuto(corners, 0x70000000, count, prim, result) != 0) {
+        ExSortPrim(prim, ot, func_001A23B0(result[0]));
     }
     return 0;
 }
 
-s32 PAINT_PIRM_GT4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Projects a textured quad's `count` corners and sorts it into the draw list at its depth. */
+s32 PAINT_PIRM_GT4(s32 corners, s32 prim, s32 count, s32 ot) {
     f32 depth[4];
 
-    if (Ex3d_RotTransPersAuto(arg0, 0x70000000, arg2, arg1, depth) != 0) {
-        ExSortPrim(arg1, arg3, func_001A23B0(depth[0]));
+    if (Ex3d_RotTransPersAuto(corners, 0x70000000, count, prim, depth) != 0) {
+        ExSortPrim(prim, ot, func_001A23B0(depth[0]));
     }
     return 0;
 }
@@ -888,13 +932,14 @@ typedef struct Color_00109050 {
     u64 high : 8;
 } Color_00109050;
 
-s32 PAINT_PIRM_LG2(s32 arg0, void *arg1, s32 arg2, s32 arg3) {
+/* Projects a white line's corners and sorts it into the draw list. */
+s32 PAINT_PIRM_LG2(s32 corners, void *prim, s32 count, s32 ot) {
     f32 result[4];
 
-    if (Ex3d_RotTransPersAuto(arg0, 0x70000000, arg2, (s32)arg1, result) != 0) {
-        ((Color_00109050 *)((u8 *)arg1 + 0x18))->rgb = 0xFFFFFF;
-        ((Color_00109050 *)((u8 *)arg1 + 0x28))->rgb = 0xFFFFFF;
-        ExSortPrim((s32)arg1, arg3, 0);
+    if (Ex3d_RotTransPersAuto(corners, 0x70000000, count, (s32)prim, result) != 0) {
+        ((Color_00109050 *)((u8 *)prim + 0x18))->rgb = 0xFFFFFF;
+        ((Color_00109050 *)((u8 *)prim + 0x28))->rgb = 0xFFFFFF;
+        ExSortPrim((s32)prim, ot, 0);
     }
     return 0;
 }
@@ -907,34 +952,36 @@ typedef struct Vec4_00109100 {
 } Vec4_00109100;
 
 
-s32 MATRIX_XYZ_ININ_4(u8 *arg0, void *arg1, s32 arg2, s32 arg3) {
-    Vec4_00109100 sp40 = *(Vec4_00109100 *)arg1;
+/* Transforms a matrix's four rows by the rotation of `axis`. */
+s32 MATRIX_XYZ_ININ_4(u8 *matrix, void *vec, s32 axis, s32 unit) {
+    Vec4_00109100 v = *(Vec4_00109100 *)vec;
 
-    MATRIX_XYZ_ININ33(arg0, &sp40, arg2, arg3);
-    MATRIX_XYZ_ININ33(arg0 + 0x10, &sp40, arg2, arg3);
-    MATRIX_XYZ_ININ33(arg0 + 0x20, &sp40, arg2, arg3);
-    MATRIX_XYZ_ININ33(arg0 + 0x30, &sp40, arg2, arg3);
+    MATRIX_XYZ_ININ33(matrix, &v, axis, unit);
+    MATRIX_XYZ_ININ33(matrix + 0x10, &v, axis, unit);
+    MATRIX_XYZ_ININ33(matrix + 0x20, &v, axis, unit);
+    MATRIX_XYZ_ININ33(matrix + 0x30, &v, axis, unit);
     return 0;
 }
 
-s32 PAINT__2G_SET_IN(void *arg0, void *arg1, void *arg2) {
-    *(s16 *)((u8 *)arg0 + 2) = 0x11;
-    *(s16 *)arg0 = 4;
-    *(s64 *)((u8 *)arg0 + 8) = 0x4141;
-    *(s32 *)((u8 *)arg0 + 4) = 0;
-    ExAssignAlpha(arg0, 0x48 | ((s64)0x80 << 32));
-    ((u8 *)arg0)[0x10] = ((u8 *)arg1)[0];
-    ((u8 *)arg0)[0x11] = ((u8 *)arg1)[1];
-    ((u8 *)arg0)[0x12] = ((u8 *)arg1)[2];
-    ((u8 *)arg0)[0x13] = ((u8 *)arg1)[3];
-    ((u8 *)arg0)[0x20] = ((u8 *)arg2)[0];
-    ((u8 *)arg0)[0x21] = ((u8 *)arg2)[1];
-    ((u8 *)arg0)[0x22] = ((u8 *)arg2)[2];
-    ((u8 *)arg0)[0x23] = ((u8 *)arg2)[3];
-    *(s32 *)((u8 *)arg0 + 0x24) = 0x3F800000;
-    *(s32 *)((u8 *)arg0 + 0x14) = 0x3F800000;
-    ((u8 *)arg0)[0x1F] = 0;
-    ((u8 *)arg0)[0x2F] = 0;
+/* Sets up a two-colour line primitive from colours `c0` and `c1`. */
+s32 PAINT__2G_SET_IN(void *prim, void *c0, void *c1) {
+    *(s16 *)((u8 *)prim + 2) = 0x11;
+    *(s16 *)prim = 4;
+    *(s64 *)((u8 *)prim + 8) = 0x4141;
+    *(s32 *)((u8 *)prim + 4) = 0;
+    ExAssignAlpha(prim, 0x48 | ((s64)0x80 << 32));
+    ((u8 *)prim)[0x10] = ((u8 *)c0)[0];
+    ((u8 *)prim)[0x11] = ((u8 *)c0)[1];
+    ((u8 *)prim)[0x12] = ((u8 *)c0)[2];
+    ((u8 *)prim)[0x13] = ((u8 *)c0)[3];
+    ((u8 *)prim)[0x20] = ((u8 *)c1)[0];
+    ((u8 *)prim)[0x21] = ((u8 *)c1)[1];
+    ((u8 *)prim)[0x22] = ((u8 *)c1)[2];
+    ((u8 *)prim)[0x23] = ((u8 *)c1)[3];
+    *(s32 *)((u8 *)prim + 0x24) = 0x3F800000;
+    *(s32 *)((u8 *)prim + 0x14) = 0x3F800000;
+    ((u8 *)prim)[0x1F] = 0;
+    ((u8 *)prim)[0x2F] = 0;
     return 0;
 }
 
@@ -945,36 +992,38 @@ typedef struct Packet_00109270 {
     s64 registers;
 } Packet_00109270;
 
-s32 PAINT__GT4_SET_IN(void *arg0) {
-    Packet_00109270 *packet = arg0;
+/* Sets up a textured quad primitive. */
+s32 PAINT__GT4_SET_IN(void *prim) {
+    Packet_00109270 *packet = prim;
 
     packet->flags = 0x34;
     packet->count = 0xC;
     packet->registers = 0x421421421421LL;
     packet->reserved = 0;
     packet->flags |= 0x800;
-    ExAssignAlpha(arg0, 0x8000000048LL);
+    ExAssignAlpha(prim, 0x8000000048LL);
     return 0;
 }
 
-s32 PAINT__G4_SET_IN(void *arg0, s32 arg1) {
-    *(s16 *)((u8 *)arg0 + 2) = 0x14;
-    *(s16 *)arg0 = 8;
-    *(s64 *)((u8 *)arg0 + 8) = 0x41414141;
-    *(s32 *)((u8 *)arg0 + 4) = 0;
-    if (arg1 == 0) {
-        ExAssignAlpha(arg0, 0x48 | ((s64)0x80 << 32));
+/* Sets up a flat quad primitive, normal (`additive` 0) or additive blend. */
+s32 PAINT__G4_SET_IN(void *prim, s32 additive) {
+    *(s16 *)((u8 *)prim + 2) = 0x14;
+    *(s16 *)prim = 8;
+    *(s64 *)((u8 *)prim + 8) = 0x41414141;
+    *(s32 *)((u8 *)prim + 4) = 0;
+    if (additive == 0) {
+        ExAssignAlpha(prim, 0x48 | ((s64)0x80 << 32));
     } else {
-        ExAssignAlpha(arg0, 0x42 | ((s64)0x80 << 32));
+        ExAssignAlpha(prim, 0x42 | ((s64)0x80 << 32));
     }
-    *(s32 *)((u8 *)arg0 + 0x44) = 0;
-    *(s32 *)((u8 *)arg0 + 0x34) = 0;
-    *(s32 *)((u8 *)arg0 + 0x24) = 0;
-    *(s32 *)((u8 *)arg0 + 0x14) = 0;
-    *(s8 *)((u8 *)arg0 + 0x1F) = 0;
-    *(s8 *)((u8 *)arg0 + 0x2F) = 0;
-    *(s8 *)((u8 *)arg0 + 0x3F) = 0;
-    *(s8 *)((u8 *)arg0 + 0x4F) = 0;
+    *(s32 *)((u8 *)prim + 0x44) = 0;
+    *(s32 *)((u8 *)prim + 0x34) = 0;
+    *(s32 *)((u8 *)prim + 0x24) = 0;
+    *(s32 *)((u8 *)prim + 0x14) = 0;
+    *(s8 *)((u8 *)prim + 0x1F) = 0;
+    *(s8 *)((u8 *)prim + 0x2F) = 0;
+    *(s8 *)((u8 *)prim + 0x3F) = 0;
+    *(s8 *)((u8 *)prim + 0x4F) = 0;
     return 0;
 }
 
@@ -1005,16 +1054,17 @@ typedef struct {
     Vertex_00109380 vertices[4];
 } Packet_00109380;
 
-s32 GT4_Xyz_ZIN(void *arg0, s32 arg1) {
-    if (arg1 == 0) {
-        TexturedPacket_00109380 *packet = (TexturedPacket_00109380 *)arg0;
+/* Sets a quad's four corner colours to white (`flat` picks the untextured layout). */
+s32 GT4_Xyz_ZIN(void *prim, s32 flat) {
+    if (flat == 0) {
+        TexturedPacket_00109380 *packet = (TexturedPacket_00109380 *)prim;
 
         packet->vertices[0].color.rgb =
             packet->vertices[1].color.rgb =
             packet->vertices[2].color.rgb =
             packet->vertices[3].color.rgb = 0xFFFFFF;
     } else {
-        Packet_00109380 *packet = (Packet_00109380 *)arg0;
+        Packet_00109380 *packet = (Packet_00109380 *)prim;
 
         packet->vertices[0].color.rgb =
             packet->vertices[1].color.rgb =
@@ -1041,17 +1091,18 @@ typedef struct {
     Vertex_001094F0 v[4];
 } Packet_001094F0;
 
-s32 G4_BOX_IN__(void *arg0) {
+/* Sets up a box of flat quads. */
+s32 G4_BOX_IN__(void *box) {
     s32 h;
     s32 w;
-    Packet_001094F0 *p = arg0;
+    Packet_001094F0 *p = box;
 
     w = 320;
     h = 240;
-    *(s32 *)((u8 *)arg0 + 0x44) = 0;
-    *(s32 *)((u8 *)arg0 + 0x34) = 0;
-    *(s32 *)((u8 *)arg0 + 0x24) = 0;
-    *(s32 *)((u8 *)arg0 + 0x14) = 0;
+    *(s32 *)((u8 *)box + 0x44) = 0;
+    *(s32 *)((u8 *)box + 0x34) = 0;
+    *(s32 *)((u8 *)box + 0x24) = 0;
+    *(s32 *)((u8 *)box + 0x14) = 0;
     p->v[0].xyzf.x = (0x800 - w) << 4;
     p->v[0].xyzf.y = (0x800 - h) << 4;
     p->v[0].xyzf.z = 0xFFFFFF;
@@ -1089,7 +1140,8 @@ typedef struct {
     Vertex_001095D0 v[4];
 } Packet_001095D0;
 
-s32 GT4_BOX_IN__2DMAP(void *arg0, void *arg1, void *arg2) {
+/* Sets up a box of textured quads on the 2D map. */
+s32 GT4_BOX_IN__2DMAP(void *box, void *rect, void *texture) {
     Vec4_001095D0 size;
     Vec4_001095D0 pos;
     s32 h;
@@ -1098,10 +1150,10 @@ s32 GT4_BOX_IN__2DMAP(void *arg0, void *arg1, void *arg2) {
     u16 y0;
     u16 x1;
     u16 y1;
-    Packet_001095D0 *p = arg0;
+    Packet_001095D0 *p = box;
 
-    size = *(Vec4_001095D0 *)arg1;
-    pos = *(Vec4_001095D0 *)arg2;
+    size = *(Vec4_001095D0 *)rect;
+    pos = *(Vec4_001095D0 *)texture;
     h = (s32)(size.y / 2.0f);
     w = (s32)(size.x / 2.0f);
     p->v[0].xyzf.x = x0 = ((0x800 - w) + (u16)(s32)pos.x) << 4;
@@ -1123,22 +1175,24 @@ s32 GT4_BOX_IN__2DMAP(void *arg0, void *arg1, void *arg2) {
     return 0;
 }
 
-void R3D_RRR_XYZ(void *arg0, void *arg1, void *arg2) {
+/* out = a - b (3 floats). */
+void R3D_RRR_XYZ(void *outVec, void *aIn, void *bIn) {
     Vec4_00109830 a;
     Vec4_00109830 b;
 
-    a = *(Vec4_00109830 *)arg1;
-    b = *(Vec4_00109830 *)arg2;
+    a = *(Vec4_00109830 *)aIn;
+    b = *(Vec4_00109830 *)bIn;
     a.x = a.x - b.x;
     ((Vec4_00109830 *)&a.y)->x = ((Vec4_00109830 *)&a.y)->x - b.y;
     ((Vec4_00109830 *)&a.z)->x = ((Vec4_00109830 *)&a.z)->x - b.z;
-    *(Vec4_00109830 *)arg0 = a;
+    *(Vec4_00109830 *)outVec = a;
 }
 
 typedef struct Vec4_001098E0 {
     f32 x, y, z, w;
 } Vec4_001098E0;
 
+/* Collision: where the point `point` + `offset` hits the line a..b, into `out`. */
 void ATARI3(void *out, f32 *offset, f32 *point, f32 *a, f32 *b) {
     Vec4_001098E0 result;
     f32 zero;
@@ -1174,23 +1228,26 @@ typedef struct Vec4_001099E0 {
     f32 x, y, z, w;
 } Vec4_001099E0;
 
-void Card_V_IN(void *arg0, void *arg1, void *arg2, f32 fparg0) {
+/* The step that moves a card (position plus offset) to `target` in `frames` frames into `outVec`. */
+void Card_V_IN(void *outVec, void *target, void *card, f32 frames) {
     Vec4_001099E0 delta;
 
-    delta.x = (((f32 *)arg1)[0] - (((f32 *)arg2)[0] + ((f32 *)arg2)[4])) / fparg0;
-    delta.z = (((f32 *)arg1)[2] - (((f32 *)arg2)[2] + ((f32 *)arg2)[6])) / fparg0;
-    delta.y = (((f32 *)arg1)[1] - (((f32 *)arg2)[1] + ((f32 *)arg2)[5])) / fparg0;
+    delta.x = (((f32 *)target)[0] - (((f32 *)card)[0] + ((f32 *)card)[4])) / frames;
+    delta.z = (((f32 *)target)[2] - (((f32 *)card)[2] + ((f32 *)card)[6])) / frames;
+    delta.y = (((f32 *)target)[1] - (((f32 *)card)[1] + ((f32 *)card)[5])) / frames;
     delta.w = 0.0f;
-    *(Vec4_001099E0 *)arg0 = delta;
+    *(Vec4_001099E0 *)outVec = delta;
 }
 
-s32 VEC_POI_IN(void *arg0, void *arg1) {
-    ((f32 *)arg0)[0] = ((f32 *)arg1)[0];
-    ((f32 *)arg0)[1] = ((f32 *)arg1)[1];
-    ((f32 *)arg0)[2] = ((f32 *)arg1)[2];
+/* Copies a vector. */
+s32 VEC_POI_IN(void *dstVec, void *srcVec) {
+    ((f32 *)dstVec)[0] = ((f32 *)srcVec)[0];
+    ((f32 *)dstVec)[1] = ((f32 *)srcVec)[1];
+    ((f32 *)dstVec)[2] = ((f32 *)srcVec)[2];
     return 0;
 }
 
+/* Starts the sound driver on the IOP. */
 void SD_InitializeDevice(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;

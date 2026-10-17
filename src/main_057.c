@@ -1,11 +1,13 @@
 #include "common.h"
 
+/* The current end of the VIF packet being built (where the next primitive goes). */
 s32 RhBase_GetVifPacketArea(void) {
     return D_003261D0;
 }
 
-void RhBase_SetVifPacketArea(s32 arg0) {
-    D_003261D0 = arg0;
+/* Sets the end of the VIF packet being built. */
+void RhBase_SetVifPacketArea(s32 cursor) {
+    D_003261D0 = cursor;
 }
 
 typedef struct {
@@ -14,22 +16,25 @@ typedef struct {
     s32 field_248;
 } Data_00209D40;
 
-f32 RhBase_GetAspectY(s32 *arg0) {
-    Data_00209D40 *data = (Data_00209D40 *)gRhBase_dl;
+/* The screen's vertical aspect ratio; its other ratio word through `out`. */
+f32 RhBase_GetAspectY(s32 *out) {
+    Data_00209D40 *data = (Data_00209D40 *)screenState;
 
-    if (arg0 != NULL) {
-        *arg0 = data->field_248;
+    if (out != NULL) {
+        *out = data->field_248;
     }
     return data->field_244;
 }
 
-s32 RhBase_GetScreenSize(s32 *arg0, s32 *arg1) {
-    *arg0 = D_0032618C;
-    *arg1 = D_00326190;
+/* The screen's width and height. */
+s32 RhBase_GetScreenSize(s32 *outW, s32 *outH) {
+    *outW = D_0032618C;
+    *outH = D_00326190;
     return 1;
 }
 
-s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
+/* The depth range of the current z-buffer format. */
+s32 RhBase_GetZMinMax(s32 *outMin, s32 *outMax) {
     typedef struct Flags_00209D80 {
         s8 active : 1;
         s8 useSaved : 1;
@@ -42,7 +47,7 @@ s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
         Flags_00209D80 flags;
     } State_00209D80;
 
-    extern State_00209D80 gRhBase_rl;
+    extern State_00209D80 renderFrameState;
     extern Flags_00209D80 D_00325F40;
     extern s32 D_003261A8;
 
@@ -50,31 +55,32 @@ s32 RhBase_GetZMinMax(s32 *arg0, s32 *arg1) {
     s32 value;
 
     value = D_003261A8;
-    state = &gRhBase_rl;
+    state = &renderFrameState;
     if (D_00325F40.active) {
         if (state->flags.useSaved) {
             value = state->value;
         }
     }
-    *arg0 = 0;
+    *outMin = 0;
     switch (value) {
     case 0x30:
-        *arg1 = 0x7FFFFFFF;
+        *outMax = 0x7FFFFFFF;
         break;
     case 0x31:
-        *arg1 = 0xFFFFFF;
+        *outMax = 0xFFFFFF;
         break;
     case 0x32:
     case 0x3A:
-        *arg1 = 0xFFFF;
+        *outMax = 0xFFFF;
         break;
     }
     return 1;
 }
 
-s32 RhBase_GetScreenCenter(s32 *arg0, s32 *arg1) {
-    *arg0 = D_003261B0;
-    *arg1 = D_003261B4;
+/* The screen centre in GS coordinates. */
+s32 RhBase_GetScreenCenter(s32 *outX, s32 *outY) {
+    *outX = D_003261B0;
+    *outY = D_003261B4;
     return 1;
 }
 
@@ -88,20 +94,21 @@ typedef struct {
     s8 flag1 : 1;
 } Flags_00209E50;
 
-extern State_00209E50 gRhBase_rl;
+extern State_00209E50 renderFrameState; /* original: gRhBase_rl */
 extern Flags_00209E50 D_00325F40;
 
+/* The GS memory free for textures after the frame and z buffers (and any render frame). */
 s32 RhBase_GetUserGsAddress(void) {
-    u8 *base = gRhBase_dl;
-    State_00209E50 *state = &gRhBase_rl;
-    s32 var_v0;
+    u8 *base = screenState;
+    State_00209E50 *state = &renderFrameState;
+    s32 address;
 
     if (D_00325F40.enabled != 0) {
-        var_v0 = state->index;
+        address = state->index;
     } else {
-        var_v0 = 0;
+        address = 0;
     }
-    return *(s32 *)(base + 0x268) + (var_v0 << 5);
+    return *(s32 *)(base + 0x268) + (address << 5);
 }
 
 typedef struct {
@@ -115,16 +122,17 @@ typedef struct {
 
 extern Slot_00209E90 D_00326050[2];
 
-s32 RhBase_SetClearColorEx(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
-    D_00326050[0].r = arg0;
-    D_00326050[0].g = arg1;
-    D_00326050[0].b = arg2;
-    D_00326050[0].a = arg3;
+/* Sets the colour both frame buffers are cleared to. */
+s32 RhBase_SetClearColorEx(u8 r, u8 g, u8 b, u8 a) {
+    D_00326050[0].r = r;
+    D_00326050[0].g = g;
+    D_00326050[0].b = b;
+    D_00326050[0].a = a;
     D_00326050[0].timer = 0;
-    D_00326050[1].r = arg0;
-    D_00326050[1].g = arg1;
-    D_00326050[1].b = arg2;
-    D_00326050[1].a = arg3;
+    D_00326050[1].r = r;
+    D_00326050[1].g = g;
+    D_00326050[1].b = b;
+    D_00326050[1].a = a;
     D_00326050[1].timer = 0;
     return 1;
 }
@@ -142,35 +150,38 @@ typedef struct State_00209EF0 {
     s32 flags26C;
 } State_00209EF0;
 
-s32 RhBase_GetBufferFormatEx(s32 arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
-    State_00209EF0 *state = (State_00209EF0 *)gRhBase_dl;
-    u16 *var_v0;
+/* The address (`back` picks the back buffer), pixel format and width of a frame buffer. */
+s32 RhBase_GetBufferFormatEx(s32 back, s32 *outAddress, s32 *outPsm, s32 *outWidth) {
+    State_00209EF0 *state = (State_00209EF0 *)screenState;
+    u16 *frame;
 
-    if (arg1 != NULL) {
-        if ((state->flags26C & 1) == (arg0 ? 1 : 0)) {
-            var_v0 = &state->value150;
+    if (outAddress != NULL) {
+        if ((state->flags26C & 1) == (back ? 1 : 0)) {
+            frame = &state->value150;
         } else {
-            var_v0 = &state->value60;
+            frame = &state->value60;
         }
-        *arg1 = (*var_v0 & 0x1FF) << 5;
+        *outAddress = (*frame & 0x1FF) << 5;
     }
-    if (arg2 != NULL) {
-        *arg2 = state->value250;
+    if (outPsm != NULL) {
+        *outPsm = state->value250;
     }
-    if (arg3 != NULL) {
-        *arg3 = state->value258;
+    if (outWidth != NULL) {
+        *outWidth = state->value258;
     }
     return 1;
 }
 
-s32 RhBase_SetVSyncCallback(void (*arg0)(void)) {
+/* Sets the function called at every vertical blank. */
+s32 RhBase_SetVSyncCallback(void (*callback)(void)) {
     extern void (*D_003261E4)(void);
 
-    D_003261E4 = arg0;
+    D_003261E4 = callback;
     return 1;
 }
 
-void *RhBase_MaskFBuffer(void *arg0, u32 arg1) {
+/* Sets the frame buffer register with write mask `mask` (the render frame's if one is on). */
+void *RhBase_MaskFBuffer(void *packetIn, u32 mask) {
     typedef struct {
         s8 active : 1;
         s8 custom : 1;
@@ -196,10 +207,10 @@ void *RhBase_MaskFBuffer(void *arg0, u32 arg1) {
         u8 format;
     } Texture_00209F70;
     extern Entry_00209F70 D_00293F1C[];
-    u8 *textureBase = gRhBase_dl;
-    State_00209F70 *state = (State_00209F70 *)&gRhBase_rl;
+    u8 *textureBase = screenState;
+    State_00209F70 *state = (State_00209F70 *)&renderFrameState;
     Texture_00209F70 *texture;
-    u64 *packet = arg0;
+    u64 *packet = packetIn;
 
     if (D_003261BC & 1) {
         texture = (Texture_00209F70 *)(textureBase + 0x150);
@@ -213,12 +224,12 @@ void *RhBase_MaskFBuffer(void *arg0, u32 arg1) {
     packet[2] = ((u64)0x10000000 << 32) | 0x8001;
     packet[3] = 0xE;
     if (state->flags.active && state->flags.custom) {
-        packet[4] = ((u64)arg1 << 32) |
+        packet[4] = ((u64)mask << 32) |
             (((s64)state->format << 24) |
              (state->base | ((s64)(D_00293F1C[state->index].base >> 6) << 16)));
         packet += 5;
     } else {
-        packet[4] = ((u64)arg1 << 32) |
+        packet[4] = ((u64)mask << 32) |
             ((((u64)texture->format & 0x3F) << 24) |
              (((u64)texture->base & 0x1FF) | (((u64)texture->width & 0x3F) << 16)));
         packet += 5;
@@ -260,14 +271,15 @@ typedef struct GifTag_0020A0B0 {
     u64 hi;
 } GifTag_0020A0B0;
 
-s32 RhBase_SetZBufferMode(s32 arg0, s32 arg1) {
+/* Turns z-buffer writes on (`write`) or off. */
+s32 RhBase_SetZBufferMode(s32 cursor, s32 write) {
     extern u8 gSceVif1[];
     extern __int128 gowGif;
     extern Packet_0020A0B0 SceZBuf;
     extern Packet_0020A0B0 D_00325FC0;
-    State_0020A0B0 *state = (State_0020A0B0 *)&gRhBase_rl;
+    State_0020A0B0 *state = (State_0020A0B0 *)&renderFrameState;
 
-    sceVif1PkInit((s32 *)gSceVif1, arg0);
+    sceVif1PkInit((s32 *)gSceVif1, cursor);
     sceVif1PkCnt(gSceVif1, 0);
     sceVif1PkAddCode((s32 **)gSceVif1, 0x11000000);
     sceVif1PkAlign(gSceVif1, 2, 3);
@@ -281,7 +293,7 @@ s32 RhBase_SetZBufferMode(s32 arg0, s32 arg1) {
     } else {
         SceZBuf = D_00325FC0;
     }
-    SceZBuf.f.clear = !arg1;
+    SceZBuf.f.clear = !write;
     sceVif1PkAddGsAD(gSceVif1, 0x4E, ((u64 *)&SceZBuf)[0]);
     sceVif1PkCloseGifTag(gSceVif1);
     sceVif1PkCloseDirectHLCode(gSceVif1);
@@ -310,10 +322,11 @@ typedef struct Packet_0020A280 {
     u8 other : 4;
 } Packet_0020A280;
 
-void RhBase_GetZBufInfo(void *arg0) {
+/* The z-buffer's address and format into `out`. */
+void RhBase_GetZBufInfo(void *out) {
     extern Packet_0020A280 D_00325FC0;
-    State_0020A280 *state = (State_0020A280 *)&gRhBase_rl;
-    Packet_0020A280 *packet = arg0;
+    State_0020A280 *state = (State_0020A280 *)&renderFrameState;
+    Packet_0020A280 *packet = out;
 
     if (D_00325F40.enabled && state->flags.apply) {
         packet->value = state->base + state->offset;
@@ -324,21 +337,23 @@ void RhBase_GetZBufInfo(void *arg0) {
     }
 }
 
-void *RhBase_SetFogColor(void *arg0, void *arg1) {
-    *(s32 *)((u8 *)arg0 + 0) = 0x10000002;
-    *(s32 *)((u8 *)arg0 + 4) = 0;
-    *(s32 *)((u8 *)arg0 + 8) = 0;
-    *(s32 *)((u8 *)arg0 + 0xC) = 0x51000002;
-    *(s64 *)((u8 *)arg0 + 0x10) = ((s64)0x10000000 << 32) | 0x8001;
-    *(s64 *)((u8 *)arg0 + 0x18) = 0xE;
-    *(s64 *)((u8 *)arg0 + 0x20) = ((s64)((u8 *)arg1)[0] << 16) |
-        ((s64)((u8 *)arg1)[2] | ((s64)((u8 *)arg1)[1] << 8));
-    *(s64 *)((u8 *)arg0 + 0x28) = 0x3D;
-    return (u8 *)arg0 + 0x30;
+/* Sets the GS fog colour. */
+void *RhBase_SetFogColor(void *packet, void *color) {
+    *(s32 *)((u8 *)packet + 0) = 0x10000002;
+    *(s32 *)((u8 *)packet + 4) = 0;
+    *(s32 *)((u8 *)packet + 8) = 0;
+    *(s32 *)((u8 *)packet + 0xC) = 0x51000002;
+    *(s64 *)((u8 *)packet + 0x10) = ((s64)0x10000000 << 32) | 0x8001;
+    *(s64 *)((u8 *)packet + 0x18) = 0xE;
+    *(s64 *)((u8 *)packet + 0x20) = ((s64)((u8 *)color)[0] << 16) |
+        ((s64)((u8 *)color)[2] | ((s64)((u8 *)color)[1] << 8));
+    *(s64 *)((u8 *)packet + 0x28) = 0x3D;
+    return (u8 *)packet + 0x30;
 }
 
-void RhBase_CopyFrameBuffer(u32 arg0) {
-    u8 *base = gRhBase_dl;
+/* Copies the shown frame buffer into main memory at `address`. */
+void RhBase_CopyFrameBuffer(u32 address) {
+    u8 *base = screenState;
     u16 *p;
 
     sceGsSyncPath(0, 0);
@@ -349,7 +364,7 @@ void RhBase_CopyFrameBuffer(u32 arg0) {
     }
     sceGsSetDefStoreImage(GSI, (*p & 0x1FF) << 5, 10, 10, 0, 0, 0x280, 0x1C0);
     FlushCache(0);
-    sceGsExecStoreImage(GSI, (void *)(arg0 & 0x0FFFFFFF));
+    sceGsExecStoreImage(GSI, (void *)(address & 0x0FFFFFFF));
     sceGsSyncPath(0, 0);
 }
 
@@ -378,22 +393,24 @@ typedef struct {
     s32 pad1C[3];
 } Table_0020A470;
 
-s32 RhBase_AssignRenderFrame(s32 arg0, s32 arg1, s32 arg2) {
+/* Books render frame `size` (an off-screen buffer) with pixel format `psm` and z format `zpsm`. Returns 0 if it
+   does not fit. */
+s32 RhBase_AssignRenderFrame(s32 size, s32 psm, s32 zpsm) {
     extern Table_0020A470 D_00293F1C[];
-    u8 *base = gRhBase_dl;
-    Full_0020A470 *state = (Full_0020A470 *)&gRhBase_rl;
+    u8 *base = screenState;
+    Full_0020A470 *state = (Full_0020A470 *)&renderFrameState;
     s32 a = 0;
     s32 b = 0;
 
     if (D_00325F40.enabled != 0) {
         return 0;
     }
-    state->id = arg0;
-    state->value4 = D_00293F1C[arg0].value0;
-    state->value8 = D_00293F1C[arg0].value4;
-    state->mode = arg1;
-    state->kind = arg2;
-    switch (arg1) {
+    state->id = size;
+    state->value4 = D_00293F1C[size].value0;
+    state->value8 = D_00293F1C[size].value4;
+    state->mode = psm;
+    state->kind = zpsm;
+    switch (psm) {
     case 0:
     case 1:
         a = 1;
@@ -403,7 +420,7 @@ s32 RhBase_AssignRenderFrame(s32 arg0, s32 arg1, s32 arg2) {
         a = 0;
         break;
     }
-    switch (arg2) {
+    switch (zpsm) {
     case 0x30:
     case 0x31:
         b = 1;
@@ -414,8 +431,8 @@ s32 RhBase_AssignRenderFrame(s32 arg0, s32 arg1, s32 arg2) {
         break;
     }
     state->valueC = *(s32 *)(base + 0x268) >> 5;
-    state->value1C = D_00293F1C[arg0].sizes[a];
-    state->value10 = D_00293F1C[arg0].sizes[a] + D_00293F1C[arg0].sizes[b];
+    state->value1C = D_00293F1C[size].sizes[a];
+    state->value10 = D_00293F1C[size].sizes[a] + D_00293F1C[size].sizes[b];
     if (state->valueC + state->value10 > 0x200) {
         return 0;
     }
@@ -452,13 +469,14 @@ typedef struct Packet_0020A610 {
     s64 registers[10];
 } Packet_0020A610;
 
-void *RhBase_EnableRenderFrame(void *arg0) {
+/* Starts drawing into the booked render frame. */
+void *RhBase_EnableRenderFrame(void *packetIn) {
     extern Texture_0020A610 D_00293F1C[];
-    State_0020A610 *state = (State_0020A610 *)&gRhBase_rl;
-    Packet_0020A610 *packet = arg0;
+    State_0020A610 *state = (State_0020A610 *)&renderFrameState;
+    Packet_0020A610 *packet = packetIn;
 
     if (!D_00325F40.enabled) {
-        return arg0;
+        return packetIn;
     }
     packet->tag[0] = 0x10000005;
     packet->tag[1] = 0;
@@ -478,12 +496,12 @@ void *RhBase_EnableRenderFrame(void *arg0) {
         ((s64) (state->height - 1) << 48);
     packet->registers[9] = 0x40;
     state->flags.built = 1;
-    return (u8 *) arg0 + 0x60;
+    return (u8 *) packetIn + 0x60;
 }
 
 #ifndef GAME_H
 /* The game translation unit already declares this global with its local type. */
-extern unsigned char gRhBase_rl[];
+extern unsigned char renderFrameState[]; /* original: gRhBase_rl */
 #endif
 
 
@@ -518,11 +536,12 @@ typedef struct Context_0020A760 {
     s32 height;
 } Context_0020A760;
 
-void *RhBase_DisableRenderFrame(void *arg0) {
-    Context_0020A760 *context = (Context_0020A760 *)gRhBase_dl;
-    Flags_0020A760 *flags = (Flags_0020A760 *)&gRhBase_rl;
+/* Goes back to drawing into the frame buffer. */
+void *RhBase_DisableRenderFrame(void *packetIn) {
+    Context_0020A760 *context = (Context_0020A760 *)screenState;
+    Flags_0020A760 *flags = (Flags_0020A760 *)&renderFrameState;
     s64 *environment;
-    Packet_0020A760 *packet = arg0;
+    Packet_0020A760 *packet = packetIn;
 
     if (D_003261BC & 1) {
         environment = context->environment1;
@@ -530,7 +549,7 @@ void *RhBase_DisableRenderFrame(void *arg0) {
         environment = context->environment0;
     }
     if (!flags->enabled) {
-        return arg0;
+        return packetIn;
     }
     packet->dmaTag = 0x10000005;
     packet->dmaAddress = 0;
@@ -575,14 +594,17 @@ typedef struct Color_0020A870 {
 
 extern Color_0020A870 D_00293F00;
 
+/* Sets the default clear colour. */
 static inline void default_color_0020A870(void *color, void *value) {
     *(Color_0020A870 *)color = *(Color_0020A870 *)value;
 }
 
+/* Whether the render frame is drawing. */
 static inline s32 draw_0020A870(void *state) {
     return ((State_0020A870 *)state)->flags.draw;
 }
 
+/* One component of a colour, or its default. */
 static inline s32 color_0020A870(u8 *color, s32 component) {
     if (color != NULL) {
         return color[component];
@@ -590,10 +612,11 @@ static inline s32 color_0020A870(u8 *color, s32 component) {
     return 0;
 }
 
+/* Clears the render frame to `color` (or its default). */
 void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
     s32 sceGsSetDefClear(void *, s32, s32, s32, s32, s32, u8, u8, u8, u8, s32);
     Color_0020A870 defaultColor;
-    State_0020A870 *state = (State_0020A870 *)&gRhBase_rl;
+    State_0020A870 *state = (State_0020A870 *)&renderFrameState;
     s32 alpha;
     s32 red;
     s32 green;
@@ -627,12 +650,14 @@ void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
     return packet + 0x10;
 }
 
+/* Frees the render frame. */
 void RhBase_FreeRenderFrame(void) {
     D_00325F40.enabled = 0;
     D_00325F40.flag1 = 0;
 }
 
-s32 RhBase_GetTextureInfoForRender(void *arg0, void *arg1) {
+/* The texture registers that read the render frame, into `tex0` and `tex1`. */
+s32 RhBase_GetTextureInfoForRender(void *tex0, void *tex1) {
     typedef struct {
         s32 index;
         s32 unk4;
@@ -673,12 +698,12 @@ s32 RhBase_GetTextureInfoForRender(void *arg0, void *arg1) {
     } Extra_0020AA30;
     extern Entry_0020AA30 D_00293F1C[];
     extern Entry_0020AA30 D_00293F20[];
-    State_0020AA30 *state = (State_0020AA30 *)&gRhBase_rl;
+    State_0020AA30 *state = (State_0020AA30 *)&renderFrameState;
     s32 first;
     s32 second;
     s32 kind;
-    Record_0020AA30 *record = arg0;
-    Extra_0020AA30 *extra = arg1;
+    Record_0020AA30 *record = tex0;
+    Extra_0020AA30 *extra = tex1;
 
     if (D_00325F40.enabled == 0) {
         return 0;
@@ -786,27 +811,29 @@ typedef struct {
     u8 reserved[0x20];
 } Sizes_0020AD10;
 
+/* A 12.4 fixed-point value as an integer. */
 static inline s32 from_fixed_0020AD10(s32 value) {
     return value >> 6;
 }
 
-void lRhBase_InitScreenVariables(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Sets up the screen state for mode `mode`: sizes, buffers, the GS environment. */
+void lRhBase_InitScreenVariables(void *stateIn, s32 mode, s32 interlace, s32 field) {
     extern Entry_0020AD10 D_00293F1C[];
     extern Entry_0020AD10 D_00293F20[];
     extern Scale_0020AD10 D_00293F24[];
     extern Entry_0020AD10 D_00293F28[];
     extern Entry_0020AD10 D_00293F2C[];
     extern Sizes_0020AD10 D_00293F30[];
-    State_0020AD10 *state = arg0;
+    State_0020AD10 *state = stateIn;
 
-    state->mode = arg1;
-    state->width = D_00293F1C[arg1].value;
-    state->height = D_00293F20[arg1].value;
-    state->scale = D_00293F24[arg1].value;
-    state->field248 = D_00293F28[arg1].value;
-    state->field24C = D_00293F2C[arg1].value;
-    state->firstMode = arg2;
-    switch (arg2) {
+    state->mode = mode;
+    state->width = D_00293F1C[mode].value;
+    state->height = D_00293F20[mode].value;
+    state->scale = D_00293F24[mode].value;
+    state->field248 = D_00293F28[mode].value;
+    state->field24C = D_00293F2C[mode].value;
+    state->firstMode = interlace;
+    switch (interlace) {
     case 0:
     case 1:
         state->firstIndex = 1;
@@ -816,8 +843,8 @@ void lRhBase_InitScreenVariables(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
         state->firstIndex = 0;
         break;
     }
-    state->secondMode = arg3;
-    switch (arg3) {
+    state->secondMode = field;
+    switch (field) {
     case 0x30:
     case 0x31:
         state->secondIndex = 1;
@@ -829,17 +856,17 @@ void lRhBase_InitScreenVariables(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
     state->originX = 0x800;
     state->originY = 0x800;
-    state->offset = D_00293F30[arg1].values[state->secondIndex] + D_00293F30[arg1].values[state->firstIndex] * 2;
+    state->offset = D_00293F30[mode].values[state->secondIndex] + D_00293F30[mode].values[state->firstIndex] * 2;
     state->offset = from_fixed_0020AD10((state->offset << 13) >> 2);
-    sceGsSetDefDBuff(arg0, (s16)arg2, (s16)D_00293F1C[arg1].value, (s16)D_00293F20[arg1].value, 3, (s16)arg3, 1);
+    sceGsSetDefDBuff(stateIn, (s16)interlace, (s16)D_00293F1C[mode].value, (s16)D_00293F20[mode].value, 3, (s16)field, 1);
     if (state->firstX.x == state->secondX.x) {
         state->firstX.x = 0;
-        state->secondX.x = D_00293F30[arg1].values[state->firstIndex];
+        state->secondX.x = D_00293F30[mode].values[state->firstIndex];
         state->thirdX.x = state->secondX.x;
         state->fifthX.x = state->firstX.x;
-        state->fourthX.x = D_00293F30[arg1].values[state->firstIndex] * 2;
+        state->fourthX.x = D_00293F30[mode].values[state->firstIndex] * 2;
         state->sixthX.x = state->fourthX.x;
-        state->firstDisplay.height = state->secondDisplay.height = D_00293F20[arg1].value - 1;
+        state->firstDisplay.height = state->secondDisplay.height = D_00293F20[mode].value - 1;
     }
     state->firstColor[0] = 0;
     state->firstColor[1] = 0;
@@ -854,11 +881,12 @@ void lRhBase_InitScreenVariables(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     state->field26C = 0;
 }
 
-s32 lRhBase_InitGsAndVif(s32 arg0) {
+/* Resets the GS and VIF1 for mode `mode`. */
+s32 lRhBase_InitGsAndVif(s32 mode) {
     extern void sceVif1PkAddGsAD();
 
     D_00326180 = 0x63721405 | ((u64)0x72630514 << 32);
-    sceVif1PkInit(D_00325F00, arg0);
+    sceVif1PkInit(D_00325F00, mode);
     sceVif1PkCnt(D_00325F00, 0);
     sceVif1PkAddCode(D_00325F00, 0x01000404);
     sceVif1PkAddData(D_00325F00, 0x20000000);
@@ -880,7 +908,8 @@ s32 lRhBase_InitGsAndVif(s32 arg0) {
     return sceVif1PkTerminate(D_00325F00);
 }
 
-void lRhBase_SetRandomDither(s32 arg0) {
+/* Sets a random dither matrix (`on`). */
+void lRhBase_SetRandomDither(s32 on) {
     extern void sceVif1PkAddGsAD();
     u8 buffer[0x40];
     u8 *packet;
@@ -891,7 +920,7 @@ void lRhBase_SetRandomDither(s32 arg0) {
     tag = (u64 *) (packet + 0x20);
     shift = (func_0019A5C8() % 16) * 4;
     D_00326180 = (D_00326180 >> shift) | (D_00326180 << (0x40 - shift));
-    sceVif1PkInit(packet, arg0);
+    sceVif1PkInit(packet, on);
     sceVif1PkCnt(packet, 0);
     sceVif1PkAlign(packet, 2, 3);
     sceVif1PkOpenDirectHLCode(packet, 0);
@@ -905,18 +934,20 @@ void lRhBase_SetRandomDither(s32 arg0) {
     sceVif1PkTerminate(packet);
 }
 
-u8 *RhMem_CopyMemory(u8 *arg0, u8 *arg1, s32 arg2) {
-    if (arg2 > 0) {
+/* Copies `size` bytes; returns the end of the copy. */
+u8 *RhMem_CopyMemory(u8 *dst, u8 *src, s32 size) {
+    if (size > 0) {
         do {
-            arg2 -= 1;
-            *arg0 = *arg1;
-            arg1 += 1;
-            arg0 += 1;
-        } while (arg2 > 0);
+            size -= 1;
+            *dst = *src;
+            src += 1;
+            dst += 1;
+        } while (size > 0);
     }
-    return arg0;
+    return dst;
 }
 
+/* Copies `count` words; returns the end of the copy. */
 void *RhMem_CopyMemory4(void *dest, void *source, s32 count) {
     s32 *dst = dest;
     s32 *src = source;
@@ -932,6 +963,7 @@ void *RhMem_CopyMemory4(void *dest, void *source, s32 count) {
     return dst;
 }
 
+/* Copies `count` quadwords; returns the end of the copy. */
 void *RhMem_CopyMemory16(void *dest, void *source, s32 count) {
     __int128 *dst = dest;
     __int128 *src = source;
@@ -947,17 +979,19 @@ void *RhMem_CopyMemory16(void *dest, void *source, s32 count) {
     return dst;
 }
 
-s8 *RhMem_FillMemory(s8 *arg0, s8 arg1, s32 arg2) {
-    if (arg2 > 0) {
+/* Fills `size` bytes with `value`. */
+s8 *RhMem_FillMemory(s8 *dst, s8 value, s32 size) {
+    if (size > 0) {
         do {
-            *arg0 = arg1;
-            arg2 -= 1;
-            arg0 += 1;
-        } while (arg2 > 0);
+            *dst = value;
+            size -= 1;
+            dst += 1;
+        } while (size > 0);
     }
-    return arg0;
+    return dst;
 }
 
+/* Fills `count` words with `val`. */
 void *RhMem_FillMemory4(void *dst, s32 val, s32 count) {
     s32 *p = dst;
 
@@ -968,67 +1002,71 @@ void *RhMem_FillMemory4(void *dst, s32 val, s32 count) {
     return p;
 }
 
-s64 *RhMem_FillMemory8(s64 *arg0, s64 arg1, s32 arg2) {
-    while (arg2 > 0) {
-        *arg0 = arg1;
-        arg2 -= 1;
-        arg0++;
+/* Fills `count` doublewords with `value`. */
+s64 *RhMem_FillMemory8(s64 *dst, s64 value, s32 count) {
+    while (count > 0) {
+        *dst = value;
+        count -= 1;
+        dst++;
     }
-    return arg0;
+    return dst;
 }
 
-f32 RhMath_CosI(s32 arg0) {
+/* The cosine of an angle in the game's units (0x10000 = 360 degrees), from the table. */
+f32 RhMath_CosI(s32 angle) {
     f32 sign;
     f32 *samples;
     f32 sample0;
     f32 sample1;
     s32 fraction;
 
-    arg0 = (s16)(arg0 + 0x4000);
+    angle = (s16)(angle + 0x4000);
     sign = 1.0f;
-    if (arg0 < 0) {
+    if (angle < 0) {
         sign = -1.0f;
-        arg0 = -arg0;
+        angle = -angle;
     }
-    if (arg0 > 0x4000) {
-        arg0 = 0x8000 - arg0;
+    if (angle > 0x4000) {
+        angle = 0x8000 - angle;
     }
-    if ((arg0 & 0x3FFF) == 0) {
-        return arg0 == 0x4000 ? sign : 0.0f;
+    if ((angle & 0x3FFF) == 0) {
+        return angle == 0x4000 ? sign : 0.0f;
     }
-    fraction = arg0 & 0xF;
-    samples = &gRhMath_adwSinTable[arg0 >> 4];
+    fraction = angle & 0xF;
+    samples = &gRhMath_adwSinTable[angle >> 4];
     sample0 = samples[0];
     sample1 = samples[1];
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
 }
 
-f32 RhMath_SinI(s32 arg0) {
+/* The sine of an angle in the game's units (0x10000 = 360 degrees), from the table. */
+f32 RhMath_SinI(s32 angle) {
     f32 sign;
     f32 *samples;
     f32 sample0;
     f32 sample1;
     s32 fraction;
 
-    arg0 = (s16)arg0;
+    angle = (s16)angle;
     sign = 1.0f;
-    if (arg0 < 0) {
+    if (angle < 0) {
         sign = -1.0f;
-        arg0 = -arg0;
+        angle = -angle;
     }
-    if (arg0 > 0x4000) {
-        arg0 = 0x8000 - arg0;
+    if (angle > 0x4000) {
+        angle = 0x8000 - angle;
     }
-    if ((arg0 & 0x3FFF) == 0) {
-        return arg0 == 0x4000 ? sign : 0.0f;
+    if ((angle & 0x3FFF) == 0) {
+        return angle == 0x4000 ? sign : 0.0f;
     }
-    fraction = arg0 & 0xF;
-    samples = &gRhMath_adwSinTable[arg0 >> 4];
+    fraction = angle & 0xF;
+    samples = &gRhMath_adwSinTable[angle >> 4];
     sample0 = samples[0];
     sample1 = samples[1];
     return sign * (sample0 * (16 - fraction) + sample1 * fraction) / 16.0f;
 }
 
+/* The cosine of an angle in radians, from the table. */
 f32 RhMath_Cos(f32 angle) {
     s32 phase;
     f32 sign;
@@ -1063,6 +1101,7 @@ f32 RhMath_Cos(f32 angle) {
     return sign;
 }
 
+/* The sine of an angle in radians, from the table. */
 f32 RhMath_Sin(f32 angle) {
     s32 phase;
     f32 sign;
@@ -1097,7 +1136,8 @@ f32 RhMath_Sin(f32 angle) {
     return sign;
 }
 
-void RhMath_HeapSortStruct(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)) {
+/* Heap-sorts `count` records of `size` bytes at `base` with `compare`. */
+void RhMath_HeapSortStruct(u8 *base, s32 count, s32 size, s32 (*compare)(u8 *, u8 *)) {
     s32 spA0;
     u8 *var_s3_2;
     u8 *temp_s3;
@@ -1115,69 +1155,72 @@ void RhMath_HeapSortStruct(u8 *arg0, s32 arg1, s32 arg2, s32 (*arg3)(u8 *, u8 *)
     u8 *spB0;
 
     sentinel = &abTmpBuf;
-    var_fp = arg1 >> 1;
-    temp_s5 = arg0 - arg2;
-    var_s2 = arg1;
+    var_fp = count >> 1;
+    temp_s5 = base - size;
+    var_s2 = count;
     if (var_fp > 0) {
-        spA0 = var_fp * arg2;
+        spA0 = var_fp * size;
         do {
             var_s3 = var_fp;
-            RhMem_CopyMemory(sentinel, temp_s5 + spA0, arg2);
+            RhMem_CopyMemory(sentinel, temp_s5 + spA0, size);
             while ((var_s4 = var_s3 * 2) <= var_s2) {
                 if (var_s4 < var_s2 &&
-                    arg3(temp_s5 + (var_s4 * arg2), temp_s5 + ((var_s4 + 1) * arg2)) < 0) {
+                    compare(temp_s5 + (var_s4 * size), temp_s5 + ((var_s4 + 1) * size)) < 0) {
                     var_s4 += 1;
                 }
-                temp_s6 = temp_s5 + (var_s4 * arg2);
-                if (arg3(sentinel, temp_s6) >= 0) {
+                temp_s6 = temp_s5 + (var_s4 * size);
+                if (compare(sentinel, temp_s6) >= 0) {
                     break;
                 }
-                var_v0 = var_s3 * arg2;
-                RhMem_CopyMemory(temp_s5 + var_v0, temp_s6, arg2);
+                var_v0 = var_s3 * size;
+                RhMem_CopyMemory(temp_s5 + var_v0, temp_s6, size);
                 var_s3 = var_s4;
             }
-            RhMem_CopyMemory(temp_s5 + (var_s3 * arg2), sentinel, arg2);
+            RhMem_CopyMemory(temp_s5 + (var_s3 * size), sentinel, size);
             var_fp -= 1;
-            spA0 -= arg2;
+            spA0 -= size;
         } while (var_fp > 0);
     }
     if (var_s2 > 1) {
-        var_fp_2 = var_s2 * arg2;
-        spB0 = temp_s5 + arg2;
+        var_fp_2 = var_s2 * size;
+        spB0 = temp_s5 + size;
         var_s3_2 = temp_s5 + var_fp_2;
         do {
-            RhMem_CopyMemory(sentinel, var_s3_2, arg2);
-            RhMem_CopyMemory(var_s3_2, spB0, arg2);
+            RhMem_CopyMemory(sentinel, var_s3_2, size);
+            RhMem_CopyMemory(var_s3_2, spB0, size);
             var_s2 -= 1;
             var_s4_2 = 1;
-            var_fp_2 -= arg2;
+            var_fp_2 -= size;
             while ((var_s6 = var_s4_2 * 2) <= var_s2) {
                 if (var_s6 < var_s2 &&
-                    arg3(temp_s5 + (var_s6 * arg2), temp_s5 + ((var_s6 + 1) * arg2)) < 0) {
+                    compare(temp_s5 + (var_s6 * size), temp_s5 + ((var_s6 + 1) * size)) < 0) {
                     var_s6 += 1;
                 }
-                temp_s3 = temp_s5 + (var_s6 * arg2);
-                if (arg3(sentinel, temp_s3) >= 0) {
+                temp_s3 = temp_s5 + (var_s6 * size);
+                if (compare(sentinel, temp_s3) >= 0) {
                     break;
                 }
-                RhMem_CopyMemory(temp_s5 + (var_s4_2 * arg2), temp_s3, arg2);
+                RhMem_CopyMemory(temp_s5 + (var_s4_2 * size), temp_s3, size);
                 var_s4_2 = var_s6;
             }
-            RhMem_CopyMemory(temp_s5 + (var_s4_2 * arg2), sentinel, arg2);
+            RhMem_CopyMemory(temp_s5 + (var_s4_2 * size), sentinel, size);
             var_s3_2 = temp_s5 + var_fp_2;
         } while (var_s2 > 1);
     }
 }
 
+/* Starts the matrix stack. */
 s32 RhGeom_Init(void) {
     D_0032A220 = 0;
     return 1;
 }
 
+/* Ends the matrix stack. */
 s32 RhGeom_Term(void) {
     return 1;
 }
 
+/* Loads matrix `p` into the VU0 registers. */
 asm void RhGeom_SetMatrix(void *p) {
     .set noreorder
     beqz a0, L_0020BAAC
@@ -1198,6 +1241,7 @@ L_0020BAC0:
     nop
 }
 
+/* Stores the VU0 matrix into `p`. */
 asm void RhGeom_GetMatrix(void *p) {
     .set noreorder
     sqc2 vf28, 0x0(a0)
@@ -1207,10 +1251,11 @@ asm void RhGeom_GetMatrix(void *p) {
     sqc2 vf31, 0x30(a0)
 }
 
-asm void RhGeom_PushMatrix(s32 arg0) {
+/* Pushes matrix `matrix` on the matrix stack (VU0). */
+asm void RhGeom_PushMatrix(s32 matrix) {
     .set noreorder
     lw a2, D_0032A220
-    la v1, gRhGeom_rgl
+    la v1, matrixStack
     sll a1, a2, 3
     subu a1, a1, a2
     sll a1, a1, 4
@@ -1233,10 +1278,11 @@ L_0020BB38:
     jr ra
 }
 
+/* Pops the matrix stack. */
 asm void RhGeom_PopMatrix(void) {
     .set noreorder
     lw a0, D_0032A220
-    la v1, gRhGeom_rgl
+    la v1, matrixStack
     addiu a0, a0, -0x1
     sw a0, D_0032A220
     lw a1, D_0032A220
@@ -1251,12 +1297,14 @@ asm void RhGeom_PopMatrix(void) {
     lqc2 vf31, 0x30(v1)
 }
 
+/* Empties the matrix stack. */
 s32 RhGeom_ResetMatrixStack(void) {
     D_0032A220 = 0;
     return 1;
 }
 
-asm void RhGeom_UnitMatrix(void *arg0) {
+/* Sets `matrix` to the identity. */
+asm void RhGeom_UnitMatrix(void *matrix) {
     .set noreorder
     bnez a0, L_0020BBD0
     nop
@@ -1281,7 +1329,8 @@ L_0020BBF4:
     nop
 }
 
-asm void RhGeom_MulMatrix(s32 arg0, void *arg1) {
+/* dst = dst x src (VU0). */
+asm void RhGeom_MulMatrix(s32 dst, void *src) {
     .set noreorder
     bnez a0, L_0020BC6C
     nop
@@ -1344,7 +1393,8 @@ L_0020BCDC:
     nop
 }
 
-asm void RhGeom_MulMatrixRev(s32 arg0, s32 arg1) {
+/* dst = src x dst (VU0). */
+asm void RhGeom_MulMatrixRev(s32 dst, s32 src) {
     .set noreorder
     bnez a0, L_0020BD5C
     nop
@@ -1411,6 +1461,7 @@ typedef struct Matrix_0020BDE0 {
     f32 m[4][4];
 } Matrix_0020BDE0;
 
+/* dst = the inverse of matrix src. */
 void RhGeom_InvertMatrix(void *dst, void *src) {
     Matrix_0020BDE0 result;
     f32 det;
@@ -1475,6 +1526,7 @@ void RhGeom_InvertMatrix(void *dst, void *src) {
     }
 }
 
+/* The rotation matrix for angles src (x, y, z) into dst. */
 void RhGeom_GetRotXYZMatrix(void *dst, void *src) {
     f32 *matrix = dst;
     s32 *angles = src;
@@ -1517,17 +1569,18 @@ typedef struct Vec4_0020C750 {
 } Vec4_0020C750;
 
 
-void RhGeom_GetRotVectorMatrix(void *arg0, void *arg1, s32 arg2) {
-    f32 *m = arg0;
+/* The rotation matrix turning around vector `axis` by `angle` into `dst`. */
+void RhGeom_GetRotVectorMatrix(void *dst, void *axis, s32 angle) {
+    f32 *m = dst;
     Vec4_0020C750 v;
     f32 c;
     f32 s;
     f32 t;
 
-    v = *(Vec4_0020C750 *)arg1;
-    c = RhMath_CosI(arg2);
+    v = *(Vec4_0020C750 *)axis;
+    c = RhMath_CosI(angle);
     t = 1.0f - c;
-    s = RhMath_SinI(arg2);
+    s = RhMath_SinI(angle);
     RhGeom_NormalizeVector(&v.x);
     m[0] = c + t * (v.x * v.x);
     m[4] = t * (v.x * v.y) - v.z * s;
@@ -1553,13 +1606,14 @@ typedef struct {
 } Matrix_0020C8F0;
 
 
-void RhGeom_GetTransMatrix(void *arg0, f32 *arg1) {
-    Matrix_0020C8F0 *matrix = arg0;
+/* The translation matrix for `pos` into `dst`. */
+void RhGeom_GetTransMatrix(void *dst, f32 *pos) {
+    Matrix_0020C8F0 *matrix = dst;
 
-    RhGeom_UnitMatrix(arg0);
-    matrix->translation[0] = arg1[0];
-    matrix->translation[1] = arg1[1];
-    matrix->translation[2] = arg1[2];
+    RhGeom_UnitMatrix(dst);
+    matrix->translation[0] = pos[0];
+    matrix->translation[1] = pos[1];
+    matrix->translation[2] = pos[2];
 }
 
 typedef struct {
@@ -1568,8 +1622,9 @@ typedef struct {
 } Matrix_0020C940;
 
 
-void RhGeom_GetScaleRotXYZTransMatrix(void *arg0, void *p1, void *p2, void *p3) {
-    Matrix_0020C940 *mtx = arg0;
+/* The matrix scale x rotation x translation from p1 (scale), p2 (angles), p3 (position) into `dst`. */
+void RhGeom_GetScaleRotXYZTransMatrix(void *dst, void *p1, void *p2, void *p3) {
+    Matrix_0020C940 *mtx = dst;
     f32 *arg1 = p1;
     s32 *arg2 = p2;
     f32 *arg3 = p3;
@@ -1580,7 +1635,7 @@ void RhGeom_GetScaleRotXYZTransMatrix(void *arg0, void *p1, void *p2, void *p3) 
     f32 cz;
     f32 sz;
 
-    RhGeom_UnitMatrix(arg0);
+    RhGeom_UnitMatrix(dst);
     if (arg3 != NULL) {
         mtx->t[0] = arg3[0];
         mtx->t[1] = arg3[1];
