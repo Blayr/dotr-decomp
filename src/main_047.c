@@ -89,7 +89,7 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     Matrix_001E4570 matrix;
     Packet_001E4570 sprite __attribute__((aligned(8)));
 
-    state = (State_001E4570 *)gSzDuel_dl.b;
+    state = (State_001E4570 *)duelState.b;
     first = (Texture_001E4570 *)D_00290814;
     second = (Texture_001E4570 *)D_0029081E;
     halfWidth = abs_001E4570(first->right - first->left) >> 1;

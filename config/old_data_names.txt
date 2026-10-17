@@ -1,6 +1,7 @@
-/* The main program's old D_<address> data names, aliases of the real ones in config/symbol_addrs.txt (the
-   Japanese release's symbol names where it has one). The code modules still use the old names. */
-D_00317490 = gSzDuel_dl;
+/* Aliases of the main program's data names in config/symbol_addrs.txt: the old D_<address> names (the code
+   modules still use them) and the Japanese release's own names where a global now has an English one. */
+D_00317490 = duelState;
+gSzDuel_dl = duelState;
 D_0028A880 = gMain_ModelData;
 D_0028BC10 = g_rand_f;
 D_0028C230 = s_szReadPCMListAtFirst;

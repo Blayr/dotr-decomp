@@ -137,7 +137,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     u32 tmp;
 
     (void)&spare; /* spare's 8-byte slot sits between gradient and arrow in the original frame */
-    graphics = (State_001B4780 *)gSzDuel_dl.b;
+    graphics = (State_001B4780 *)duelState.b;
     tmp = style;
     parts = &gSzDuel_Icon[tmp * 9 + 0x3B];
     margin = &aabFrameOfs[tmp * 4];

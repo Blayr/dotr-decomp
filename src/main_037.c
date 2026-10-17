@@ -3388,7 +3388,7 @@ s32 lSzGame_DrawTitle_Rose_Pipe(s32 packet, s32 id, s32 x, s32 y, s32 width, s32
 }
 
 void SzDuel_Initialize(void) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 x;
     s32 y;
     u8 *cell;
@@ -3397,7 +3397,7 @@ void SzDuel_Initialize(void) {
     u8 *entry;
     u8 *row;
 
-    RhMem_FillMemory((s8 *)gSzDuel_dl.b, 0, 0xD70);
+    RhMem_FillMemory((s8 *)duelState.b, 0, 0xD70);
     SzDuel_InitCardRequest();
     SzDuel_InitCardControl();
     y = 0;

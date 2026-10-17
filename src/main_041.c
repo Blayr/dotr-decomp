@@ -16,7 +16,7 @@ void SzDuel_ActTrade(void) {
     extern u16 D_00318118;
     extern u8 D_003181F3;
     extern MoveFlags_001C2540 D_003181F4;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 *state2;
     s32 temp_v1;
     s32 var_v0;
@@ -40,7 +40,7 @@ void SzDuel_ActTrade(void) {
     if ((*(u16 *)(state + 0xC86) == 0) || ((s32)*(u16 *)(state + 0xC86) >= 0x8000)) {
         ((MoveFlags_001C2540 *)(state + 0xD64))->axis_0 = -((MoveFlags_001C2540 *)(state + 0xD64))->axis_0;
     }
-    state2 = gSzDuel_dl.b;
+    state2 = duelState.b;
     temp_v1 = (s32)D_003181F4.axis_1 << 0xB;
     var_v0_2 = D_00318118 + temp_v1;
     if (var_v0_2 > 0) {
@@ -66,7 +66,7 @@ void SzDuel_ActTrade(void) {
 static inline s32 count_001C2720(s32 player) {
     u8 *q;
     s32 sum;
-    u8 *b = gSzDuel_dl.b;
+    u8 *b = duelState.b;
     s32 i;
 
     if (player) {
@@ -101,7 +101,7 @@ s32 lSzDuel_ActTradeProc(s32 player) {
     u8 *state;
     u16 *total;
 
-    base = gSzDuel_dl.b;
+    base = duelState.b;
     if (player) {
         list = *(u16 **)(base + 0x6DC);
     } else {
@@ -422,7 +422,7 @@ typedef struct {
 
 
 s32 lSzDuel_TradeDo(void) {
-    State_001C32B0 *state = (State_001C32B0 *)gSzDuel_dl.b;
+    State_001C32B0 *state = (State_001C32B0 *)duelState.b;
     s32 var_s1;
     s32 var_a1;
     s32 var_a2;
@@ -483,7 +483,7 @@ void lSzDuel_TradeDoSide(s32 player) {
     s32 opponent;
     State_001C33A0 *state;
 
-    state = (State_001C33A0 *)gSzDuel_dl.b;
+    state = (State_001C33A0 *)duelState.b;
     if (player != 0) {
         counts = state->counts1;
     } else {
@@ -525,7 +525,7 @@ typedef struct {
 } State_001C3520;
 
 void lSzDuel_SortTrade(s32 arg0) {
-    State_001C3520 *state = (State_001C3520 *)gSzDuel_dl.b;
+    State_001C3520 *state = (State_001C3520 *)duelState.b;
     s32 var_a1;
     void (*var_a3)(void);
 
@@ -571,7 +571,7 @@ typedef struct State_001C35A0 {
 extern u16 D_0031811C;
 
 s32 SzDuel_DrawTrade_Pipe(s32 arg0) {
-    State_001C35A0 *state = (State_001C35A0 *)gSzDuel_dl.b;
+    State_001C35A0 *state = (State_001C35A0 *)duelState.b;
     s32 result;
     s32 next;
     extern s32 lSzDuel_DrawTrade_Title_Pipe();
@@ -759,7 +759,7 @@ static inline s32 text_001C3E20(s32 cursor, s32 x, s32 y, s32 align,
 }
 
 static inline s32 total_001C3E20(s32 player) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 *cards;
     s32 total;
     s32 i;
@@ -867,7 +867,7 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 enabled;
     Work_001C3E20 work;
 
-    data = gSzDuel_dl.b;
+    data = duelState.b;
     special = (D_0031814E[arg1] == 1) ? 1 : 0;
     enabled = 0;
     if (special != 0) {
@@ -1086,7 +1086,7 @@ s32 lSzDuel_DrawTrade_Card_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4
     extern s64 func_00215D30();
     s32 ret;
     s32 id3;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 *info;
     s32 kind;
     s32 style;
@@ -1247,7 +1247,7 @@ s32 lSzDuel_DrawTrade_Cursor_Pipe(s32 id, s32 player, s32 arg2, s32 arg3, s32 ar
     extern s32 D_00290A58;
     extern s32 D_00290A4E;
     extern s32 D_00290A76;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s8 *text1 = D_002BF030 + 3;
     s8 *text2 = D_002BEFEC;
     s8 *text4 = (s8 *)&D_002BF00B;
@@ -1319,7 +1319,7 @@ void lSzDuel_DrawTrade_Exit_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *SzMsg_GetInfo(s32);
     extern s32 SzMsg_DrawX_Pipe(s32, s32, s32, s32, s32, void (*)(void));
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 text = (s32)D_002BEF98;
     s8 *text2 = D_002BEF6F;
     s8 *text3 = D_002BEF73;
@@ -1344,7 +1344,7 @@ void lSzDuel_DrawTrade_Do_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *SzMsg_GetInfo(s32);
     extern s32 SzMsg_DrawX_Pipe(s32, s32, s32, s32, s32, void (*)(void));
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 text = (s32)&D_002BF00B;
     s8 *text2 = D_002BEF6F;
     s8 *text3 = D_002BEF73;
@@ -2257,7 +2257,7 @@ s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg
     s32 number_x;
     s32 number_y;
 
-    spD0 = gSzDuel_dl.b;
+    spD0 = duelState.b;
     temp_v0 = func_002158B0(arg1);
     temp_v0_2 = func_002159D0(arg1, temp_v0);
     temp_fp = func_001DD0E0(temp_v0_2);
@@ -2504,7 +2504,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectDeck_Pipe(s32 arg0, u8 *arg1, s32 x, s32 y
     extern s32 D_00290A58;
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
     s32 color = (arg1[0xA9C002] & 0xF) + 0x81;
@@ -2652,7 +2652,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LifeSet_Pipe(s32 arg0, s32 player, s32 x, s32 y)
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     extern Pair_001C92C0 D_002914A0;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
     s32 tmp = (((u8 *)player)[0xA9C002] & 0xF) + 0x81;
@@ -3011,7 +3011,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     s32 ret;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 *save = (u8 *)0xA9C000;
     Maps_001CA7C0 *maps;
     s8 *text1;

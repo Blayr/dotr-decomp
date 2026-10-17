@@ -106,7 +106,7 @@ static inline s32 check_001BA630(u8 *data, s32 i) {
 }
 
 s32 lSzDuel_SortFunc1(s32 arg0, s32 arg1) {
-    u8 *data = gSzDuel_dl.b;
+    u8 *data = duelState.b;
     s32 i;
     s32 result = 0;
 
@@ -124,7 +124,7 @@ s32 lSzDuel_SortFunc1(s32 arg0, s32 arg1) {
 }
 
 s32 lSzDuel_SortFunc2(s32 arg0, s32 arg1) {
-    u8 *base = gSzDuel_dl.b;
+    u8 *base = duelState.b;
     s32 i;
     s32 j;
     s32 result = 0;
@@ -209,7 +209,7 @@ typedef struct {
 } Data_001BA930;
 
 s32 lSzDuel_NameCmp(u16 *arg0, u16 *arg1) {
-    Data_001BA930 *data = (Data_001BA930 *)gSzDuel_dl.b;
+    Data_001BA930 *data = (Data_001BA930 *)duelState.b;
     s32 temp_a1;
     s64 var_a2;
     s64 var_v0;
@@ -474,7 +474,7 @@ s32 SzDuel_DrawBuildDeck_Pipe(s32 arg0) {
     s32 result;
 
     player = D_003181EC;
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     RhBase_AssignRenderFrame(5, 2, 0x32);
     arg0 = (s32)RhBase_EnableRenderFrame((void *)arg0);
     value = lSzDuel_DrawBuildDeck_Title_Pipe(
@@ -847,7 +847,7 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 pageX;
     s32 pageY;
 
-    data = gSzDuel_dl.b;
+    data = duelState.b;
     player = D_003181EC;
     special = ((D_003181ED == 3) || (data[0xD5D] == 2)) ? 1 : 0;
     enabled = 0;
@@ -1096,7 +1096,7 @@ void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 style;
 
     leader = D_003181EC;
-    data = gSzDuel_dl.b;
+    data = duelState.b;
     special = ((D_003181ED == 4) || (data[0xD5D] == 5)) ? 1 : 0;
     enabled = 0;
     if (special != 0) {
@@ -1349,7 +1349,7 @@ void *lSzDuel_DrawBuildDeck_Card_Pipe(void *arg0, s32 card, s32 x, s32 y, s32 fl
     extern s32 D_00290986;
     extern s32 D_00290990;
     s32 player = D_003181EC;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 id = (s32)arg0;
     Card_001BCE20 *data;
     s32 level;
@@ -1605,7 +1605,7 @@ s32 func_001BDAF0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s3
     s32 tx;
     s32 ty;
 
-    data = gSzDuel_dl.b;
+    data = duelState.b;
     card = func_001DD0E0(arg1);
     text = D_002BEFC3;
     xoff = (arg4 != 0) ? 0x280 : -0x140;
@@ -1896,7 +1896,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 ar
     s32 y;
     s32 stars;
 
-    data = gSzDuel_dl.b;
+    data = duelState.b;
     player = D_003181EC;
     card = (Card_001BE5F0 *)SzDuel_GetCardConstInfo(arg1);
     slide = arg4 ? 0x280 : -0x140;
@@ -2231,7 +2231,7 @@ s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y)
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
     extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, u8 *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, u8);
     extern s32 SzDuel_DrawWindow_Font_Pipe();
-    Duel_00317490 *c;
+    DuelStateBytes *c;
     int side;
     int show;
     char *text;
@@ -2258,7 +2258,7 @@ s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y)
     s32 icon;
     s32 last;
 
-    c = &gSzDuel_dl;
+    c = &duelState;
     show = 1;
     side = c->s.player;
     show = (c->s.mode == 0) ? show : 0;
@@ -2387,7 +2387,7 @@ s32 lSzDuel_DrawBuildDeck_BagCursor_Pipe(s32 id, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 D_00290A76;
     extern s32 D_00290864;
     extern u8 D_003181ED;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 flag = (D_003181ED == 3) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
@@ -2447,7 +2447,7 @@ s32 lSzDuel_DrawBuildDeck_DeckCursor_Pipe(s32 id, s32 arg1, s32 arg2, s32 arg3) 
     extern s32 D_00290A58;
     extern s32 D_00290A4E;
     extern u8 D_003181ED;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 flag = (D_003181ED == 4) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
@@ -2508,7 +2508,7 @@ void lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 res;
     s32 *info;
 
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     text0 = (s32)D_002BEF9D;
     text1 = D_002BEF6F;
     text2 = D_002BEF73;
@@ -2542,7 +2542,7 @@ s32 lSzDuel_DrawBuildDeck_ReincarnationDone_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 ExClampMode_Pipe();
     extern s64 ExGetRegVal();
 
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     text = &D_002BEF9D;
     cards = (u16 *)((u8 *)D_00317B60 + 0x20);
     icon = -1;
@@ -2747,7 +2747,7 @@ extern Vec3_001C1090 D_00291420;
 
 
 void SzDuel_Init3DView(s32 arg0) {
-    u8 *duel = gSzDuel_dl.b;
+    u8 *duel = duelState.b;
     s32 i;
     Quad_001C1090 a;
     Block_001C1090 b;
@@ -3088,7 +3088,7 @@ void SzDuel_InitTrade(void) {
     s32 result;
     u8 *var_v0;
 
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     var_s1 = (s16 *)0x01ED0000;
     var_s2 = (s16 *)0x01ED06AC;
     var_s3 = (s8 *)0x01ED0D58;
@@ -3162,7 +3162,7 @@ void lSzDuel_SetupTrade(s32 arg0) {
     u8 *var_s4;
     u8 temp_v1;
 
-    base = gSzDuel_dl.b;
+    base = duelState.b;
     if (arg0 != 0) {
         var_s2 = (u16 *)(base + 0xC8E);
     } else {

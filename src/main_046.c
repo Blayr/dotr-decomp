@@ -1629,7 +1629,7 @@ void SzDuel_CloseHandPopup(void) {
 }
 
 void SzDuel_OpenOptionPopup(s32 arg0, s16 arg1, s16 arg2) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 i;
     s32 bit;
 
@@ -1660,7 +1660,7 @@ s32 SzDuel_ActOptionPopup(s32 arg0) {
     s32 temp_s1;
     s32 temp_s1_2;
 
-    base = gSzDuel_dl.b;
+    base = duelState.b;
     if (SzPad_Check(arg0, 2, 0x5000) != 0) {
         temp_s1 = base[0xD35];
         if (SzPad_Check(arg0, 2, 0x1000) != 0) {
@@ -1707,7 +1707,7 @@ void SzDuel_CloseOptionPopup(void) {
 }
 
 void SzDuel_OpenMsgPopup(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
 
     switch (arg0) {
     case 0:
@@ -1757,7 +1757,7 @@ void SzDuel_OpenMsgPopup(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 s32 SzDuel_ActMsgPopup(s32 arg0) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 temp_s1;
 
     if (SzPad_Check(arg0, 0, 0xA000) != 0) {

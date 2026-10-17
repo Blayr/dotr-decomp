@@ -3,7 +3,7 @@
 void lSzDuel_InitHandUp(s32 arg0, s32 arg1) {
     u16 ids[4];
     s16 w[4];
-    u8 *g = gSzDuel_dl.b;
+    u8 *g = duelState.b;
     u8 *p;
     s32 i;
     s32 x;
@@ -17,7 +17,7 @@ void lSzDuel_InitHandUp(s32 arg0, s32 arg1) {
     s16 r;
     s32 idx;
 
-    p = gSzDuel_dl.b + arg0 * 0x350;
+    p = duelState.b + arg0 * 0x350;
     SzDuel_PackHand(arg0);
     lSzDuel_InitHandInfo(arg0, 0, 999, 0, 0, 0, 0);
     x = -250;
@@ -129,7 +129,7 @@ s32 lSzDuel_InitHandCancel(s32 arg0) {
     s32 result;
     u8 *candidate;
 
-    base = gSzDuel_dl.b;
+    base = duelState.b;
     if (D_00317B5C != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
         if ((slot = gSzDuel_aCardControl) != NULL && *(u8 **)slot != NULL) {
             freeSlot_001D8080(slot);
@@ -262,7 +262,7 @@ static inline Model_001D82C0 *get_model_001D82C0(void) {
 s32 lSzDuel_InitHandCombo(s32 arg0) {
     extern void *SzDuel_GetCardInfo();
     extern void SzDuel_ClearDrawCard();
-    State_001D82C0 *state = (State_001D82C0 *)gSzDuel_dl.b;
+    State_001D82C0 *state = (State_001D82C0 *)duelState.b;
     s32 next;
     Item_001D82C0 *copy;
     Node_001D82C0 *primary;
@@ -569,7 +569,7 @@ s32 lSzDuel_InitHandInfo(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     Slot_001D89F0 *slot;
     Model_001D89F0 *model;
 
-    player = gSzDuel_dl.b + arg0 * 0x350;
+    player = duelState.b + arg0 * 0x350;
     entry = SzDuel_GetCardInfo(2, arg1);
     if (entry == NULL) {
         return 0;
@@ -655,7 +655,7 @@ s32 lSzDuel_InitHandInfo2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     u8 *entry;
     u8 *resource;
 
-    player = gSzDuel_dl.b + arg0 * 0x350;
+    player = duelState.b + arg0 * 0x350;
     object = SzDuel_GetCardInfo(2, arg1);
     if (object == NULL) {
         return 0;
@@ -742,7 +742,7 @@ void lSzDuel_LockCamera(s32 arg0, s32 arg1, s32 arg2) {
     f32 sp60[4];
     u8 *temp_s3;
 
-    temp_s3 = gSzDuel_dl.b + (D_003181E4 * 0x350);
+    temp_s3 = duelState.b + (D_003181E4 * 0x350);
     SzView_IV2V(temp_s3 + 0x1D0, sp50);
     sp60[0] = (f32) arg1;
     sp60[2] = (f32) arg2;
@@ -770,7 +770,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 angle;
     u8 *cur;
 
-    p = gSzDuel_dl.b + D_003181E4 * 0x350;
+    p = duelState.b + D_003181E4 * 0x350;
     saved = *(Vec4_001D91B0 *)(p + 0x1D0);
     x0 = (s32)(f32)((arg1 - 3) * 50);
     z0 = (s32)(f32)((arg2 - 3) * 50);
@@ -780,7 +780,7 @@ void lSzDuel_LockCamera2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *(s32 *)(p + 0x1D0) = 0x96;
     *(s32 *)(p + 0x1D4) = (((angle + 0x80) >> 8) << 8) + 0x4000;
     *(s32 *)(p + 0x1D8) = 0x4000;
-    cur = gSzDuel_dl.b + D_003181E4 * 0x350;
+    cur = duelState.b + D_003181E4 * 0x350;
     SzView_IV2V(cur + 0x1D0, camera);
     pos[0] = (f32)((x0 + x1) >> 1);
     pos[2] = (f32)((z0 + z1) >> 1);
@@ -804,7 +804,7 @@ typedef struct {
 } Card_001D9420;
 
 s32 lSzDuel_IsUnitHide(void *arg0) {
-    u8 *duel = gSzDuel_dl.b;
+    u8 *duel = duelState.b;
     s32 result;
     void **cell;
     s32 me;
@@ -906,7 +906,7 @@ typedef struct {
 
 void SzDuel_InitTurn(s32 arg0, s32 arg1) {
     extern s32 func_001A22C0(f32);
-    State_001D9820 *state = (State_001D9820 *)gSzDuel_dl.b;
+    State_001D9820 *state = (State_001D9820 *)duelState.b;
     Player_001D9820 *p;
     s32 x;
     s32 z;
@@ -915,10 +915,10 @@ void SzDuel_InitTurn(s32 arg0, s32 arg1) {
     f32 saved[4];
 
     D_003181E4 = arg1;
-    p = (Player_001D9820 *)(gSzDuel_dl.b + arg1 * 0x350);
+    p = (Player_001D9820 *)(duelState.b + arg1 * 0x350);
     z = func_001A22C0((f32)((p->z - 3) * 50));
     x = func_001A22C0((f32)((p->x - 3) * 50));
-    cur = (Player_001D9820 *)(gSzDuel_dl.b + D_003181E4 * 0x350);
+    cur = (Player_001D9820 *)(duelState.b + D_003181E4 * 0x350);
     SzView_IV2V(cur->f1D0, saved);
     pos[0] = (f32)x;
     pos[2] = (f32)z;
@@ -956,7 +956,7 @@ s32 SzDuel_StartCardSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     extern s32 RhBase_EnableRenderFrame();
     extern s32 RhBase_ClearRenderFrame();
     extern s32 RhBase_DisableRenderFrame();
-    u8 *base = gSzDuel_dl.b;
+    u8 *base = duelState.b;
     s32 sprite;
     s32 length;
     s32 i;
@@ -1017,7 +1017,7 @@ s32 lSzDuel_SetupCardTexture(s32 arg0, s32 arg1) {
     s32 value;
     s32 i;
 
-    state = (State_001D9C40 *)gSzDuel_dl.b;
+    state = (State_001D9C40 *)duelState.b;
     value = D_00318110;
     if (D_00317B30[arg1] != 0) {
         return arg0;
@@ -1157,7 +1157,7 @@ s32 SzDuel_GetCardNode(void *arg0, s32 arg1) {
     Vec_001D9F00 transformed;
     __int128 matrix[4];
     __int128 projection[4];
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 mode;
     Object_001D9F00 *object = arg0;
     s32 i;
@@ -1277,7 +1277,7 @@ s32 SzDuel_GetCardNodeOnScreen(void *arg0, s32 arg1, f32 fparg0, f32 fparg1) {
     u8 *global;
 
     object = arg0;
-    global = gSzDuel_dl.b;
+    global = duelState.b;
     temp_s1 = (object->field80.bytes.flags.flag6 == 0) ? NULL : ((u8 *) object + 0x30);
     object->field4A = 0x35;
     object->field48 = 0;
@@ -1665,7 +1665,7 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
     Sprite_001DA7F0 sprite __attribute__((aligned(8)));
     Solid_001DA7F0 solid __attribute__((aligned(8)));
 
-    game = (Game_001DA7F0 *)gSzDuel_dl.b;
+    game = (Game_001DA7F0 *)duelState.b;
     sx = 0x6C0;
     sy = 0x720;
     mode = SzGame_GetMode(1);
@@ -2293,7 +2293,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 arg0, s32 arg1, f32 *arg2, s32 arg3, s32 arg4
     f32 rotation[4];
     Points_001DC790 matrix;
     Packet_001DC790 packet;
-    Gfx_001DC790 *textures = (Gfx_001DC790 *)gSzDuel_dl.b;
+    Gfx_001DC790 *textures = (Gfx_001DC790 *)duelState.b;
     f32 u;
     u8 *entry;
     f32 scale;

@@ -41,7 +41,7 @@ extern Vec_001ADD00 D_002910D0;
 void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     Vec_001ADD00 spA0;
     Vec_001ADD00 spB0;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 var_s1;
     u8 *temp_s1_2;
     u8 *var_t2;
@@ -276,7 +276,7 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void SzDuel_Term(void) {
-    u8 *data = gSzDuel_dl.b;
+    u8 *data = duelState.b;
     s32 var_a1;
     s32 var_s0;
 
@@ -343,8 +343,8 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
     f32 scale;
     s32 brightness;
 
-    state = gSzDuel_dl.b;
-    player = gSzDuel_dl.b + D_003181E4 * 0x350;
+    state = duelState.b;
+    player = duelState.b + D_003181E4 * 0x350;
     mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     own = D_002910E0;
@@ -588,7 +588,7 @@ s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     s32 length;
     s32 i;
 
-    base = gSzDuel_dl.b;
+    base = duelState.b;
     addr = RhBase_GetUserGsAddress();
     addr += SzText_InitClutManage(addr, 2);
     arg0 = SzMsg_Init_Pipe(arg0, arg1, addr, &length);
@@ -628,7 +628,7 @@ typedef struct {
 } Data_001AF140;
 
 s32 SzDuel_GetWindowTexture(s32 arg0) {
-    Data_001AF140 *data = (Data_001AF140 *)gSzDuel_dl.b;
+    Data_001AF140 *data = (Data_001AF140 *)duelState.b;
 
     if ((arg0 < 0) || (arg0 >= 8)) {
         return 0;
@@ -693,7 +693,7 @@ static inline f32 abs_001AF180(f32 value) {
 
 s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
     extern Palette_001AF180 gSzDuel_aaicolRgba[];
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 i;
     s32 id;
     Actor_001AF180 *actor;
@@ -789,7 +789,7 @@ s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
     s32 y;
     s32 kind;
 
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     mode = SzGame_GetMode(1);
     player = D_003181E4;
     count = SzDuel_GetHandCount(player);
@@ -902,7 +902,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
     Card_001AF7E0 card2;
     s32 mode2;
     u8 *entry;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 mode4;
     char *text;
     s32 x_c7;
@@ -1298,7 +1298,7 @@ s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
     f32 scale;
     s32 nw;
 
-    state = gSzDuel_dl.b;
+    state = duelState.b;
     frame = (u32)func_001A8720() / 5;
     if (arg6 < 0) {
         flip = 1;
@@ -1671,8 +1671,8 @@ s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s
     s32 hidden;
     s32 rowX2;
 
-    data = gSzDuel_dl.b;
-    playerData = gSzDuel_dl.b + arg1 * 0x350;
+    data = duelState.b;
+    playerData = duelState.b + arg1 * 0x350;
     baseY = arg3 + 3;
     baseX = arg2 + 3;
     screenY = baseY + 0x720;
@@ -1766,7 +1766,7 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = gSzDuel_dl.b;
+    global = duelState.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -1817,7 +1817,7 @@ s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaX;
     s32 areaY;
 
-    global = gSzDuel_dl.b;
+    global = duelState.b;
     x = arg1 + 3;
     y = arg2 + 3;
     areaX = x + 0x6C0;
@@ -1952,8 +1952,8 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
     Card_001B22F0 *card;
     s32 iconX;
 
-    globalBase = gSzDuel_dl.b;
-    playerState = gSzDuel_dl.b + arg4 * 0x350;
+    globalBase = duelState.b;
+    playerState = duelState.b + arg4 * 0x350;
     x = arg5 + 3;
     y = arg6 + 4;
     labelX = x + 0x6C0;
@@ -2233,8 +2233,8 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
     s32 entryY;
     f32 scale;
 
-    state = (State_001B3100 *)gSzDuel_dl.b;
-    player = (State_001B3100 *)(gSzDuel_dl.b + D_003181CC * 0x350);
+    state = (State_001B3100 *)duelState.b;
+    player = (State_001B3100 *)(duelState.b + D_003181CC * 0x350);
     x = (s32)arg2 + 4;
     y = (s32)arg3 + 4;
     choice = -1;
@@ -2495,7 +2495,7 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x
     extern Params_001B3790 D_002912D0;
     extern s32 D_0031AB80;
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     Source_001B3790 *color = &gSzDuel_aaicolRgba[colorIndex];
     s32 left;
     s32 top;
@@ -2715,7 +2715,7 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     s32 width;
     s32 height;
 
-    graphics = (State_001B3CC0 *)gSzDuel_dl.b;
+    graphics = (State_001B3CC0 *)duelState.b;
     width = abs_001B3CC0(src[3] - src[1]);
     height = abs_001B3CC0(src[4] - src[2]);
     if (shrink != 0) {

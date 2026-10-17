@@ -24,8 +24,41 @@ extern s32 *g_SDValue;
 extern u8 D_1FE0000;
 
 
-typedef struct Duel_00317490_s {
-    u8 players[2][0x350];          /* 0x000: one record per player (callers use their own views) */
+/* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
+   Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
+typedef struct DuelPlayer {
+    u8 pad000[0x1D0];
+    s32 cameraLookAt[4];           /* 0x1D0: where the camera looks while this side moves (SzView_IV2V) */
+    u16 deck[40];                  /* 0x1E0: shuffled on entry (SzDuel_AddDeck), drawn from [0] */
+    u8 deckCount;                  /* 0x230 */
+    u8 pad231;
+    u16 grave[120];                /* 0x232: the graveyard */
+    u8 graveCount;                 /* 0x322 */
+    u8 pad323;
+    u16 hand[5];                   /* 0x324: card id in bits 0-11, a pick-order tag in bits 12-15 */
+    u8 handCount;                  /* 0x32E */
+    u8 pad32F;
+    s32 unk330;                    /* 0x330: a handle SzDuel_Act opens per side (-1 = none) */
+    u8 pad334[0x33A - 0x334];
+    u16 lifePoints;                /* 0x33A: 0..9999 (SzDuel_CalcLP) */
+    u8 duelistId;                  /* 0x33C: who plays this side; 100 and up = a computer duelist (id - 100) */
+    u8 cursorX;                    /* 0x33D: board column 0..6 */
+    u8 cursorZ;                    /* 0x33E: board row 0..6 */
+    u8 pad33F[0x341 - 0x33F];
+    u8 summonPower;                /* 0x341: 0..12 (SzDuel_CalcSummonPower) */
+    u8 summonCharge;               /* 0x342 */
+    u8 pad343;
+    u8 destinyFlag;                /* 0x344: SzDuel_InqDestinyFlag / SetDestinyFlag */
+    s8 cursorY;                    /* 0x345: the cursor's height above the board */
+    struct {
+        s8 handPhase : 1;          /* SzDuel_InqHandPhase / SetHandPhase */
+        s8 b1 : 7;
+    } flags346;                    /* 0x346 */
+    u8 pad347[0x350 - 0x347];
+} DuelPlayer;
+
+typedef struct DuelState {
+    DuelPlayer players[2];         /* 0x000: the two sides */
     u8 pad6A0[0x6D0 - 0x6A0];
     struct {
         u8 pad00[0x20];
@@ -106,15 +139,16 @@ typedef struct Duel_00317490_s {
         s8 b7 : 1;
     } f67;                         /* 0xD67 */
     u8 padD68[0xD70 - 0xD68];
-} Duel_00317490_s;
+} DuelState;
 
-/* The duel state: old code reads it as bytes (.b), new code by field (.s) */
-typedef union Duel_00317490 {
+/* The duel state (also the work area of the duel-side menus: deck building, trade, custom duel, map edit).
+   Code written against raw offsets reads it as bytes (.b), the rest by field (.s). */
+typedef union DuelStateBytes {
     u8 b[0xD70];
-    Duel_00317490_s s;
-} Duel_00317490;
+    DuelState s;
+} DuelStateBytes;
 
-extern Duel_00317490 gSzDuel_dl;
+extern DuelStateBytes duelState; /* original: duelState */
 
 
 typedef __int128 Q128_0020F290;

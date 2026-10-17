@@ -573,7 +573,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     s32 ret;
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 *save = (u8 *)0xA9C000;
     Maps_001CB6B0 *maps;
     s8 *text1;
@@ -730,7 +730,7 @@ extern Vec4_001CC4B0 D_002914B0;
 extern Vec4_001CC4B0 D_002914C0;
 
 void SzDuel_InitMapEdit(s32 arg0) {
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     s32 i;
     Vec4_001CC4B0 vector0;
     Vec4_001CC4B0 vector1;
@@ -800,7 +800,7 @@ extern PulseFlags_001CC620 D_003181F4;
 void SzDuel_ActMapEdit(void) {
     extern void *SzData_GetData(s32);
     extern s32 SzDuel_SetField();
-    State_001CC620 *state = (State_001CC620 *)gSzDuel_dl.b;
+    State_001CC620 *state = (State_001CC620 *)duelState.b;
     s32 row;
     s32 column;
     u8 *cell;
@@ -814,7 +814,7 @@ void SzDuel_ActMapEdit(void) {
     State_001CC620 *p2;
 
     {
-        p = (State_001CC620 *)gSzDuel_dl.b;
+        p = (State_001CC620 *)duelState.b;
         if (D_003181F3 != 0) {
             p->flags.first = 1;
         }
@@ -826,7 +826,7 @@ void SzDuel_ActMapEdit(void) {
         }
     }
     {
-        p2 = (State_001CC620 *)gSzDuel_dl.b;
+        p2 = (State_001CC620 *)duelState.b;
         step = D_003181F4.second << 11;
         p2->second = (D_00318118 + step > 0 ? p2->second + step : 0) < 0x8000 ?
             (p2->second + step > 0 ? p2->second + step : 0) : 0x8000;
@@ -1051,7 +1051,7 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe(s32, s32, s32, s32, s32, s32, s32);
     extern u8 gSzDuel_Icon[];
     extern u8 gSzDuel_aaicolField[];
-    u8 *state = gSzDuel_dl.b;
+    u8 *state = duelState.b;
     u8 cur;
     s32 j;
     s32 i;
@@ -1235,8 +1235,8 @@ s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
     extern s32 SzDuel_DrawHandCard_Pipe(s32);
     Vec4_001CD710 position;
     Command_001CD710 command;
-    u8 *base = gSzDuel_dl.b;
-    u8 *selected = gSzDuel_dl.b + D_003181E4 * 0x350;
+    u8 *base = duelState.b;
+    u8 *selected = duelState.b + D_003181E4 * 0x350;
     s32 original;
     s64 mode;
     s32 special;
@@ -1667,8 +1667,8 @@ s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
     u8 alpha;
     f32 fade;
 
-    game = gSzDuel_dl.b;
-    player = gSzDuel_dl.b + D_003181E4 * 0x350;
+    game = duelState.b;
+    player = duelState.b + D_003181E4 * 0x350;
     mode = SzGame_GetMode(1);
     alpha = (u8)((((s32)D_00318116 >> 8) & 0xFF) + 0x40);
     ownColor = D_002914E0;
@@ -1867,9 +1867,9 @@ extern s8 Rensyu_flg;
 extern s8 Rensyu_END;
 
 s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
-    u8 *base = gSzDuel_dl.b;
+    u8 *base = duelState.b;
     s32 ret = 0;
-    Record_001CECF0 *record = (Record_001CECF0 *)(gSzDuel_dl.b + arg0 * 0x350);
+    Record_001CECF0 *record = (Record_001CECF0 *)(duelState.b + arg0 * 0x350);
     void *selected;
     s32 result;
 
@@ -2201,8 +2201,8 @@ s32 SzDuel_Act(void) {
     s8 bit;
     Object_001CEE60 tmpo;
 
-    duel = gSzDuel_dl.b;
-    me = &gSzDuel_dl.b[D_003181E4 * 0x350];
+    duel = duelState.b;
+    me = &duelState.b[D_003181E4 * 0x350];
     list = me + 0x1D0;
     cam = func_001F9AD0(0);
     hand0 = func_001DF470(0);
@@ -2399,7 +2399,7 @@ s32 SzDuel_Act(void) {
         DUEL[0xD57] = 0x15;
     }
     {
-        Duel_00317490_s *q = &gSzDuel_dl.s;
+        DuelState *q = &duelState.s;
         if (q->hold != 0) {
             q->dirs.dir1 = 1;
         }
@@ -2409,7 +2409,7 @@ s32 SzDuel_Act(void) {
         }
     }
     {
-        Duel_00317490_s *q = &gSzDuel_dl.s;
+        DuelState *q = &duelState.s;
         s32 st = q->dirs.dir2 << 0xB;
         q->wave2 = MIN_001CEE60(MAX_001CEE60(q->wave2 + st, 0), 0x8000);
         if ((q->wave2 == 0) || ((s32) q->wave2 >= 0x8000)) {
@@ -3303,7 +3303,7 @@ s32 SzDuel_Act(void) {
         DUEL[0xD57] == 0x25 || DUEL[0xD57] == 0x29 || DUEL[0xD57] == 0x2D || DUEL[0xD57] == 0x30 ||
         DUEL[0xD57] == 0x33 || DUEL[0xD57] == 0x35 || DUEL[0xD57] == 0x3E || DUEL[0xD57] == 0x43 ||
         DUEL[0xD57] == 0x53 || DUEL[0xD57] == 0x46 || DUEL[0xD57] == 0x5C || DUEL[0xD57] == 0x61) {
-        sl = &gSzDuel_dl.b[DUEL[0xD54] * 0x350];
+        sl = &duelState.b[DUEL[0xD54] * 0x350];
         if (sl[0x33C] < 100 && *(s32 *)(sl + 0x334) != 0) {
             func_0020B380((void *)0x3F0000, (void *) *(s32 *)(sl + 0x334), *(u16 *)(sl + 0x338) >> 4);
             func_0017BB60(0);
@@ -4071,7 +4071,7 @@ s32 SzDuel_Act(void) {
                         if (F66->b3) {
                             if (*(u16 *)(duel + 0xC8C) != 0) {
                                 DUEL[0xD57] = 0x2E;
-                                DUEL_U32(0xC4C) = ((Duel_00317490_s *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                                DUEL_U32(0xC4C) = ((DuelState *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
                                 func_00217710(0, 4);
                             } else {
                                 func_00217710(0, 6);
@@ -4121,7 +4121,7 @@ s32 SzDuel_Act(void) {
                         if (F66->b3) {
                             if (*(u16 *)(duel + 0xC90) != 0) {
                                 DUEL[0xD57] = 0x2E;
-                                DUEL_U32(0xC4C) = ((Duel_00317490_s *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]] | 0x10000;
+                                DUEL_U32(0xC4C) = ((DuelState *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]] | 0x10000;
                                 func_00217710(0, 4);
                             } else {
                                 func_00217710(0, 6);
@@ -4158,14 +4158,14 @@ s32 SzDuel_Act(void) {
             if (keys & 0x10) {
                 if (side == 0) {
                     if (*(u16 *)(duel + 0xC8C) != 0) {
-                        *(u16 *)(duel + 0xCAC) = ((Duel_00317490_s *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
+                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->list[*(u16 *)(duel + 0xC8A) + DUEL[0xD5E]];
                     } else {
                         func_00217710(0, 6);
                         return 0;
                     }
                 } else {
                     if (*(u16 *)(duel + 0xC90) != 0) {
-                        *(u16 *)(duel + 0xCAC) = ((Duel_00317490_s *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]];
+                        *(u16 *)(duel + 0xCAC) = ((DuelState *)duel)->list2[*(u16 *)(duel + 0xC8E) + DUEL[0xD5F]];
                     } else {
                         func_00217710(0, 6);
                         return 0;
@@ -4256,8 +4256,8 @@ s32 SzDuel_Act(void) {
                 } else {
                     DUEL[0xD5E] = (DUEL[0xD5E] + *(u16 *)(duel + 0xC8C) + 1) % *(u16 *)(duel + 0xC8C);
                 }
-                me[0x33D] = *(u8 *)&((Duel_00317490_s *)duel)->list[DUEL[0xD5E]];
-                me[0x33E] = ((Duel_00317490_s *)duel)->list[DUEL[0xD5E]] >> 8;
+                me[0x33D] = *(u8 *)&((DuelState *)duel)->list[DUEL[0xD5E]];
+                me[0x33E] = ((DuelState *)duel)->list[DUEL[0xD5E]] >> 8;
                 tz = ABS_001CEE60(me[0x33E] - tz);
                 tx = ABS_001CEE60(me[0x33D] - tx);
                 gx = (s32)(f32)((me[0x33D] - 3) * 50);
