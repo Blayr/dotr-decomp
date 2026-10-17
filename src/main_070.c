@@ -1719,7 +1719,7 @@ s32 Chk_Enc(s32 nSide, s32 cID, s32 eNO) {
     return 0x3E7;
 }
 
-/* A side's power change from its life points (`pOfs` gets the bonus). */
+/* Half the opposing side's life points (through standing effect 0x2C), plus `pOfs`. */
 s32 Ta_GetForceEffection(s32 nSide, s32 pOfs) {
     s32 var_v0;
 

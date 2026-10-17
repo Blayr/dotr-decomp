@@ -1617,7 +1617,7 @@ typedef struct {
 
 typedef struct {
     u8 reserved[0x45];
-    u8 type;
+    u8 slot; /* the unit's slot: 0 leader, 1..10 cards; 0xB and up = not on the board */
     u8 reserved2[0x12];
     Flags_001E14B0 flags;
 } Entry_001E14B0;
@@ -1629,7 +1629,7 @@ static inline void *lookup_001E14B0(void) {
 
     if (entry == NULL) {
         entry = NULL;
-    } else if (((Entry_001E14B0 *)entry)->type >= 0xB) {
+    } else if (((Entry_001E14B0 *)entry)->slot >= 0xB) {
         entry = NULL;
     }
     return entry;

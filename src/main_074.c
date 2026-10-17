@@ -3249,7 +3249,7 @@ s32 Ta_Eff_014(void *eInfo, u16 *Temp, s32 ID) {
 }
 
 /* Pops a hand card up for an effect. */
-s32 TaEff_PopHand(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 TaEff_PopHand(s32 eInfo, u16 *Temp, s32 bEnemy, s32 nSide, s32 PopUp) {
     s32 temp_a1;
     s32 temp_v1;
     s32 var_s0;
@@ -3259,28 +3259,28 @@ s32 TaEff_PopHand(s32 arg0, u16 *arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 var_v0;
 
     var_s0 = 0;
-    if (arg1[1] == 0) {
-        temp_v1 = *(s32 *)((u8 *)arg1 + 0xCC);
-        *(s32 *)((u8 *)arg1 + 0xCC) = temp_v1 + 1;
+    if (Temp[1] == 0) {
+        temp_v1 = *(s32 *)((u8 *)Temp + 0xCC);
+        *(s32 *)((u8 *)Temp + 0xCC) = temp_v1 + 1;
         if (temp_v1 == 0) {
-            var_v0 = (arg2 & 0xFF) == 1 ? 0 : 0x3C0;
-            arg1[1] = var_v0;
+            var_v0 = (bEnemy & 0xFF) == 1 ? 0 : 0x3C0;
+            Temp[1] = var_v0;
         }
     }
-    SzDuel_OpenHandPopup(arg3, 0, arg1[1] - 0x1E0);
-    if ((arg4 & 0xFF) == 1) {
-        if (arg1[1] != 0x1E0) {
-            var_v1 = (arg2 & 0xFF) == 1 ? 0x1E : -0x1E;
-            arg1[1] += var_v1;
+    SzDuel_OpenHandPopup(nSide, 0, Temp[1] - 0x1E0);
+    if ((PopUp & 0xFF) == 1) {
+        if (Temp[1] != 0x1E0) {
+            var_v1 = (bEnemy & 0xFF) == 1 ? 0x1E : -0x1E;
+            Temp[1] += var_v1;
         } else {
             var_s0 = 1;
         }
     } else {
-        temp_a1 = arg2 & 0xFF;
+        temp_a1 = bEnemy & 0xFF;
         var_v0_2 = temp_a1 == 1 ? 0 : 0x3C0;
-        if (arg1[1] != var_v0_2) {
+        if (Temp[1] != var_v0_2) {
             var_v1_2 = temp_a1 == 1 ? 0x1E : -0x1E;
-            arg1[1] -= var_v1_2;
+            Temp[1] -= var_v1_2;
         } else {
             var_s0 = 1;
         }

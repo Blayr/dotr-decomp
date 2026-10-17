@@ -207,7 +207,8 @@ s32 Ta_Do_HandDestroyEfc(void *eInfo, s32 nSide, s32 nID) {
     return 1;
 }
 
-/* Whether side `nSide` may get a destiny draw this turn (rank, leader, life points). */
+/* The destiny-draw byte side `nSide` gets this turn (table entry | bonus level << 4), or -1: life points below
+   1000, and only computer duelists 1 and 0x13 or a human whose leader has ability 3. */
 s32 Ta_IsDestinyDraw(s32 nSide) {
     extern s32 SzDuel_GetPlayer();
     extern s32 SzData_GetRank();
@@ -394,7 +395,8 @@ s32 Ta_SetDestinyEffect(s32 nSide, s32 *eInfo) {
     return 0;
 }
 
-/* The card drawn by side `nSide`'s destiny draw into `wDrawCardNo`, and its bonus into `wDestinyOfs`. */
+/* The three cards side `nSide`'s destiny draw can give into `wDrawCardNo`, and their chances in percent
+   (summing to 100) into `wDestinyOfs`; marks the draw used. */
 s32 Ta_GetDestinyDraw(s32 nSide, u16 *wDrawCardNo, s16 *wDestinyOfs, s32 eInfo) {
     extern u16 destinyDrawTable[];
     extern u16 D_002B8702[];
@@ -558,7 +560,8 @@ typedef struct {
 } Flags_0026FA80;
 
 
-/* The summon cost of card `nCardNo` for side `nSide` (its level, less the leader bonus). */
+/* The summon cost of card `nCardNo` for side `nSide` (its level, less the leader bonus when the card is of the
+   leader's kind). */
 s32 TaHand_GetCardSummonCost2(s32 nCardNo, s32 nSide) {
     s32 owner;
     s32 value;

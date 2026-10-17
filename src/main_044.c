@@ -234,7 +234,7 @@ void SzDuel_SetHandPhase(s32 player, s32 on) {
     side->flags346.handPhase = on ? 1 : 0;
 }
 
-/* Side `player`'s destiny-draw flag. */
+/* Side `player`'s destiny-draw byte (bits 0-3 Destiny_Tab entry, 4-6 bonus level, 7 used this duel). */
 u8 SzDuel_InqDestinyFlag(s32 player) {
     return DUEL_PLAYER(player)->destinyDraw;
 }

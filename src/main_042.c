@@ -1890,12 +1890,12 @@ typedef struct Record_001CECF0 {
     u8 tail[0x11];
 } Record_001CECF0;
 
-extern s32 (*g_aLogFunc[])(u16, void *);
+extern s32 (*duelistControllers[])(u16, void *); /* original: g_aLogFunc */
 extern s8 practiceDuelFlag; /* original: Rensyu_flg */
 extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
 /* The buttons side `side` presses this frame (`mode` = pad check mode): the first/second pad for a human
-   (ids 100/101), else what its logic function g_aLogFunc[id] returns (computer duelists and the tutorial). */
+   (ids 100/101), else what its logic function duelistControllers[id] returns (computer duelists and the tutorial). */
 s32 lSzDuel_GetControl(s32 side, s32 mode) {
     u8 *base = duelState.b;
     s32 ret = 0;
@@ -1917,7 +1917,7 @@ s32 lSzDuel_GetControl(s32 side, s32 mode) {
                 selected = base;
             }
             if (SzView_InqRequest(-1, -1) == NULL) {
-                result = g_aLogFunc[record->kind]((u16)((record->high << 8) | record->low), selected);
+                result = duelistControllers[record->kind]((u16)((record->high << 8) | record->low), selected);
                 if (result < 0) {
                     if (practiceDuelFlag != 0) {
                         if (result == -1) {

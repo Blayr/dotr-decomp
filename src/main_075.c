@@ -122,7 +122,7 @@ typedef struct State_0025EF40 {
 
 /* Effect script 035, step `ID`: its camera, fades and effect module; it destroys units, changes life points, moves
    units, changes the field. */
-s32 Ta_Eff_035(s32 arg0, void *arg1, s32 arg2) {
+s32 Ta_Eff_035(s32 eInfo, void *Temp, s32 ID) {
     extern void TaEffect_LoadModule(void *, s32);
     extern void TaView_ReqStdCompleteView(s32);
     extern void TaView_RestoreOriginalView(void *, s32);
@@ -132,27 +132,27 @@ s32 Ta_Eff_035(s32 arg0, void *arg1, s32 arg2) {
     s32 pending;
     s32 old;
     s32 high;
-    State_0025EF40 *state = arg1;
+    State_0025EF40 *state = Temp;
 
     command[0] = 999;
     command[1] = 0;
     command[2] = 0;
     command[3] = 0;
     SzDuel_SetWindowDraw(0);
-    if (arg2 >= 0) {
-        InitEffectTemp(arg1);
-        TaEffect_LoadModule(arg1, 0x23);
+    if (ID >= 0) {
+        InitEffectTemp(Temp);
+        TaEffect_LoadModule(Temp, 0x23);
         TaView_ReqStdCompleteView(0x10);
         return 1;
     }
     switch (state->count) {
     case 0:
-        if (TaEffect_IsLoadModule(arg1) == 1) {
+        if (TaEffect_IsLoadModule(Temp) == 1) {
             params[0] = 0x23;
             params[1] = 0;
             params[2] = 0;
             params[3] = 0;
-            state->cards[state->index] = Ta_Do_Effect(params, arg1);
+            state->cards[state->index] = Ta_Do_Effect(params, Temp);
             state->data.shifted.following[state->index] = 0;
             state->index++;
             state->count++;
@@ -200,7 +200,7 @@ s32 Ta_Eff_035(s32 arg0, void *arg1, s32 arg2) {
         }
         if (state->initialized == 0) {
             state->initialized++;
-            TaView_RestoreOriginalView(arg1, 0x10);
+            TaView_RestoreOriginalView(Temp, 0x10);
         } else {
             if (state->timer++ > 0x10) {
                 if (SzDuel_GetWindowDisp() != 0) {
@@ -595,29 +595,29 @@ typedef struct Object_0025FC30 {
 } Object_0025FC30;
 
 /* Fades every unit of a target list in or out (second form). */
-void Ta_AllUnitFade2(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+void Ta_AllUnitFade2(void *eInfo, void *Temp, s32 ID, s32 Flip, s32 nMode, s32 fCM) {
     extern s32 SzDuel_GetUnitCtlGoalM();
-    Object_0025FC30 *object = arg1;
+    Object_0025FC30 *object = Temp;
     s32 i = 0;
 
     do {
-        if (arg3 < 0) {
+        if (Flip < 0) {
             if (i < 11) {
                 if (SzDuel_GetUnitCtlGoalM(0, i) > 0) {
-                    Ta_UnitFade(0, i, arg3, arg4, arg5);
+                    Ta_UnitFade(0, i, Flip, nMode, fCM);
                     object->mask = ConvUnitIDtoFlagList(object->mask, 0, i);
                 }
             } else {
                 if (SzDuel_GetUnitCtlGoalM(1, i - 11) > 0) {
-                    Ta_UnitFade(1, i - 11, arg3, arg4, arg5);
+                    Ta_UnitFade(1, i - 11, Flip, nMode, fCM);
                     object->mask = ConvUnitIDtoFlagList(object->mask, 1, i - 11);
                 }
             }
         } else if (((object->mask >> (21 - i)) & 1) == 1) {
             if (i < 11) {
-                Ta_UnitFade(0, i, arg3, arg4, arg5);
+                Ta_UnitFade(0, i, Flip, nMode, fCM);
             } else {
-                Ta_UnitFade(1, i - 11, arg3, arg4, arg5);
+                Ta_UnitFade(1, i - 11, Flip, nMode, fCM);
             }
         }
         i++;
@@ -700,9 +700,9 @@ typedef struct {
 
 
 /* Fades every unit of a target list in or out. */
-void Ta_AllUnitFade(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    Owner_00260020 *owner = arg0;
-    Field_00260020 *field = arg1;
+void Ta_AllUnitFade(void *eInfo, void *Temp, s32 ID, s32 Flip, s32 Flag, s32 nMode) {
+    Owner_00260020 *owner = eInfo;
+    Field_00260020 *field = Temp;
     s32 i;
     extern s32 SzDuel_GetUnitCtlGoalC();
     extern s32 SzDuel_GetUnitCtlGoalM();
@@ -710,25 +710,25 @@ void Ta_AllUnitFade(void *arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     for (i = 0; i < 22; i++) {
         if (((owner->bits >> (21 - i)) & 1) == 1) {
             if (i < 11) {
-                SzEffect_SetBusyFlag2(i, arg4);
+                SzEffect_SetBusyFlag2(i, Flag);
             } else {
-                SzEffect_SetBusyFlag2((i - 11) | 0x100, arg4);
+                SzEffect_SetBusyFlag2((i - 11) | 0x100, Flag);
             }
-        } else if (arg3 < 0) {
+        } else if (Flip < 0) {
             if (i < 11) {
                 if (SzDuel_GetUnitCtlGoalM(0, i) > 0 && SzDuel_GetUnitCtlGoalC(0, i) > 0) {
-                    Ta_UnitFade(0, i, arg3, arg5, 1);
+                    Ta_UnitFade(0, i, Flip, nMode, 1);
                     field->bits = ConvUnitIDtoFlagList(field->bits, 0, i);
                 }
             } else if (SzDuel_GetUnitCtlGoalM(1, i - 11) > 0 && SzDuel_GetUnitCtlGoalC(1, i - 11) > 0) {
-                Ta_UnitFade(1, i - 11, arg3, arg5, 1);
+                Ta_UnitFade(1, i - 11, Flip, nMode, 1);
                 field->bits = ConvUnitIDtoFlagList(field->bits, 1, i - 11);
             }
         } else if (((field->bits >> (21 - i)) & 1) == 1) {
             if (i < 11) {
-                Ta_UnitFade(0, i, arg3, arg5, 1);
+                Ta_UnitFade(0, i, Flip, nMode, 1);
             } else {
-                Ta_UnitFade(1, i - 11, arg3, arg5, 1);
+                Ta_UnitFade(1, i - 11, Flip, nMode, 1);
             }
         }
     }

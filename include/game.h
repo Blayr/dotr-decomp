@@ -70,7 +70,7 @@ typedef struct DuelPlayer {
     u16 loadedSize;                /* 0x338 */
     u16 lifePoints;                /* 0x33A: 0..9999 (SzDuel_CalcLP) */
     u8 duelistId;                  /* 0x33C: who plays this side: 0..0x1F a computer duelist, 0x20..0x63 a
-                                      tutorial script (both run g_aLogFunc[id]), 100 + n the human on pad n */
+                                      tutorial script (both run duelistControllers[id]), 100 + n the human on pad n */
     u8 cursorX;                    /* 0x33D: board column 0..6 */
     u8 cursorZ;                    /* 0x33E: board row 0..6 */
     u8 pad33F[0x341 - 0x33F];

@@ -1,6 +1,7 @@
 #include "common.h"
 
-/* The level a recycled card may have for side `nSide` (from its leader's rank), against cost `SourceCost`. */
+/* The level of the card reincarnation gives for a card of level `SourceCost`: usually up to 10 below it, now and
+   then 1..10 above it (more often the higher the best leader rank of side `nSide`'s decks 0 and 1). */
 s32 Ta_GetRecycleRequestLvl(s32 nSide, s32 SourceCost) {
     extern s32 SzData_GetRank();
     s32 i;
@@ -55,7 +56,7 @@ s32 TaUtil_IsExMonster(s32 nSide, s32 nID) {
     return 0;
 }
 
-/* Value `Expr` of cap table `CapID` (a range or limit). */
+/* `Expr` kept to cap `CapID`: 0 and 1 are lower bounds (at least `CapID`); 6, 7, 500, 1500 and 9999 upper bounds. */
 s32 GetCap(s32 CapID, s32 Expr) {
     switch (CapID) {
     case 0:

@@ -9,9 +9,10 @@ typedef struct {
 } Unit_00135790;
 
 
-s32 TaLogic_CommandUnit_00135790(void *arg0) {
+/* Gives a unit of this duelist its order for this turn (attack, run, move, summon, guard). */
+s32 TaLogic_CommandUnit_00135790(void *pCtl) {
     extern s32 SzDuel_GetUnitCardNo();
-    Unit_00135790 *unit = arg0;
+    Unit_00135790 *unit = pCtl;
 
     Ta_IsUnitControl(unit->pos >> 8, unit->pos & 0xFF);
     if (SzDuel_GetUnit(unit->pos >> 8, unit->pos & 0xFF) != 0 &&
@@ -60,7 +61,8 @@ s32 TaLogic_CommandUnit_00135790(void *arg0) {
     return 0;
 }
 
-s32 TaLogic_GetNextActiveUnit_00135970(u16 *arg0, s32 arg1, s32 arg2) {
+/* The next unit of side `nSide` to act: first one that can attack now, then the others by task. */
+s32 TaLogic_GetNextActiveUnit_00135970(u16 *pCtl, s32 nSide, s32 pInput) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -70,42 +72,42 @@ s32 TaLogic_GetNextActiveUnit_00135970(u16 *arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1D, 1);
-    ret = TaLogic_GetAtkUnitNow(arg1, list, arg0);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1D, 1);
+    ret = TaLogic_GetAtkUnitNow(nSide, list, pCtl);
     if (ret >= 0) {
         return ret;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1E, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1E, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if ((SzDuel_GetUnitKind(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
             TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
-    pos = arg1 << 8;
-    idx = TaLogic_GetActionUnitFromOwnerID(arg0, pos);
-    TaLogic_CommandUnit_00135790(arg0 + idx * 8);
-    if (((arg0[idx * 8 + 2] >> 8) & 0xFF) == 10) {
-        if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_00136210(pos, arg1, arg2) >= 0) {
+    pos = nSide << 8;
+    idx = TaLogic_GetActionUnitFromOwnerID(pCtl, pos);
+    TaLogic_CommandUnit_00135790(pCtl + idx * 8);
+    if (((pCtl[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+        if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_GetMinimumTask_Summon_00136210(pos, nSide, pInput) >= 0) {
             return pos | 0x10000;
         }
         if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (SzDuel_GetUnitStatus(arg1, 0, 0) == 0) {
+    } else if (SzDuel_GetUnitStatus(nSide, 0, 0) == 0) {
         if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_00136210(pos, arg1, arg2) >= 0) {
+    } else if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_GetMinimumTask_Summon_00136210(pos, nSide, pInput) >= 0) {
         return pos | 0x10000;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1F, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if (TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
@@ -114,7 +116,7 @@ s32 TaLogic_GetNextActiveUnit_00135970(u16 *arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1F, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if (SzDuel_GetUnitStatus(list[i] >> 8, list[i] & 0xFF, 0) == 0 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
@@ -145,11 +147,13 @@ typedef struct {
     u8 pad;
 } Slot_00135D50;
 
-void TaLogic009_CommandBtlUnit(void *arg0, s32 arg1) {
+/* Orders a fighting unit (task `pTask`): straight at its goal when `fGoalFirst` and the path is open, else the
+   nearest enemy it can beat. */
+void TaLogic009_CommandBtlUnit(void *pTask, s32 fGoalFirst) {
     extern void TaLogic_InitIgnoreLst();
     extern s32 TaLogic_IsRootOpen();
     extern s32 TaLogic009_GetNearUnit();
-    Entry_00135D50 *entry = arg0;
+    Entry_00135D50 *entry = pTask;
     s32 pos;
     s32 otherPos;
     s32 other;
@@ -175,7 +179,7 @@ void TaLogic009_CommandBtlUnit(void *arg0, s32 arg1) {
             slot++;
         } while (i < 22);
         TaLogic_InitIgnoreLst(work);
-        if (arg1 != 0) {
+        if (fGoalFirst != 0) {
             if (TaLogic_IsRootOpen(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
                               other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 2) > 0) {
                 entry->state = 0x2FF;
@@ -214,24 +218,27 @@ void TaLogic009_CommandBtlUnit(void *arg0, s32 arg1) {
     }
 }
 
-void TaLogic009_GetNearUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
-    TaLogic_GetNearUnit(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
-                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
-                  1, 0x898, arg_sp28);
+/* TaLogic_GetNearUnit with this duelist's view and strength settings. */
+void TaLogic009_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
+    TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
+                  nUnitLst, wUnitNum, wSize, wNodeCount, bChase,
+                  1, 0x898, wIgnoreLst);
 }
 
-void TaLogic009_CommandDefenseUnit(void *arg0) {
-    s32 temp_v0;
+/* Orders a unit (task `pTask`) to guard its leader. */
+void TaLogic009_CommandDefenseUnit(void *pTask) {
+    s32 emptyDefensePoint;
 
-    temp_v0 = TaLogic009_GetEmptyDefensePoint(arg0);
-    if (temp_v0 >= 0) {
-        *(s16 *)((u8 *)arg0 + 4) = 0x3FF;
-        *(u32 *)((u8 *)arg0 + 8) = (temp_v0 << 16) | *(u16 *)((u8 *)arg0 + 8);
+    emptyDefensePoint = TaLogic009_GetEmptyDefensePoint(pTask);
+    if (emptyDefensePoint >= 0) {
+        *(s16 *)((u8 *)pTask + 4) = 0x3FF;
+        *(u32 *)((u8 *)pTask + 8) = (emptyDefensePoint << 16) | *(u16 *)((u8 *)pTask + 8);
         return;
     }
-    *(s16 *)((u8 *)arg0 + 4) = 0x5FF;
+    *(s16 *)((u8 *)pTask + 4) = 0x5FF;
 }
 
+/* The free defence square (2, 2) or (5, 2), or -1. */
 s32 TaLogic009_GetEmptyDefensePoint(void *arg0) {
     if (SzDuel_GetMapUnit(2, 2) == 0 && SzDuel_GetField(2, 2) != 8) {
         return 0x202;
@@ -258,9 +265,10 @@ typedef struct {
     Data_001360E0 data;
 } Entry_001360E0;
 
-void TaLogic009_CommandSpellUnit(void *arg0) {
+/* Orders a face-down magic card (task `pTask`): whether and where to open it. */
+void TaLogic009_CommandSpellUnit(void *pTask) {
     extern s32 SzDuel_GetUnitCardNo();
-    Entry_001360E0 *entry = arg0;
+    Entry_001360E0 *entry = pTask;
     s32 pos;
     s32 ret;
 
@@ -304,36 +312,37 @@ typedef struct {
 } Ctx_00136210;
 
 
-s32 TaLogic_GetMinimumTask_Summon_00136210(s32 arg0, s32 arg1, s32 arg2) {
+/* The summon task for side `nSide`: which hand cards to play and where, into `pInput`; -1 when it plays none. */
+s32 TaLogic_GetMinimumTask_Summon_00136210(s32 wUnit, s32 nSide, s32 pInput) {
     extern s32 TaLogic_GetUnitNum();
     Work_00136210 work;
     s32 ret;
     s32 res;
     s32 pos;
     s32 kind;
-    Ctx_00136210 *ctx = (Ctx_00136210 *)arg2;
+    Ctx_00136210 *ctx = (Ctx_00136210 *)pInput;
 
-    ctx->id = arg0;
-    if (SzDuel_InqHandPhase(arg1) == 0) {
+    ctx->id = wUnit;
+    if (SzDuel_InqHandPhase(nSide) == 0) {
         return -1;
     }
-    if (TaLogic_GetUnitNum(arg1, 0) == 5 && TaLogic_GetUnitNum(arg1, 1) == 5) {
+    if (TaLogic_GetUnitNum(nSide, 0) == 5 && TaLogic_GetUnitNum(nSide, 1) == 5) {
         return -1;
     }
-    kind = TaLogic009_IsHandPlay(arg1, &work);
+    kind = TaLogic009_IsHandPlay(nSide, &work);
     if (kind < 0) {
         return -1;
     }
     ctx->kind = 10;
     ctx->unkC = 0;
-    pos = SzDuel_GetUnitLoc(arg0 >> 8, arg0 & 0xFF);
+    pos = SzDuel_GetUnitLoc(wUnit >> 8, wUnit & 0xFF);
     if (kind == 0) {
-        if (TaLogic009_SetComboQue(arg1, ctx, &work) >= 0) {
+        if (TaLogic009_SetComboQue(nSide, ctx, &work) >= 0) {
             ret = TaLogic_GetNearCard2(&work, pos & 0xFF, pos >> 8,
-                                arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 1, 0);
+                                nSide == 0 ? 1 : 0, 3, 0x1F, 2, 2, 1, 0);
             if (ret < 0) {
-                if (SzDuel_GetUnitMonsterCount(arg1) < 4) {
-                    res = TaLogic009_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
+                if (SzDuel_GetUnitMonsterCount(nSide) < 4) {
+                    res = TaLogic009_GetSummonPiece(nSide, kind & 0xFF, &work, ret);
                     if (res < 0) {
                         return -1;
                     }
@@ -341,7 +350,7 @@ s32 TaLogic_GetMinimumTask_Summon_00136210(s32 arg0, s32 arg1, s32 arg2) {
                     return 1;
                 }
             } else {
-                res = TaLogic009_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
+                res = TaLogic009_GetSummonPiece(nSide, kind & 0xFF, &work, ret);
                 if (res < 0) {
                     return -1;
                 }
@@ -351,21 +360,21 @@ s32 TaLogic_GetMinimumTask_Summon_00136210(s32 arg0, s32 arg1, s32 arg2) {
         }
     } else {
         ret = TaLogic_GetNearCard2(&work, pos & 0xFF, pos >> 8,
-                            arg1 == 0 ? 1 : 0, 3, 0x1F, 2, 2, 1, 0);
+                            nSide == 0 ? 1 : 0, 3, 0x1F, 2, 2, 1, 0);
     }
     if (kind == 2) {
-        TaLogic009_SetSpecialComboQue(arg1, ctx, &work);
-        res = TaLogic009_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
+        TaLogic009_SetSpecialComboQue(nSide, ctx, &work);
+        res = TaLogic009_GetSummonPiece(nSide, kind & 0xFF, &work, ret);
         if (res < 0) {
             return -1;
         }
         ctx->value = res;
         return 1;
     }
-    if (TaLogic009_GetSpellPlay(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
+    if (TaLogic009_GetSpellPlay(nSide, (u8 *)ctx, &work, work.unk3C) < 0) {
         return -1;
     }
-    res = TaLogic009_GetSummonPiece(arg1, kind & 0xFF, &work, ret);
+    res = TaLogic009_GetSummonPiece(nSide, kind & 0xFF, &work, ret);
     if (res < 0) {
         return -1;
     }
@@ -373,7 +382,8 @@ s32 TaLogic_GetMinimumTask_Summon_00136210(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 TaLogic009_IsHandPlay(s32 arg0, void *arg1) {
+/* Whether side `nSide` should play from its hand this turn (and what, into `pInput`). */
+s32 TaLogic009_IsHandPlay(s32 nSide, void *pInput) {
     s32 cards[8];
     u8 scratch[32];
     u8 first;
@@ -388,148 +398,152 @@ s32 TaLogic009_IsHandPlay(s32 arg0, void *arg1) {
     s32 result;
     extern s32 TaLogic_GetUnitNum();
 
-    first = TaLogic_GetUnitNum(arg0, 0);
-    second = TaLogic_GetUnitNum(arg0, 1);
-    if (arg1 == NULL) {
+    first = TaLogic_GetUnitNum(nSide, 0);
+    second = TaLogic_GetUnitNum(nSide, 1);
+    if (pInput == NULL) {
         return -1;
     }
-    TaHand_GetNextHand(arg0, cards);
+    TaHand_GetNextHand(nSide, cards);
     if (first == 5) {
-        if (TaLogic009_GetSpellPlay(arg0, scratch, arg1, 999) >= 0) {
+        if (TaLogic009_GetSpellPlay(nSide, scratch, pInput, 999) >= 0) {
             return 1;
         } else {
             return -1;
         }
     }
     if (second == 5) {
-        for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
             p = &cards[i];
-            if ((TaHand_GetCardKind(*p) >> 5) == 0 && TaHand_IsCardSummon2(arg0, *p) == 1) {
-                SzDuel_InitCardInfo(arg1, cards[i]);
+            if ((TaHand_GetCardKind(*p) >> 5) == 0 && TaHand_IsCardSummon2(nSide, *p) == 1) {
+                SzDuel_InitCardInfo(pInput, cards[i]);
                 return 0;
             }
         }
         return -1;
     }
-    if (TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x33E) >= 0) {
-        if (TaLogic009_IsDoCerem(arg0, 0x33E) == 1) {
+    if (TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x33E) >= 0) {
+        if (TaLogic009_IsDoCerem(nSide, 0x33E) == 1) {
             return 2;
         }
     }
-    if (TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x351) >= 0) {
-        if (TaLogic009_IsDoCerem(arg0, 0x351) == 1) {
+    if (TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x351) >= 0) {
+        if (TaLogic009_IsDoCerem(nSide, 0x351) == 1) {
             return 2;
         }
     }
-    value = TaLogic009_GetRevoltObj(arg0);
+    value = TaLogic009_GetRevoltObj(nSide);
     if (value >= 0) {
         if (((value >> 16) & 0xFFFF) != 0xFFFF) {
-            value = TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x2DC);
+            value = TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x2DC);
             if (value >= 0) {
                 return 2;
             }
         }
-        if ((value & 0xFFFF) != 0xFFFF && TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x2DD) >= 0) {
+        if ((value & 0xFFFF) != 0xFFFF && TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x2DD) >= 0) {
             return 2;
         }
     }
-    if (TaLogic009_IsUseCurseDragonPot(arg0) == 1) {
-        if (TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x2AB) >= 0) {
+    if (TaLogic009_IsUseCurseDragonPot(nSide) == 1) {
+        if (TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x2AB) >= 0) {
             return 2;
         }
     }
     i2 = 0;
-    if (i2 < TaHand_GetNextHandNum(arg0)) {
+    if (i2 < TaHand_GetNextHandNum(nSide)) {
         p2 = cards;
         do {
             if (SzDuel_Kind2Type(TaHand_GetCardKind(*p2) >> 5) == 2) {
-                SzDuel_InitCardInfo(arg1, cards[i2]);
+                SzDuel_InitCardInfo(pInput, cards[i2]);
                 return 1;
             }
             p2++;
             i2++;
-        } while (i2 < TaHand_GetNextHandNum(arg0));
+        } while (i2 < TaHand_GetNextHandNum(nSide));
     }
-    if (TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x2C9) >= 0) {
+    if (TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x2C9) >= 0) {
         return 2;
     }
-    if (TaLogic009_IsUseCopyCat(arg0) >= 0) {
-        if (TaLogic009_GetSpecCardPlay(arg0, scratch, arg1, 0x2AF) >= 0) {
+    if (TaLogic009_IsUseCopyCat(nSide) >= 0) {
+        if (TaLogic009_GetSpecCardPlay(nSide, scratch, pInput, 0x2AF) >= 0) {
             return 2;
         }
     }
     i3 = 0;
-    if (i3 < TaHand_GetNextHandNum(arg0)) {
+    if (i3 < TaHand_GetNextHandNum(nSide)) {
         p3 = cards;
         do {
-            if ((TaHand_GetCardKind(*p3) >> 5) == 0 && TaHand_IsCardSummon2(arg0, *p3) == 1) {
-                SzDuel_InitCardInfo(arg1, cards[i3]);
+            if ((TaHand_GetCardKind(*p3) >> 5) == 0 && TaHand_IsCardSummon2(nSide, *p3) == 1) {
+                SzDuel_InitCardInfo(pInput, cards[i3]);
                 return 0;
             }
             p3++;
             i3++;
-        } while (i3 < TaHand_GetNextHandNum(arg0));
+        } while (i3 < TaHand_GetNextHandNum(nSide));
     }
-    result = TaLogic009_GetSpellPlay(arg0, scratch, arg1, 999);
+    result = TaLogic009_GetSpellPlay(nSide, scratch, pInput, 999);
     if (result >= 0) {
         return result;
     }
     return -1;
 }
 
-s32 TaLogic009_GetSpecCardPlay(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+/* Whether side `nSide` holds card `nCardNo` and can summon it (its slot into `bCombo`, the card into `pCardInfo`);
+   returns its kind group or -1. */
+s32 TaLogic009_GetSpecCardPlay(s32 nSide, void *bCombo, void *pCardInfo, s32 nCardNo) {
     s32 entries[8];
     s32 i;
     s32 *entry;
     s32 wanted;
 
-    TaHand_GetNextHand(arg0, entries);
+    TaHand_GetNextHand(nSide, entries);
     i = 0;
-    if (i < TaHand_GetNextHandNum(arg0)) {
-        wanted = arg3 & 0xFFFF;
+    if (i < TaHand_GetNextHandNum(nSide)) {
+        wanted = nCardNo & 0xFFFF;
         entry = entries;
         do {
-            if (wanted == *entry && TaHand_IsCardSummon2(arg0, *entry) == 1) {
-                *((s8 *)arg1 + 6) = i;
-                SzDuel_InitCardInfo(arg2, entries[i]);
+            if (wanted == *entry && TaHand_IsCardSummon2(nSide, *entry) == 1) {
+                *((s8 *)bCombo + 6) = i;
+                SzDuel_InitCardInfo(pCardInfo, entries[i]);
                 return TaHand_GetCardKind(entries[i]) >> 5;
             }
             entry++;
             i++;
-        } while (i < TaHand_GetNextHandNum(arg0));
+        } while (i < TaHand_GetNextHandNum(nSide));
     }
     return -1;
 }
 
-s32 TaLogic009_GetSpellPlay(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
+/* Whether side `nSide` plays a magic or ritual card from its hand now (its slot into `bCombo`, the card into
+   `pCardInfo`). */
+s32 TaLogic009_GetSpellPlay(s32 nSide, u8 *bCombo, void *pCardInfo, s32 nMode) {
     s32 buf[8];
     s32 i;
 
-    TaHand_GetNextHand(arg0, buf);
-    if (arg2 == NULL) {
+    TaHand_GetNextHand(nSide, buf);
+    if (pCardInfo == NULL) {
         return -1;
     }
     for (i = 0; i < 5; i++) {
-        arg1[i + 6] = 0xFF;
+        bCombo[i + 6] = 0xFF;
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
-        if (arg3 == buf[i] && arg3 != 999) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
+        if (nMode == buf[i] && nMode != 999) {
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if ((TaHand_GetCardKind(buf[i]) >> 5) != 0 && (TaHand_GetCardKind(buf[i]) >> 5) != 2) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if ((TaHand_GetCardKind(buf[i]) >> 5) != 0) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
@@ -549,7 +563,8 @@ typedef struct Sprite_00136B80 {
     s16 y;
 } Sprite_00136B80;
 
-s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
+/* Fills hand combination `bCombo` for side `nSide`: the best fusion or equip chain, its card into `pCardInfo`. */
+s32 TaLogic009_SetComboQue(s32 nSide, u8 *bCombo, void *pCardInfo) {
     u16 *nodes[8];
     s32 entries[7];
     s16 a;
@@ -559,18 +574,18 @@ s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
     s32 value;
     s32 best;
 
-    if (arg2 == NULL) {
+    if (pCardInfo == NULL) {
         return -1;
     } else {
         s32 top;
         s32 *entry;
         u16 **node;
 
-        TaHand_GetNextHand(arg0, entries);
+        TaHand_GetNextHand(nSide, entries);
         best = -1;
         top = -1;
         i = 0;
-        if (i < TaHand_GetNextHandNum(arg0)) {
+        if (i < TaHand_GetNextHandNum(nSide)) {
             entry = entries;
             node = nodes;
             do {
@@ -579,16 +594,16 @@ s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 card = *entry;
                 *node = NULL;
                 if ((TaHand_GetCardKind(card) >> 5) == 0) {
-                    *node = TaLogic_GetFusionTree(arg0, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
+                    *node = TaLogic_GetFusionTree(nSide, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
                     *node = TaLogic_GetFusionRes(*node);
-                    value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
-                    if (TaHand_IsCardSummon2(arg0, card) == 1) {
+                    value = TaLogic_GetEnchantQue(nSide, *node, 0, 0);
+                    if (TaHand_IsCardSummon2(nSide, card) == 1) {
                         if (best < value) {
-                            TaLogic_ConvEmptyCombo_00136D60(arg0, *node, entries);
-                            TaLogic_CopyArray((u8 *)*node + 2, arg1 + 6);
-                            SzDuel_InitCardInfo(arg2, **node);
-                            ((Sprite_00136B80 *)arg2)->x = (value >> 16) - (((Sprite_00136B80 *)arg2)->info->x & 0x1FFF);
-                            ((Sprite_00136B80 *)arg2)->y = (value & 0xFFFF) - (((Sprite_00136B80 *)arg2)->info->y & 0x1FFF);
+                            TaLogic_ConvEmptyCombo_00136D60(nSide, *node, entries);
+                            TaLogic_CopyArray((u8 *)*node + 2, bCombo + 6);
+                            SzDuel_InitCardInfo(pCardInfo, **node);
+                            ((Sprite_00136B80 *)pCardInfo)->x = (value >> 16) - (((Sprite_00136B80 *)pCardInfo)->info->x & 0x1FFF);
+                            ((Sprite_00136B80 *)pCardInfo)->y = (value & 0xFFFF) - (((Sprite_00136B80 *)pCardInfo)->info->y & 0x1FFF);
                             best = value;
                             if (top < value) {
                                 top = value;
@@ -601,7 +616,7 @@ s32 TaLogic009_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 entry++;
                 node++;
                 i++;
-            } while (i < TaHand_GetNextHandNum(arg0));
+            } while (i < TaHand_GetNextHandNum(nSide));
         }
         return top;
     }
@@ -612,8 +627,9 @@ typedef struct {
     u8 values[5];
 } Info_00136D60;
 
-void TaLogic_ConvEmptyCombo_00136D60(s32 arg0, void *arg1, s32 *arg2) {
-    Info_00136D60 *info = arg1;
+/* Fills an empty combination: the hand card side `nSide` can summon with the best attack plus defence. */
+void TaLogic_ConvEmptyCombo_00136D60(s32 nSide, void *pCardInfo, s32 *pResult) {
+    Info_00136D60 *info = pCardInfo;
     u8 buf[5];
     s32 count;
     s32 i;
@@ -623,19 +639,19 @@ void TaLogic_ConvEmptyCombo_00136D60(s32 arg0, void *arg1, s32 *arg2) {
     extern u32 TaHand_GetCardAPDP();
 
     if (info != NULL) {
-        level = TaHand_GetCardSummonCost2(info->id, arg0);
+        level = TaHand_GetCardSummonCost2(info->id, nSide);
         for (i = 0; i < 5; i++) {
             buf[i] = 0xFF;
         }
-        for (i = 0, count = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        for (i = 0, count = 0; i < TaHand_GetNextHandNum(nSide); i++) {
             if ((u8)TaLogic_IsUseHandInCombo(i, info->values) == 0) {
                 buf[count++] = i;
             }
         }
         if (count != 0) {
             for (i = 0; i < (u8)TaLogic_GetArrayLength(buf); i++) {
-                card = arg2[buf[i]];
-                if (card != 0x3E7 && level >= TaHand_GetCardSummonCost2(card, arg0)) {
+                card = pResult[buf[i]];
+                if (card != 0x3E7 && level >= TaHand_GetCardSummonCost2(card, nSide)) {
                     cost = TaHand_GetCardAPDP(card);
                     if ((cost & 0xFFFF) + (cost >> 16) * 2 < 0x3E9 && TaHand_IsCardEffect(card) == 2 &&
                         (u16)TaLogic_GetHandFusion(info->id, (u16)card) == 0x3E7) {
@@ -657,9 +673,11 @@ typedef struct {
     u16 id;
 } Obj2_00136F30;
 
-s32 TaLogic009_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
-    Obj1_00136F30 *o1 = arg1;
-    Obj2_00136F30 *o2 = arg2;
+/* Fills hand combination `bCombo` for side `nSide` with this duelist's special combination, its card into
+   `pCardInfo`. */
+s32 TaLogic009_SetSpecialComboQue(s32 nSide, void *bCombo, void *pCardInfo) {
+    Obj1_00136F30 *o1 = bCombo;
+    Obj2_00136F30 *o2 = pCardInfo;
     s32 list[8];
     s32 i;
     u8 k;
@@ -667,20 +685,20 @@ s32 TaLogic009_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
     for (i = 0; i < 5; i++) {
         o1->slot[i] = 0xFF;
     }
-    TaHand_GetNextHand(arg0, list);
+    TaHand_GetNextHand(nSide, list);
     if (o2 == NULL) {
         return -1;
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if (i != o1->slot[0] && i != o1->slot[1]) {
-            if (o2->id == list[i] && TaHand_IsCardSummon2(arg0, list[i]) == 1) {
+            if (o2->id == list[i] && TaHand_IsCardSummon2(nSide, list[i]) == 1) {
                 o1->slot[0] = i;
             }
         }
     }
     k = 1;
     if ((TaHand_GetCardKind(list[o1->slot[0]]) >> 5) == 0) {
-        for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
             if (i != o1->slot[0] && i != o1->slot[1]) {
                 if (Ta_GetHandEnchant(list[o1->slot[0]], list[i]) >= 0 && (TaHand_GetCardKind(list[i]) >> 5) == 2) {
                     if (list[i] != 0x31B && list[i] != 0x31C) {
@@ -700,7 +718,8 @@ typedef struct {
 } Nibbles_00137120;
 
 
-s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+/* The square side `nSide` summons a card of kind `sKind` to. */
+s32 TaLogic009_GetSummonPiece(s32 nSide, u8 sKind, void *pInput, s32 nMode) {
     extern s32 TaLogic_IsUnitWin4();
     extern s32 TaLogic_GetInvadeRoot2();
     extern s32 TaLogic_GetRoot2(s32, s32, s32, s32, s32, s32, u16, u8);
@@ -710,7 +729,7 @@ s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
     s32 originY;
     s32 originX;
 
-    if (arg2 == NULL) {
+    if (pInput == NULL) {
         return -1;
     }
     p = path;
@@ -720,13 +739,13 @@ s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
         n++;
         p++;
     } while (n < 12);
-    if ((u8)(*((u8 *)arg2 + 0x3E) >> 5) == 0) {
+    if ((u8)(*((u8 *)pInput + 0x3E) >> 5) == 0) {
         s32 y;
         s32 x;
         s32 i;
         s32 result;
         s32 position;
-        if (arg3 >= 0) {
+        if (nMode >= 0) {
             s32 position;
             s32 y;
             s32 cost;
@@ -738,22 +757,22 @@ s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
 
             bestCost = 255;
             bestPosition = 65535;
-            origin = SzDuel_GetUnitLoc(arg3 >> 8, arg3 & 255);
+            origin = SzDuel_GetUnitLoc(nMode >> 8, nMode & 255);
             i = 0;
             originY = origin >> 8;
             originX = origin & 255;
             do {
-                position = Ta_GetSommonPiecePreference(arg0, i);
+                position = Ta_GetSommonPiecePreference(nSide, i);
                 if (position >= 0) {
                     x = position & 255;
                     y = position >> 8;
                     if (SzDuel_GetField(x, y) != 8 &&
-                        (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                        (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(pInput, x, y) != 1) &&
                         SzDuel_GetMapUnit(x, y) == 0) {
-                        if (TaLogic_IsUnitWin4(arg2, arg3, 0, originX, originY, 1) > 0) {
-                            cost = TaLogic_GetInvadeRoot2(arg2, path, x, y, originX, originY, arg3, 1, (s64)2, (s64)0);
+                        if (TaLogic_IsUnitWin4(pInput, nMode, 0, originX, originY, 1) > 0) {
+                            cost = TaLogic_GetInvadeRoot2(pInput, path, x, y, originX, originY, nMode, 1, (s64)2, (s64)0);
                         } else {
-                            cost = TaLogic_GetRoot2((s32)arg2, (s32)path, x, y, originX, originY, arg3, 2);
+                            cost = TaLogic_GetRoot2((s32)pInput, (s32)path, x, y, originX, originY, nMode, 2);
                         }
                         if (TaLogic_GetMinGoalCount((u8 *)path) > 0 && cost < bestCost) {
                             bestCost = cost;
@@ -771,12 +790,12 @@ s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
         {
             i = 0;
             do {
-                position = Ta_GetSommonPiecePreference(arg0, i);
+                position = Ta_GetSommonPiecePreference(nSide, i);
                 if (position >= 0) {
                     x = position & 255;
                     y = position >> 8;
                     if (SzDuel_GetField(x, y) != 8 &&
-                        (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                        (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(pInput, x, y) != 1) &&
                         SzDuel_GetMapUnitID(x, y) < 0) {
                         result = position;
                     }
@@ -794,12 +813,12 @@ s32 TaLogic009_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
         result = -1;
         i = 0;
         do {
-            position = Ta_GetSommonPiecePreference(arg0, i);
+            position = Ta_GetSommonPiecePreference(nSide, i);
             if (position >= 0) {
                 x = position & 255;
                 y = position >> 8;
                 if (SzDuel_GetField(x, y) != 8 &&
-                    (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                    (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(pInput, x, y) != 1) &&
                     SzDuel_GetMapUnitID(x, y) < 0) {
                     result = position;
                 }
@@ -826,7 +845,9 @@ typedef struct {
 } Output_001374D0;
 
 
-s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+/* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
+   for the unit's first-choice task). */
+s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     s32 position;
     u8 upperX;
@@ -842,9 +863,9 @@ s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, 
     s32 x;
     s32 bestPosition;
     s32 bestScore;
-    Output_001374D0 *out = arg2;
+    Output_001374D0 *out = pInput;
 
-    position = SzDuel_GetUnitLoc(*arg0 >> 8, *arg0 & 0xFF);
+    position = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
     i = 0;
     do {
         cells[i].low = cells[i].high = 15;
@@ -853,23 +874,23 @@ s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, 
 
     originalX = position & 0xFF;
     originalY = position >> 8;
-    if (TaLogic_GetUnitWarning(originalX, originalY, *arg0, 3, 0, 1) == 0) {
-        out->id = *arg0;
+    if (TaLogic_GetUnitWarning(originalX, originalY, *pTask, 3, 0, 1) == 0) {
+        out->id = *pTask;
         out->action = 6;
         out->position = position;
-        out->mode = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 1);
-        out->value = TaLogic_IsOpenUnit_00139180(*arg0 >> 8, *arg0 & 0xFF, arg0);
-        TaLogic_InitRogicControl(arg0, arg3);
+        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
+        out->value = TaLogic_IsOpenUnit_00139180(*pTask >> 8, *pTask & 0xFF, pTask);
+        TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     } else {
-        result = GetMoveRev(SzDuel_GetUnit(*arg0 >> 8, *arg0 & 0xFF), originalX, originalY);
+        result = GetMoveRev(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), originalX, originalY);
         if (result == 0) {
-            out->id = *arg0;
+            out->id = *pTask;
             out->action = 6;
             out->position = position;
-            out->mode = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 1);
-            out->value = TaLogic_IsOpenUnit_00139180(*arg0 >> 8, *arg0 & 0xFF, arg0);
-            TaLogic_InitRogicControl(arg0, arg3);
+            out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
+            out->value = TaLogic_IsOpenUnit_00139180(*pTask >> 8, *pTask & 0xFF, pTask);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         } else {
             u8 startY;
@@ -891,8 +912,8 @@ s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, 
                 end = 6;
             }
             endY = end & 0xFF;
-            if ((*arg0 & 0xFF) == 0) {
-                flag = TaLogic_IsAttackedNow(*arg0 >> 8, *arg0 & 0xFF, 1) & 0xFF;
+            if ((*pTask & 0xFF) == 0) {
+                flag = TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 1) & 0xFF;
             } else {
                 flag = 0;
             }
@@ -904,9 +925,9 @@ s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, 
                           (originalX < x ? originalX : x)) +
                          ((y < originalY ? originalY : y) -
                           (originalY < y ? originalY : y))) <= (result & 15)) {
-                        if (TaLogic_IsRunPassRoot(*arg0 >> 8, *arg0 & 0xFF, originalX, originalY, x, y, arg0, flag) == 1 &&
-                            (TaLogic_IsAttackedNow2(*arg0 >> 8, *arg0 & 0xFF, x, y, 1) == 0 || (u8)*arg0 == 0)) {
-                            score = TaLogic_GetUnitWarning(x, y, *arg0, 3, 0, 1);
+                        if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
+                            (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 1) == 0 || (u8)*pTask == 0)) {
+                            score = TaLogic_GetUnitWarning(x, y, *pTask, 3, 0, 1);
                             if (score < bestScore) {
                                 bestScore = score;
                                 bestPosition = packedY | x;
@@ -921,23 +942,23 @@ s32 TaLogic_GetMinimumTask_RunMission_001374D0(u16 *arg0, s32 arg1, void *arg2, 
                 }
             }
             if (bestPosition != 0xFF) {
-                out->id = *arg0;
+                out->id = *pTask;
                 out->action = 6;
                 out->position = bestPosition;
                 if (bestPosition == position) {
-                    out->mode = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 1);
+                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
                 } else {
-                    out->mode = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->position, 0, 1);
+                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 0, 1);
                 }
-                out->value = TaLogic_IsOpenUnit_00139180(*arg0 >> 8, *arg0 & 0xFF, arg0);
+                out->value = TaLogic_IsOpenUnit_00139180(*pTask >> 8, *pTask & 0xFF, pTask);
             } else {
-                out->id = *arg0;
+                out->id = *pTask;
                 out->action = 6;
                 out->position = position;
-                out->mode = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->position, 1, 1);
-                out->value = TaLogic_IsOpenUnit_00139180(*arg0 >> 8, *arg0 & 0xFF, arg0);
+                out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
+                out->value = TaLogic_IsOpenUnit_00139180(*pTask >> 8, *pTask & 0xFF, pTask);
             }
-            TaLogic_InitRogicControl(arg0, arg3);
+            TaLogic_InitRogicControl(pTask, fFirst);
         }
     }
     return 0;
@@ -965,6 +986,7 @@ typedef struct Coordinate_001379F0 {
 } Coordinate_001379F0;
 
 
+/* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline s32 destination_001379F0(void *src, u8 mode) {
     Input_001379F0 *input = src;
     if (mode == 1) {
@@ -973,7 +995,9 @@ static inline s32 destination_001379F0(void *src, u8 mode) {
     return (u16)input->destinations;
 }
 
-s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+/* The task of a unit attacking (task `pTask`): its path to the goal, into `pInput`; -1 when it has none (`fFirst`
+   = 1 for the unit's first-choice task). */
+s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern void TaLogic_GetInvadeRoot();
     Coordinate_001379F0 candidates[12];
     s32 targetPosition;
@@ -988,19 +1012,19 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
     s32 originalCard;
     s32 lowDestination;
     s32 highDestination;
-    Input_001379F0 *input = arg0;
-    Output_001379F0 *output = arg2;
+    Input_001379F0 *input = pTask;
+    Output_001379F0 *output = pInput;
 
-    lowDestination = destination_001379F0(arg0, arg3);
-    highDestination = destination_001379F0(arg0, arg3);
+    lowDestination = destination_001379F0(pTask, fFirst);
+    highDestination = destination_001379F0(pTask, fFirst);
     if (SzDuel_GetUnit((u32)highDestination >> 8, lowDestination & 0xFF) == 0) {
-        TaLogic_InitRogicControl(arg0, 1);
+        TaLogic_InitRogicControl(pTask, 1);
         return -1;
     }
-    initialFlag = TaLogic_IsOpenUnit_00139180((s32)input->position >> 8, input->position & 0xFF, arg0);
+    initialFlag = TaLogic_IsOpenUnit_00139180((s32)input->position >> 8, input->position & 0xFF, pTask);
     originalPosition = SzDuel_GetUnitLoc((s32)input->position >> 8, input->position & 0xFF);
-    lowDestination = destination_001379F0(arg0, arg3);
-    highDestination = destination_001379F0(arg0, arg3);
+    lowDestination = destination_001379F0(pTask, fFirst);
+    highDestination = destination_001379F0(pTask, fFirst);
     targetPosition = SzDuel_GetUnitLoc((u32)highDestination >> 8, lowDestination & 0xFF);
     i = 0;
     do {
@@ -1015,7 +1039,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
         output->position = input->position;
         output->action = 6;
         output->destination = originalPosition;
-        score = TaLogic_GetUnitWarning(originalX, originalY, arg1, 3, 0, 0);
+        score = TaLogic_GetUnitWarning(originalX, originalY, nSide, 3, 0, 0);
         if (score >= SzDuel_GetUnitAP((s32)input->position >> 8, input->position & 0xFF, 0)) {
             output->result = TaLogic_IsDefStyleUnit((s32)input->position >> 8, input->position & 0xFF,
                                           output->destination, 1, 1);
@@ -1023,7 +1047,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
             output->result = TaLogic_IsDefStyleUnit((s32)input->position >> 8, input->position & 0xFF,
                                           output->destination, 0, 1);
         }
-        TaLogic_InitRogicControl(arg0, arg3);
+        TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     } else {
         s32 targetY;
@@ -1035,7 +1059,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
         TaLogic_GetInvadeRoot((s32)input->position >> 8, input->position & 0xFF,
                      candidates, originalX, originalY, targetX = targetPosition & 0xFF,
                      targetY = targetPosition >> 8,
-                     destination_001379F0(arg0, arg3), 1, 30, 0);
+                     destination_001379F0(pTask, fFirst), 1, 30, 0);
         count = TaLogic_GetMinGoalCount((u8 *)candidates);
         bestIndex = 255;
         if (count > 0) {
@@ -1052,7 +1076,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
                 } else {
                     s32 score;
                     candidate = &candidates[candidateIndex];
-                    score = TaLogic_GetUnitWarning(candidate->x, candidate->y, arg1, 2, 0, 0);
+                    score = TaLogic_GetUnitWarning(candidate->x, candidate->y, nSide, 2, 0, 0);
                     if (score < bestScore) {
                         bestScore = score;
                         bestIndex = candidateIndex;
@@ -1090,7 +1114,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
             output->flag = initialFlag;
             output->result = TaLogic_IsDefStyleUnit((s32)input->position >> 8, input->position & 0xFF,
                                           output->destination, 0, 1);
-            TaLogic_InitRogicControl(arg0, arg3);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
         if (bestIndex != 255) {
@@ -1107,7 +1131,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_001379F0(void *arg0, s32 arg1, void *arg2,
             output->flag = found;
             output->result = TaLogic_IsDefStyleUnit((s32)input->position >> 8, input->position & 0xFF,
                                           output->destination, 0, 1);
-            TaLogic_InitRogicControl(arg0, arg3);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
     }
@@ -1139,6 +1163,7 @@ typedef struct Point_00137FB0 {
 } Point_00137FB0;
 
 
+/* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 destination_00137FB0(void *unit, s32 side) {
     if (side == 1) {
         return (u16)(((Unit_00137FB0 *)unit)->destination.packed >> 16);
@@ -1146,7 +1171,9 @@ static inline u32 destination_00137FB0(void *unit, s32 side) {
     return ((Unit_00137FB0 *)unit)->destination.halves[0];
 }
 
-s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+/* The task of a unit moving to its goal (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's first-choice
+   task). */
+s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *pTask, s32 nSide, void *pInput, u8 fFirst, u8 nKind) {
     extern s32 TaLogic_IsDefStyleUnit(s32, s32, s32, u8, s32);
     extern void TaLogic_GetRoot(s32, s32, void *, s32, s32, s32, s32, s32, u8);
     s32 count;
@@ -1155,8 +1182,8 @@ s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2
     s32 id;
     s32 score;
     u32 destinationValue;
-    Unit_00137FB0 *unit = arg0;
-    Order_00137FB0 *order = arg2;
+    Unit_00137FB0 *unit = pTask;
+    Order_00137FB0 *order = pInput;
 
     {
     s32 bestScore;
@@ -1166,16 +1193,16 @@ s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2
     s32 index;
 
     position = SzDuel_GetUnitLoc((s32)unit->position >> 8, unit->position & 0xFF);
-    side = arg3;
+    side = fFirst;
     if (destination_00137FB0(unit, side) == 0xFFFF) {
         if (position == destination_00137FB0(unit, side)) {
             order->position = unit->position;
             order->kind = 6;
             order->destination = position;
             order->flags = TaLogic_IsDefStyleUnit((s32)unit->position >> 8, unit->position & 0xFF,
-                                       order->destination, arg4, 1);
+                                       order->destination, nKind, 1);
             order->value = TaLogic_IsOpenUnit_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
-            TaLogic_InitRogicControl(unit, arg3);
+            TaLogic_InitRogicControl(unit, fFirst);
             return 0;
         }
     }
@@ -1208,7 +1235,7 @@ s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2
         bestScore = 0xFFFF;
         for (index = 0; index < count; index++, point++) {
             if (SzDuel_GetMapUnit(point->x, point->y) == 0) {
-                score = TaLogic_GetUnitWarning(point->x, point->y, arg1, 2, 0, 0);
+                score = TaLogic_GetUnitWarning(point->x, point->y, nSide, 2, 0, 0);
                 if (score < bestScore) {
                     bestScore = score;
                     bestIndex = index;
@@ -1285,9 +1312,9 @@ s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2
         order->kind = 6;
         order->destination = position;
         order->flags = TaLogic_IsDefStyleUnit((s32)unit->position >> 8, unit->position & 0xFF,
-                                   order->destination, arg4, 1);
+                                   order->destination, nKind, 1);
         order->value = TaLogic_IsOpenUnit_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
-        TaLogic_InitRogicControl(unit, arg3);
+        TaLogic_InitRogicControl(unit, fFirst);
         return 0;
     }
         if (bestIndex != 0xFF) {
@@ -1295,17 +1322,17 @@ s32 TaLogic_GetMinimumTask_MoveMission_00137FB0(void *arg0, s32 arg1, void *arg2
             order->kind = 6;
             order->destination = (points[bestIndex].y << 8) | points[bestIndex].x;
             order->flags = TaLogic_IsDefStyleUnit((s32)unit->position >> 8, unit->position & 0xFF,
-                                       order->destination, arg4, 1);
+                                       order->destination, nKind, 1);
             order->value = TaLogic_IsOpenUnit_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
         } else {
             order->position = unit->position;
             order->kind = 6;
             order->destination = position;
             order->flags = TaLogic_IsDefStyleUnit((s32)unit->position >> 8, unit->position & 0xFF,
-                                       order->destination, arg4, 1);
+                                       order->destination, nKind, 1);
             order->value = TaLogic_IsOpenUnit_00139180((s32)unit->position >> 8, unit->position & 0xFF, unit);
         }
-        TaLogic_InitRogicControl(unit, arg3);
+        TaLogic_InitRogicControl(unit, fFirst);
     }
     return 0;
 }
@@ -1326,16 +1353,18 @@ typedef struct {
 } Out_00138780;
 
 
-s32 TaLogic_GetMinimumTask_ReviveMission_00138780(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+/* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
+   first-choice task). */
+s32 TaLogic_GetMinimumTask_ReviveMission_00138780(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
     s32 card;
     s32 col;
     u16 row;
-    Out_00138780 *out = arg2;
+    Out_00138780 *out = pInput;
     Nibbles_00138780 entries[12];
     s32 i;
     Nibbles_00138780 *entry;
 
-    SzDuel_GetUnitLoc(*arg0 >> 8, *arg0 & 0xFF);
+    SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
     entry = entries;
     i = 0;
     do {
@@ -1344,28 +1373,28 @@ s32 TaLogic_GetMinimumTask_ReviveMission_00138780(u16 *arg0, s32 arg1, void *arg
         i++;
     } while (i < 12);
 
-    card = TaLogic009_IsUseCopyCat(arg1);
-    if (TaLogic_GetActionReaction(*arg0 >> 8, *arg0 & 0xFF, 0, 0, 6, 1) == 5) {
+    card = TaLogic009_IsUseCopyCat(nSide);
+    if (TaLogic_GetActionReaction(*pTask >> 8, *pTask & 0xFF, 0, 0, 6, 1) == 5) {
         card = -1;
     }
     if (card >= 0) {
         row = card >> 16;
         col = TaLogic_GetGraveEntryAfterScreen(row, card & 0xFF, 0);
-        out->pos = *arg0;
+        out->pos = *pTask;
         out->kind = 12;
-        out->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, out->target, 1, 1);
+        out->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->target, 1, 1);
         out->flag = 1;
         out->target = (row << 8) | col;
-        TaLogic_InitRogicControl(arg0, arg3);
+        TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     }
-    if (SzDuel_GetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
-        SzDuel_SetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
-        out->pos = *arg0;
+    if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
+        SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
+        out->pos = *pTask;
         out->kind = 14;
         return 0;
     }
-    return TaLogic_GetMinimumTask_RunMission_001374D0(arg0, arg1, arg2, arg3);
+    return TaLogic_GetMinimumTask_RunMission_001374D0(pTask, nSide, pInput, fFirst);
 }
 
 typedef struct Nibbles_00138950 {
@@ -1383,6 +1412,7 @@ typedef struct Out_00138950 {
     u8 result;
 } Out_00138950;
 
+/* The controlled unit this duelist wants back, unless a trap waits on the way (-1). */
 static inline s32 slot_00138950(u16 *unit, s32 arg1) {
     s32 card = TaLogic009_GetRevoltObj(arg1);
     if (TaLogic_GetActionReaction(*unit >> 8, *unit & 0xFF, 0, 0, 6, 1) == 5) {
@@ -1391,13 +1421,14 @@ static inline s32 slot_00138950(u16 *unit, s32 arg1) {
     return card;
 }
 
-s32 TaLogic_GetMinimumTask_RevoltMission_00138950(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
+/* The task of taking back a controlled unit (task `pTask`), into `pInput`. */
+s32 TaLogic_GetMinimumTask_RevoltMission_00138950(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern void SzDuel_SetUnitStatus(s32, s32, s32, s32);
-    u16 *unit = arg0;
+    u16 *unit = pTask;
     s32 count;
     s32 card;
     s32 k;
-    Out_00138950 *out = arg2;
+    Out_00138950 *out = pInput;
     Nibbles_00138950 entries[12];
     s32 i;
     Nibbles_00138950 *entry;
@@ -1411,13 +1442,13 @@ s32 TaLogic_GetMinimumTask_RevoltMission_00138950(u16 *arg0, s32 arg1, void *arg
         i++;
     } while (i < 12);
     count = 0;
-    card = slot_00138950(unit, arg1);
+    card = slot_00138950(unit, nSide);
     if (card >= 0) {
         card = (card >> 16) & 0xFFFF;
         if (card != 0xFFFF) {
             k = 1;
             do {
-                if (SzDuel_GetUnit(arg1 == 0 ? 1 : 0, k) != 0) {
+                if (SzDuel_GetUnit(nSide == 0 ? 1 : 0, k) != 0) {
                     count++;
                 }
                 if (k == card) {
@@ -1430,7 +1461,7 @@ s32 TaLogic_GetMinimumTask_RevoltMission_00138950(u16 *arg0, s32 arg1, void *arg
             out->result = TaLogic_IsDefStyleUnit(*unit >> 8, *unit & 0xFF, out->target, 1, 1);
             out->flag = 1;
             out->target = count - 1;
-            TaLogic_InitRogicControl(unit, arg3);
+            TaLogic_InitRogicControl(unit, fFirst);
             return 0;
         }
     }
@@ -1440,10 +1471,11 @@ s32 TaLogic_GetMinimumTask_RevoltMission_00138950(u16 *arg0, s32 arg1, void *arg
         out->kind = 14;
         return 0;
     }
-    return TaLogic_GetMinimumTask_RunMission_001374D0(unit, arg1, out, arg3);
+    return TaLogic_GetMinimumTask_RunMission_001374D0(unit, nSide, out, fFirst);
 }
 
-s32 TaLogic009_GetRevoltObj(s32 arg0) {
+/* The unit of side `nSide` controlled by the opponent that this duelist wants back. */
+s32 TaLogic009_GetRevoltObj(s32 nSide) {
     extern s32 SzDuel_GetUnitCurseRest(s32, s32);
     extern s32 SzDuel_GetUnitSpellRest(s32, s32);
     u16 cells[0x16];
@@ -1461,16 +1493,16 @@ s32 TaLogic009_GetRevoltObj(s32 arg0) {
     s32 score;
     s32 j;
 
-    pos = SzDuel_GetUnitLoc((arg0 == 0) ? 1 : 0, 0);
+    pos = SzDuel_GetUnitLoc((nSide == 0) ? 1 : 0, 0);
     if (Ta_SearchUncTypeNaturalEffectUserNum(0x39) > 0) {
         return -1;
     }
-    handle = Ta_RemoveObjFromFlagLst(SearchUnitByRange(0, 0, arg0, 2, 0x21, 0xE), arg0);
+    handle = Ta_RemoveObjFromFlagLst(SearchUnitByRange(0, 0, nSide, 2, 0x21, 0xE), nSide);
     p = cells;
     for (j = 0; j < 0x16; j++) {
         cells[j] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst((arg0 == 0) ? 1 : 0, cells, 0x34, 1);
+    TaLogic_GetUnitCtlLst((nSide == 0) ? 1 : 0, cells, 0x34, 1);
     target = -1;
     best = target;
     bestScore = 1;
@@ -1504,45 +1536,48 @@ s32 TaLogic009_GetRevoltObj(s32 arg0) {
     return ((best & 0xFFFF) << 16) | (target & 0xFFFF);
 }
 
-s32 TaLogic009_IsUseCurseDragonPot(s32 arg0) {
-    s32 temp_s0;
-    s32 temp_s1;
-    s32 temp_v0;
+/* Whether side `nSide` should use the curse pot now (two or more targets, or a plain enemy monster in reach). */
+s32 TaLogic009_IsUseCurseDragonPot(s32 nSide) {
+    s32 unitIdLo;
+    s32 unitIdHi;
+    s32 unitId;
 
-    if (Ta_GetUnitNumFrom22bitFlagList(SearchUnitByRange(0, 0, arg0, 2, 0, 14)) >= 2) {
+    if (Ta_GetUnitNumFrom22bitFlagList(SearchUnitByRange(0, 0, nSide, 2, 0, 14)) >= 2) {
         return 1;
     }
-    temp_v0 = Ta_GetUnitOwnerIDFromLstCount(SearchUnitByRange(0, 0, arg0, 3, 33, 14), 0);
-    temp_s1 = temp_v0 >> 8;
-    temp_s0 = temp_v0 & 0xFF;
-    if (arg0 != Ta_IsUnitControl(temp_s1, temp_s0)) {
-        if (((SzDuel_GetUnitKind(temp_s1, temp_s0) >> 5) == 0) && !(SzDuel_GetUnitKind(temp_s1, temp_s0) & 0x1F)) {
+    unitId = Ta_GetUnitOwnerIDFromLstCount(SearchUnitByRange(0, 0, nSide, 3, 33, 14), 0);
+    unitIdHi = unitId >> 8;
+    unitIdLo = unitId & 0xFF;
+    if (nSide != Ta_IsUnitControl(unitIdHi, unitIdLo)) {
+        if (((SzDuel_GetUnitKind(unitIdHi, unitIdLo) >> 5) == 0) && !(SzDuel_GetUnitKind(unitIdHi, unitIdLo) & 0x1F)) {
             return 1;
         }
     }
     return 0;
 }
 
-s32 TaLogic009_IsUseCopyCat(s32 arg0) {
+/* The Copycat card (0x2C9) in either graveyard side `nSide` can revive ((side << 16) | index), or -1. */
+s32 TaLogic009_IsUseCopyCat(s32 nSide) {
     extern s32 SzDuel_GetGraveCount(s32);
     s32 i;
 
-    if (SzDuel_GetUnitSpellCount(arg0) < 5) {
-        for (i = 0; i < SzDuel_GetGraveCount(arg0); i++) {
-            if (SzDuel_InqGrave(arg0, i) == 0x2C9) {
-                return (arg0 << 16) | i;
+    if (SzDuel_GetUnitSpellCount(nSide) < 5) {
+        for (i = 0; i < SzDuel_GetGraveCount(nSide); i++) {
+            if (SzDuel_InqGrave(nSide, i) == 0x2C9) {
+                return (nSide << 16) | i;
             }
         }
-        for (i = 0; i < SzDuel_GetGraveCount(arg0 == 0 ? 1 : 0); i++) {
-            if (SzDuel_InqGrave(arg0 == 0 ? 1 : 0, i) == 0x2C9) {
-                return i | ((arg0 == 0 ? 1 : 0) << 16);
+        for (i = 0; i < SzDuel_GetGraveCount(nSide == 0 ? 1 : 0); i++) {
+            if (SzDuel_InqGrave(nSide == 0 ? 1 : 0, i) == 0x2C9) {
+                return i | ((nSide == 0 ? 1 : 0) << 16);
             }
         }
     }
     return -1;
 }
 
-s32 TaLogic009_IsDoCerem(s32 arg0, s32 arg1) {
+/* Whether side `nSide` can play ritual card `nCardNo` now (it has the units to give up). */
+s32 TaLogic009_IsDoCerem(s32 nSide, s32 nCardNo) {
     s32 index;
     s32 mask;
     s32 low;
@@ -1551,8 +1586,8 @@ s32 TaLogic009_IsDoCerem(s32 arg0, s32 arg1) {
     s32 value;
     s32 data[4];
 
-    Ta_GetCeremSacrifice(data, *(s32 *)((u8 *)TaHand_GetCardEffect(arg1, 0) + 4));
-    if ((mask = Ta_GetSacrificeUnit(data, arg0)) < 0) {
+    Ta_GetCeremSacrifice(data, *(s32 *)((u8 *)TaHand_GetCardEffect(nCardNo, 0) + 4));
+    if ((mask = Ta_GetSacrificeUnit(data, nSide)) < 0) {
         return 0;
     }
     index = 0;
@@ -1571,6 +1606,7 @@ s32 TaLogic009_IsDoCerem(s32 arg0, s32 arg1) {
     return 1;
 }
 
+/* The larger of the two values. */
 static inline s32 max_00139080(s32 a, s32 b) {
     if (a < b) {
         return b;
@@ -1578,22 +1614,23 @@ static inline s32 max_00139080(s32 a, s32 b) {
     return a;
 }
 
-s32 TaLogic009_IsOpenMoveUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
+s32 TaLogic009_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
-    min_y = arg3 < arg5 ? arg3 : arg5;
-    arg5 = max_00139080(arg5, arg3);
-    min_x = arg2 < arg4 ? arg2 : arg4;
-    arg4 = max_00139080(arg4, arg2);
-    if ((arg4 - min_x) + (arg5 - min_y) != 2) {
+    min_y = nZ < gZ ? nZ : gZ;
+    gZ = max_00139080(gZ, nZ);
+    min_x = nX < gX ? nX : gX;
+    gX = max_00139080(gX, nX);
+    if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }
-    if (SzDuel_GetUnit(arg0, arg1) == 0) {
+    if (SzDuel_GetUnit(nSide, nID) == 0) {
         return 0;
     }
-    if (SzDuel_GetUnitStatus(arg0, arg1, 0) == 0) {
-        if (CheckLandAgreement2(SzDuel_GetField(arg2, arg3), arg0, arg1) != 1) {
+    if (SzDuel_GetUnitStatus(nSide, nID, 0) == 0) {
+        if (CheckLandAgreement2(SzDuel_GetField(nX, nZ), nSide, nID) != 1) {
             return 0;
         }
         return 1;
@@ -1601,6 +1638,7 @@ s32 TaLogic009_IsOpenMoveUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, 
     return 0;
 }
 
+/* Whether the units side `owner` would give up for a ritual are all weaker than 2600. */
 static inline s32 check_list_00139180(s32 *buffer, s32 owner) {
     s32 player;
     s32 slot;
@@ -1623,6 +1661,7 @@ static inline s32 check_list_00139180(s32 *buffer, s32 owner) {
     return 1;
 }
 
+/* Whether side `arg0` has the targets for its curse card (as TaLogic009_IsUseCurseDragonPot). */
 static inline s32 check_target_00139180(s32 arg0) {
     s32 player;
     s32 slot;
@@ -1643,7 +1682,8 @@ static inline s32 check_target_00139180(s32 arg0) {
     return 0;
 }
 
-s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
+/* Whether this duelist opens (turns face up) unit (nSide, nID) now: 0 no, 1 or 2 by its kind. */
+s32 TaLogic_IsOpenUnit_00139180(s32 nSide, s32 nID, void *pInfo) {
     extern s32 SzDuel_GetUnitCurseRest();
     s32 buffer[4];
     s32 i;
@@ -1657,26 +1697,26 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
     s32 state;
 
     card = SzDuel_GetUnitCardNo();
-    Ta_IsUnitControl(arg0, arg1);
-    info = SzDuel_GetUnitEffect(arg0, arg1, 0);
-    position = SzDuel_GetUnitLoc(arg0, arg1);
+    Ta_IsUnitControl(nSide, nID);
+    info = SzDuel_GetUnitEffect(nSide, nID, 0);
+    position = SzDuel_GetUnitLoc(nSide, nID);
     count = 0;
-    if (SzDuel_GetUnitStatus(arg0, arg1, 4) != 0) {
+    if (SzDuel_GetUnitStatus(nSide, nID, 4) != 0) {
         return 0;
     }
-    state = SzDuel_GetUnitKind(arg0, arg1) >> 5;
+    state = SzDuel_GetUnitKind(nSide, nID) >> 5;
     switch (state) {
     case 0:
         switch (card) {
         case 0x265:
             i = 1;
             while (1) {
-                if (SzDuel_GetUnitCurseRest(arg0, i) > 0 &&
-                    arg0 == Ta_IsUnitControl(arg0, i)) {
+                if (SzDuel_GetUnitCurseRest(nSide, i) > 0 &&
+                    nSide == Ta_IsUnitControl(nSide, i)) {
                     count++;
                 }
-                if (SzDuel_GetUnitCurseRest(arg0 == 0 ? 1 : 0, i) > 0 &&
-                    arg0 == Ta_IsUnitControl(arg0 == 0 ? 1 : 0, i)) {
+                if (SzDuel_GetUnitCurseRest(nSide == 0 ? 1 : 0, i) > 0 &&
+                    nSide == Ta_IsUnitControl(nSide == 0 ? 1 : 0, i)) {
                     count++;
                 }
                 i++;
@@ -1690,10 +1730,10 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
         }
         return 2;
     case 5:
-        if (TaLogic_GetActionReaction(arg0, arg1, 0, 0, 6, 1) == 5) {
+        if (TaLogic_GetActionReaction(nSide, nID, 0, 0, 6, 1) == 5) {
             return 2;
         }
-        owner = Ta_IsUnitControl(arg0, arg1);
+        owner = Ta_IsUnitControl(nSide, nID);
         Ta_GetCeremSacrifice(buffer, *(s32 *)((u8 *)TaHand_GetCardEffect(card, 0) + 4));
         valid = check_list_00139180(buffer, owner);
         if (valid == 1) {
@@ -1703,7 +1743,7 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
         }
         break;
     case 1:
-        if (TaLogic_GetActionReaction(arg0, arg1, 0, 0, 6, 1) == 5) {
+        if (TaLogic_GetActionReaction(nSide, nID, 0, 0, 6, 1) == 5) {
             return 2;
         }
         if (info == NULL) {
@@ -1711,7 +1751,7 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
         }
         switch (*info >> 8) {
         case 2:
-            target = TaLogic_GetLandChange(SzDuel_GetUnit(arg0, arg1),
+            target = TaLogic_GetLandChange(SzDuel_GetUnit(nSide, nID),
                 position & 0xFF, position >> 8, 6, 5, 2);
             if (target >= 0 && (target >> 8) < 4 && position == target) {
                 return 1;
@@ -1720,14 +1760,14 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
         case 13:
             return 1;
         case 23:
-            valid = check_target_00139180(arg0);
+            valid = check_target_00139180(nSide);
             if (valid == 1) {
                 return 1;
             }
             break;
         case 31:
             if (card == 0x2DD) {
-                target = TaLogic009_GetRevoltObj(arg0);
+                target = TaLogic009_GetRevoltObj(nSide);
                 if (target >= 0 && (target & 0xFFFF) != 0xFFFF) {
                     return 1;
                 }
@@ -1736,12 +1776,12 @@ s32 TaLogic_IsOpenUnit_00139180(s32 arg0, s32 arg1, void *arg2) {
         case 32:
             i = 1;
             while (1) {
-                if (SzDuel_GetUnitCurseRest(arg0, i) != 0 &&
-                    arg0 == Ta_IsUnitControl(arg0, i)) {
+                if (SzDuel_GetUnitCurseRest(nSide, i) != 0 &&
+                    nSide == Ta_IsUnitControl(nSide, i)) {
                     count++;
                 }
-                if (SzDuel_GetUnitCurseRest(arg0 == 0 ? 1 : 0, i) != 0 &&
-                    arg0 == Ta_IsUnitControl(arg0 == 0 ? 1 : 0, i)) {
+                if (SzDuel_GetUnitCurseRest(nSide == 0 ? 1 : 0, i) != 0 &&
+                    nSide == Ta_IsUnitControl(nSide == 0 ? 1 : 0, i)) {
                     count++;
                 }
                 i++;
@@ -1783,13 +1823,16 @@ typedef struct {
 
 s32 TaLogic_GetInputQueFromMinimumTask_b(void *, void *, s32);
 
-s32 func_001396C0(s32 arg0, void *arg1) {
+/* This computer duelist's controller (one entry of duelistControllers): the buttons it presses this frame. With an empty
+   input queue it plans its next task and turns it into buttons, then plays the queue back one button per frame;
+   after 600 frames it gives up the turn (0x20, then 0x800). */
+s32 func_001396C0(s32 wCursorPos, void *pCtl) {
     Req_001396C0 req;
     Work_001396C0 *w;
     s32 i;
     s32 ret;
 
-    w = arg1;
+    w = pCtl;
     req.unk0 = 0xFFFF;
     req.unk2 = 0xFF;
     req.unk4 = 0xFFFF;
@@ -1816,10 +1859,10 @@ s32 func_001396C0(s32 arg0, void *arg1) {
     }
     if (w->idx == 0) {
         TaLogic_DoAdjustLogicData(w);
-        if (TaLogic_GetMinimumTask_00135230(w, &req, arg0) == 0) {
+        if (TaLogic_GetMinimumTask_00135230(w, &req, wCursorPos) == 0) {
             return 0x800;
         }
-        if (TaLogic_GetInputQueFromMinimumTask_b(w, &req, arg0) < 0) {
+        if (TaLogic_GetInputQueFromMinimumTask_b(w, &req, wCursorPos) < 0) {
             return 0;
         }
     }
@@ -1846,9 +1889,11 @@ typedef struct {
 
 #pragma conditional_move off
 
-s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
-    u16 *arg0 = work;
-    Ai_00139890 *ai = work;
+/* This duelist's move: picks the next unit to act, gives it a task and turns that into input `pInput`; returns 1
+   when it set one. */
+s32 TaLogic_GetMinimumTask_00139890(void *pCtl, void *pInput, s32 wCursorPos) {
+    u16 *arg0 = pCtl;
+    Ai_00139890 *ai = pCtl;
     s32 side;
     s32 found;
     s32 result;
@@ -1857,7 +1902,7 @@ s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
     side = SzDuel_GetTurnOwner();
     found = 0;
     ai->lvl = TaLogic010_IsActiveMode();
-    if ((result = TaLogic_GetNextActiveUnit_0013A010(arg0, side, ai->lvl, arg1)) < 0) {
+    if ((result = TaLogic_GetNextActiveUnit_0013A010(arg0, side, ai->lvl, pInput)) < 0) {
         return 0;
     }
     index = TaLogic_GetActionUnitFromOwnerID(arg0, result & 0xFFFF);
@@ -1876,13 +1921,13 @@ s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
     switch ((arg0[index * 8 + 2] >> 8) & 0xFF) {
     case 5:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, arg1, 1);
+            TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, pInput, 1);
             found = 1;
         }
         break;
     case 2:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (TaLogic_GetMinimumTask_AtkMission_0013C430(arg0 + index * 8, side, arg1, 1) < 0) {
+            if (TaLogic_GetMinimumTask_AtkMission_0013C430(arg0 + index * 8, side, pInput, 1) < 0) {
                 TaLogic_InitRogicControl(arg0 + index * 8, 1);
                 return 1;
             }
@@ -1890,31 +1935,31 @@ s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
         }
         break;
     case 10:
-        if (TaLogic_GetMinimumTask_Summon_0013AB70(arg0[index * 8], side, arg1) < 0) {
+        if (TaLogic_GetMinimumTask_Summon_0013AB70(arg0[index * 8], side, pInput) < 0) {
             TaLogic_InitRogicControl(arg0 + index * 8, 1);
-            *(u8 *)((u8 *)arg1 + 2) = 0xFF;
-            *(s32 *)((u8 *)arg1 + 0xC) = 0;
+            *(u8 *)((u8 *)pInput + 2) = 0xFF;
+            *(s32 *)((u8 *)pInput + 0xC) = 0;
         } else {
             TaLogic_InitRogicControl(arg0 + index * 8, 1);
             found = 1;
         }
         break;
     case 6:
-        TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, arg1, 1, 0);
+        TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, pInput, 1, 0);
         found = 1;
         break;
     case 3:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, arg1, 1, 1);
+            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, pInput, 1, 1);
             found = 1;
         }
         break;
     case 9:
-        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 1, 0, TaLogic_GetWarnHideLvl_0013DA70(side), 2, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, pInput, 1, 0, TaLogic_GetWarnHideLvl_0013DA70(side), 2, 1);
         found = 1;
         break;
     case 14:
-        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, pInput);
         found = 1;
         break;
     default:
@@ -1928,24 +1973,24 @@ s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
     switch (arg0[index * 8 + 2] & 0xFF) {
     case 5:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, arg1, 0);
+            TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, pInput, 0);
             found = 1;
         }
         break;
     case 2:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            if (TaLogic_GetMinimumTask_AtkMission_0013C430(arg0 + index * 8, side, arg1, 0) < 0) {
-                TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, arg1, 0);
+            if (TaLogic_GetMinimumTask_AtkMission_0013C430(arg0 + index * 8, side, pInput, 0) < 0) {
+                TaLogic_GetMinimumTask_RunMission_0013BE60(arg0 + index * 8, side, pInput, 0);
             }
             found = 1;
         }
         break;
     case 10:
-        if (TaLogic_GetMinimumTask_Summon_0013AB70(arg0[index * 8], side, arg1) < 0) {
+        if (TaLogic_GetMinimumTask_Summon_0013AB70(arg0[index * 8], side, pInput) < 0) {
             TaLogic_InitRogicControl(arg0 + index * 8, 0);
-            *(u8 *)((u8 *)arg1 + 2) = 0xFF;
+            *(u8 *)((u8 *)pInput + 2) = 0xFF;
             found = 1;
-            *(s32 *)((u8 *)arg1 + 0xC) = 0;
+            *(s32 *)((u8 *)pInput + 0xC) = 0;
         } else {
             TaLogic_InitRogicControl(arg0 + index * 8, 0);
             found = 1;
@@ -1953,22 +1998,22 @@ s32 TaLogic_GetMinimumTask_00139890(void *work, void *arg1, s32 arg2) {
         break;
     case 6:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, arg1, 0, 0);
+            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, pInput, 0, 0);
             found = 1;
         }
         break;
     case 3:
         if (SzDuel_GetUnitStatus(arg0[index * 8] >> 8, arg0[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, arg1, 0, 1);
+            TaLogic_GetMinimumTask_MoveMission_0013CA10(arg0 + index * 8, side, pInput, 0, 1);
             found = 1;
         }
         break;
     case 9:
-        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, arg1, 0, 0, TaLogic_GetWarnHideLvl_0013DA70(side), 2, 1);
+        TaLogic_GetMinimumTask_EncMission(arg0 + index * 8, side, pInput, 0, 0, TaLogic_GetWarnHideLvl_0013DA70(side), 2, 1);
         found = 1;
         break;
     case 14:
-        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, arg1);
+        TaLogic_GetMinimumTask_DoNone(arg0 + index * 8, side, pInput);
         break;
     default:
         return 0;
@@ -1997,9 +2042,10 @@ typedef struct Record_00139D90 {
 } Record_00139D90;
 
 
-s32 TaLogic_CommandUnit_00139D90(void *arg0, s32 arg1) {
+/* Gives the unit of task `pTask` its order for this turn (attack, run, move, summon, guard). */
+s32 TaLogic_CommandUnit_00139D90(void *pCtl, s32 pTask) {
     extern void TaLogic010_CommandSpellUnit();
-    Record_00139D90 *record = arg0;
+    Record_00139D90 *record = pCtl;
     s32 value;
     s32 state;
 
@@ -2019,7 +2065,7 @@ s32 TaLogic_CommandUnit_00139D90(void *arg0, s32 arg1) {
                             }
                         } else if (SzDuel_InqHandPhase((s32) record->id >> 8) == 1) {
                             record->code = 0xA06;
-                            if ((arg1 & 0xFF) == 1) {
+                            if ((pTask & 0xFF) == 1) {
                                 record->data.word = (record->data.word & 0xFFFF0000) |
                                     (((((value >> 8) + 1) << 8) | (value & 0xFF)) & 0xFFFF);
                             } else {
@@ -2027,7 +2073,7 @@ s32 TaLogic_CommandUnit_00139D90(void *arg0, s32 arg1) {
                             }
                         } else {
                             record->code = 0x6FF;
-                            if ((arg1 & 0xFF) == 1) {
+                            if ((pTask & 0xFF) == 1) {
                                 record->data.word = (u16) record->data.word |
                                     (((((value >> 8) + 1) << 8) | (value & 0xFF)) << 16);
                             } else {
@@ -2038,14 +2084,14 @@ s32 TaLogic_CommandUnit_00139D90(void *arg0, s32 arg1) {
                 } else {
                     switch (SzDuel_GetUnitKind((s32) record->id >> 8, record->id & 0xFF) >> 5) {
                     case 0:
-                        TaLogic010_CommandBtlUnit(arg0, 1, arg1);
+                        TaLogic010_CommandBtlUnit(pCtl, 1, pTask);
                         break;
                     case 2:
-                        TaLogic_CommandEncUnit(arg0, 2, 0, TaLogic_GetWarnHideLvl_0013DA70(state) & 0xFF);
+                        TaLogic_CommandEncUnit(pCtl, 2, 0, TaLogic_GetWarnHideLvl_0013DA70(state) & 0xFF);
                         break;
                     case 1:
                     case 3:
-                        TaLogic010_CommandSpellUnit(arg0, arg1);
+                        TaLogic010_CommandSpellUnit(pCtl, pTask);
                         break;
                     default:
                         record->code = 0x5FF;
@@ -2059,7 +2105,8 @@ s32 TaLogic_CommandUnit_00139D90(void *arg0, s32 arg1) {
     return 0;
 }
 
-s32 TaLogic_GetNextActiveUnit_0013A010(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
+/* The next unit of side `nSide` to act: first one that can attack now, then the others by task. */
+s32 TaLogic_GetNextActiveUnit_0013A010(u16 *pCtl, s32 nSide, s32 pInput, void *nMode) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -2069,42 +2116,42 @@ s32 TaLogic_GetNextActiveUnit_0013A010(u16 *arg0, s32 arg1, s32 arg2, void *arg3
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1D, 1);
-    ret = TaLogic_GetAtkUnitNow(arg1, list, arg0);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1D, 1);
+    ret = TaLogic_GetAtkUnitNow(nSide, list, pCtl);
     if (ret >= 0) {
         return ret;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1E, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1E, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if ((SzDuel_GetUnitKind(list[i] >> 8, list[i] & 0xFF) >> 5) == 3 &&
             TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
         }
     }
-    pos = arg1 << 8;
-    idx = TaLogic_GetActionUnitFromOwnerID(arg0, pos);
-    TaLogic_CommandUnit_00139D90(arg0 + idx * 8, arg2);
-    if (((arg0[idx * 8 + 2] >> 8) & 0xFF) == 10) {
-        if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_0013AB70(pos, arg1, arg3) >= 0) {
+    pos = nSide << 8;
+    idx = TaLogic_GetActionUnitFromOwnerID(pCtl, pos);
+    TaLogic_CommandUnit_00139D90(pCtl + idx * 8, pInput);
+    if (((pCtl[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+        if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_GetMinimumTask_Summon_0013AB70(pos, nSide, nMode) >= 0) {
             return pos | 0x10000;
         }
         if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (SzDuel_GetUnitStatus(arg1, 0, 0) == 0) {
+    } else if (SzDuel_GetUnitStatus(nSide, 0, 0) == 0) {
         if (TaLogic_IsUnitReadyMove(pos & 0xFFFF) == 1) {
             return pos;
         }
-    } else if (SzDuel_InqHandPhase(arg1) == 1 && TaLogic_GetMinimumTask_Summon_0013AB70(pos, arg1, arg3) >= 0) {
+    } else if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_GetMinimumTask_Summon_0013AB70(pos, nSide, nMode) >= 0) {
         return pos | 0x10000;
     }
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1F, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if (TaLogic_IsUnitReadyMove(list[i]) == 1 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
@@ -2113,7 +2160,7 @@ s32 TaLogic_GetNextActiveUnit_0013A010(u16 *arg0, s32 arg1, s32 arg2, void *arg3
     for (i = 0; i < 22; i++) {
         list[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg1, list, 0x1F, 1);
+    TaLogic_GetUnitCtlLst(nSide, list, 0x1F, 1);
     for (i = 0; i < TaLogic_GetUnitCtlLstLen(list); i++) {
         if (SzDuel_GetUnitStatus(list[i] >> 8, list[i] & 0xFF, 0) == 0 && TaLogic_IsPickUp(list[i]) == 1) {
             return list[i];
@@ -2128,7 +2175,9 @@ typedef struct Entry_0013A400 {
     u8 pad;
 } Entry_0013A400;
 
-void TaLogic010_CommandBtlUnit(void *arg0, s32 arg1, s32 arg2) {
+/* Orders a fighting unit (task `pTask`): straight at its goal when `fGoalFirst` and the path is open, else (while
+   `bActive` is 0) the nearest enemy it can beat. */
+void TaLogic010_CommandBtlUnit(void *pTask, s32 fGoalFirst, s32 bActive) {
     extern s32 TaLogic_IsRootOpen();
     extern s32 TaLogic010_GetNearUnit();
     extern void TaLogic_InitIgnoreLst();
@@ -2139,7 +2188,7 @@ void TaLogic010_CommandBtlUnit(void *arg0, s32 arg1, s32 arg2) {
     s16 result;
     u16 id;
 
-    id = *(u16 *)arg0;
+    id = *(u16 *)pTask;
     if (SzDuel_GetUnit(id >> 8, id & 0xFF) != 0) {
         s32 side;
         s32 target;
@@ -2150,14 +2199,14 @@ void TaLogic010_CommandBtlUnit(void *arg0, s32 arg1, s32 arg2) {
         s32 i;
         Entry_0013A400 *entry;
 
-        id = *(u16 *)arg0;
+        id = *(u16 *)pTask;
         side = Ta_GetCurrentSide(id >> 8, id & 0xFF);
         target = (side == 0 ? 1 : 0) << 8;
-        position = SzDuel_GetUnitLoc(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF);
+        position = SzDuel_GetUnitLoc(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
         targetHigh = target >> 8;
         targetLow = target & 0xFF;
         otherPosition = SzDuel_GetUnitLoc(targetHigh, targetLow);
-        id = *(u16 *)arg0;
+        id = *(u16 *)pTask;
         data = SzDuel_GetUnit(id >> 8, id & 0xFF);
         TaLogic_InitIgnoreLst(workspace);
         entry = entries;
@@ -2169,59 +2218,60 @@ void TaLogic010_CommandBtlUnit(void *arg0, s32 arg1, s32 arg2) {
             entry++;
         } while (i < 22);
 
-        if (arg1 != 0) {
-            id = *(u16 *)arg0;
+        if (fGoalFirst != 0) {
+            id = *(u16 *)pTask;
             if (TaLogic_IsRootOpen(id >> 8, id & 0xFF, position & 0xFF,
                     position >> 8, targetHigh, targetLow, otherPosition & 0xFF,
                     otherPosition >> 8, 2) > 0) {
-                *(u16 *)((u8 *)arg0 + 4) = 0x2FF;
-                *(u32 *)((u8 *)arg0 + 8) =
-                    (target << 16) | *(u16 *)((u8 *)arg0 + 8);
+                *(u16 *)((u8 *)pTask + 4) = 0x2FF;
+                *(u32 *)((u8 *)pTask + 8) =
+                    (target << 16) | *(u16 *)((u8 *)pTask + 8);
                 return;
             }
         }
 
         result = 0;
         count = 0;
-        for (i = 1; i <= (arg2 ? 1 : 3); i++) {
+        for (i = 1; i <= (bActive ? 1 : 3); i++) {
             s32 limit;
             s32 opposite;
             s32 value;
 
-            limit = arg2 ? 1 : 3;
-            opposite = Ta_GetCurrentSide(*(u16 *)arg0 >> 8, *(u16 *)arg0 & 0xFF) == 0 ? 1 : 0;
+            limit = bActive ? 1 : 3;
+            opposite = Ta_GetCurrentSide(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF) == 0 ? 1 : 0;
             value = TaLogic_GetWarnHideLvl_0013DA70(side);
-            switch (TaLogic010_GetNearUnit((s32)arg0, 0, data, position & 0xFF,
+            switch (TaLogic010_GetNearUnit((s32)pTask, 0, data, position & 0xFF,
                         position >> 8, opposite, (u8)i, value,
                         (s32)entries, 0, (s32)&count, (s32)&result,
                         (u8)limit, (s32)workspace)) {
             case 3:
-                *(u16 *)((u8 *)arg0 + 4) = 0x6FF;
-                *(u32 *)((u8 *)arg0 + 8) =
-                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                *(u16 *)((u8 *)pTask + 4) = 0x6FF;
+                *(u32 *)((u8 *)pTask + 8) =
+                    (position << 16) | *(u16 *)((u8 *)pTask + 8);
                 return;
             case 2:
-                *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
-                *(u32 *)((u8 *)arg0 + 8) =
-                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                *(u16 *)((u8 *)pTask + 4) = 0x3FF;
+                *(u32 *)((u8 *)pTask + 8) =
+                    (position << 16) | *(u16 *)((u8 *)pTask + 8);
                 return;
             case 1:
                 return;
             case 0:
-                *(u16 *)((u8 *)arg0 + 4) = 0x3FF;
-                *(u32 *)((u8 *)arg0 + 8) =
-                    (position << 16) | *(u16 *)((u8 *)arg0 + 8);
+                *(u16 *)((u8 *)pTask + 4) = 0x3FF;
+                *(u32 *)((u8 *)pTask + 8) =
+                    (position << 16) | *(u16 *)((u8 *)pTask + 8);
                 return;
             }
         }
-        TaLogic010_CommandInvadeUnit(arg0, arg2);
+        TaLogic010_CommandInvadeUnit(pTask, bActive);
     }
 }
 
-void TaLogic010_GetNearUnit(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg_sp0, u16 arg_sp8, s32 arg_sp10, s32 arg_sp18, u8 arg_sp20, s32 arg_sp28) {
-    TaLogic_GetNearUnit(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
-                  arg_sp0, arg_sp8, arg_sp10, arg_sp18, arg_sp20,
-                  0, 2500, arg_sp28);
+/* TaLogic_GetNearUnit with this duelist's view and strength settings. */
+void TaLogic010_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
+    TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
+                  nUnitLst, wUnitNum, wSize, wNodeCount, bChase,
+                  0, 2500, wIgnoreLst);
 }
 
 typedef struct Packet_0013A710 {
@@ -2235,8 +2285,9 @@ typedef struct Packet_0013A710 {
     } value;
 } Packet_0013A710;
 
-void TaLogic010_CommandInvadeUnit(void *arg0, s32 arg1) {
-    Packet_0013A710 *packet = arg0;
+/* Orders a unit (task `pTask`) to push into the opponent's side of the board. */
+void TaLogic010_CommandInvadeUnit(void *pTask, s32 nMode) {
+    Packet_0013A710 *packet = pTask;
     s32 item;
     s32 encoded;
     s32 result;
@@ -2246,7 +2297,7 @@ void TaLogic010_CommandInvadeUnit(void *arg0, s32 arg1) {
     item = Ta_IsUnitControl(location >> 8, location & 0xFF);
     location = packet->location;
     encoded = SzDuel_GetUnitLoc(location >> 8, location & 0xFF);
-    if ((arg1 & 0xFF) == 1) {
+    if ((nMode & 0xFF) == 1) {
         item = encoded & 0xFF;
         encoded = (encoded >> 8) + 1;
         result = SzDuel_GetMapUnitID(item, encoded);
@@ -2259,15 +2310,15 @@ void TaLogic010_CommandInvadeUnit(void *arg0, s32 arg1) {
         }
         return;
     } else {
-        arg1 = encoded >> 8;
-        if (arg1 != TaLogic010_GetLineHeight(item)) {
+        nMode = encoded >> 8;
+        if (nMode != TaLogic010_GetLineHeight(item)) {
             result = TaLogic010_GetEmptyLine(item);
             if (result >= 0) {
                 packet->mode = 0x6FF;
                 packet->value.word = (result << 16) | packet->value.lower;
             } else {
                 packet->mode = 0x6FF;
-                packet->value.word = packet->value.lower | ((((arg1 + 1) << 8) | (encoded & 0xFF)) << 16);
+                packet->value.word = packet->value.lower | ((((nMode + 1) << 8) | (encoded & 0xFF)) << 16);
             }
         } else {
             packet->mode = 0x6FF;
@@ -2276,54 +2327,56 @@ void TaLogic010_CommandInvadeUnit(void *arg0, s32 arg1) {
     }
 }
 
-s32 TaLogic010_GetEmptyLine(s32 arg0) {
-    s32 var_s0;
-    s32 temp_s1;
+/* The free line of the board this duelist's units fill next. */
+s32 TaLogic010_GetEmptyLine(s32 nSide) {
+    s32 i;
+    s32 lineHeightLo;
 
-    temp_s1 = TaLogic010_GetLineHeight(arg0) & 0xFF;
-    var_s0 = 0;
+    lineHeightLo = TaLogic010_GetLineHeight(nSide) & 0xFF;
+    i = 0;
     do {
-        switch (var_s0) {
+        switch (i) {
         case 0:
-            if (SzDuel_GetMapUnit(3, temp_s1) == 0) {
-                return (temp_s1 << 8) | 3;
+            if (SzDuel_GetMapUnit(3, lineHeightLo) == 0) {
+                return (lineHeightLo << 8) | 3;
             }
             break;
         case 1:
-            if (SzDuel_GetMapUnit(4, temp_s1) == 0) {
-                return (temp_s1 << 8) | 4;
+            if (SzDuel_GetMapUnit(4, lineHeightLo) == 0) {
+                return (lineHeightLo << 8) | 4;
             }
             break;
         case 2:
-            if (SzDuel_GetMapUnit(2, temp_s1) == 0) {
-                return (temp_s1 << 8) | 2;
+            if (SzDuel_GetMapUnit(2, lineHeightLo) == 0) {
+                return (lineHeightLo << 8) | 2;
             }
             break;
         case 3:
-            if (SzDuel_GetMapUnit(5, temp_s1) == 0) {
-                return (temp_s1 << 8) | 5;
+            if (SzDuel_GetMapUnit(5, lineHeightLo) == 0) {
+                return (lineHeightLo << 8) | 5;
             }
             break;
         case 4:
-            if (SzDuel_GetMapUnit(1, temp_s1) == 0) {
-                return (temp_s1 << 8) | 1;
+            if (SzDuel_GetMapUnit(1, lineHeightLo) == 0) {
+                return (lineHeightLo << 8) | 1;
             }
             break;
         }
-        var_s0++;
-    } while (var_s0 < 5);
+        i++;
+    } while (i < 5);
     return -1;
 }
 
-s32 TaLogic010_GetLineHeight(s32 arg0) {
+/* How far forward side `nSide`'s units stand (the highest row of its cards, at least 2). */
+s32 TaLogic010_GetLineHeight(s32 nSide) {
     s32 i;
     u8 maximum;
     s32 value;
 
     maximum = 0;
     for (i = 1; i <= 5; i++) {
-        if (SzDuel_GetUnit(arg0, i) != 0) {
-            value = (SzDuel_GetUnitLoc(arg0, i) >> 8) & 0xFF;
+        if (SzDuel_GetUnit(nSide, i) != 0) {
+            value = (SzDuel_GetUnitLoc(nSide, i) >> 8) & 0xFF;
             if (maximum < value) {
                 maximum = value;
             }
@@ -2346,39 +2399,41 @@ typedef struct State_0013AA40 {
     } info;
 } State_0013AA40;
 
+/* The square of unit id `position`. */
 static inline s32 decode_0013AA40(s32 position) {
     return SzDuel_GetUnitLoc(position >> 8, position & 0xFF);
 }
 
-void TaLogic010_CommandSpellUnit(void *arg0) {
-    State_0013AA40 *state = arg0;
+/* Orders a face-down magic card (task `pTask`): whether and where to open it. */
+void TaLogic010_CommandSpellUnit(void *pTask) {
+    State_0013AA40 *state = pTask;
     s32 temp_s0;
-    s32 temp_s2;
+    s32 controller;
     s32 temp_a0;
-    s32 temp_v0_4;
-    u16 temp_v0;
-    u16 temp_v0_2;
-    u16 temp_v0_3;
+    s32 useThunderBolt;
+    u16 position;
+    u16 position2;
+    u16 position3;
 
-    temp_v0 = state->position;
-    temp_s2 = Ta_IsUnitControl((s32) temp_v0 >> 8, temp_v0 & 0xFF);
-    temp_v0_2 = state->position;
-    temp_s0 = decode_0013AA40(temp_v0_2);
-    temp_v0_3 = state->position;
-    temp_a0 = SzDuel_GetUnitKind((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF) >> 5;
+    position = state->position;
+    controller = Ta_IsUnitControl((s32) position >> 8, position & 0xFF);
+    position2 = state->position;
+    temp_s0 = decode_0013AA40(position2);
+    position3 = state->position;
+    temp_a0 = SzDuel_GetUnitKind((s32) position3 >> 8, position3 & 0xFF) >> 5;
     switch (temp_a0) {
     case 1:
-        temp_v0_4 = TaLogic010_GetUseThunderBolt(temp_s2);
-        if (temp_v0_4 >= 0) {
+        useThunderBolt = TaLogic010_GetUseThunderBolt(controller);
+        if (useThunderBolt >= 0) {
             state->mode = 0x6FF;
-            state->info.word = state->info.halves[0] | ((((temp_s0 >> 8) << 8) | (SzDuel_GetUnitLoc(temp_v0_4 >> 8, temp_v0_4 & 0xFF) & 0xFF)) << 0x10);
+            state->info.word = state->info.halves[0] | ((((temp_s0 >> 8) << 8) | (SzDuel_GetUnitLoc(useThunderBolt >> 8, useThunderBolt & 0xFF) & 0xFF)) << 0x10);
             return;
         }
         state->mode = 0x5FF;
         break;
     case 3:
         state->mode = 0x3FF;
-        state->info.word = state->info.halves[0] | (((temp_s0 & 0xFF) | ((SzDuel_GetUnitLoc(temp_s2, 0) >> 8) << 8)) << 0x10);
+        state->info.word = state->info.halves[0] | (((temp_s0 & 0xFF) | ((SzDuel_GetUnitLoc(controller, 0) >> 8) << 8)) << 0x10);
         return;
     }
     state->mode = 0x5FF;
@@ -2400,37 +2455,38 @@ typedef struct {
 } Ctx_0013AB70;
 
 
-s32 TaLogic_GetMinimumTask_Summon_0013AB70(s32 arg0, s32 arg1, void *arg2) {
+/* The summon task for side `nSide`: which hand cards to play and where, into `pInput`; -1 when it plays none. */
+s32 TaLogic_GetMinimumTask_Summon_0013AB70(s32 wUnit, s32 nSide, void *pInput) {
     extern s32 TaLogic_GetUnitNum();
     Work_0013AB70 work;
     s32 ret;
     s32 res;
     s32 pos;
     s32 kind;
-    Ctx_0013AB70 *ctx = (Ctx_0013AB70 *)arg2;
+    Ctx_0013AB70 *ctx = (Ctx_0013AB70 *)pInput;
 
-    ctx->id = arg0;
-    if (SzDuel_InqHandPhase(arg1) == 0) {
+    ctx->id = wUnit;
+    if (SzDuel_InqHandPhase(nSide) == 0) {
         return -1;
     }
-    if (TaLogic_GetUnitNum(arg1, 0) == 5 && TaLogic_GetUnitNum(arg1, 1) == 5) {
+    if (TaLogic_GetUnitNum(nSide, 0) == 5 && TaLogic_GetUnitNum(nSide, 1) == 5) {
         return -1;
     }
-    kind = TaLogic010_IsHandPlay(arg1, &work);
+    kind = TaLogic010_IsHandPlay(nSide, &work);
     if (kind < 0) {
         return -1;
     }
     ctx->unk2 = 10;
     ctx->unkC = 0;
-    pos = SzDuel_GetUnitLoc(arg0 >> 8, arg0 & 0xFF);
+    pos = SzDuel_GetUnitLoc(wUnit >> 8, wUnit & 0xFF);
     if (kind == 0) {
-        if (TaLogic010_SetComboQue(arg1, (u8 *)ctx, &work) >= 0) {
+        if (TaLogic010_SetComboQue(nSide, (u8 *)ctx, &work) >= 0) {
             ret = TaLogic_GetNearCard2(&work, pos & 0xFF, pos >> 8,
-                                arg1 == 0 ? 1 : 0, 2, 0x1F, 2, 2,
-                                0, TaLogic_GetWarnHideLvl_0013DA70(arg1));
+                                nSide == 0 ? 1 : 0, 2, 0x1F, 2, 2,
+                                0, TaLogic_GetWarnHideLvl_0013DA70(nSide));
             if (ret < 0) {
-                if (SzDuel_GetUnitMonsterCount(arg1) < 6) {
-                    res = TaLogic010_GetSummonPiece(arg1, kind, &work, ret);
+                if (SzDuel_GetUnitMonsterCount(nSide) < 6) {
+                    res = TaLogic010_GetSummonPiece(nSide, kind, &work, ret);
                     if (res < 0) {
                         return -1;
                     }
@@ -2438,7 +2494,7 @@ s32 TaLogic_GetMinimumTask_Summon_0013AB70(s32 arg0, s32 arg1, void *arg2) {
                     return 1;
                 }
             } else {
-                res = TaLogic010_GetSummonPiece(arg1, kind, &work, ret);
+                res = TaLogic010_GetSummonPiece(nSide, kind, &work, ret);
                 if (res < 0) {
                     return -1;
                 }
@@ -2448,22 +2504,22 @@ s32 TaLogic_GetMinimumTask_Summon_0013AB70(s32 arg0, s32 arg1, void *arg2) {
         }
     } else {
         ret = TaLogic_GetNearCard2(&work, pos & 0xFF, pos >> 8,
-                            arg1 == 0 ? 1 : 0, 2, 0x1F, 2, 2,
-                            0, TaLogic_GetWarnHideLvl_0013DA70(arg1));
+                            nSide == 0 ? 1 : 0, 2, 0x1F, 2, 2,
+                            0, TaLogic_GetWarnHideLvl_0013DA70(nSide));
     }
     if (kind == 2) {
-        TaLogic010_SetSpecialComboQue(arg1, ctx, &work);
-        res = TaLogic010_GetSummonPiece(arg1, kind, &work, ret);
+        TaLogic010_SetSpecialComboQue(nSide, ctx, &work);
+        res = TaLogic010_GetSummonPiece(nSide, kind, &work, ret);
         if (res < 0) {
             return -1;
         }
         ctx->unk4 = res;
         return 1;
     }
-    if (TaLogic010_GetSpellPlay(arg1, (u8 *)ctx, &work, work.unk3C) < 0) {
+    if (TaLogic010_GetSpellPlay(nSide, (u8 *)ctx, &work, work.unk3C) < 0) {
         return -1;
     }
-    res = TaLogic010_GetSummonPiece(arg1, kind, &work, ret);
+    res = TaLogic010_GetSummonPiece(nSide, kind, &work, ret);
     if (res < 0) {
         return -1;
     }
@@ -2471,7 +2527,8 @@ s32 TaLogic_GetMinimumTask_Summon_0013AB70(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-s32 TaLogic010_IsHandPlay(s32 arg0, void *arg1) {
+/* Whether side `nSide` should play from its hand this turn (and what, into `pInput`). */
+s32 TaLogic010_IsHandPlay(s32 nSide, void *pInput) {
     extern s32 TaLogic_GetUnitNum();
     extern s32 SzDuel_GetUnitCurseRest();
     s32 cards[8];
@@ -2483,122 +2540,126 @@ s32 TaLogic010_IsHandPlay(s32 arg0, void *arg1) {
     s32 i;
     s32 result;
 
-    status0 = TaLogic_GetUnitNum(arg0, 0);
-    status1 = TaLogic_GetUnitNum(arg0, 1);
-    if (arg1 == NULL) {
+    status0 = TaLogic_GetUnitNum(nSide, 0);
+    status1 = TaLogic_GetUnitNum(nSide, 1);
+    if (pInput == NULL) {
         return -1;
     }
-    TaHand_GetNextHand(arg0, cards);
+    TaHand_GetNextHand(nSide, cards);
     if (status0 == 5) {
-        if (TaLogic010_GetSpellPlay(arg0, work, arg1, 999) >= 0) {
+        if (TaLogic010_GetSpellPlay(nSide, work, pInput, 999) >= 0) {
             return 1;
         }
         return -1;
     }
     if (status1 == 5) {
         s32 j;
-        for (j = 0; j < TaHand_GetNextHandNum(arg0); j++) {
+        for (j = 0; j < TaHand_GetNextHandNum(nSide); j++) {
             if ((TaHand_GetCardKind(cards[j]) >> 5) == 0 &&
-                TaHand_IsCardSummon2(arg0, cards[j]) == 1) {
-                SzDuel_InitCardInfo(arg1, cards[j]);
+                TaHand_IsCardSummon2(nSide, cards[j]) == 1) {
+                SzDuel_InitCardInfo(pInput, cards[j]);
                 return 0;
             }
         }
         return -1;
     }
-    if (TaLogic010_GetSpecCardPlay(arg0, work, arg1, 0x348) >= 0) {
-        if (TaLogic010_IsDoCerem(arg0, 0x348) == 1) {
+    if (TaLogic010_GetSpecCardPlay(nSide, work, pInput, 0x348) >= 0) {
+        if (TaLogic010_IsDoCerem(nSide, 0x348) == 1) {
             return 2;
         }
     }
-    if (TaLogic010_GetUseThunderBolt(arg0) >= 0) {
-        if (TaLogic010_GetSpecCardPlay(arg0, work, arg1, 0x2BC) >= 0) {
+    if (TaLogic010_GetUseThunderBolt(nSide) >= 0) {
+        if (TaLogic010_GetSpecCardPlay(nSide, work, pInput, 0x2BC) >= 0) {
             return 2;
         }
     }
     categoryIndex = 0;
-    if (categoryIndex < TaHand_GetNextHandNum(arg0)) {
+    if (categoryIndex < TaHand_GetNextHandNum(nSide)) {
         categoryCard = cards;
         do {
             if (SzDuel_Kind2Type(TaHand_GetCardKind(*categoryCard) >> 5) == 2) {
-                SzDuel_InitCardInfo(arg1, cards[categoryIndex]);
+                SzDuel_InitCardInfo(pInput, cards[categoryIndex]);
                 return 1;
             }
             categoryCard++;
             categoryIndex++;
-        } while (categoryIndex < TaHand_GetNextHandNum(arg0));
+        } while (categoryIndex < TaHand_GetNextHandNum(nSide));
     }
     for (i = 0; i < 11; i++) {
-        if (SzDuel_GetUnitCurseRest(arg0, i) != 0 &&
-            TaLogic010_GetSpecCardPlay(arg0, work, arg1, 0x31C) >= 0) {
+        if (SzDuel_GetUnitCurseRest(nSide, i) != 0 &&
+            TaLogic010_GetSpecCardPlay(nSide, work, pInput, 0x31C) >= 0) {
             return 2;
         }
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if ((TaHand_GetCardKind(cards[i]) >> 5) == 0 &&
-            TaHand_IsCardSummon2(arg0, cards[i]) == 1) {
-            SzDuel_InitCardInfo(arg1, cards[i]);
+            TaHand_IsCardSummon2(nSide, cards[i]) == 1) {
+            SzDuel_InitCardInfo(pInput, cards[i]);
             return 0;
         }
     }
-    result = TaLogic010_GetSpellPlay(arg0, work, arg1, 999);
+    result = TaLogic010_GetSpellPlay(nSide, work, pInput, 999);
     if (result >= 0) {
         return result;
     }
     return -1;
 }
 
-s32 TaLogic010_GetSpecCardPlay(s32 arg0, void *arg1, void *arg2, s32 arg3) {
+/* Whether side `nSide` holds card `nCardNo` and can summon it (its slot into `bCombo`, the card into `pCardInfo`);
+   returns its kind group or -1. */
+s32 TaLogic010_GetSpecCardPlay(s32 nSide, void *bCombo, void *pCardInfo, s32 nCardNo) {
     s32 entries[8];
     s32 i;
     s32 *entry;
 
-    TaHand_GetNextHand(arg0, entries);
+    TaHand_GetNextHand(nSide, entries);
     i = 0;
-    if (0 < TaHand_GetNextHandNum(arg0)) {
+    if (0 < TaHand_GetNextHandNum(nSide)) {
         entry = entries;
         do {
-            if ((arg3 & 0xFFFF) == *entry && TaHand_IsCardSummon2(arg0, *entry) == 1) {
-                *((u8 *)arg1 + 6) = i;
-                SzDuel_InitCardInfo(arg2, entries[i]);
+            if ((nCardNo & 0xFFFF) == *entry && TaHand_IsCardSummon2(nSide, *entry) == 1) {
+                *((u8 *)bCombo + 6) = i;
+                SzDuel_InitCardInfo(pCardInfo, entries[i]);
                 return TaHand_GetCardKind(entries[i]) >> 5;
             }
             entry++;
             i++;
-        } while (i < TaHand_GetNextHandNum(arg0));
+        } while (i < TaHand_GetNextHandNum(nSide));
     }
     return -1;
 }
 
-s32 TaLogic010_GetSpellPlay(s32 arg0, u8 *arg1, void *arg2, s32 arg3) {
+/* Whether side `nSide` plays a magic or ritual card from its hand now (its slot into `bCombo`, the card into
+   `pCardInfo`). */
+s32 TaLogic010_GetSpellPlay(s32 nSide, u8 *bCombo, void *pCardInfo, s32 nMode) {
     s32 buf[8];
     s32 i;
 
-    TaHand_GetNextHand(arg0, buf);
-    if (arg2 == NULL) {
+    TaHand_GetNextHand(nSide, buf);
+    if (pCardInfo == NULL) {
         return -1;
     }
     for (i = 0; i < 5; i++) {
-        arg1[i + 6] = 0xFF;
+        bCombo[i + 6] = 0xFF;
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
-        if (arg3 == buf[i] && arg3 != 999) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
+        if (nMode == buf[i] && nMode != 999) {
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if ((TaHand_GetCardKind(buf[i]) >> 5) != 0 && (TaHand_GetCardKind(buf[i]) >> 5) != 2) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if ((TaHand_GetCardKind(buf[i]) >> 5) != 0) {
-            arg1[6] = i;
-            SzDuel_InitCardInfo(arg2, buf[i]);
+            bCombo[6] = i;
+            SzDuel_InitCardInfo(pCardInfo, buf[i]);
             return 1;
         }
     }
@@ -2619,7 +2680,8 @@ typedef struct Sprite_0013B420 {
 } Sprite_0013B420;
 
 
-s32 TaLogic010_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
+/* Fills hand combination `bCombo` for side `nSide`: the best fusion or equip chain, its card into `pCardInfo`. */
+s32 TaLogic010_SetComboQue(s32 nSide, u8 *bCombo, void *pCardInfo) {
     u16 *nodes[8];
     s32 entries[7];
     s16 a;
@@ -2629,18 +2691,18 @@ s32 TaLogic010_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
     s32 value;
     s32 best;
 
-    if (arg2 == NULL) {
+    if (pCardInfo == NULL) {
         return -1;
     } else {
         s32 top;
         s32 *entry;
         u16 **node;
 
-        TaHand_GetNextHand(arg0, entries);
+        TaHand_GetNextHand(nSide, entries);
         best = -1;
         top = -1;
         i = 0;
-        if (i < TaHand_GetNextHandNum(arg0)) {
+        if (i < TaHand_GetNextHandNum(nSide)) {
             entry = entries;
             node = nodes;
             do {
@@ -2649,16 +2711,16 @@ s32 TaLogic010_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 card = *entry;
                 *node = NULL;
                 if ((TaHand_GetCardKind(card) >> 5) == 0) {
-                    *node = TaLogic_GetFusionTree(arg0, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
+                    *node = TaLogic_GetFusionTree(nSide, (struct TreeTag *)*node, i & 0xFF, card & 0xFFFF, 0, (u16 *)&a, (u16 *)&b);
                     *node = TaLogic_GetFusionRes(*node);
-                    value = TaLogic_GetEnchantQue(arg0, *node, 0, 0);
-                    if (TaHand_IsCardSummon2(arg0, card) == 1) {
+                    value = TaLogic_GetEnchantQue(nSide, *node, 0, 0);
+                    if (TaHand_IsCardSummon2(nSide, card) == 1) {
                         if (best < value) {
-                            TaLogic_ConvEmptyCombo_0013B600(arg0, *node, entries);
-                            TaLogic_CopyArray((u8 *)*node + 2, arg1 + 6);
-                            SzDuel_InitCardInfo(arg2, **node);
-                            ((Sprite_0013B420 *)arg2)->x = (value >> 16) - (((Sprite_0013B420 *)arg2)->info->x & 0x1FFF);
-                            ((Sprite_0013B420 *)arg2)->y = (value & 0xFFFF) - (((Sprite_0013B420 *)arg2)->info->y & 0x1FFF);
+                            TaLogic_ConvEmptyCombo_0013B600(nSide, *node, entries);
+                            TaLogic_CopyArray((u8 *)*node + 2, bCombo + 6);
+                            SzDuel_InitCardInfo(pCardInfo, **node);
+                            ((Sprite_0013B420 *)pCardInfo)->x = (value >> 16) - (((Sprite_0013B420 *)pCardInfo)->info->x & 0x1FFF);
+                            ((Sprite_0013B420 *)pCardInfo)->y = (value & 0xFFFF) - (((Sprite_0013B420 *)pCardInfo)->info->y & 0x1FFF);
                             best = value;
                             if (top < value) {
                                 top = value;
@@ -2671,7 +2733,7 @@ s32 TaLogic010_SetComboQue(s32 arg0, u8 *arg1, void *arg2) {
                 entry++;
                 node++;
                 i++;
-            } while (i < TaHand_GetNextHandNum(arg0));
+            } while (i < TaHand_GetNextHandNum(nSide));
         }
         return top;
     }
@@ -2682,8 +2744,9 @@ typedef struct {
     u8 values[5];
 } Info_0013B600;
 
-void TaLogic_ConvEmptyCombo_0013B600(s32 arg0, void *arg1, s32 *arg2) {
-    Info_0013B600 *info = arg1;
+/* Fills an empty combination: the hand card side `nSide` can summon with the best attack plus defence. */
+void TaLogic_ConvEmptyCombo_0013B600(s32 nSide, void *pCardInfo, s32 *pResult) {
+    Info_0013B600 *info = pCardInfo;
     u8 buf[5];
     s32 count;
     s32 i;
@@ -2693,19 +2756,19 @@ void TaLogic_ConvEmptyCombo_0013B600(s32 arg0, void *arg1, s32 *arg2) {
     extern u32 TaHand_GetCardAPDP();
 
     if (info != NULL) {
-        level = TaHand_GetCardSummonCost2(info->id, arg0);
+        level = TaHand_GetCardSummonCost2(info->id, nSide);
         for (i = 0; i < 5; i++) {
             buf[i] = 0xFF;
         }
-        for (i = 0, count = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        for (i = 0, count = 0; i < TaHand_GetNextHandNum(nSide); i++) {
             if ((u8)TaLogic_IsUseHandInCombo(i, info->values) == 0) {
                 buf[count++] = i;
             }
         }
         if (count != 0) {
             for (i = 0; i < (u8)TaLogic_GetArrayLength(buf); i++) {
-                card = arg2[buf[i]];
-                if (card != 0x3E7 && TaLogic010_IsRefuseEmptyCombo(card) == 0 && level >= TaHand_GetCardSummonCost2(card, arg0)) {
+                card = pResult[buf[i]];
+                if (card != 0x3E7 && TaLogic010_IsRefuseEmptyCombo(card) == 0 && level >= TaHand_GetCardSummonCost2(card, nSide)) {
                     cost = TaHand_GetCardAPDP(card);
                     if ((cost & 0xFFFF) + (cost >> 16) * 2 < 0xFA1 && TaHand_IsCardEffect(card) == 2 &&
                         (u16)TaLogic_GetHandFusion(info->id, (u16)card) == 0x3E7) {
@@ -2717,11 +2780,12 @@ void TaLogic_ConvEmptyCombo_0013B600(s32 arg0, void *arg1, s32 *arg2) {
     }
 }
 
-s32 TaLogic010_IsRefuseEmptyCombo(s32 arg0) {
-    if ((TaHand_GetCardKind(arg0) >> 5) != 0) {
+/* Whether this duelist keeps card `nCardNo` out of a summon (it is wanted for an equip). */
+s32 TaLogic010_IsRefuseEmptyCombo(s32 nCardNo) {
+    if ((TaHand_GetCardKind(nCardNo) >> 5) != 0) {
         return 1;
     }
-    if (TaHand_IsCardEffect(arg0) == 1) {
+    if (TaHand_IsCardEffect(nCardNo) == 1) {
         return 1;
     }
     return 0;
@@ -2737,9 +2801,11 @@ typedef struct {
     u16 id;
 } Obj2_0013B840;
 
-s32 TaLogic010_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
-    Obj1_0013B840 *o1 = arg1;
-    Obj2_0013B840 *o2 = arg2;
+/* Fills hand combination `bCombo` for side `nSide` with this duelist's special combination, its card into
+   `pCardInfo`. */
+s32 TaLogic010_SetSpecialComboQue(s32 nSide, void *bCombo, void *pCardInfo) {
+    Obj1_0013B840 *o1 = bCombo;
+    Obj2_0013B840 *o2 = pCardInfo;
     s32 list[8];
     s32 i;
     u8 k;
@@ -2747,20 +2813,20 @@ s32 TaLogic010_SetSpecialComboQue(s32 arg0, void *arg1, void *arg2) {
     for (i = 0; i < 5; i++) {
         o1->slot[i] = 0xFF;
     }
-    TaHand_GetNextHand(arg0, list);
+    TaHand_GetNextHand(nSide, list);
     if (o2 == NULL) {
         return -1;
     }
-    for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+    for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
         if (i != o1->slot[0] && i != o1->slot[1]) {
-            if (o2->id == list[i] && TaHand_IsCardSummon2(arg0, list[i]) == 1) {
+            if (o2->id == list[i] && TaHand_IsCardSummon2(nSide, list[i]) == 1) {
                 o1->slot[0] = i;
             }
         }
     }
     k = 1;
     if ((TaHand_GetCardKind(list[o1->slot[0]]) >> 5) == 0) {
-        for (i = 0; i < TaHand_GetNextHandNum(arg0); i++) {
+        for (i = 0; i < TaHand_GetNextHandNum(nSide); i++) {
             if (i != o1->slot[0] && i != o1->slot[1]) {
                 if (Ta_GetHandEnchant(list[o1->slot[0]], list[i]) >= 0 && (TaHand_GetCardKind(list[i]) >> 5) == 2) {
                     if (list[i] != 0x31B && list[i] != 0x31C) {
@@ -2779,7 +2845,8 @@ typedef struct Nibbles_0013BA30 {
     u8 high : 4;
 } Nibbles_0013BA30;
 
-s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
+/* The square side `nSide` summons a card of kind `sKind` to. */
+s32 TaLogic010_GetSummonPiece(s32 nSide, u8 sKind, void *pInput, s32 nMode) {
     extern s32 TaLogic_IsUnitWin4();
     extern s32 TaLogic_GetInvadeRoot2(s32, s32, s32, s32, s32, s32, s32, s32, u8, u16);
     extern s32 TaLogic_GetRoot2(s32, s32, s32, s32, s32, s32, u16, u8);
@@ -2791,7 +2858,7 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
     s32 value;
     u8 mode;
 
-    if (arg2 == NULL) {
+    if (pInput == NULL) {
         return -1;
     }
     {
@@ -2805,9 +2872,9 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
         initIndex++;
     } while (initIndex < 12);
     }
-    mode = *((u8 *)arg2 + 0x3E) >> 5;
+    mode = *((u8 *)pInput + 0x3E) >> 5;
     if (mode == 0) {
-        if (arg3 >= 0) {
+        if (nMode >= 0) {
             s32 candidate;
             s32 candidateY;
             s32 candidateX;
@@ -2815,31 +2882,31 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
             s32 score;
             bestScore = 255;
             bestPosition = 65535;
-            value = SzDuel_GetUnitLoc(arg3 >> 8, arg3 & 255);
+            value = SzDuel_GetUnitLoc(nMode >> 8, nMode & 255);
             index = 0;
             transformedY = value >> 8;
             transformedX = value & 255;
             do {
-                candidate = Ta_GetSommonPiecePreference(arg0, index);
+                candidate = Ta_GetSommonPiecePreference(nSide, index);
                 if (candidate >= 0) {
                     candidateX = candidate & 255;
                     candidateY = candidate >> 8;
                     if (SzDuel_GetField(candidateX, candidateY) != 8 &&
                         (SzDuel_GetField(candidateX, candidateY) != 9 ||
-                         Ta_IsVirus_Chk3(arg2, candidateX, candidateY) != 1) &&
+                         Ta_IsVirus_Chk3(pInput, candidateX, candidateY) != 1) &&
                         SzDuel_GetMapUnit(candidateX, candidateY) == 0) {
-                        if (TaLogic_IsUnitWin4((s32)arg2, arg3, TaLogic_GetWarnHideLvl_0013DA70(arg0),
+                        if (TaLogic_IsUnitWin4((s32)pInput, nMode, TaLogic_GetWarnHideLvl_0013DA70(nSide),
                                          transformedX, transformedY, 0) > 0) {
-                            score = TaLogic_GetInvadeRoot2((s32)arg2, (s32)path,
+                            score = TaLogic_GetInvadeRoot2((s32)pInput, (s32)path,
                                                        candidateX, candidateY,
                                                        transformedX, transformedY,
-                                                       arg3, 0, 2,
-                                                       TaLogic_GetWarnHideLvl_0013DA70(arg0));
+                                                       nMode, 0, 2,
+                                                       TaLogic_GetWarnHideLvl_0013DA70(nSide));
                         } else {
-                            score = TaLogic_GetRoot2((s32)arg2, (s32)path,
+                            score = TaLogic_GetRoot2((s32)pInput, (s32)path,
                                                        candidateX, candidateY,
                                                        transformedX, transformedY,
-                                                       arg3, 2);
+                                                       nMode, 2);
                         }
                         if (TaLogic_GetMinGoalCount((u8 *)path) > 0 && score < bestScore) {
                             bestScore = score;
@@ -2864,17 +2931,17 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
         s32 minY;
         s32 minX;
         bestDistance = 14;
-        arg3 = 0;
+        nMode = 0;
         i = 0;
         do {
-            position = Ta_GetSommonPiecePreference(arg0, i);
+            position = Ta_GetSommonPiecePreference(nSide, i);
             if (position >= 0) {
                 x = position & 255;
                 y = position >> 8;
                 if (SzDuel_GetField(x, y) != 8 &&
-                    (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                    (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(pInput, x, y) != 1) &&
                     SzDuel_GetMapUnitID(x, y) < 0) {
-                    value = TaLogic010_GetEmptyLine(arg0);
+                    value = TaLogic010_GetEmptyLine(nSide);
                     if (y < (value >> 8)) {
                         minY = y;
                     } else {
@@ -2897,7 +2964,7 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
                     }
                     value = (maxX - minX) + (maxY - minY);
                     if (value < bestDistance && value >= 0) {
-                        arg3 = position;
+                        nMode = position;
                         bestDistance = value;
                     }
                 }
@@ -2905,10 +2972,10 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
             i++;
         } while (i < 8);
         if (bestDistance < 14) {
-            return arg3;
+            return nMode;
         }
-        arg3 = -1;
-        return arg3;
+        nMode = -1;
+        return nMode;
         }
     }
     {
@@ -2919,14 +2986,14 @@ s32 TaLogic010_GetSummonPiece(s32 arg0, u8 arg1, void *arg2, s32 arg3) {
     best = -1;
     i = 0;
     do {
-        arg3 = Ta_GetSommonPiecePreference(arg0, i);
-        if (arg3 >= 0) {
-            x = arg3 & 255;
-            y = arg3 >> 8;
+        nMode = Ta_GetSommonPiecePreference(nSide, i);
+        if (nMode >= 0) {
+            x = nMode & 255;
+            y = nMode >> 8;
             if (SzDuel_GetField(x, y) != 8 &&
-                (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(arg2, x, y) != 1) &&
+                (SzDuel_GetField(x, y) != 9 || Ta_IsVirus_Chk3(pInput, x, y) != 1) &&
                 SzDuel_GetMapUnitID(x, y) < 0 && y < 8) {
-                best = arg3;
+                best = nMode;
             }
         }
         i++;
@@ -2955,8 +3022,10 @@ typedef struct Output_0013BE60 {
 } Output_0013BE60;
 
 
-s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, u8 arg3) {
-    Output_0013BE60 *output = arg2;
+/* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
+   for the unit's first-choice task). */
+s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+    Output_0013BE60 *output = pInput;
     s32 target;
     u8 endX;
     u8 extra;
@@ -2968,7 +3037,7 @@ s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, 
     extern s32 TaLogic_IsOpenUnit_0013D3D0();
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
 
-    target = SzDuel_GetUnitLoc(*arg0 >> 8, *arg0 & 0xFF);
+    target = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
     p = nibbles;
     i = 0;
     do {
@@ -2990,32 +3059,32 @@ s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, 
         s32 limit;
         u16 initialScore;
 
-        initialScore = TaLogic_GetWarnHideLvl_0013DA70(arg1);
+        initialScore = TaLogic_GetWarnHideLvl_0013DA70(nSide);
         centerX = target & 0xFF;
         centerY = target >> 8;
-        if (TaLogic_GetUnitWarning(centerX, centerY, *arg0, 2, initialScore, 0) == 0) {
-            output->position = *arg0;
+        if (TaLogic_GetUnitWarning(centerX, centerY, *pTask, 2, initialScore, 0) == 0) {
+            output->position = *pTask;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_IsOpenUnit_0013D3D0(*arg0 >> 8, *arg0 & 0xFF, arg0);
-            TaLogic_InitRogicControl(arg0, arg3);
+            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_0013D3D0(*pTask >> 8, *pTask & 0xFF, pTask);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
-        if ((range = GetMoveRev(SzDuel_GetUnit(*arg0 >> 8, *arg0 & 0xFF), centerX, centerY)) == 0) {
-            output->position = *arg0;
+        if ((range = GetMoveRev(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), centerX, centerY)) == 0) {
+            output->position = *pTask;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_IsOpenUnit_0013D3D0(*arg0 >> 8, *arg0 & 0xFF, arg0);
-            TaLogic_InitRogicControl(arg0, arg3);
+            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_0013D3D0(*pTask >> 8, *pTask & 0xFF, pTask);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
-        if (SzDuel_GetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 4) != 0) {
-            if ((SzDuel_GetUnitKind(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 1 ||
-                (SzDuel_GetUnitKind(*arg0 >> 8, *arg0 & 0xFF) >> 5) == 5) {
-                SzDuel_SetUnitStatus(*arg0 >> 8, *arg0 & 0xFF, 0, 1);
-                output->position = *arg0;
+        if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
+                output->position = *pTask;
                 output->action = 0xE;
                 return 0;
             }
@@ -3031,8 +3100,8 @@ s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, 
             limit = 6;
         }
         maxY = (u8)limit;
-        if ((*arg0 & 0xFF) == 0) {
-            extra = (u8)TaLogic_IsAttackedNow(*arg0 >> 8, *arg0 & 0xFF, 0);
+        if ((*pTask & 0xFF) == 0) {
+            extra = (u8)TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 0);
         } else {
             extra = 0;
         }
@@ -3044,9 +3113,9 @@ s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, 
                     ((y < centerY ? centerY : y) - (centerY < y ? centerY : y))) > (range & 0xF)) {
                     continue;
                 }
-                if (TaLogic_IsRunPassRoot(*arg0 >> 8, *arg0 & 0xFF, centerX, centerY, x, y, arg0, extra) == 1) {
-                    if (TaLogic_IsAttackedNow2(*arg0 >> 8, *arg0 & 0xFF, x, y, 0) == 0 || (u8)*arg0 == 0) {
-                        candidateScore = TaLogic_GetUnitWarning(x, y, *arg0, 2, (u16)TaLogic_GetWarnHideLvl_0013DA70(arg1), 0);
+                if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, centerX, centerY, x, y, pTask, extra) == 1) {
+                    if (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 0) == 0 || (u8)*pTask == 0) {
+                        candidateScore = TaLogic_GetUnitWarning(x, y, *pTask, 2, (u16)TaLogic_GetWarnHideLvl_0013DA70(nSide), 0);
                         if (candidateScore < bestScore) {
                             bestScore = candidateScore;
                             best = packedY | x;
@@ -3060,23 +3129,23 @@ s32 TaLogic_GetMinimumTask_RunMission_0013BE60(u16 *arg0, s32 arg1, void *arg2, 
             }
         }
         if (best != 0xFF) {
-            output->position = *arg0;
+            output->position = *pTask;
             output->action = 6;
             output->destination = best;
             if (best == target) {
-                output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
             } else {
-                output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 0, 0);
+                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 0, 0);
             }
-            output->special = TaLogic_IsOpenUnit_0013D3D0(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            output->special = TaLogic_IsOpenUnit_0013D3D0(*pTask >> 8, *pTask & 0xFF, pTask);
         } else {
-            output->position = *arg0;
+            output->position = *pTask;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*arg0 >> 8, *arg0 & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_IsOpenUnit_0013D3D0(*arg0 >> 8, *arg0 & 0xFF, arg0);
+            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_IsOpenUnit_0013D3D0(*pTask >> 8, *pTask & 0xFF, pTask);
         }
-        TaLogic_InitRogicControl(arg0, arg3);
+        TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     }
 }
@@ -3103,6 +3172,7 @@ typedef struct Output_0013C430 {
 } Output_0013C430;
 
 
+/* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 destination_0013C430(void *src, s32 mode) {
     if (mode == 1) {
         return (u16)(((Input_0013C430 *)src)->destination >> 16);
@@ -3110,10 +3180,12 @@ static inline u32 destination_0013C430(void *src, s32 mode) {
     return *(u16 *)((u8 *)src + 8);
 }
 
+/* The larger of the two values. */
 static inline s32 maximum_0013C430(s32 a, s32 b) {
     return b < a ? a : b;
 }
 
+/* Whether the first square is nearer to (x, y) than the second. */
 static inline s32 closer_0013C430(Coord_0013C430 *current, Coord_0013C430 *best, s32 x, s32 y) {
     s32 bestLowY = best->y < y ? best->y : y;
     s32 bestHighY = maximum_0013C430(best->y, y);
@@ -3127,7 +3199,9 @@ static inline s32 closer_0013C430(Coord_0013C430 *current, Coord_0013C430 *best,
            (bestHighX - bestLowX) + (bestHighY - bestLowY);
 }
 
-s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2, u8 arg3) {
+/* The task of a unit attacking (task `pTask`): its path to the goal, into `pInput`; -1 when it has none (`fFirst`
+   = 1 for the unit's first-choice task). */
+s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_IsOpenUnit_0013D3D0();
     extern void TaLogic_GetInvadeRoot();
     s32 source;
@@ -3139,21 +3213,21 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
     s32 packedDestination;
     s32 originalFlag;
     s32 selected;
-    Input_0013C430 *input = arg0;
-    Output_0013C430 *output = arg2;
+    Input_0013C430 *input = pTask;
+    Output_0013C430 *output = pInput;
 
     {
-    u32 low = destination_0013C430(arg0, arg3);
-    u32 high = destination_0013C430(arg0, arg3);
+    u32 low = destination_0013C430(pTask, fFirst);
+    u32 high = destination_0013C430(pTask, fFirst);
     if (SzDuel_GetUnit(high >> 8, low & 0xFF) == 0) {
-        TaLogic_InitRogicControl(arg0, 1);
+        TaLogic_InitRogicControl(pTask, 1);
         return -1;
     } else {
-    originalFlag = TaLogic_IsOpenUnit_0013D3D0(input->position >> 8, input->position & 0xFF, arg0);
+    originalFlag = TaLogic_IsOpenUnit_0013D3D0(input->position >> 8, input->position & 0xFF, pTask);
     source = SzDuel_GetUnitLoc(input->position >> 8, input->position & 0xFF);
     {
-        u32 low = destination_0013C430(arg0, arg3);
-        u32 high = destination_0013C430(arg0, arg3);
+        u32 low = destination_0013C430(pTask, fFirst);
+        u32 high = destination_0013C430(pTask, fFirst);
         packedDestination = SzDuel_GetUnitLoc(high >> 8, low & 0xFF);
     }
     {
@@ -3174,7 +3248,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
         output->position = input->position;
         output->action = 6;
         output->destination = source;
-        pathCost = TaLogic_GetUnitWarning(sourceX, sourceY, arg1, 2, 0, (u8)TaLogic_GetWarnHideLvl_0013DA70(arg1));
+        pathCost = TaLogic_GetUnitWarning(sourceX, sourceY, nSide, 2, 0, (u8)TaLogic_GetWarnHideLvl_0013DA70(nSide));
         if (pathCost >= SzDuel_GetUnitAP(input->position >> 8, input->position & 0xFF, 0)) {
             output->result = TaLogic_IsDefStyleUnit(input->position >> 8, input->position & 0xFF,
                                           output->destination, 1, 0);
@@ -3182,7 +3256,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
             output->result = TaLogic_IsDefStyleUnit(input->position >> 8, input->position & 0xFF,
                                           output->destination, 0, 0);
         }
-        TaLogic_InitRogicControl(arg0, arg3);
+        TaLogic_InitRogicControl(pTask, fFirst);
     } else {
         s32 position = input->position;
         s32 destinationX;
@@ -3193,12 +3267,12 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
         s32 positionY;
         s32 positionX;
 
-        limit = (u16)TaLogic_GetWarnHideLvl_0013DA70(arg1);
+        limit = (u16)TaLogic_GetWarnHideLvl_0013DA70(nSide);
         positionY = position >> 8;
         positionX = position & 0xFF;
         destinationX = packedDestination & 0xFF;
         TaLogic_GetInvadeRoot(positionY, positionX, points, sourceX, sourceY,
-                      destinationX, packedDestination >>= 8, destination_0013C430(arg0, arg3),
+                      destinationX, packedDestination >>= 8, destination_0013C430(pTask, fFirst),
                       0, 30, limit);
         count = TaLogic_GetMinGoalCount((u8 *)points);
         selected = 0xFF;
@@ -3216,8 +3290,8 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
                 } else {
                     s32 candidate;
                     point = &points[i];
-                    candidate = TaLogic_GetUnitWarning(point->x, point->y, arg1, 2, 0,
-                                              (u8)TaLogic_GetWarnHideLvl_0013DA70(arg1));
+                    candidate = TaLogic_GetUnitWarning(point->x, point->y, nSide, 2, 0,
+                                              (u8)TaLogic_GetWarnHideLvl_0013DA70(nSide));
                     if (candidate < score) {
                         score = candidate;
                         selected = i;
@@ -3236,7 +3310,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
             output->flag = originalFlag;
             output->result = TaLogic_IsDefStyleUnit(input->position >> 8, input->position & 0xFF,
                                           output->destination, 0, 0);
-            TaLogic_InitRogicControl(arg0, arg3);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
             if (selected != 0xFF) {
@@ -3253,7 +3327,7 @@ s32 TaLogic_GetMinimumTask_AtkMission_0013C430(void *arg0, s32 arg1, void *arg2,
                 output->flag = flag;
                 output->result = TaLogic_IsDefStyleUnit(input->position >> 8, input->position & 0xFF,
                                               output->destination, 0, 0);
-                TaLogic_InitRogicControl(arg0, arg3);
+                TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             }
     }
@@ -3288,27 +3362,34 @@ typedef struct Output_0013CA10 {
 } Output_0013CA10;
 
 
+/* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 target_0013CA10(void *unit, s32 side) {
     return side == 1 ? (u32)(u16)(((Unit_0013CA10 *)unit)->target.packed >> 16) : (u32)((Unit_0013CA10 *)unit)->target.low;
 }
 
+/* The smaller of the two values. */
 static inline u32 minY_0013CA10(void *unit, s32 side, u8 coord) {
     return coord < (target_0013CA10(unit, side) >> 8) ? coord : (target_0013CA10(unit, side) >> 8);
 }
 
+/* The larger of the two values. */
 static inline u32 maxY_0013CA10(void *unit, s32 side, u8 coord) {
     return (target_0013CA10(unit, side) >> 8) < coord ? coord : (target_0013CA10(unit, side) >> 8);
 }
 
+/* The smaller of the two values. */
 static inline u32 minX_0013CA10(void *unit, s32 side, u8 coord) {
     return coord < (target_0013CA10(unit, side) & 0xFF) ? coord : (target_0013CA10(unit, side) & 0xFF);
 }
 
+/* The larger of the two values. */
 static inline u32 maxX_0013CA10(void *unit, s32 side, u8 coord) {
     return (target_0013CA10(unit, side) & 0xFF) < coord ? coord : (target_0013CA10(unit, side) & 0xFF);
 }
 
-s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2, u8 arg3, u8 arg4) {
+/* The task of a unit moving to its goal (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's first-choice
+   task). */
+s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *pTask, s32 nSide, void *pInput, u8 fFirst, u8 nKind) {
     extern s32 TaLogic_IsOpenUnit_0013D3D0();
     extern s32 TaLogic_GetUnitWarning();
     extern void TaLogic_GetRoot();
@@ -3318,35 +3399,35 @@ s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2
     s32 cell;
     s32 count;
 
-    initial = SzDuel_GetUnitLoc(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF);
+    initial = SzDuel_GetUnitLoc(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF);
     {
     s32 bestScore;
     s32 best;
-    s32 side = arg3;
+    s32 side = fFirst;
     Coord_0013CA10 *candidate;
     s32 index;
-    if (target_0013CA10(arg0, side) == 0xFFFF) {
-        if (initial == target_0013CA10(arg0, side)) {
-            ((Output_0013CA10 *)arg2)->position = ((Unit_0013CA10 *)arg0)->position;
-            ((Output_0013CA10 *)arg2)->kind = 6;
-            ((Output_0013CA10 *)arg2)->target = initial;
-            ((Output_0013CA10 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, ((Output_0013CA10 *)arg2)->target, arg4, 0);
-            ((Output_0013CA10 *)arg2)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, arg0);
-            TaLogic_InitRogicControl(arg0, arg3);
+    if (target_0013CA10(pTask, side) == 0xFFFF) {
+        if (initial == target_0013CA10(pTask, side)) {
+            ((Output_0013CA10 *)pInput)->position = ((Unit_0013CA10 *)pTask)->position;
+            ((Output_0013CA10 *)pInput)->kind = 6;
+            ((Output_0013CA10 *)pInput)->target = initial;
+            ((Output_0013CA10 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, ((Output_0013CA10 *)pInput)->target, nKind, 0);
+            ((Output_0013CA10 *)pInput)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, pTask);
+            TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
     }
 
-    if (SzDuel_GetUnitStatus(((Unit_0013CA10 *)arg0)->position >> 8,
-                      ((Unit_0013CA10 *)arg0)->position & 0xFF, 4) != 0) {
-        if ((SzDuel_GetUnitKind(((Unit_0013CA10 *)arg0)->position >> 8,
-                          ((Unit_0013CA10 *)arg0)->position & 0xFF) >> 5) == 1 ||
-            (SzDuel_GetUnitKind(((Unit_0013CA10 *)arg0)->position >> 8,
-                          ((Unit_0013CA10 *)arg0)->position & 0xFF) >> 5) == 5) {
-            SzDuel_SetUnitStatus(((Unit_0013CA10 *)arg0)->position >> 8,
-                          ((Unit_0013CA10 *)arg0)->position & 0xFF, 0, 1);
-            ((Output_0013CA10 *)arg2)->position = ((Unit_0013CA10 *)arg0)->position;
-            ((Output_0013CA10 *)arg2)->kind = 14;
+    if (SzDuel_GetUnitStatus(((Unit_0013CA10 *)pTask)->position >> 8,
+                      ((Unit_0013CA10 *)pTask)->position & 0xFF, 4) != 0) {
+        if ((SzDuel_GetUnitKind(((Unit_0013CA10 *)pTask)->position >> 8,
+                          ((Unit_0013CA10 *)pTask)->position & 0xFF) >> 5) == 1 ||
+            (SzDuel_GetUnitKind(((Unit_0013CA10 *)pTask)->position >> 8,
+                          ((Unit_0013CA10 *)pTask)->position & 0xFF) >> 5) == 5) {
+            SzDuel_SetUnitStatus(((Unit_0013CA10 *)pTask)->position >> 8,
+                          ((Unit_0013CA10 *)pTask)->position & 0xFF, 0, 1);
+            ((Output_0013CA10 *)pInput)->position = ((Unit_0013CA10 *)pTask)->position;
+            ((Output_0013CA10 *)pInput)->kind = 14;
             return 0;
         }
     }
@@ -3362,13 +3443,13 @@ s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2
         } while (i < 12);
     }
 
-    cell = SzDuel_GetMapUnitID(target_0013CA10(arg0, side) & 0xFF, ((u32)target_0013CA10(arg0, side)) >> 8);
+    cell = SzDuel_GetMapUnitID(target_0013CA10(pTask, side) & 0xFF, ((u32)target_0013CA10(pTask, side)) >> 8);
     if (cell < 0) {
         cell = 0xFFFF;
     }
-    TaLogic_GetRoot(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF,
-                 coords, initial & 0xFF, initial >> 8, target_0013CA10(arg0, side) & 0xFF,
-                 ((u32)target_0013CA10(arg0, side)) >> 8, (u16)cell, 7);
+    TaLogic_GetRoot(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF,
+                 coords, initial & 0xFF, initial >> 8, target_0013CA10(pTask, side) & 0xFF,
+                 ((u32)target_0013CA10(pTask, side)) >> 8, (u16)cell, 7);
     count = TaLogic_GetMinGoalCount((u8 *)coords);
     {
         if (count > 0) {
@@ -3376,7 +3457,7 @@ s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2
         bestScore = 0xFFFF;
         for (index = 0; index < count; index++) {
                 if (SzDuel_GetMapUnit(candidate->x, candidate->y) == 0) {
-                    s32 score = TaLogic_GetUnitWarning(candidate->x, candidate->y, arg1, 2, 0, (u8)TaLogic_GetWarnHideLvl_0013DA70(arg1));
+                    s32 score = TaLogic_GetUnitWarning(candidate->x, candidate->y, nSide, 2, 0, (u8)TaLogic_GetWarnHideLvl_0013DA70(nSide));
                     if (score < bestScore) {
                         bestScore = score;
                         best = index;
@@ -3394,17 +3475,17 @@ s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2
                         u32 currentY;
                         u32 currentX;
                         bestY = (u8)(&coords[best])->y;
-                        bestMinY = minY_0013CA10(arg0, side, bestY);
-                        bestMaxY = maxY_0013CA10(arg0, side, bestY);
+                        bestMinY = minY_0013CA10(pTask, side, bestY);
+                        bestMaxY = maxY_0013CA10(pTask, side, bestY);
                         bestX = (&coords[best])->x;
-                        bestMinX = minX_0013CA10(arg0, side, bestX);
-                        bestMaxX = maxX_0013CA10(arg0, side, bestX);
+                        bestMinX = minX_0013CA10(pTask, side, bestX);
+                        bestMaxX = maxX_0013CA10(pTask, side, bestX);
                         currentY = (u8)candidate->y;
-                        currentMinY = minY_0013CA10(arg0, side, currentY);
-                        currentMaxY = maxY_0013CA10(arg0, side, currentY);
+                        currentMinY = minY_0013CA10(pTask, side, currentY);
+                        currentMaxY = maxY_0013CA10(pTask, side, currentY);
                         currentX = candidate->x;
-                        currentMinX = minX_0013CA10(arg0, side, currentX);
-                        currentMaxX = maxX_0013CA10(arg0, side, currentX);
+                        currentMinX = minX_0013CA10(pTask, side, currentX);
+                        currentMaxX = maxX_0013CA10(pTask, side, currentX);
                         if ((currentMaxX - currentMinX) + (currentMaxY - currentMinY) < (bestMaxX - bestMinX) + (bestMaxY - bestMinY)) {
                             bestScore = score;
                             best = index;
@@ -3414,34 +3495,35 @@ s32 TaLogic_GetMinimumTask_MoveMission_0013CA10(void *arg0, s32 arg1, void *arg2
             candidate++;
         }
     } else {
-        ((Output_0013CA10 *)arg2)->position = ((Unit_0013CA10 *)arg0)->position;
-            ((Output_0013CA10 *)arg2)->kind = 6;
-            ((Output_0013CA10 *)arg2)->target = initial;
-            ((Output_0013CA10 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, ((Output_0013CA10 *)arg2)->target, arg4, 0);
-            ((Output_0013CA10 *)arg2)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, arg0);
-        TaLogic_InitRogicControl(arg0, arg3);
+        ((Output_0013CA10 *)pInput)->position = ((Unit_0013CA10 *)pTask)->position;
+            ((Output_0013CA10 *)pInput)->kind = 6;
+            ((Output_0013CA10 *)pInput)->target = initial;
+            ((Output_0013CA10 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, ((Output_0013CA10 *)pInput)->target, nKind, 0);
+            ((Output_0013CA10 *)pInput)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, pTask);
+        TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     }
 
         if (best != 0xFF) {
-            ((Output_0013CA10 *)arg2)->position = ((Unit_0013CA10 *)arg0)->position;
-            ((Output_0013CA10 *)arg2)->kind = 6;
-            ((Output_0013CA10 *)arg2)->target = (coords[best].y << 8) | coords[best].x;
-            ((Output_0013CA10 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, ((Output_0013CA10 *)arg2)->target, arg4, 0);
-            ((Output_0013CA10 *)arg2)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, arg0);
+            ((Output_0013CA10 *)pInput)->position = ((Unit_0013CA10 *)pTask)->position;
+            ((Output_0013CA10 *)pInput)->kind = 6;
+            ((Output_0013CA10 *)pInput)->target = (coords[best].y << 8) | coords[best].x;
+            ((Output_0013CA10 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, ((Output_0013CA10 *)pInput)->target, nKind, 0);
+            ((Output_0013CA10 *)pInput)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, pTask);
         } else {
-            ((Output_0013CA10 *)arg2)->position = ((Unit_0013CA10 *)arg0)->position;
-            ((Output_0013CA10 *)arg2)->kind = 6;
-            ((Output_0013CA10 *)arg2)->target = initial;
-            ((Output_0013CA10 *)arg2)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, ((Output_0013CA10 *)arg2)->target, arg4, 0);
-            ((Output_0013CA10 *)arg2)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)arg0)->position >> 8, ((Unit_0013CA10 *)arg0)->position & 0xFF, arg0);
+            ((Output_0013CA10 *)pInput)->position = ((Unit_0013CA10 *)pTask)->position;
+            ((Output_0013CA10 *)pInput)->kind = 6;
+            ((Output_0013CA10 *)pInput)->target = initial;
+            ((Output_0013CA10 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, ((Output_0013CA10 *)pInput)->target, nKind, 0);
+            ((Output_0013CA10 *)pInput)->value = TaLogic_IsOpenUnit_0013D3D0(((Unit_0013CA10 *)pTask)->position >> 8, ((Unit_0013CA10 *)pTask)->position & 0xFF, pTask);
         }
-        TaLogic_InitRogicControl(arg0, arg3);
+        TaLogic_InitRogicControl(pTask, fFirst);
     }
     }
     return 0;
 }
 
+/* Whether this duelist plays in its attacking mode this turn. */
 s32 TaLogic010_IsActiveMode(void) {
     if (TaLogic010_GetEmptyLine(SzDuel_GetTurnOwner()) < 0) {
         return 1;
@@ -3449,7 +3531,8 @@ s32 TaLogic010_IsActiveMode(void) {
     return 0;
 }
 
-s32 TaLogic010_GetUseThunderBolt(s32 arg0) {
+/* The opponent's strongest unit when it beats side `nSide`'s strongest (a Thunderbolt target), or -1. */
+s32 TaLogic010_GetUseThunderBolt(s32 nSide) {
     u16 buf[0x16];
     s32 i;
     s32 a;
@@ -3459,12 +3542,12 @@ s32 TaLogic010_GetUseThunderBolt(s32 arg0) {
     for (i = 0; i < 0x16; i++) {
         buf[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst2(arg0 == 0 ? 1 : 0, buf, 0x1D, 0, 0);
+    TaLogic_GetUnitCtlLst2(nSide == 0 ? 1 : 0, buf, 0x1D, 0, 0);
     a = TaLogic_GetMaxApUnit(buf);
     for (i = 0; i < 0x16; i++) {
         buf[i] = 0xFFFF;
     }
-    TaLogic_GetUnitCtlLst(arg0, buf, 0x1D, 1);
+    TaLogic_GetUnitCtlLst(nSide, buf, 0x1D, 1);
     b = TaLogic_GetMaxApUnit(buf);
     if (a >= 0) {
         if (b >= 0) {

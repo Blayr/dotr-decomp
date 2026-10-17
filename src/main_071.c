@@ -1,6 +1,6 @@
 #include "common.h"
 
-/* A random roll for the equips that work by chance. */
+/* One of six cards at random (ids 0x23, 0x4F, 0x2C, 0x5C, 0x17B, 0x18A): what card 0x17B's combination gives. */
 s32 TaEnc_GetRandomElf(void) {
     s32 roll;
 

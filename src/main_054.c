@@ -432,9 +432,10 @@ s32 SzFile_EntryGroup(s32 group, s32 callback) {
     return 0;
 }
 
-/* The record of read group `group`, or NULL. */
-void SzFile_InqGroup(void *group) {
-    SzFile_InqGroupX(group, 0);
+/* The record of read group `groupId`, or NULL (SzFile_InqGroupX's result is left in v0: declared void for the
+   match). */
+void SzFile_InqGroup(void *groupId) {
+    SzFile_InqGroupX(groupId, 0);
 }
 
 typedef struct Entry_001FFCC0 {

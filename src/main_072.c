@@ -274,7 +274,7 @@ s32 ConvUnitIDtoFlagList_OFF(u32 FlagLst, s32 nSide, s32 nID) {
     return temp_s2 | (FlagLst & Ta_ConvBitLengthToNumericLength(0xA - nID));
 }
 
-/* The number a bit-length stands for (2 to the power). */
+/* A mask of the low `bit` bits (2^bit - 1). */
 s32 Ta_ConvBitLengthToNumericLength(s32 bit) {
     extern s32 func_001A2858(s32, s32);
     extern s32 func_001A2EB0(s32);
@@ -1397,7 +1397,7 @@ s32 TaUtil_GetObjSideNum(void) {
     return 0;
 }
 
-/* Whether attribute `Attr1` beats attribute `Attr2` (the attribute wheel). */
+/* Attribute `Attr1` against `Attr2` on the attribute wheel: 1 wins, -1 loses, 0 neither. */
 s32 ChkAttrAdv(s32 Attr1, s32 Attr2) {
     switch (Attr1) {
     case 0:
@@ -1665,7 +1665,7 @@ s32 Ta_GetMaximumOrderUnitFromFlagList(s32 mask) {
     return bestPair;
 }
 
-/* The unit of flag list `eObj` with the lowest attack plus defence. */
+/* The units of flag list `eObj` tied at the lowest attack plus defence (a flag list). */
 u32 Ta_GetMinimumParamUnitFromFlagList(s32 eObj) {
     s32 i;
     s32 best;
@@ -2191,7 +2191,8 @@ typedef struct {
 } Card_00250430;
 
 
-/* Whether side `nSide` gets card `cNo` back from the graveyard (a recycle effect's roll). */
+/* Reincarnation: the card side `nSide` gets for giving up card `cNo` (a random card of a rolled nearby level;
+   0x334 if none). */
 s32 Ta_GetRecycle(s32 nSide, s32 cNo) {
     s32 list[0x356];
     Card_00250430 *card;
