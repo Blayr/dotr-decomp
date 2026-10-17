@@ -348,7 +348,7 @@ void TkCamp_Init(int mode)
         func_00233F50_b(3);
         DOTR_CAMP_ENTRY_WORK->byte_53b3 = 1;
         D_0034F6F8_21c510 = 0;
-        Rensyu_flg = 0;
+        practiceDuelFlag = 0;
         func_00217980_b(24, 0);
         break;
     case 1:
@@ -397,8 +397,8 @@ void TkCamp_Init(int mode)
             break;
         }
         flag = 0;
-        if (Rensyu_END != 0) {
-            Rensyu_END = 0;
+        if (practiceDuelEnd != 0) {
+            practiceDuelEnd = 0;
             SzModel_LoadMerge(3, 4, 0);
             SzText_LoadMerge(10, 0);
             if (board->done0 != 0) {

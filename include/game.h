@@ -59,12 +59,14 @@ typedef struct DuelHand {
 
 typedef struct DuelPlayer {
     u8 pad000[0x1D0];
-    s32 cameraLookAt[4];           /* 0x1D0: where the camera looks while this side moves (SzView_IV2V) */
+    s32 cameraOrbit[4];            /* 0x1D0: the camera around this side's cursor: distance, heading, pitch
+                                      (SzDuel_Init: 200, 0x4000 or 0xC000, 0x2000; SzView_IV2V reads it) */
     DuelDeck deck;                 /* 0x1E0 */
     DuelGrave grave;               /* 0x232: the graveyard */
     DuelHand hand;                 /* 0x324 */
     s32 unk330;                    /* 0x330: a handle SzDuel_Act opens per side (-1 = none) */
-    u8 pad334[0x33A - 0x334];
+    s32 loadedData;                /* 0x334: memory SzDuel_Init frees (SzMem_Free) */
+    u16 loadedSize;                /* 0x338 */
     u16 lifePoints;                /* 0x33A: 0..9999 (SzDuel_CalcLP) */
     u8 duelistId;                  /* 0x33C: who plays this side; 100 and up = a computer duelist (id - 100) */
     u8 cursorX;                    /* 0x33D: board column 0..6 */
@@ -74,7 +76,7 @@ typedef struct DuelPlayer {
     u8 summonCharge;               /* 0x342 */
     u8 pad343;
     u8 destinyFlag;                /* 0x344: SzDuel_InqDestinyFlag / SetDestinyFlag */
-    s8 cursorY;                    /* 0x345: the cursor's height above the board */
+    s8 cursorHeight;               /* 0x345: the cursor's height above the board (40 at the start) */
     struct {
         s8 handPhase : 1;          /* SzDuel_InqHandPhase / SetHandPhase */
         s8 b1 : 7;
@@ -93,7 +95,7 @@ typedef struct DuelState {
     u16 *list;                     /* 0x6D8: the trunk list */
     u16 *list2;                    /* 0x6DC: the deck list (40) */
     u8 pad6E0[0xC58 - 0x6E0];
-    s32 depth;                     /* 0xC58: GS z of the duel screen sprites */
+    s32 depth;                     /* 0xC58: GS z of the duel windows (SzDuel_SetWindowDefPrioZ) */
     u8 padC5C[0xC86 - 0xC5C];
     u16 wave1;                     /* 0xC86 */
     u16 wave2;                     /* 0xC88 */
@@ -210,7 +212,7 @@ extern char D_002B9112[];
 extern char D_002B9127[];
 extern char D_002B9135[];
 
-extern s32 gSzGame_gl;
+extern s32 gameState; /* original: gSzGame_gl */
 
 extern s32 D_00317254;
 
@@ -267,7 +269,7 @@ extern char D_0030F8E9;
 extern u8 D_0029D586[];
 
 
-extern u8 gSzDuel_aCardControl[];
+extern u8 cardControls[]; /* original: gSzDuel_aCardControl */
 extern u16 D_002CE4A4[];
 
 
@@ -283,7 +285,7 @@ extern u8 audioDec[];
 
 
 
-extern u8 gSzDuel_aCardRequest[];
+extern u8 cardRequests[]; /* original: gSzDuel_aCardRequest */
 
 
 extern s32 g_SDBuffer;
@@ -315,7 +317,7 @@ extern volatile s32 D_0035060C;
 
 
 extern u16 D_002CD8A0[];
-extern u8 gSzDuel_aaMapInfo[];
+extern u8 boardSquares[]; /* original: gSzDuel_aaMapInfo */
 
 
 
@@ -420,7 +422,7 @@ extern u8 D_003503C0[];
 extern f32 gRhMath_adwSinTable[];
 
 
-extern u8 gSzDuel_aaVarInfo[];
+extern u8 duelUnits[]; /* original: gSzDuel_aaVarInfo */
 
 
 
@@ -430,12 +432,11 @@ extern u8 gSzDuel_aaVarInfo[];
 
 
 
-extern s8 Rensyu_flg;
-extern s8 Rensyu_END;
+extern s8 practiceDuelFlag; /* original: Rensyu_flg */
+extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
 
 
-extern s32 D_003180E8;
 
 extern u8 D_0031747A;
 extern s32 D_003180E4;
@@ -478,7 +479,7 @@ extern u8 D_003181CA;
 
 extern char D_002BF00B;
 
-extern s32 apchMovie[];
+extern s32 movieFileNames[]; /* original: apchMovie */
 extern u8 D_002BE809[];
 extern u8 D_002BE80F[];
 
@@ -527,7 +528,7 @@ extern u64 D_00326180;
 
 
 
-extern f32 gSzDuel_StageParam;
+extern f32 duelStageParams; /* original: gSzDuel_StageParam */
 extern f32 D_0029100C;
 extern f32 D_00291020;
 extern f32 D_002910B0;
@@ -536,7 +537,7 @@ extern f32 D_002910B8;
 
 
 
-extern s32 (*gSzDuel_pfnSort[])(s32, s32);
+extern s32 (*sortCompareFuncs[])(s32, s32); /* original: gSzDuel_pfnSort */
 
 extern u8 D_002CCB48[];
 extern u8 D_002CD1F4[];
@@ -1001,7 +1002,7 @@ extern char gSdfs_sa[];
 
 extern u8 abTmpBuf;
 
-extern u8 gSzDuel_dt[];
+extern u8 cardTestState[]; /* original: gSzDuel_dt */
 
 extern s32 isFrameEnd;
 

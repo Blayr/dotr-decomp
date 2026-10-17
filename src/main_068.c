@@ -261,7 +261,7 @@ void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
     s32 var_s1;
     s32 var_s2;
 
-    switch (Rensyu_flg) {
+    switch (practiceDuelFlag) {
     case 0:
         var_s0 = 0x20;
         var_s1 = 0x11;
@@ -294,11 +294,11 @@ void Taku_Camp_Go_Rensyu_Duel(s32 arg0) {
     SzGame_SetMenuNum(4, var_s0);
     SzData_SetupFromConstDeck(0, var_s1);
     SzData_SetupFromConstDeck(1, var_s2);
-    if (Rensyu_flg < 3) {
-        Rensyu_flg += 1;
-        if (Rensyu_flg > 2) {
-            Rensyu_flg = 0;
-            Rensyu_END = 1;
+    if (practiceDuelFlag < 3) {
+        practiceDuelFlag += 1;
+        if (practiceDuelFlag > 2) {
+            practiceDuelFlag = 0;
+            practiceDuelEnd = 1;
         }
     }
     if (arg0 != 0) {

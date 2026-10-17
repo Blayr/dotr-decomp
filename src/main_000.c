@@ -99,7 +99,7 @@ s32 Main_Init(void) {
     SzModel_Init();
     SzView_Init();
     SzFade_Init();
-    func_001A6C80();
+    SzGame_Init();
     SzEffect_Init();
     SzDebug_Init();
     SzPad_SetParam(0, 0xC, 1);

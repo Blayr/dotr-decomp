@@ -160,8 +160,8 @@ typedef struct {
     u8 high : 4;
 } Nibbles_001C4B00;
 
-extern u8 gSzDuel_Attr[];
-extern u8 gSzDuel_Icon[];
+extern u8 duelAttrIcons[]; /* original: gSzDuel_Attr */
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern u8 D_0029086E[];
 extern u8 D_00290878[];
 extern u8 D_002908BE[];
@@ -390,7 +390,7 @@ extern s32 D_00290A1C;
 extern char D_002BF051[];
 extern char D_002BF056[];
 
-extern u8 gSzDuel_Icon[];
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern u8 D_002908F0[];
 extern u8 D_0029099A[];
 
@@ -533,6 +533,7 @@ typedef struct {
     u8 maps[5][7][7];
 } Maps_001CB6B0;
 
+/* Sets two vertex colours from `src`. */
 static inline void set_color_001CB6B0(Color_001CB6B0 *a, Color_001CB6B0 *b,
                                       Source_001CB6B0 *src) {
     a->r = b->r = src->r;
@@ -542,6 +543,7 @@ static inline void set_color_001CB6B0(Color_001CB6B0 *a, Color_001CB6B0 *b,
     a->q = b->q = 1.0f;
 }
 
+/* Sets a screen vertex at (x, y) at the windows' depth. */
 static inline void set_xyz_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y, u8 *state) {
     v->x = x << 4;
     v->y = y << 4;
@@ -552,10 +554,11 @@ static inline void set_xyz_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y, u8 *state)
 static inline void set_corner_001CB6B0(Vertex_001CB6B0 *v, s32 x, s32 y) {
     v->x = x << 4;
     v->y = y << 4;
-    v->z = D_003180E8;
+    v->z = duelState.s.depth;
     v->fog = 0;
 }
 
+/* Draws the edited-map choice menu for `player`, with a small picture of each map. */
 s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s32 y) {
     extern s32 *func_001FEAB0(s32);
     extern s32 func_001FE7D0(s32, s32, s32, s32, s32, void (*)(void));
@@ -563,8 +566,8 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     extern s32 func_001B6EA0(s32, s32, s32, s32, s32, s32, s32);
     extern s32 func_001B65F0(s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
-    extern u8 gSzDuel_Icon[];
-    extern u8 gSzDuel_aaicolField[];
+    extern u8 duelIcons[];
+    extern u8 fieldColors[];
     extern char D_002BF074[];
     extern char D_002BEF93[];
     extern s32 D_002902C4;
@@ -640,7 +643,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
     px = x + 0x81C;
     for (i = 0; i < 7; i++) {
         for (j = 0; j < 7; j++) {
-            id = func_001B3CC0(id, gSzDuel_Icon + (board[i * 7 + j] + 0x10E) * 10, px + j * 16,
+            id = func_001B3CC0(id, duelIcons + (board[i * 7 + j] + 0x10E) * 10, px + j * 16,
                                y + 0x75C + i * 16, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
         }
     }
@@ -657,7 +660,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
                 }
             }
         }
-        id = func_001B3CC0(id, gSzDuel_Icon + (row + 0x10E) * 10, x + 0x89B, y + 0x745 + row * 16, 0, 1, 0,
+        id = func_001B3CC0(id, duelIcons + (row + 0x10E) * 10, x + 0x89B, y + 0x745 + row * 16, 0, 1, 0,
                            0, 0, 0, 1, 0, -1, 0x80);
         id = func_001B4780(id, 0xD, -1, 5, x + 0x1EB, y + 0x25 + row * 16, -0x54, -0x10, 1);
         px = x + 0x8AB;
@@ -668,15 +671,15 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
         ((Tag_001CB6B0 *)packet.tag)->count = 8;
         ((Tag_001CB6B0 *)packet.tag)->registers = 0x41414141;
         ((Tag_001CB6B0 *)packet.tag)->padding = 0;
-        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3]);
-        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 1]);
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)fieldColors)[row * 3]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)fieldColors)[row * 3 + 1]);
         set_xyz_001CB6B0(&packet.points[0].xyz, px, py, state);
         set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py, state);
         set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h, state);
         set_xyz_001CB6B0(&packet.points[3].xyz, px + w, py + h, state);
         id = func_00207650(id, (s32)packet.tag, 0, 0);
-        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 1]);
-        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)gSzDuel_aaicolField)[row * 3 + 2]);
+        set_color_001CB6B0(&packet.points[0].color, &packet.points[1].color, &((Source_001CB6B0 *)fieldColors)[row * 3 + 1]);
+        set_color_001CB6B0(&packet.points[2].color, &packet.points[3].color, &((Source_001CB6B0 *)fieldColors)[row * 3 + 2]);
         set_xyz_001CB6B0(&packet.points[0].xyz, px, py + h, state);
         set_xyz_001CB6B0(&packet.points[1].xyz, px + w, py + h, state);
         set_xyz_001CB6B0(&packet.points[2].xyz, px, py + h * 2, state);
@@ -702,7 +705,8 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
                          hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+/* Draws the leave-custom-duel dialog (yes / no). */
+void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 arg1, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
     s32 text = (s32)D_002BEF98;
@@ -710,11 +714,11 @@ void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s8 *text3 = D_002BEF73;
     s32 id;
 
-    arg0 = lSzDuel_DrawDialog_Window_Pipe(arg0, 2, -1, 0x91, arg1 + 0x140, arg2 + 0x94, 0x140, 0x98,
+    packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x91, arg1 + 0x140, top + 0x94, 0x140, 0x98,
                          func_0019BEF0((char *)text), text, 0);
-    id = SzDuel_DrawWindow_Font_Pipe(arg0, arg1 + 0xF0, arg2 + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
+    id = SzDuel_DrawWindow_Font_Pipe(packet, arg1 + 0xF0, top + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
                        *(u8 *)0xA9C08E != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(id, arg1 + 0x190, arg2 + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
+    SzDuel_DrawWindow_Font_Pipe(id, arg1 + 0x190, top + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
                   *(u8 *)0xA9C08E != 0 ? (s32)D_002BE944 : 0);
 }
 
@@ -729,7 +733,8 @@ typedef struct {
 extern Vec4_001CC4B0 D_002914B0;
 extern Vec4_001CC4B0 D_002914C0;
 
-void SzDuel_InitMapEdit(s32 arg0) {
+/* Opens the map editor (`fromCustomDuel` keeps the map being edited): board colours, models, camera. */
+void SzDuel_InitMapEdit(s32 fromCustomDuel) {
     u8 *state = duelState.b;
     s32 i;
     Vec4_001CC4B0 vector0;
@@ -760,13 +765,14 @@ void SzDuel_InitMapEdit(s32 arg0) {
     ((Flags_001CC4B0 *)0xA9C092)->enabled = 0;
     SzDuel_InitMapColor2(0, 0, 1, 0);
     state[0xD57] = 0x63;
-    if (arg0 != 0) {
+    if (fromCustomDuel != 0) {
         *(u8 *)0xA9C08D = 5;
         *(u8 *)0xA9C08C = *(u8 *)0xA9C08D - 2;
     }
     state[0xD63] = 0;
 }
 
+/* Ends the map editor (nothing to do). */
 void SzDuel_TermMapEdit(void) {
 
 }
@@ -797,6 +803,7 @@ extern PulseFlags_001CC620 D_003181F4;
 
 #pragma conditional_move off
 
+/* Runs the map editor: moves the cursor over the board, changes the field type under it, leaves on cancel. */
 void SzDuel_ActMapEdit(void) {
     extern void *SzData_GetData(s32);
     extern s32 SzDuel_SetField();
@@ -918,6 +925,7 @@ void SzDuel_ActMapEdit(void) {
 }
 #pragma conditional_move reset
 
+/* Draws the map editor. */
 void SzDuel_DrawMapEdit(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawMapEdit_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -935,6 +943,7 @@ typedef struct {
     u8 y;
 } Cursor_001CCBB0;
 
+/* Draws a window title from message `text`. */
 static inline s32 title_001CCBB0(s32 id, s32 text, s32 x, s32 y) {
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
@@ -956,7 +965,8 @@ static inline s32 title_001CCBB0(s32 id, s32 text, s32 x, s32 y) {
     return result;
 }
 
-s32 SzDuel_DrawMapEdit_Pipe(s32 arg0) {
+/* Draws the map editor: the board colours, the field piece under the cursor, the field counts, the button guide. */
+s32 SzDuel_DrawMapEdit_Pipe(s32 packet) {
     extern Color_001CCBB0 D_002914D0;
     extern u16 D_00318116;
     extern s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32, s32, s32, s32, s32, f32);
@@ -988,8 +998,8 @@ s32 SzDuel_DrawMapEdit_Pipe(s32 arg0) {
         }
     }
     SzDuel_SetWindowDefPrioZ(0xFFFFF8);
-    arg0 = lSzDuel_DrawWindow_FieldPiece_Pipe(arg0, 0, SzDuel_GetField(cursor->x, cursor->y), 6, 0x150, 100.0f);
-    id = SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 0);
+    packet = lSzDuel_DrawWindow_FieldPiece_Pipe(packet, 0, SzDuel_GetField(cursor->x, cursor->y), 6, 0x150, 100.0f);
+    id = SzDuel_StartWindowSessionWithPalette_Pipe(packet, 0);
     id = title_001CCBB0(id, SzDuel_GetField(cursor->x, cursor->y), 6, 0x150);
     id = lSzDuel_DrawMapEdit_Graph_Pipe(lSzDuel_DrawWindow_CommandGuide_Pipe(id, 0, 0x21A, 0x150), 6, 0x90);
     SzMsg_Free(0);
@@ -1030,6 +1040,7 @@ typedef struct {
     u8 b, g, r, a;
 } Source_001CCEA0;
 
+/* Sets two vertex colours from `src`. */
 static inline void set_color_001CCEA0(Color_001CCEA0 *a, Color_001CCEA0 *b,
                                       Source_001CCEA0 *src) {
     a->r = b->r = src->r;
@@ -1039,6 +1050,7 @@ static inline void set_color_001CCEA0(Color_001CCEA0 *a, Color_001CCEA0 *b,
     a->q = b->q = 1.0f;
 }
 
+/* Sets a screen vertex at (x, y) at the windows' depth. */
 static inline void set_xyz_001CCEA0(Vertex_001CCEA0 *v, s32 x, s32 y, u8 *state) {
     v->x = x << 4;
     v->y = y << 4;
@@ -1046,11 +1058,12 @@ static inline void set_xyz_001CCEA0(Vertex_001CCEA0 *v, s32 x, s32 y, u8 *state)
     v->fog = 0;
 }
 
-s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
+/* Draws the map editor's bar graph: how many squares of each field type the map has. */
+s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 out, s32 x, s32 y) {
     extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe(s32, s32, s32, s32, s32, s32, s32);
-    extern u8 gSzDuel_Icon[];
-    extern u8 gSzDuel_aaicolField[];
+    extern u8 duelIcons[];
+    extern u8 fieldColors[];
     u8 *state = duelState.b;
     u8 cur;
     s32 j;
@@ -1065,7 +1078,7 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
     Packet_001CCEA0 packet __attribute__((aligned(8)));
 
     cur = SzDuel_GetField(*(u8 *)0xA9C08F, *(u8 *)0xA9C090);
-    id = lSzDuel_DrawWindow_Frame_Pipe(arg0, 0, -1, 0xB, x, y, -0x6E, -0xAA, 1);
+    id = lSzDuel_DrawWindow_Frame_Pipe(out, 0, -1, 0xB, x, y, -0x6E, -0xAA, 1);
     for (row = 0; row < 10; row++) {
         count = 0;
         for (j = 0; j < 7; j++) {
@@ -1076,7 +1089,7 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
             }
         }
         px = x + 0x6C5;
-        id = lSzDuel_DrawWindow_ExIcon_Pipe(id, gSzDuel_Icon + (row + 0x10E) * 10, px, y + 0x725 + row * 16, 0, 1, 0,
+        id = lSzDuel_DrawWindow_ExIcon_Pipe(id, duelIcons + (row + 0x10E) * 10, px, y + 0x725 + row * 16, 0, 1, 0,
                            0, 0, 0, 1, 0, (cur == row) ? 1 : -1, 0x80);
         id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xD, -1, 5, x + 0x15, y + 5 + row * 16, -0x54, -0x10, 1);
         px = x + 0x6D5;
@@ -1087,15 +1100,15 @@ s32 lSzDuel_DrawMapEdit_Graph_Pipe(s32 arg0, s32 x, s32 y) {
         ((Tag_001CCEA0 *)packet.tag)->count = 8;
         ((Tag_001CCEA0 *)packet.tag)->registers = 0x41414141;
         ((Tag_001CCEA0 *)packet.tag)->padding = 0;
-        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3]);
-        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 1]);
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)fieldColors)[row * 3]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)fieldColors)[row * 3 + 1]);
         set_xyz_001CCEA0(&packet.points[0].xyz, px, py, state);
         set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py, state);
         set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h, state);
         set_xyz_001CCEA0(&packet.points[3].xyz, px + w, py + h, state);
         id = ExSortPrim_Pipe(id, (s32)packet.tag, 0, 0);
-        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 1]);
-        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)gSzDuel_aaicolField)[row * 3 + 2]);
+        set_color_001CCEA0(&packet.points[0].color, &packet.points[1].color, &((Source_001CCEA0 *)fieldColors)[row * 3 + 1]);
+        set_color_001CCEA0(&packet.points[2].color, &packet.points[3].color, &((Source_001CCEA0 *)fieldColors)[row * 3 + 2]);
         set_xyz_001CCEA0(&packet.points[0].xyz, px, py + h, state);
         set_xyz_001CCEA0(&packet.points[1].xyz, px + w, py + h, state);
         set_xyz_001CCEA0(&packet.points[2].xyz, px, py + h * 2, state);
@@ -1150,13 +1163,14 @@ typedef struct Draw_001CD560 {
     s8 b83d : 1;
 } Draw_001CD560;
 
-s32 SzDuel_ClearDrawCard(void *arg0) {
+/* Resets a card draw record to its defaults. Returns 0 for none. */
+s32 SzDuel_ClearDrawCard(void *draw) {
     Draw_001CD560 *p;
 
-    if (arg0 == NULL) {
+    if (draw == NULL) {
         return 0;
     }
-    p = arg0;
+    p = draw;
     p->f00 = 0;
     p->f04 = 0;
     p->f08 = 0;
@@ -1199,6 +1213,7 @@ s32 SzDuel_ClearDrawCard(void *arg0) {
     return 1;
 }
 
+/* Draws every card on screen. */
 void SzDuel_DrawAllCard(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawAllCard_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -1231,7 +1246,8 @@ typedef struct Object_001CD710 {
 } Object_001CD710;
 
 
-s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
+/* Draws every card on screen: requested cards, the leaders' bases, the cards in hand and those on the board. */
+s32 SzDuel_DrawAllCard_Pipe(s32 packet) {
     extern s32 SzDuel_DrawHandCard_Pipe(s32);
     Vec4_001CD710 position;
     Command_001CD710 command;
@@ -1248,23 +1264,23 @@ s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
     extern s32 ExSortAnchor_Pipe();
 
     mode = SzGame_GetMode(1);
-    original = arg0;
+    original = packet;
     switch (mode) {
     case 1:
     case 0:
         if (SzModel_GetDrawFlag(0) == 0) {
             return original;
         }
-        arg0 = ExSetAnchor_Pipe(arg0);
-        arg0 = SzDuel_StartCardSession_Pipe(arg0);
-        arg0 = SzDuel_DrawCardRequest_Pipe(arg0);
-        arg0 = RhBase_SetZBufferMode(arg0, 1);
+        packet = ExSetAnchor_Pipe(packet);
+        packet = SzDuel_StartCardSession_Pipe(packet);
+        packet = SzDuel_DrawCardRequest_Pipe(packet);
+        packet = RhBase_SetZBufferMode(packet, 1);
         SzDuel_GetUnitPos(0, 0, &position.x);
         position.y = 0.0f;
-        arg0 = SzDuel_DrawLeaderBase_Pipe(arg0, 0, &position.x, 0x80, 1);
+        packet = SzDuel_DrawLeaderBase_Pipe(packet, 0, &position.x, 0x80, 1);
         SzDuel_GetUnitPos(1, 0, &position.x);
         position.y = 0.0f;
-        value = RhBase_SetZBufferMode(SzDuel_DrawLeaderBase_Pipe(arg0, 1, &position.x, 0x80, 1), 0);
+        value = RhBase_SetZBufferMode(SzDuel_DrawLeaderBase_Pipe(packet, 1, &position.x, 0x80, 1), 0);
         if (*(Object_001CD710 **)(base + 0x6C8) != NULL) {
             if ((*(Object_001CD710 **)(base + 0x6C8))->flags.active != 0) {
                 special = 0;
@@ -1301,11 +1317,12 @@ s32 SzDuel_DrawAllCard_Pipe(s32 arg0) {
     }
 }
 
+/* Empties the card request list. */
 void SzDuel_InitCardRequest(void) {
     u8 *entry;
     s32 i;
 
-    entry = gSzDuel_aCardRequest;
+    entry = cardRequests;
     i = 0;
     do {
         SzDuel_FreeCardRequest(entry);
@@ -1314,14 +1331,15 @@ void SzDuel_InitCardRequest(void) {
     } while (i < 0x20);
 }
 
-s32 SzDuel_FreeCardRequest(void *arg0) {
+/* Frees one card request. */
+s32 SzDuel_FreeCardRequest(void *request) {
     extern void SzDuel_ClearDrawCard();
 
-    if (arg0 == NULL) {
+    if (request == NULL) {
         return 0;
     }
     SzDuel_ClearDrawCard();
-    *(s32 *)((u8 *)arg0 + 0x90) = 0;
+    *(s32 *)((u8 *)request + 0x90) = 0;
     return 1;
 }
 
@@ -1332,11 +1350,12 @@ typedef struct {
     u8 pad_94[0xC];
 } Slot_001CDAA0;
 
+/* A free card request record, cleared, or NULL. */
 u8 *SzDuel_GetCardRequest(void) {
     s32 i;
     Slot_001CDAA0 *slot;
 
-    slot = (Slot_001CDAA0 *)gSzDuel_aCardRequest;
+    slot = (Slot_001CDAA0 *)cardRequests;
     i = 0;
     do {
         if (slot->in_use == 0) {
@@ -1402,7 +1421,8 @@ typedef struct {
 
 extern f32 D_002914D8;
 
-s32 SzDuel_DrawCardRequest_Pipe(s32 arg0) {
+/* Draws the cards that were requested (cards shown flying or held up). */
+s32 SzDuel_DrawCardRequest_Pipe(s32 packet) {
     Draw_001CDB00 draw;
     PackedColor_001CDB00 color;
     Entry_001CDB00 *entry;
@@ -1410,7 +1430,7 @@ s32 SzDuel_DrawCardRequest_Pipe(s32 arg0) {
     void *position;
     s32 height;
 
-    entry = (Entry_001CDB00 *)gSzDuel_aCardRequest;
+    entry = (Entry_001CDB00 *)cardRequests;
     i = 0;
     color = *(PackedColor_001CDB00 *)&D_002914D8;
     do {
@@ -1433,25 +1453,26 @@ s32 SzDuel_DrawCardRequest_Pipe(s32 arg0) {
                     draw.position.value.x += (f32)unit->x;
                     draw.position.value.z += (f32)unit->z;
                 }
-                arg0 = SzDuel_SetupCard2_Pipe(arg0, (s32)(SzDuel_GetCardNode(&draw, 1) ? unit : NULL), &draw);
-                arg0 = RhBase_SetZBufferMode(arg0, 1);
-                arg0 = SzDuel_DrawCard_Pipe(arg0, (s32)&draw);
-                arg0 = RhBase_SetZBufferMode(arg0, 0);
+                packet = SzDuel_SetupCard2_Pipe(packet, (s32)(SzDuel_GetCardNode(&draw, 1) ? unit : NULL), &draw);
+                packet = RhBase_SetZBufferMode(packet, 1);
+                packet = SzDuel_DrawCard_Pipe(packet, (s32)&draw);
+                packet = RhBase_SetZBufferMode(packet, 0);
             }
         }
         i++;
         entry++;
     } while (i < 32);
-    return arg0;
+    return packet;
 }
 
 #include "common.h"
 
+/* Clears the six card control records. */
 void SzDuel_InitCardControl(void) {
     u8 *p;
     s32 i;
 
-    p = gSzDuel_aCardControl;
+    p = cardControls;
     i = 0;
     do {
         SzDuel_ClearCardControl(p);
@@ -1479,18 +1500,19 @@ typedef struct Flags_001CDD90 {
     s8 bit7 : 1;
 } Flags_001CDD90;
 
-s32 SzDuel_ClearCardControl(u8 *arg0) {
-    State_001CDD90 *state = (State_001CDD90 *)arg0;
+/* Clears one card control record. Returns 0 for none. */
+s32 SzDuel_ClearCardControl(u8 *control) {
+    State_001CDD90 *state = (State_001CDD90 *)control;
     Flags_001CDD90 *flags;
 
-    if (arg0 == NULL) {
+    if (control == NULL) {
         return 0;
     }
     state->value = 0;
     state->field98 = 0;
     state->field9A = 0;
     state->field9C = 0xFF;
-    flags = (Flags_001CDD90 *)(arg0 + 0x9F);
+    flags = (Flags_001CDD90 *)(control + 0x9F);
     flags->bit2 = 0;
     flags->bit3 = 0;
     flags->bit4 = 0;
@@ -1500,12 +1522,13 @@ s32 SzDuel_ClearCardControl(u8 *arg0) {
     return 1;
 }
 
-void *SzDuel_GetCardControl(s32 arg0) {
-    if (arg0 < 0 || arg0 >= 6) {
+/* Card control record `index` (0..5), or NULL. */
+void *SzDuel_GetCardControl(s32 index) {
+    if (index < 0 || index >= 6) {
         return NULL;
     }
 
-    return &gSzDuel_aCardControl[arg0 * 0xA0];
+    return &cardControls[index * 0xA0];
 }
 
 typedef struct Flags_001CDEB0 {
@@ -1544,12 +1567,13 @@ typedef struct Blend_001CDEB0 {
     Flags_001CDEB0 flags;
 } Blend_001CDEB0;
 
-s32 SzDuel_DoCardControl0(void *arg0) {
+/* Moves a card along its control record's path (blends its position and turn). */
+s32 SzDuel_DoCardControl0(void *control) {
     extern s32 func_001A22C0(f32);
     Output_001CDEB0 *output;
     f32 blend;
     f32 inverse;
-    Blend_001CDEB0 *src = arg0;
+    Blend_001CDEB0 *src = control;
 
     output = src->output;
     if (output != NULL) {
@@ -1590,6 +1614,7 @@ s32 SzDuel_DoCardControl0(void *arg0) {
     return 0;
 }
 
+/* Draws the monsters and cards on the board. */
 void SzDuel_DrawUnit(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawUnit_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -1647,7 +1672,8 @@ extern Color_001CE430 D_002914F0;
 extern Render_001CE430 D_00291500;
 extern u16 D_00318116;
 
-s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
+/* Draws the monsters and cards on the board, lit by the field and turned to face their way. */
+s32 SzDuel_DrawUnit_Pipe(s32 packet) {
     extern f32 SzModel_GetAnimFrame();
     extern s32 SzGame_GetMode();
     u32 mode;
@@ -1765,7 +1791,7 @@ s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
                     if (selected) {
                         SzModel_SetFilter(model, 1, tint);
                     }
-                    arg0 = SzModel_ExSort_Pipe(arg0, model, (s32)pos, (s32)&render, 0, 0, 0x80FFFFF6);
+                    packet = SzModel_ExSort_Pipe(packet, model, (s32)pos, (s32)&render, 0, 0, 0x80FFFFF6);
                     if (selected) {
                         SzModel_SetFilter(model, 1, NULL);
                     }
@@ -1779,11 +1805,11 @@ s32 SzDuel_DrawUnit_Pipe(s32 arg0) {
     do {
         extraModel = extra + 0x20;
         if (SzModel_IsModelDisp(extraModel)) {
-            arg0 = SzModel_ExSort_Pipe(arg0, extraModel, NULL, NULL, 0, 0, 0x80FFFFF6);
+            packet = SzModel_ExSort_Pipe(packet, extraModel, NULL, NULL, 0, 0, 0x80FFFFF6);
         }
         extra++;
     } while (extra < 2);
-    return arg0;
+    return packet;
 }
 
 typedef struct Vec4_001CEA50 {
@@ -1811,6 +1837,7 @@ typedef struct Draw_001CEA50 {
 extern Vec4_001CEA50 D_0031825C;
 extern s32 D_00318270;
 
+/* Debug: draws one card picked with the pad. */
 void SzDuel_DrawCardTest(void) {
     extern void SzDuel_ClearDrawCard();
     u8 matrix[0x60];
@@ -1863,13 +1890,14 @@ typedef struct Record_001CECF0 {
 } Record_001CECF0;
 
 extern s32 (*g_aLogFunc[])(u16, void *);
-extern s8 Rensyu_flg;
-extern s8 Rensyu_END;
+extern s8 practiceDuelFlag; /* original: Rensyu_flg */
+extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
-s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
+/* The buttons side `side` presses this frame (`mode` = pad check mode): the pad, or the tutorial's scripted input. */
+s32 lSzDuel_GetControl(s32 side, s32 arg1) {
     u8 *base = duelState.b;
     s32 ret = 0;
-    Record_001CECF0 *record = (Record_001CECF0 *)(duelState.b + arg0 * 0x350);
+    Record_001CECF0 *record = (Record_001CECF0 *)(duelState.b + side * 0x350);
     void *selected;
     s32 result;
 
@@ -1883,18 +1911,18 @@ s32 lSzDuel_GetControl(s32 arg0, s32 arg1) {
     default:
         if (record->kind < 0x64) {
             selected = record;
-            if (TaTuto_IsTuto(arg0) != 0) {
+            if (TaTuto_IsTuto(side) != 0) {
                 selected = base;
             }
             if (SzView_InqRequest(-1, -1) == NULL) {
                 result = g_aLogFunc[record->kind]((u16)((record->high << 8) | record->low), selected);
                 if (result < 0) {
-                    if (Rensyu_flg != 0) {
+                    if (practiceDuelFlag != 0) {
                         if (result == -1) {
                             Taku_Camp_Go_Rensyu_Duel(1);
                         } else {
-                            Rensyu_flg = 0;
-                            Rensyu_END = 1;
+                            practiceDuelFlag = 0;
+                            practiceDuelEnd = 1;
                             SzGame_Pop();
                         }
                     } else {
@@ -2002,17 +2030,20 @@ typedef struct { u8 pad[0xC64]; u32 c64; } C64_001CEE60;
 #define F67 ((Flags8_001CEE60 *)(duel + 0xD67))
 #define U66 ((UFlags8_001CEE60 *)(duel + 0xD66))
 
+/* Whether a board object's model is still moving. */
 static inline s32 busy_001CEE60(Object_001CEE60 *p) {
     return p != NULL && p->flags57.b4 && func_001F1300(p->model) && p->progress != p->status51;
 }
 
+/* Card control record n, or NULL. */
 static inline u8 *slot_001CEE60(s32 n) {
     if (n < 0 || n >= 6) {
         return NULL;
     }
-    return gSzDuel_aCardControl + n * 0xA0;
+    return cardControls + n * 0xA0;
 }
 
+/* Frees a card object. */
 static inline void freeobj_001CEE60(u8 *obj) {
     if (obj != NULL) {
         func_001CD560(obj);
@@ -2020,6 +2051,7 @@ static inline void freeobj_001CEE60(u8 *obj) {
     }
 }
 
+/* Frees a card control record and its card. */
 static inline void freeslot_001CEE60(u8 *p) {
     if (p != NULL) {
         if (*(u8 **)p != NULL) {
@@ -2029,6 +2061,7 @@ static inline void freeslot_001CEE60(u8 *p) {
     }
 }
 
+/* Drops card control slot n (and its hand card). */
 static inline void drop_001CEE60(u8 *duel, s32 n) {
     u8 *p;
 
@@ -2040,6 +2073,7 @@ static inline void drop_001CEE60(u8 *duel, s32 n) {
     }
 }
 
+/* Runs one frame of the duel: the state machine for turns, moves, summons, battles, fusions, effects and the end. */
 s32 SzDuel_Act(void) {
     extern s32 func_001F48F0(s32, s32, s32, s32, s32);
     extern s32 func_001E1D10();
@@ -4780,7 +4814,7 @@ s32 SzDuel_Act(void) {
                     DUEL[0xD4C] = DUEL[0xD4B] + 1;
                     DUEL[0xD4D] = DUEL[0xD4B] + DUEL[0xD4A];
                     if (DUEL_DUO(0x6CC) != NULL) {
-                        if ((sl = gSzDuel_aCardControl) != NULL && *(u8 **)sl != NULL) {
+                        if ((sl = cardControls) != NULL && *(u8 **)sl != NULL) {
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b4 = 0;
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b6 = 0;
                             ((Flags8_001CEE60 *)(sl + 0x9F))->b5 = 0;

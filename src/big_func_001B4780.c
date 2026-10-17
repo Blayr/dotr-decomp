@@ -78,11 +78,12 @@ typedef struct State_001B4780 {
     s32 depth;
 } State_001B4780;
 
-extern Texture_001B4780 gSzDuel_Icon[];
-extern u8 gSzDuel_aaicolRgba[];
-extern u8 aabFrameOfs[];
-extern u8 abDecoOfs[];
+extern Texture_001B4780 duelIcons[]; /* original: gSzDuel_Icon */
+extern u8 sideColors[]; /* original: gSzDuel_aaicolRgba */
+extern u8 windowFrameOffsets[]; /* original: aabFrameOfs */
+extern u8 windowDecoOffsets[]; /* original: abDecoOfs */
 
+/* Fills a GIF tag. */
 static inline void tag_001B4780(Tag_001B4780 *tag, s32 count, s32 flags, u64 registers) {
     tag->flags = flags;
     tag->count = count;
@@ -90,6 +91,7 @@ static inline void tag_001B4780(Tag_001B4780 *tag, s32 count, s32 flags, u64 reg
     tag->reserved = 0;
 }
 
+/* Absolute value. */
 static inline s32 abs_001B4780(s32 value) {
     if (value >= 0) {
         return value;
@@ -97,6 +99,7 @@ static inline s32 abs_001B4780(s32 value) {
     return -value;
 }
 
+/* The frame brightness: 0x80 when bright, else 0x30. */
 static inline s32 intensity_001B4780(s32 bright) {
     if (bright != 0) {
         return 0x80;
@@ -104,6 +107,8 @@ static inline s32 intensity_001B4780(s32 bright) {
     return 0x30;
 }
 
+/* Draws a window frame at (x, y), cols x rows tiles (negative sizes are in pixels), in `style` and side colour
+   `colorIndex`, with corner icons. */
 s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 style, s32 x, s32 y, s32 cols, s32 rows, s64 bright) {
     Sprite_001B4780 sprite __attribute__((aligned(8)));
     Gradient_001B4780 gradient __attribute__((aligned(8)));
@@ -139,12 +144,12 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     (void)&spare; /* spare's 8-byte slot sits between gradient and arrow in the original frame */
     graphics = (State_001B4780 *)duelState.b;
     tmp = style;
-    parts = &gSzDuel_Icon[tmp * 9 + 0x3B];
-    margin = &aabFrameOfs[tmp * 4];
+    parts = &duelIcons[tmp * 9 + 0x3B];
+    margin = &windowFrameOffsets[tmp * 4];
     tmp = x + 0x6C0;
     style = y + 0x720;
     if (colorIndex >= 0) {
-        rgb = &gSzDuel_aaicolRgba[colorIndex * 8];
+        rgb = &sideColors[colorIndex * 8];
         if (cols >= 0) {
             width = ((parts[2].x1 - parts[2].x0) - margin[1]) + (((parts[0].x1 - parts[0].x0) - margin[0]) + cols * (parts[1].x1 - parts[1].x0));
         } else {
@@ -280,8 +285,8 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     if (icons >= 0) {
         do {
             kind = icons & 0xF;
-            shift = abDecoOfs[kind];
-            icon = &gSzDuel_Icon[kind + 0x2F];
+            shift = windowDecoOffsets[kind];
+            icon = &duelIcons[kind + 0x2F];
             if ((u32)(kind - 3) < 2) {
                 tag_001B4780((Tag_001B4780 *)arrow.tag, 9, 0x24, 0x24242421 | ((u64)4 << 32));
                 ((Tag_001B4780 *)arrow.tag)->flags |= 0x800;
@@ -385,7 +390,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
                 cursor.c[3].xyz.x = px * 16 - 0x18;
                 cursor.c[3].xyz.y = py * 16 + 8;
                 packet = ExSortPrim_Pipe(packet, &cursor, 0, 0);
-                icon = &gSzDuel_Icon[0x38];
+                icon = &duelIcons[0x38];
                 ((UV_001B4780 *)&cursor.c[0].uv)->u = icon->x0 * 16;
                 ((UV_001B4780 *)&cursor.c[0].uv)->v = icon->y0 * 16;
                 ((UV_001B4780 *)&cursor.c[1].uv)->u = icon->x1 * 16;
@@ -445,7 +450,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
                 page.c[3].xyz.x = (px + ih) * 16 + 8;
                 page.c[3].xyz.y = py * 16 + 8;
                 packet = ExSortPrim_Pipe(packet, &page, 0, 0);
-                icon = &gSzDuel_Icon[0x39];
+                icon = &duelIcons[0x39];
                 ((UV_001B4780 *)&page.c[0].uv)->u = icon->x0 * 16;
                 ((UV_001B4780 *)&page.c[0].uv)->v = icon->y0 * 16;
                 ((UV_001B4780 *)&page.c[1].uv)->u = icon->x1 * 16;

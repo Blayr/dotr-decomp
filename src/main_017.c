@@ -55,7 +55,8 @@ typedef struct Tutorial_001747D0 {
 } Tutorial_001747D0;
 
 
-s32 func_001747D0(s32 arg0, void *tutorial) {
+/* Runs one frame of tutorial lesson 2. `event` is the duel event (kind in bits 8-15). */
+s32 TaTuto_Lesson2(s32 event, void *tutorial) {
     extern void SzPad_SetAnalogInfo();
     extern s32 SzDuel_SetUnitCtlGoal();
     Tutorial_001747D0 *arg1 = tutorial;

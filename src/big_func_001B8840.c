@@ -4,6 +4,7 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 
+/* Clamps at 0. */
 static inline s32 nonnegative_001B8840(s32 value) {
     if (value > 0) {
         return value;
@@ -11,6 +12,8 @@ static inline s32 nonnegative_001B8840(s32 value) {
     return 0;
 }
 
+/* Runs one frame of deck building: the trunk and deck lists, moving cards, sorting, passwords, reincarnation, the
+   3D viewer and leaving. */
 void SzDuel_ActBuildDeck(void) {
     DuelState *d = &duelState.s;
     s32 player;

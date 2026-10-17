@@ -1,5 +1,6 @@
 #include "common.h"
 
+/* The type group of a card kind (SzDuel_Kind2Type written out). */
 static inline s32 convert_001DE0B0(s32 value) {
     return value == 1 ? 1 :
            value == 2 ? 1 :
@@ -8,42 +9,45 @@ static inline s32 convert_001DE0B0(s32 value) {
            value == 5 ? 3 : value;
 }
 
-s32 SzDuel_Kind2Attr(s32 arg0, s32 arg1) {
-    s32 result = arg1;
+/* The attribute icon for card kind `kind`, or `fallback` when the kind has no type group. */
+s32 SzDuel_Kind2Attr(s32 kind, s32 fallback) {
+    s32 result = fallback;
 
-    arg0 = convert_001DE0B0(arg0);
-    result = arg0 > 0 ? arg0 + 5 : result;
+    kind = convert_001DE0B0(kind);
+    result = kind > 0 ? kind + 5 : result;
     return result;
 }
 
-s32 SzDuel_Xax2New(s32 arg0) {
-    if (arg0 < 0 || arg0 >= 0x356) {
+/* Converts a card number in the old (card list) order to the game's card id; CARD_NONE for none. */
+s32 SzDuel_Xax2New(s32 number) {
+    if (number < 0 || number >= 0x356) {
         return 0x3E7;
     }
-    arg0 = D_002CD8A0[arg0];
-    if (arg0 == 0x29F) {
-        arg0 = 0x3E7;
+    number = D_002CD8A0[number];
+    if (number == 0x29F) {
+        number = 0x3E7;
     }
-    if (arg0 < 0 || arg0 >= 0x356) {
+    if (number < 0 || number >= 0x356) {
         return 0x3E7;
     }
-    return arg0;
+    return number;
 }
 
-s32 SzDuel_New2Xax(s32 arg0) {
+/* Converts a card id to its number in the old (card list) order; CARD_NONE for none. */
+s32 SzDuel_New2Xax(s32 card) {
     s32 i;
     u16 *p;
 
     p = D_002CD8A0;
-    if (arg0 == 0x29F) {
-        arg0 = 0x3E7;
+    if (card == 0x29F) {
+        card = 0x3E7;
     }
-    if (arg0 < 0 || arg0 >= 0x356) {
+    if (card < 0 || card >= 0x356) {
         return 0x3E7;
     }
     i = 0;
     do {
-        if (*p == arg0) {
+        if (*p == card) {
             return i;
         }
         i++;
@@ -52,21 +56,24 @@ s32 SzDuel_New2Xax(s32 arg0) {
     return 0x3E7;
 }
 
-s32 SzDuel_GetMsgName(s32 arg0) {
+/* The message id of card `card`'s name, or -1. */
+s32 SzDuel_GetMsgName(s32 card) {
     SzData_GetOption(0, 0);
-    if (arg0 < 0 || arg0 >= 0x356) {
+    if (card < 0 || card >= 0x356) {
         return -1;
     }
-    return arg0 + 0x140;
+    return card + 0x140;
 }
 
-s32 SzDuel_GetCamDist(s32 arg0) {
-    if (arg0 < 0 || arg0 >= 0x356) {
+/* The camera distance used to show monster `card` in 3D, or -1. */
+s32 SzDuel_GetCamDist(s32 card) {
+    if (card < 0 || card >= 0x356) {
         return -1;
     }
-    return D_002CE4A4[arg0];
+    return D_002CE4A4[card];
 }
 
+/* Reads the 3D-battle option. */
 void SzDuel_GetOption3DBattle(void) {
     SzData_GetOption(0, 1);
 }
@@ -80,7 +87,9 @@ typedef struct {
     s8 pad4 : 4;
 } Flags_001DE2B0;
 
-s32 SzDuel_GetPlayMotion(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Which battle animation (3, 4 or 6) the attack of unit (attackerSide, attackerUnit) on unit (defenderSide,
+   defenderUnit) uses, from their attack and defence on field square (fieldX, fieldZ). */
+s32 SzDuel_GetPlayMotion(s32 attackerSide, s32 attackerUnit, s32 defenderSide, s32 defenderUnit, s32 fieldX, s32 fieldZ, s32 noTieWin) {
     s32 self;
     s32 other;
     s32 result;
@@ -90,13 +99,13 @@ s32 SzDuel_GetPlayMotion(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     s32 defense;
     s32 guard;
 
-    self = SzDuel_GetUnit(arg0, arg1);
-    other = SzDuel_GetUnit(arg2, arg3);
+    self = SzDuel_GetUnit(attackerSide, attackerUnit);
+    other = SzDuel_GetUnit(defenderSide, defenderUnit);
     result = 0;
     if (self != 0 && other != 0) {
-        base = Ta_GetParamOfs(self, arg4, arg5, 1);
-        power = Ta_GetParamOfs(other, arg4, arg5, 1);
-        defense = Ta_GetParamOfs(other, arg4, arg5, 0);
+        base = Ta_GetParamOfs(self, fieldX, fieldZ, 1);
+        power = Ta_GetParamOfs(other, fieldX, fieldZ, 1);
+        defense = Ta_GetParamOfs(other, fieldX, fieldZ, 0);
         attack = base + SzDuel_GetUnitAP2((void *)self, 0);
         power += SzDuel_GetUnitAP2((void *)other, 0);
         guard = defense + SzDuel_GetUnitDP2((void *)other, 0);
@@ -109,7 +118,7 @@ s32 SzDuel_GetPlayMotion(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
                 result = 6;
             }
         } else if (power == attack) {
-            if (arg6 == 0 && arg0 == SzDuel_GetTurnOwner()) {
+            if (noTieWin == 0 && attackerSide == SzDuel_GetTurnOwner()) {
                 result = 3;
             }
         } else if (attack < power) {
@@ -266,12 +275,12 @@ s32 SzDuel_SetPlayerCur(s32 player, s32 x, s32 z) {
     if (x < 0 || x >= 7 || z < 0 || z >= 7) {
         return 0;
     }
-    SzView_IV2V(side->cameraLookAt, saved);
+    SzView_IV2V(side->cameraOrbit, saved);
     side->cursorX = x;
     side->cursorZ = z;
     position[0] = (f32)((x - 3) * 50);
     position[2] = (f32)((z - 3) * 50);
-    position[1] = (f32)side->cursorY;
+    position[1] = (f32)side->cursorHeight;
     SzView_SetCP(0, position);
     SzView_SetLookSP(0, saved);
     return 1;

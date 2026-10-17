@@ -38,15 +38,17 @@ typedef struct {
 extern Vec_001ADD00 D_002910C0;
 extern Vec_001ADD00 D_002910D0;
 
-void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
-    Vec_001ADD00 spA0;
-    Vec_001ADD00 spB0;
+/* Sets up a duel on map `stage` with side `firstSide` to move first; a `newDuel` also deals both decks, places the
+   leaders and resets the board. */
+void SzDuel_Init(s32 stage, s32 firstSide, s32 newDuel) {
+    Vec_001ADD00 cameraPos;
+    Vec_001ADD00 cameraLook;
     u8 *state = duelState.b;
-    s32 var_s1;
-    u8 *temp_s1_2;
-    u8 *var_t2;
-    u8 *var_t3;
-    s32 var_t4;
+    s32 row;
+    u8 *side1;
+    u8 *halfwords;
+    u8 *words;
+    s32 i;
 
     SzDuel_InitDeck(0);
     SzDuel_InitGrave(0);
@@ -54,91 +56,91 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     SzDuel_InitDeck(1);
     SzDuel_InitGrave(1);
     SzDuel_InitHand(1);
-    var_s1 = 0;
-    if (arg2 != 0) {
-        s32 temp_s1;
-        s32 temp_s2;
-        s32 var_s3;
-        s32 temp_s5;
-        s32 temp_s4;
-        s32 temp_s3;
-        s32 temp_s4_2;
-        s32 var_s5;
-        s32 var_s1_2;
-        s32 var_s2_2;
+    row = 0;
+    if (newDuel != 0) {
+        s32 deck0;
+        s32 deck1;
+        s32 unit;
+        s32 leader0;
+        s32 leader1;
+        s32 card0;
+        s32 card1;
+        s32 slot;
+        s32 x;
+        s32 z;
         s32 otherPlayer;
-        s32 var_s2;
+        s32 option;
         s32 heading;
-        temp_s1 = SzData_GetCurrentDeck(0);
-        temp_s2 = SzData_GetCurrentDeck(1);
-        temp_s5 = SzData_GetLeader(0, temp_s1);
-        temp_s4 = SzData_GetLeader(1, temp_s2);
+        deck0 = SzData_GetCurrentDeck(0);
+        deck1 = SzData_GetCurrentDeck(1);
+        leader0 = SzData_GetLeader(0, deck0);
+        leader1 = SzData_GetLeader(1, deck1);
         SzDuel_InitCardRequest();
         SzDuel_InitCardControl();
-        var_s3 = 0;
+        unit = 0;
         do {
-            SzDuel_DelUnit(0, var_s3);
-            SzDuel_DelUnit(1, var_s3);
-            var_s3 += 1;
-        } while (var_s3 < 0xB);
+            SzDuel_DelUnit(0, unit);
+            SzDuel_DelUnit(1, unit);
+            unit += 1;
+        } while (unit < 0xB);
         SzDuel_InitMapColor(0, 0, 1);
-        SzDuel_AddUnit(0, 3, 6, temp_s5, 1);
-        SzDuel_AddUnit(1, 3, 0, temp_s4, 1);
+        SzDuel_AddUnit(0, 3, 6, leader0, 1);
+        SzDuel_AddUnit(1, 3, 0, leader1, 1);
         SzDuel_SetUnitCtlRateM(0, 0, 0, 0);
         SzDuel_SetUnitCtlModeM(0, 0, 7);
         SzDuel_SetUnitCtlRateM(1, 0, 0, 0);
         SzDuel_SetUnitCtlModeM(1, 0, 7);
-        var_s5 = 0;
+        slot = 0;
         do {
-            temp_s3 = SzData_GetCardNo(0, temp_s1, var_s5);
-            temp_s4_2 = SzData_GetCardNo(1, temp_s2, var_s5);
+            card0 = SzData_GetCardNo(0, deck0, slot);
+            card1 = SzData_GetCardNo(1, deck1, slot);
             if (SzGame_GetMenuNum(3) >= 0x3E8) {
-                SzDuel_AddDeck(0, temp_s3);
+                SzDuel_AddDeck(0, card0);
             } else {
-                SzDuel_SetDeck(0, var_s5, temp_s3);
+                SzDuel_SetDeck(0, slot, card0);
             }
             if (SzGame_GetMenuNum(4) >= 0x3E8) {
-                SzDuel_AddDeck(1, temp_s4_2);
+                SzDuel_AddDeck(1, card1);
             } else {
-                SzDuel_SetDeck(1, var_s5, temp_s4_2);
+                SzDuel_SetDeck(1, slot, card1);
             }
-            var_s5 += 1;
-        } while (var_s5 < 0x28);
-        var_s2 = 0;
-        otherPlayer = arg1 ^ 1;
+            slot += 1;
+        } while (slot < 0x28);
+        option = 0;
+        otherPlayer = firstSide ^ 1;
         do {
-            SzData_SetOption(otherPlayer, var_s2, SzData_GetOption(arg1, var_s2));
-            var_s2 += 1;
-        } while (var_s2 < 3);
-        heading = (arg1 != 0) ? 0xC000 : 0x4000;
-        spA0 = D_002910C0;
-        spB0 = D_002910D0;
-        spB0.f[1] = (3.1415927f * (f32) heading) / 32768.0f;
-        SzView_SetCP(0, &spA0);
-        SzView_SetLookSP(0, spB0.f);
-        var_s2_2 = 0;
+            SzData_SetOption(otherPlayer, option, SzData_GetOption(firstSide, option));
+            option += 1;
+        } while (option < 3);
+        heading = (firstSide != 0) ? 0xC000 : 0x4000;
+        cameraPos = D_002910C0;
+        cameraLook = D_002910D0;
+        cameraLook.f[1] = (3.1415927f * (f32) heading) / 32768.0f;
+        SzView_SetCP(0, &cameraPos);
+        SzView_SetLookSP(0, cameraLook.f);
+        z = 0;
         do {
-            var_s1_2 = 0;
+            x = 0;
             do {
-                SzDuel_SetFieldRate(var_s1_2, var_s2_2, -0x80);
-                var_s1_2 += 1;
-            } while (var_s1_2 < 7);
-            var_s2_2 += 1;
-        } while (var_s2_2 < 7);
+                SzDuel_SetFieldRate(x, z, -0x80);
+                x += 1;
+            } while (x < 7);
+            z += 1;
+        } while (z < 7);
         *(u8 *)(state + 0xD34) = 0;
         SzSound_TransferSEGrp(1, 0, 0);
     } else {
-        s32 var_s2_3;
-        for (var_s1 = 0; var_s1 < 7; var_s1++) {
-            for (var_s2_3 = 0; var_s2_3 < 7; var_s2_3++) {
-                SzDuel_SetFieldRate(var_s2_3, var_s1, 0);
+        s32 column;
+        for (row = 0; row < 7; row++) {
+            for (column = 0; column < 7; column++) {
+                SzDuel_SetFieldRate(column, row, 0);
             }
         }
         *(u8 *)(state + 0xD34) = 0x80;
     }
-    *(u8 *)(state + 0xD37) = (u8) arg0;
+    *(u8 *)(state + 0xD37) = (u8) stage;
     SzDuel_SetupMap((s32) *(u8 *)(state + 0xD37));
-    lSzDuel_InitCom(arg2);
+    lSzDuel_InitCom(newDuel);
     TaLogic_InitLogicData(0, state);
     *(s32 *)(state + 0x330) = -1;
     if (*(s32 *)(state + 0x334) != 0) {
@@ -150,7 +152,7 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     *(s32 *)(state + 0x1D4) = 0x4000;
     *(s32 *)(state + 0x1D8) = 0x2000;
     *(s8 *)(state + 0x341) = 4;
-    if (arg0 < 0x16) {
+    if (stage < 0x16) {
         *(s16 *)(state + 0x33A) = 0xFA0;
         *(s8 *)(state + 0x342) = 3;
     }
@@ -160,28 +162,28 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     *(s8 *)(state + 0x345) = 0x28;
     *(s8 *)(state + 0x33D) = 3;
     *(s8 *)(state + 0x33E) = 6;
-    temp_s1_2 = state + 0x350;
-    TaLogic_InitLogicData(1, temp_s1_2);
-    *(s32 *)(temp_s1_2 + 0x330) = -1;
-    if (*(s32 *)(temp_s1_2 + 0x334) != 0) {
-        SzMem_Free(*(s32 *)(temp_s1_2 + 0x334));
+    side1 = state + 0x350;
+    TaLogic_InitLogicData(1, side1);
+    *(s32 *)(side1 + 0x330) = -1;
+    if (*(s32 *)(side1 + 0x334) != 0) {
+        SzMem_Free(*(s32 *)(side1 + 0x334));
     }
-    *(s32 *)(temp_s1_2 + 0x334) = 0;
-    *(s16 *)(temp_s1_2 + 0x338) = 0;
-    *(s32 *)(temp_s1_2 + 0x1D0) = 0xC8;
-    *(s32 *)(temp_s1_2 + 0x1D4) = 0xC000;
-    *(s32 *)(temp_s1_2 + 0x1D8) = 0x2000;
-    *(s8 *)(temp_s1_2 + 0x341) = 4;
-    if (arg0 < 0x16) {
-        *(s16 *)(temp_s1_2 + 0x33A) = 0xFA0;
-        *(s8 *)(temp_s1_2 + 0x342) = 3;
+    *(s32 *)(side1 + 0x334) = 0;
+    *(s16 *)(side1 + 0x338) = 0;
+    *(s32 *)(side1 + 0x1D0) = 0xC8;
+    *(s32 *)(side1 + 0x1D4) = 0xC000;
+    *(s32 *)(side1 + 0x1D8) = 0x2000;
+    *(s8 *)(side1 + 0x341) = 4;
+    if (stage < 0x16) {
+        *(s16 *)(side1 + 0x33A) = 0xFA0;
+        *(s8 *)(side1 + 0x342) = 3;
     }
-    *(s8 *)(temp_s1_2 + 0x343) = 0;
-    ((Bits_001ADD00 *)(temp_s1_2 + 0x346))->bit0 = 1;
-    *(s8 *)(temp_s1_2 + 0x344) = 0;
-    *(s8 *)(temp_s1_2 + 0x345) = 0x28;
-    *(s8 *)(temp_s1_2 + 0x33D) = 3;
-    *(s8 *)(temp_s1_2 + 0x33E) = 0;
+    *(s8 *)(side1 + 0x343) = 0;
+    ((Bits_001ADD00 *)(side1 + 0x346))->bit0 = 1;
+    *(s8 *)(side1 + 0x344) = 0;
+    *(s8 *)(side1 + 0x345) = 0x28;
+    *(s8 *)(side1 + 0x33D) = 3;
+    *(s8 *)(side1 + 0x33E) = 0;
     *(s32 *)(state + 0x6C8) = 0;
     *(s32 *)(state + 0x6CC) = 0;
     *(s8 *)(state + 0xD35) = 0;
@@ -192,7 +194,7 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     *(s8 *)(state + 0xD3B) = 0;
     *(s8 *)(state + 0xD50) = 2;
     *(s8 *)(state + 0xD51) = 0;
-    *(u8 *)(state + 0xD52) = (u8) arg1;
+    *(u8 *)(state + 0xD52) = (u8) firstSide;
     *(u8 *)(state + 0xD54) = (u8) *(u8 *)(state + 0xD52);
     *(u8 *)(state + 0xD53) = 0U;
     *(u8 *)(state + 0xD55) = 0xFF;
@@ -229,18 +231,18 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     ((Modes_001ADD00 *)(state + 0xD64))->next = 1;
     *(s16 *)(state + 0xC96) = 0;
     *(s16 *)(state + 0xC98) = 0;
-    var_t4 = 0;
-    var_t2 = state;
-    var_t3 = state;
+    i = 0;
+    halfwords = state;
+    words = state;
     do {
-        *(s8 *)(&state[var_t4] + 0xCB2) = 0x18;
-        *(s16 *)(var_t2 + 0xCAA) = 0;
-        var_t4 += 1;
-        *(s16 *)(var_t3 + 0xC9C) = 0;
-        *(s16 *)(var_t3 + 0xC9A) = 0;
-        var_t2 += 2;
-        var_t3 += 4;
-    } while (var_t4 < 4);
+        *(s8 *)(&state[i] + 0xCB2) = 0x18;
+        *(s16 *)(halfwords + 0xCAA) = 0;
+        i += 1;
+        *(s16 *)(words + 0xC9C) = 0;
+        *(s16 *)(words + 0xC9A) = 0;
+        halfwords += 2;
+        words += 4;
+    } while (i < 4);
     *(s32 *)(state + 0xC5C) = 0;
     *(s32 *)(state + 0xC60) = 0;
     *(s32 *)(state + 0xC64) = 0;
@@ -275,29 +277,31 @@ void SzDuel_Init(s32 arg0, s32 arg1, s32 arg2) {
     ((Bits_001ADD00 *)(state + 0xD67))->bit5 = 0;
 }
 
+/* Ends a duel: removes every unit from the board. */
 void SzDuel_Term(void) {
     u8 *data = duelState.b;
-    s32 var_a1;
-    s32 var_s0;
+    s32 i;
+    s32 unit;
 
-    var_a1 = 0;
+    i = 0;
     do {
-        data[var_a1 + 0xCB2] = 0x18;
-        var_a1 += 1;
-    } while (var_a1 < 4);
-    var_s0 = 1;
+        data[i + 0xCB2] = 0x18;
+        i += 1;
+    } while (i < 4);
+    unit = 1;
     do {
-        SzDuel_DelUnit(0, var_s0);
-        SzDuel_DelUnit(1, var_s0);
-        var_s0 += 1;
-    } while (var_s0 < 0xB);
+        SzDuel_DelUnit(0, unit);
+        SzDuel_DelUnit(1, unit);
+        unit += 1;
+    } while (unit < 0xB);
 }
 
-s32 SzDuel_DrawStage_Pipe(s32 arg0) {
+/* Draws the duel board into `packet` if the stage model is shown. */
+s32 SzDuel_DrawStage_Pipe(s32 packet) {
     if (SzModel_GetDrawFlag(0) != 0) {
-        return lSzDuel_DrawStage_Pipe(arg0);
+        return lSzDuel_DrawStage_Pipe(packet);
     }
-    return arg0;
+    return packet;
 }
 
 typedef struct Color_001AE5F0 {
@@ -317,7 +321,8 @@ extern Color_001AE5F0 D_00291108;
 extern Vector_001AE5F0 D_00291110;
 extern u16 D_00318116;
 
-s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
+/* Draws the duel board: its squares and their colours, the movable-square highlights and the box cursor. */
+s32 lSzDuel_DrawStage_Pipe(s32 packet) {
     extern s32 SzDuel_DrawBoxCursor_Pipe();
     extern void SzDuel_InitMapColor();
     extern void SzDuel_SetMapColor();
@@ -467,12 +472,12 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
         if (SzModel_IsModelDisp(id) != 0 && color != NULL) {
             SzDuel_CalcUnitPos(player[0x33D], player[0x33E], *(s16 *)(tile + 0x14), position);
             if (*(s16 *)(tile + 0x14) > 0) {
-                arg0 = SzDuel_DrawBoxCursor_Pipe(arg0, position, NULL, 1);
+                packet = SzDuel_DrawBoxCursor_Pipe(packet, position, NULL, 1);
             }
-            arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0);
+            packet = SzModel_DrawWithOutCalc_Pipe(packet, id, (s32)position, 0, 0, 0, 0);
             color->a = (alpha * tile[0x1A]) >> 7;
             SzModel_SetFilter(id, -1, color);
-            arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0x80FFFFF6);
+            packet = SzModel_DrawWithOutCalc_Pipe(packet, id, (s32)position, 0, 0, 0, 0x80FFFFF6);
             SzModel_SetFilter(id, -1, NULL);
             color->a = alpha;
         }
@@ -496,9 +501,9 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
                             if (color == NULL || player[0x33D] != col || player[0x33E] != row) {
                                 SzDuel_CalcUnitPos(col, row, *(s16 *)(tile + 0x14), position);
                                 if (*(s16 *)(tile + 0x14) > 0) {
-                                    arg0 = SzDuel_DrawBoxCursor_Pipe(arg0, position, NULL, 1);
+                                    packet = SzDuel_DrawBoxCursor_Pipe(packet, position, NULL, 1);
                                 }
-                                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, (s32)position, 0, 0, 0, 0);
+                                packet = SzModel_DrawWithOutCalc_Pipe(packet, id, (s32)position, 0, 0, 0, 0);
                             }
                         }
                         col++;
@@ -513,7 +518,7 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
         s32 id = 0;
         do {
             if (SzModel_IsModelDisp(id) != 0) {
-                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, 0, 0, 0, 0);
+                packet = SzModel_DrawWithOutCalc_Pipe(packet, id, 0, 0, 0, 0, 0);
             }
             id++;
         } while (id < 3);
@@ -527,16 +532,17 @@ s32 lSzDuel_DrawStage_Pipe(s32 arg0) {
             offset.coord[1] = x != 0 ? 0 : 0x8000;
             if (SzModel_IsModelDisp(id) != 0) {
                 offset.coord[1] -= 0x2000;
-                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, (s32)&offset, 0, 0, 0);
+                packet = SzModel_DrawWithOutCalc_Pipe(packet, id, 0, (s32)&offset, 0, 0, 0);
                 offset.coord[1] += 0x4000;
-                arg0 = SzModel_DrawWithOutCalc_Pipe(arg0, id, 0, (s32)&offset, 0, 0, 0);
+                packet = SzModel_DrawWithOutCalc_Pipe(packet, id, 0, (s32)&offset, 0, 0, 0);
             }
             x++;
         } while (x < 2);
     }
-    return arg0;
+    return packet;
 }
 
+/* Draws what goes over the board (the side walls and the line). */
 void SzDuel_DrawStageAfter(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawStageAfter_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -552,35 +558,38 @@ extern Vec4_001AEEB0 D_00291120;
 
 #pragma opt_lifetimes off
 
-s32 SzDuel_DrawStageAfter_Pipe(s32 arg0) {
-    Vec4_001AEEB0 sp30;
-    s32 var_s0;
-    s32 var_s1;
+/* Draws the two side models mirrored left and right, then the board line. */
+s32 SzDuel_DrawStageAfter_Pipe(s32 packet) {
+    Vec4_001AEEB0 pos;
+    s32 model;
+    s32 out;
 
-    var_s1 = arg0;
+    out = packet;
     if (SzModel_GetDrawFlag(0) == 0) {
-        return var_s1;
+        return out;
     }
-    var_s0 = 3;
+    model = 3;
     do {
-        sp30 = D_00291120;
-        sp30.z = (var_s0 == 4) ? 180.0f : -180.0f;
-        if (SzModel_IsModelDisp(var_s0) != 0) {
-            var_s1 = SzModel_ExSort_Pipe(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
-            sp30.x *= -1.0f;
-            var_s1 = SzModel_ExSort_Pipe(var_s1, var_s0, (s32)&sp30, 0, 0, 0, 0);
+        pos = D_00291120;
+        pos.z = (model == 4) ? 180.0f : -180.0f;
+        if (SzModel_IsModelDisp(model) != 0) {
+            out = SzModel_ExSort_Pipe(out, model, (s32)&pos, 0, 0, 0, 0);
+            pos.x *= -1.0f;
+            out = SzModel_ExSort_Pipe(out, model, (s32)&pos, 0, 0, 0, 0);
         }
-        var_s0 += 1;
-    } while ((s32) var_s0 < 5);
-    return SzDuel_DrawLine_Pipe(var_s1);
+        model += 1;
+    } while ((s32) model < 5);
+    return SzDuel_DrawLine_Pipe(out);
 }
 #pragma opt_lifetimes reset
 
-s32 SzDuel_StartWindowSession_Pipe(s32 arg0) {
-    return SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 0);
+/* Starts drawing duel windows (palette 0). */
+s32 SzDuel_StartWindowSession_Pipe(s32 packet) {
+    return SzDuel_StartWindowSessionWithPalette_Pipe(packet, 0);
 }
 
-s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
+/* Starts drawing duel windows: loads the window texture and font with palette `palette`. */
+s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 packet, s32 palette) {
     extern s32 *SzMsg_GetInfo(s32);
     extern s32 SzText_InitClutManage(s32, s32);
     u8 *base;
@@ -591,7 +600,7 @@ s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     base = duelState.b;
     addr = RhBase_GetUserGsAddress();
     addr += SzText_InitClutManage(addr, 2);
-    arg0 = SzMsg_Init_Pipe(arg0, arg1, addr, &length);
+    packet = SzMsg_Init_Pipe(packet, palette, addr, &length);
     i = 0;
     addr += length;
     do {
@@ -600,26 +609,27 @@ s32 SzDuel_StartWindowSessionWithPalette_Pipe(s32 arg0, s32 arg1) {
     } while (i < 9);
     *(s32 *)(base + 0x6B8) = SzText_LoadRequest(3, 6);
     *(s32 *)(base + 0x6BC) = SzText_LoadRequest(3, 7);
-    arg0 = SzText_DoRequest_Pipe(arg0, 3, addr, &length);
+    packet = SzText_DoRequest_Pipe(packet, 3, addr, &length);
     addr += length;
     SzText_FreeRequest(3, -1);
     {
         s32 *info;
 
-        arg0 = SzMsg_LoadFont_Pipe(arg0, 0, 0x15, 0, 0);
+        packet = SzMsg_LoadFont_Pipe(packet, 0, 0x15, 0, 0);
         info = SzMsg_GetInfo(0);
         info[3] = 0x16;
-        arg0 = RhText_SetTextureFlush(arg0);
+        packet = RhText_SetTextureFlush(packet);
     }
     *(s32 *)(base + 0xC7C) = addr;
     *(s32 *)(base + 0xC58) = 0xFFFFF8;
     SzMsg_SetDefPrioZ(0xFFFFF8);
-    return arg0;
+    return packet;
 }
 
-s32 SzDuel_FinishWindowSession_Pipe(s32 arg0) {
+/* Ends drawing duel windows. */
+s32 SzDuel_FinishWindowSession_Pipe(s32 packet) {
     SzMsg_Free(0);
-    return arg0;
+    return packet;
 }
 
 typedef struct {
@@ -627,13 +637,14 @@ typedef struct {
     s32 entries[8];
 } Data_001AF140;
 
-s32 SzDuel_GetWindowTexture(s32 arg0) {
+/* The address of duel window texture `index` (0..7), or 0. */
+s32 SzDuel_GetWindowTexture(s32 index) {
     Data_001AF140 *data = (Data_001AF140 *)duelState.b;
 
-    if ((arg0 < 0) || (arg0 >= 8)) {
+    if ((index < 0) || (index >= 8)) {
         return 0;
     }
-    return data->entries[arg0];
+    return data->entries[index];
 }
 
 typedef struct {
@@ -684,6 +695,7 @@ typedef struct {
 s32 func_001D9F00(void *, s32);
 extern u16 D_00318118;
 
+/* Absolute value. */
 static inline f32 abs_001AF180(f32 value) {
     if (value < 0.0f) {
         return -value;
@@ -691,8 +703,9 @@ static inline f32 abs_001AF180(f32 value) {
     return value;
 }
 
-s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
-    extern Palette_001AF180 gSzDuel_aaicolRgba[];
+/* Draws one card of the hand as the 3D card it is on screen. */
+s32 SzDuel_DrawHandCard_Pipe(s32 packet, CardNode_001AF180 *object) {
+    extern Palette_001AF180 sideColors[];
     u8 *state = duelState.b;
     s32 i;
     s32 id;
@@ -700,11 +713,11 @@ s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
     s32 resource;
 
     if (func_001AAF60(1) != 1) {
-        return arg0;
+        return packet;
     }
     if (!((Flags_001AF180 *)(state + 0xD67))->bit2) {
         if (state[0xD45] == 0 && state[0xD47] == 0 && state[0xD48] == 0) {
-            return arg0;
+            return packet;
         }
     }
     i = 5;
@@ -718,7 +731,7 @@ s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
                 if (!object->flags83.bit6) {
                     if (id != 0) {
                         if (state[0xD47] == 0 && state[0xD4F] == id - 1) {
-                            object->color = gSzDuel_aaicolRgba[state[0xD3C]].color;
+                            object->color = sideColors[state[0xD3C]].color;
                             object->color.a = D_00318118 >> 8;
                         } else {
                             object->color.a = 0;
@@ -743,11 +756,11 @@ s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
                     }
                     if (actor->flags9F.bit2) {
                         func_001DA2B0(object, 1, object->x, object->y);
-                        arg0 = func_001DBC40(arg0, resource, object);
+                        packet = func_001DBC40(packet, resource, object);
                     } else {
                         s32 result = func_001D9F00(object, 1);
                         resource = result ? resource : 0;
-                        arg0 = func_001DBC40(arg0, resource, object);
+                        packet = func_001DBC40(packet, resource, object);
                         if (0 != id) {
                             if (state[0xD47] != 0) {
                                 if (((Flags_001AF180 *)(state + 0xD67))->bit4) {
@@ -764,16 +777,17 @@ s32 SzDuel_DrawHandCard_Pipe(s32 arg0, CardNode_001AF180 *object) {
                             }
                         }
                     }
-                    arg0 = func_0020A0B0(func_001DBD30(func_0020A0B0(arg0, 1), (s32)object), 0);
+                    packet = func_0020A0B0(func_001DBD30(func_0020A0B0(packet, 1), (s32)object), 0);
                 }
             }
         }
         i--;
     } while (i >= 0);
-    return arg0;
+    return packet;
 }
 
-s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
+/* Draws the cursor over the hand card being picked, with its pick-order number. */
+s32 SzDuel_DrawHandCursor_Pipe(s32 packet) {
     extern s32 SzGame_GetMode(s32);
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
@@ -794,13 +808,13 @@ s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
     player = duelState.s.turnOwner;
     count = SzDuel_GetHandCount(player);
     if (mode != 1) {
-        return arg0;
+        return packet;
     }
     if (state[0xD45] == 0) {
-        return arg0;
+        return packet;
     }
     if (state[0xD47] != 0) {
-        return arg0;
+        return packet;
     }
     for (i = 0; i < count; i++) {
         pos = (f32 *)SzDuel_GetUnit(2, i + 1);
@@ -812,22 +826,23 @@ s32 SzDuel_DrawHandCursor_Pipe(s32 arg0) {
                 kind = SzDuel_InqHand(player, i);
                 if (kind >= 0) {
                     if (state[0xD4F] == i) {
-                        arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, -1, -1, 8, x, y - 4, 0xC, 0x13, 1);
+                        packet = lSzDuel_DrawWindow_Frame_Pipe(packet, -1, -1, 8, x, y - 4, 0xC, 0x13, 1);
                     }
                     if ((kind & 0xFFF) != 0x3E7) {
                         kind = (kind & 0xF000) >> 12;
                         if (kind != 0) {
-                            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_002902A6, x + 0x6C0, y + 0x704, 1, 1, 0, 0, 1, 0, -1);
-                            arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, x + 0x10, y - 0x17, 0, 2, 1, kind);
+                            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_002902A6, x + 0x6C0, y + 0x704, 1, 1, 0, 0, 1, 0, -1);
+                            packet = SzDuel_DrawWindow_FontDigit_Pipe(packet, x + 0x10, y - 0x17, 0, 2, 1, kind);
                         }
                     }
                 }
             }
         }
     }
-    return arg0;
+    return packet;
 }
 
+/* Draws the duel's dialog layer. */
 void SzDuel_DrawDialog(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawDialog_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -855,7 +870,7 @@ typedef struct Card_001AF7E0 {
 } Card_001AF7E0;
 
 extern char *D_00291130[];
-extern u8 gSzDuel_Icon[];
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern u8 D_00290828[];
 extern u8 D_00290832[];
 extern u8 D_00290AA8[];
@@ -863,7 +878,8 @@ extern u8 D_00290AB2[];
 extern u8 D_00290AF8[];
 extern u8 D_00290B02[];
 
-s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
+/* Draws the duel's dialogs: card pick windows, messages and their cards. */
+s32 SzDuel_DrawDialog_Pipe(s32 packetStart) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe();
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
@@ -953,9 +969,9 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
         }
     }
     if (count == 0) {
-        return arg0;
+        return packetStart;
     }
-    packet = SzDuel_StartWindowSessionWithPalette_Pipe(arg0, 0);
+    packet = SzDuel_StartWindowSessionWithPalette_Pipe(packetStart, 0);
     SzDuel_SetWindowDefPrioZ(0xFFFFFE);
     SzMsg_SetDefPrioZ(0xFFFFFE);
     for (index = 0, p4 = state, p2 = state; index < 4; p4 += 4, index++, p2 += 2) {
@@ -1118,13 +1134,13 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
             if (on != 0) {
                 w = y + 0x7BE;
                 if (page == 0) {
-                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowA + 0xB9) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, duelIcons + (lowA + 0xB9) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
                 } else {
-                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowB + 0xBB) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
+                    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, duelIcons + (lowB + 0xBB) * 10, 0x7E8, w, 0, 1, 0, 0, 1, 0, 1);
                 }
             } else {
                 dir = page == 0 ? 1 : -1;
-                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowA + 0xB9) * 10, 0x7B8, y + 0x7BE, 0, 1, 0, 0, (page == 0 ? 1 : 0), 0, dir);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, duelIcons + (lowA + 0xB9) * 10, 0x7B8, y + 0x7BE, 0, 1, 0, 0, (page == 0 ? 1 : 0), 0, dir);
                 packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290B02, 0x7F1, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
                 packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AF8, 0x804, y + 0x7C3, 0, 1, 0, 0, 1, 0, -1);
                 w = y + 0x7BE;
@@ -1133,7 +1149,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
                 } else {
                     dir = -1;
                 }
-                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, gSzDuel_Icon + (lowB + 0xBB) * 10, 0x818, w, 0, 1, 0, 0, (page == 1 ? 1 : 0), 0, dir);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, duelIcons + (lowB + 0xBB) * 10, 0x818, w, 0, 1, 0, 0, (page == 1 ? 1 : 0), 0, dir);
             }
             packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290828, 0x867, y + 0x7C2, 0, 1, 0, 0, 1, 0, -1);
             packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AA8, 0x88B, y + 0x7C7, 0, 1, 0, 0, 1, 0, -1);
@@ -1147,9 +1163,9 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
                     msg = *entry >> 5;
                     value = *entry & 0x1F;
                     if (msg == 0) {
-                        pic = gSzDuel_Icon + value * 10;
+                        pic = duelIcons + value * 10;
                     } else {
-                        pic = gSzDuel_Icon + (msg + 0x14) * 10;
+                        pic = duelIcons + (msg + 0x14) * 10;
                     }
                     scale = 1.0f;
                     packet = SzMsg_LoadFont_Pipe(packet, 1, SzDuel_GetMsgName(id), 0, 0x16);
@@ -1271,6 +1287,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 arg0) {
     return packet;
 }
 
+/* Absolute value. */
 static inline s32 abs_001B0CE0(s32 value) {
     if (value >= 0) {
         return value;
@@ -1278,9 +1295,11 @@ static inline s32 abs_001B0CE0(s32 value) {
     return -value;
 }
 
-s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
-                  s32 arg8, s32 arg9, s32 arg10) {
-    extern u8 gSzDuel_Icon[];
+/* Draws a dialog window at (x, y), at least width x height (a negative width keeps it fixed), with an optional
+   title font and text. */
+s32 lSzDuel_DrawDialog_Window_Pipe(s32 packet, s32 side, s32 image, s32 font, s32 x, s32 y, s32 width, s32 height,
+                  s32 textLength, s32 text, s32 fitText) {
+    extern u8 duelIcons[];
     extern s32 func_001B3C80();
     extern s32 func_001B4780();
     extern s32 func_001B6F70(s32, s32, s32, s32, s32, s32, s8 *, s32);
@@ -1300,90 +1319,91 @@ s32 lSzDuel_DrawDialog_Window_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
 
     state = duelState.b;
     frame = (u32)func_001A8720() / 5;
-    if (arg6 < 0) {
+    if (width < 0) {
         flip = 1;
     } else {
         flip = 0;
     }
-    card = (arg2 >= 0x8000) ? 1 : 0;
+    card = (image >= 0x8000) ? 1 : 0;
     scale = 1.0f;
-    arg6 = abs_001B0CE0(arg6);
+    width = abs_001B0CE0(width);
     if (card) {
-        arg2 -= 0x8000;
+        image -= 0x8000;
     }
-    if (arg8 > 0) {
-        func_001B76E0(2, 3, arg8, (s8 *)arg9, &textW, &textH);
+    if (textLength > 0) {
+        func_001B76E0(2, 3, textLength, (s8 *)text, &textW, &textH);
         textW += 0x18;
         textH += 0xC;
     } else {
         textH = 0;
         textW = 0;
     }
-    if (arg3 >= 0) {
-        arg0 = func_001FD680(arg0, 1, arg3, 0, 0x16);
-        arg0 = func_0020F290(arg0);
+    if (font >= 0) {
+        packet = func_001FD680(packet, 1, font, 0, 0x16);
+        packet = func_0020F290(packet);
         info = func_001FEAB0(1);
         if (flip) {
-            if (arg6 - 0x18 < info[3]) {
-                scale = (f32)(arg6 - 0x18) / (f32)info[3];
+            if (width - 0x18 < info[3]) {
+                scale = (f32)(width - 0x18) / (f32)info[3];
             }
-            minW = arg6;
+            minW = width;
         } else {
             minW = ((info[3] > textW) ? info[3] : textW) + 0x18;
         }
-        minH = info[4] + ((arg8 > 0) ? textH + 0x18 : 0xC) + 0xC;
+        minH = info[4] + ((textLength > 0) ? textH + 0x18 : 0xC) + 0xC;
     } else {
         minW = textW + 0x18;
-        minH = (arg8 > 0) ? textH + 0x18 : 0xC;
+        minH = (textLength > 0) ? textH + 0x18 : 0xC;
     }
     if (card) {
         minH += 0x3C;
-    } else if (arg2 >= 0) {
+    } else if (image >= 0) {
         minH += 0x8C;
     }
-    if (arg10 != 0) {
+    if (fitText != 0) {
         minH += 0x1C;
     }
-    if (arg6 < minW) {
-        arg6 = minW;
+    if (width < minW) {
+        width = minW;
     }
-    if (arg7 < minH) {
-        arg7 = minH;
+    if (height < minH) {
+        height = minH;
     }
-    nw = -arg6;
+    nw = -width;
     (void)nw; /* keeps the negation at its own statement, ahead of the frame call's argument copies, as in the original */
-    id = func_001B4780(arg0, 0xD, -1, 1, arg4 - (arg6 >> 1) - 4, arg5, nw, -arg7, 1);
-    if (arg8 > 0) {
-        id = func_001B4780(id, arg1, -1, 0xB, arg4 - (textW >> 1), arg5 + 0xC, -textW, -textH, 1);
-        id = func_001B6F70(id, arg4, arg5 + 0x14, 2, 3, arg8, (s8 *)arg9, 0);
+    id = func_001B4780(packet, 0xD, -1, 1, x - (width >> 1) - 4, y, nw, -height, 1);
+    if (textLength > 0) {
+        id = func_001B4780(id, side, -1, 0xB, x - (textW >> 1), y + 0xC, -textW, -textH, 1);
+        id = func_001B6F70(id, x, y + 0x14, 2, 3, textLength, (s8 *)text, 0);
     }
     if (card) {
-        minW = arg4 - 0x18;
-        minH = arg5 + ((arg8 > 0) ? textH + 0x18 : 0xC);
-        id = func_001B7F90(id, arg2, minW, minH, 0x30, 0x30, *(s32 *)(state + 0xC58), 1);
+        minW = x - 0x18;
+        minH = y + ((textLength > 0) ? textH + 0x18 : 0xC);
+        id = func_001B7F90(id, image, minW, minH, 0x30, 0x30, *(s32 *)(state + 0xC58), 1);
         id = func_001B4780(id, -1, -1, 4, minW, minH, 3, 6, 1);
-    } else if (arg2 >= 0) {
-        id = func_001B7D60(id, arg2, arg4 - 0x40, arg5 + ((arg8 > 0) ? textH + 0x18 : 0xC), 0x80, 0x80,
+    } else if (image >= 0) {
+        id = func_001B7D60(id, image, x - 0x40, y + ((textLength > 0) ? textH + 0x18 : 0xC), 0x80, 0x80,
                            *(s32 *)(state + 0xC58));
     }
-    if (arg3 >= 0) {
-        minW = arg4 - (s32)((f32)info[3] * scale / 2.0f);
-        minH = arg5 + ((arg8 > 0) ? textH + 0x18 : 0x10);
+    if (font >= 0) {
+        minW = x - (s32)((f32)info[3] * scale / 2.0f);
+        minH = y + ((textLength > 0) ? textH + 0x18 : 0x10);
         if (card) {
             minH += 0x3C;
-        } else if (arg2 >= 0) {
+        } else if (image >= 0) {
             minH += 0x8C;
         }
         id = func_001FE660(id, 1, minW, minH, scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
         func_001FEAF0(1);
     }
-    if (arg10 != 0) {
-        id = func_001B3C80(id, gSzDuel_Icon + (frame % 3 + 0xBE) * 10, arg4 + 0x6B8, arg5 + 0x704 + arg7,
+    if (fitText != 0) {
+        id = func_001B3C80(id, duelIcons + (frame % 3 + 0xBE) * 10, x + 0x6B8, y + 0x704 + height,
                            0, 1, 0, 0, 1, 0, -1);
     }
     return id;
 }
 
+/* Draws the duel's info windows. */
 void SzDuel_DrawWindow(void) {
     RhBase_SetVifPacketArea(SzDuel_DrawWindow_Pipe(RhBase_GetVifPacketArea()));
 }
@@ -1470,6 +1490,7 @@ extern DotrDrawWord func_001B3100_b(DotrDrawWord cursor, int a1, int a2, int a3)
 extern DotrDrawWord func_001B4780_b(DotrDrawWord cursor, int a1, int a2, int a3, int x, int y, int a6, int a7, long a8);
 extern DotrDrawWord func_001B6EA0_b(DotrDrawWord cursor, int x, int y, int a, int flags, int width, int value);
 
+/* Draws the duel's info windows for the square under the cursor: player info, level, summon cost, card info, field. */
 int SzDuel_DrawWindow_Pipe(int cursor)
 {
     extern DotrDrawWord lSzDuel_DrawWindow_CardInfo_Pipe(DotrDrawWord cursor, struct DotrWindowUnit *unit, int x, int y,
@@ -1627,7 +1648,7 @@ int SzDuel_DrawWindow_Pipe(int cursor)
     return cursor;
 }
 
-extern u8 gSzDuel_Icon[];
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern u8 D_00290882[];
 extern u8 D_002908E6[];
 extern u8 D_0029094A[];
@@ -1637,7 +1658,9 @@ extern s8 D_002BEF76[];
 
 #pragma opt_propagation off
 
-s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Draws side `side`'s info window at (x, y): portrait, life points, summon power, deck count, monsters and spells
+   on the board. */
+s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 packet, s32 side, s32 x, s32 y, s32 visible) {
     s32 c0;
     s32 c1;
     s32 baseX;
@@ -1672,9 +1695,9 @@ s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s
     s32 rowX2;
 
     data = duelState.b;
-    playerData = duelState.b + arg1 * 0x350;
-    baseY = arg3 + 3;
-    baseX = arg2 + 3;
+    playerData = duelState.b + side * 0x350;
+    baseY = y + 3;
+    baseX = x + 3;
     screenY = baseY + 0x720;
     hidden = 1;
     screenX = baseX + 0x6C0;
@@ -1687,65 +1710,66 @@ s32 lSzDuel_DrawWindow_PlayerInfo_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s
         hidden = 0;
     } else {
         if (SzDuel_GetPlayer(data[0xD3C]) >= 100) {
-            if (data[0xD3C] == arg1) {
+            if (data[0xD3C] == side) {
                 hidden = 0;
             }
-        } else if (data[0xD3C] != arg1) {
+        } else if (data[0xD3C] != side) {
             hidden = 0;
         }
     }
-    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, arg1, arg1, 0, arg2 - 13, arg3 - 15, 37, 13, 1);
-    iconX = arg2 + 3 + (arg1 != 0 ? 1 : 127);
-    iconY = arg3 + 4;
-    arg0 = lSzDuel_DrawWindow_PicMini_Pipe(arg0, arg1, iconX, iconY, 48, 48, *(s32 *)(data + 0xC58), arg4);
-    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, -1, -1, 4, iconX, iconY, 3, 6, arg4);
-    playerOffset = arg1 * 48;
+    packet = lSzDuel_DrawWindow_Frame_Pipe(packet, side, side, 0, x - 13, y - 15, 37, 13, 1);
+    iconX = x + 3 + (side != 0 ? 1 : 127);
+    iconY = y + 4;
+    packet = lSzDuel_DrawWindow_PicMini_Pipe(packet, side, iconX, iconY, 48, 48, *(s32 *)(data + 0xC58), visible);
+    packet = lSzDuel_DrawWindow_Frame_Pipe(packet, -1, -1, 4, iconX, iconY, 3, 6, visible);
+    playerOffset = side * 48;
     numberY = baseY + 6;
     rowX = baseX + playerOffset;
     numberX = rowX + 4;
-    arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg1, numberX, numberY, 12, 1, -1);
-    arg0 = SzDuel_DrawWindow_Digit_Pipe(arg0, numberX + 34, numberY + 2, 4, *(u16 *)(playerData + 0x33A), 0);
-    iconX = screenX + (arg1 != 0 ? 1 : 127);
-    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32)(gSzDuel_Icon + (lowLevel + (arg1 * 2 + 185)) * 10), iconX, 48 + screenY, 0, 1, 0, 0, arg4, 0, -1);
+    packet = lSzDuel_DrawWindow_Board_Pipe(packet, side, numberX, numberY, 12, 1, -1);
+    packet = SzDuel_DrawWindow_Digit_Pipe(packet, numberX + 34, numberY + 2, 4, *(u16 *)(playerData + 0x33A), 0);
+    iconX = screenX + (side != 0 ? 1 : 127);
+    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, (s32)(duelIcons + (lowLevel + (side * 2 + 185)) * 10), iconX, 48 + screenY, 0, 1, 0, 0, visible, 0, -1);
     screenRowX = screenX + playerOffset;
     valueX = screenRowX + 8;
     iconX = screenRowX + 8;
     iconY = screenY + 12;
-    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290A1C, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
-    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_002908E6, valueX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
+    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290A1C, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_002908E6, valueX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
     rowX2 = rowX + 26;
     iconX = rowX + 26;
     lowerY = baseY + 37;
     if (hidden != 0) {
-        arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, iconX, lowerY, 0, 0, 2, D_002BEF76, 0);
+        packet = SzDuel_DrawWindow_Font_Pipe(packet, iconX, lowerY, 0, 0, 2, D_002BEF76, 0);
     } else {
-        arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, iconX, lowerY, 0, 0, 2, playerData[0x341]);
+        packet = SzDuel_DrawWindow_FontDigit_Pipe(packet, iconX, lowerY, 0, 0, 2, playerData[0x341]);
     }
     screenValueX = screenRowX + 64;
     iconX = screenRowX + 64;
-    arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_00290882, iconX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
+    packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290882, iconX, screenY + 36, 0, 1, 0, 0, 1, 0, -1);
     lastX = rowX + 82;
     lowerY = baseY + 37;
-    arg0 = SzDuel_DrawWindow_FontDigit_Pipe(arg0, lastX, lowerY, 0, 0, 2, SzDuel_GetDeckCount(arg1));
-    c0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_0029094A, valueX, screenY + 52, 0, 1, 0, 0, 1, 0, -1);
+    packet = SzDuel_DrawWindow_FontDigit_Pipe(packet, lastX, lowerY, 0, 0, 2, SzDuel_GetDeckCount(side));
+    c0 = lSzDuel_DrawWindow_Icon_Pipe(packet, D_0029094A, valueX, screenY + 52, 0, 1, 0, 0, 1, 0, -1);
     secondValueY = 53 + baseY;
     if (0 != hidden) {
         c0 = SzDuel_DrawWindow_Font_Pipe(c0, rowX2, secondValueY, 0, 0, 2, D_002BEF76, 0);
     } else {
-        c0 = SzDuel_DrawWindow_FontDigit_Pipe(c0, rowX2, secondValueY, 0, 0, 2, SzDuel_GetUnitMonsterCount(arg1));
+        c0 = SzDuel_DrawWindow_FontDigit_Pipe(c0, rowX2, secondValueY, 0, 0, 2, SzDuel_GetUnitMonsterCount(side));
     }
     c1 = lSzDuel_DrawWindow_Icon_Pipe(c0, D_00290954, screenValueX, screenY + 52, 0, 1, 0, 0, 1, 0, -1);
     lastY = baseY + 53;
     if (hidden != 0) {
         c1 = SzDuel_DrawWindow_Font_Pipe(c1, lastX, lastY, 0, 0, 2, D_002BEF76, 0);
     } else {
-        c1 = SzDuel_DrawWindow_FontDigit_Pipe(c1, lastX, lastY, 0, 0, 2, SzDuel_GetUnitSpellCount(arg1));
+        c1 = SzDuel_DrawWindow_FontDigit_Pipe(c1, lastX, lastY, 0, 0, 2, SzDuel_GetUnitSpellCount(side));
     }
     return c1;
 }
 #pragma opt_propagation reset
 
-s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+/* Draws the level window at (left, top). */
+s32 lSzDuel_DrawWindow_Level_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
     extern s32 lSzDuel_DrawWindow_Board_Pipe();
     extern s32 SzDuel_DrawWindow_Digit_Pipe();
@@ -1767,8 +1791,8 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaY;
 
     global = duelState.b;
-    x = arg1 + 3;
-    y = arg2 + 3;
+    x = left + 3;
+    y = top + 3;
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
@@ -1778,8 +1802,8 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
         }
     }
 
-    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
-    result = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32) D_002901CA, areaX + 4, areaY + 3,
+    packet = lSzDuel_DrawWindow_Frame_Pipe(packet, global[0xD54], -1, 6, left, top, 8, 3, (s64) 1);
+    result = lSzDuel_DrawWindow_Icon_Pipe(packet, (s32) D_002901CA, areaX + 4, areaY + 3,
                            0, 1, 0, 0, 1, 0, -1);
     xCoord = x + 0x1E;
     yResult = y + 1;
@@ -1797,7 +1821,8 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     return result;
 }
 
-s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+/* Draws the summon-cost window at (left, top). */
+s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
     extern s32 lSzDuel_DrawWindow_Board_Pipe();
     extern s32 SzDuel_DrawWindow_Digit_Pipe();
@@ -1818,8 +1843,8 @@ s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
     s32 areaY;
 
     global = duelState.b;
-    x = arg1 + 3;
-    y = arg2 + 3;
+    x = left + 3;
+    y = top + 3;
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
@@ -1829,8 +1854,8 @@ s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 arg0, s32 arg1, s32 arg2) {
         }
     }
 
-    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, global[0xD54], -1, 6, arg1, arg2, 8, 3, (s64) 1);
-    result = lSzDuel_DrawWindow_Icon_Pipe(arg0, (s32) D_002909B8, areaX + 4, areaY + 3,
+    packet = lSzDuel_DrawWindow_Frame_Pipe(packet, global[0xD54], -1, 6, left, top, 8, 3, (s64) 1);
+    result = lSzDuel_DrawWindow_Icon_Pipe(packet, (s32) D_002909B8, areaX + 4, areaY + 3,
                            0, 1, 0, 0, 1, 0, -1);
     xCoord = x + 0x1E;
     yResult = y + 1;
@@ -1877,14 +1902,16 @@ typedef struct Card_001B22F0 {
 
 #pragma opt_propagation off
 
-s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, long arg8, long arg9) {
+/* Draws the info window of `card` on board square (column, row) for side `side` at (left, top): name, attribute,
+   rank, attack and defence with their field bonus. */
+s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 packet, void *cardData, s32 column, s32 row, s32 side, s32 left, s32 top, s32 drawMode, long frameKind, long highlight) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
     extern s32 lSzDuel_DrawWindow_Board_Pipe();
     extern s32 SzDuel_DrawWindow_Digit_Pipe();
     extern s32 SzData_GetRank();
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void *);
-    extern u8 gSzDuel_Attr[];
-    extern u8 gSzDuel_Icon[];
+    extern u8 duelAttrIcons[];
+    extern u8 duelIcons[];
     extern u8 D_002901D4[];
     extern u8 D_002901DE[];
     extern u8 D_002901E8[];
@@ -1953,14 +1980,14 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
     s32 iconX;
 
     globalBase = duelState.b;
-    playerState = duelState.b + arg4 * 0x350;
-    x = arg5 + 3;
-    y = arg6 + 4;
+    playerState = duelState.b + side * 0x350;
+    x = left + 3;
+    y = top + 4;
     labelX = x + 0x6C0;
-    mode = arg7;
+    mode = drawMode;
     labelY = y + 0x720;
-    card = arg1;
-    cur = lSzDuel_DrawWindow_Frame_Pipe(arg0, arg4, (s32)arg9 != 0 ? 7 : -1, (s32)arg8, arg5, arg6, 0x33, 10, 1);
+    card = cardData;
+    cur = lSzDuel_DrawWindow_Frame_Pipe(packet, side, (s32)highlight != 0 ? 7 : -1, (s32)frameKind, left, top, 0x33, 10, 1);
     if (card != NULL && card->active != 0) {
         owner = card->owner;
         cardState = card->state;
@@ -1968,11 +1995,11 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
         typeIcon = card->type & 0x1F;
         attribute = SzDuel_Kind2Attr(cardType, card->attribute);
         if (cardType == 0) {
-            label = gSzDuel_Icon + typeIcon * 10;
+            label = duelIcons + typeIcon * 10;
         } else {
-            label = gSzDuel_Icon + (cardType + 0x14) * 10;
+            label = duelIcons + (cardType + 0x14) * 10;
         }
-        cardIndex = SzData_GetRank(arg4, card->id);
+        cardIndex = SzData_GetRank(side, card->id);
         icon1 = SzDuel_GetMsgName(card->id);
         if (cardType == 0) {
             typeIcon += 0x25;
@@ -1987,28 +2014,28 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
         if (hidden != 0) {
             icon1 = 0x1C;
         }
-        arg0 = SzMsg_LoadFont_Pipe(cur, 1, icon1, 0, 0x16);
+        packet = SzMsg_LoadFont_Pipe(cur, 1, icon1, 0, 0x16);
         if (hidden != 0) {
             typeIcon = 0x1D;
         }
-        arg0 = SzMsg_LoadFont_Pipe(arg0, 2, typeIcon, 0, 0x2C);
+        packet = SzMsg_LoadFont_Pipe(packet, 2, typeIcon, 0, 0x2C);
         if (hidden != 0) {
             icon3 = 0x51;
         }
-        arg0 = SzMsg_LoadFont_Pipe(arg0, 3, icon3, 0, 0x42);
-        arg0 = RhText_SetTextureFlush(arg0);
+        packet = SzMsg_LoadFont_Pipe(packet, 3, icon3, 0, 0x42);
+        packet = RhText_SetTextureFlush(packet);
         textX1 = x + 2;
-        typeIcon = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, textX1, y, 0x1B, 1, -1);
+        typeIcon = lSzDuel_DrawWindow_Board_Pipe(packet, side, textX1, y, 0x1B, 1, -1);
         width1 = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0xC);
         scale1 = (width1 < 229) ^ 1 ? 228.0f / (f32)width1 : 1.0f;
-        arg0 = SzMsg_DrawRatioX_Pipe(typeIcon, 1, textX1 + 5, y + 2, scale1, 1.0f, 0, SzMsg_DrawRect_Pipe);
-        arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, label, labelX + 3, labelY + 0x1F, hidden, enabled = !hidden, hidden, 0, 1, 0, -1);
+        packet = SzMsg_DrawRatioX_Pipe(typeIcon, 1, textX1 + 5, y + 2, scale1, 1.0f, 0, SzMsg_DrawRect_Pipe);
+        packet = lSzDuel_DrawWindow_Icon_Pipe(packet, label, labelX + 3, labelY + 0x1F, hidden, enabled = !hidden, hidden, 0, 1, 0, -1);
         textY2 = y + 0x1D;
         textX2 = x + 0x1D;
-        text2 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, textX2, textY2, 0xB, 1, -1);
+        text2 = lSzDuel_DrawWindow_Board_Pipe(packet, side, textX2, textY2, 0xB, 1, -1);
         width2 = *(s32 *)((u8 *)SzMsg_GetInfo(2) + 0xC);
         scale2 = width2 > 100 ? 100.0f / (f32)width2 : 1.0f;
-        arg0 = SzMsg_DrawRatioX_Pipe(text2, 2, textX2 + 5, textY2 + 2, scale2, 1.0f, 0, SzMsg_DrawRect_Pipe);
+        packet = SzMsg_DrawRatioX_Pipe(text2, 2, textX2 + 5, textY2 + 2, scale2, 1.0f, 0, SzMsg_DrawRect_Pipe);
         iconX = labelX + 0x90;
         iconY = labelY + 0x1F;
         if (mode == 2) {
@@ -2016,12 +2043,12 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
         } else {
             color = mode == 0 ? 2LL : -1LL;
         }
-        cur = lSzDuel_DrawWindow_Icon_Pipe(arg0, gSzDuel_Attr + attribute * 10, iconX, iconY, 1, enabled, 1, 0, 1, 0, color);
+        cur = lSzDuel_DrawWindow_Icon_Pipe(packet, duelAttrIcons + attribute * 10, iconX, iconY, 1, enabled, 1, 0, 1, 0, color);
         if (cardType == 0) {
             if (cardState == 0) {
-                arg0 = lSzDuel_DrawWindow_Emblem_Pipe(cur, x + 0xF1, y + 2, cardIndex, 1, 0);
+                packet = lSzDuel_DrawWindow_Emblem_Pipe(cur, x + 0xF1, y + 2, cardIndex, 1, 0);
                 textX3 = x + 0x10C;
-                text3 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, textX3, y, 9, 1, -1);
+                text3 = lSzDuel_DrawWindow_Board_Pipe(packet, side, textX3, y, 9, 1, -1);
                 width3 = *(s32 *)((u8 *)SzMsg_GetInfo(3) + 0xC);
                 scale3 = width3 > 88 ? 88.0f / (f32)width3 : 1.0f;
                 cur = SzMsg_DrawRatioX_Pipe(text3, 3, textX3 + 3, y + 2, scale3, 1.0f, 0, SzMsg_DrawRect_Pipe);
@@ -2094,11 +2121,11 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
                     cur = lSzDuel_DrawWindow_Icon_Pipe(cur, D_0029024C, statX, statY, 0, 1, 0, 0, 1, 0, -1);
                 }
             } else if (hidden == 0) {
-                attackBase = Ta_GetParamOfs((s32)card, arg2, arg3, 1);
-                defenseBase = Ta_GetParamOfs((s32)card, arg2, arg3, 0);
+                attackBase = Ta_GetParamOfs((s32)card, column, row, 1);
+                defenseBase = Ta_GetParamOfs((s32)card, column, row, 0);
                 attack = attackBase + SzDuel_GetUnitAP2(card, 0);
                 defense = defenseBase + SzDuel_GetUnitDP2(card, 0);
-                effect = CheckLandAgreement(SzDuel_GetField(arg2, arg3), card);
+                effect = CheckLandAgreement(SzDuel_GetField(column, row), card);
                 attack = MIN_001B22F0(MAX_001B22F0(attack, 0), 9999);
                 defense = MIN_001B22F0(MAX_001B22F0(defense, 0), 9999);
                 if (SzDuel_GetUnitConstEffect2(card, 0) != NULL) {
@@ -2108,24 +2135,24 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
                 }
                 iconX = labelX + 0xF2;
                 iconY = labelY + 2;
-                arg0 = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909A4, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909A4, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
                 numX1 = x + 0x10C;
-                arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, numX1, y, 9, 1, -1);
-                arg0 = SzDuel_DrawWindow_Digit_Pipe(arg0, numX1 + 6, y + 2, 4, attack, 0);
+                packet = lSzDuel_DrawWindow_Board_Pipe(packet, side, numX1, y, 9, 1, -1);
+                packet = SzDuel_DrawWindow_Digit_Pipe(packet, numX1 + 6, y + 2, 4, attack, 0);
                 iconX = labelX + 0xF2;
                 iconY = labelY + 0x1F;
-                arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, D_002909AE, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_002909AE, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
                 numY2 = y + 0x1D;
                 numX2 = x + 0x10C;
-                arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, numX2, numY2, 9, 1, -1);
-                cur = SzDuel_DrawWindow_Digit_Pipe(arg0, numX2 + 6, numY2 + 2, 4, defense, 0);
+                packet = lSzDuel_DrawWindow_Board_Pipe(packet, side, numX2, numY2, 9, 1, -1);
+                cur = SzDuel_DrawWindow_Digit_Pipe(packet, numX2 + 6, numY2 + 2, 4, defense, 0);
                 if (effect != 0) {
                     iconX = labelX + 0x16E;
                     iconY = labelY + 2;
-                    cur = lSzDuel_DrawWindow_Icon_Pipe(cur, gSzDuel_Icon + (effect + 0xED) * 10, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
+                    cur = lSzDuel_DrawWindow_Icon_Pipe(cur, duelIcons + (effect + 0xED) * 10, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
                 }
             }
-            if (hidden == 0 && (GetMoveRev((s32)card, arg2, arg3) & 0xF) > 1U) {
+            if (hidden == 0 && (GetMoveRev((s32)card, column, row) & 0xF) > 1U) {
                 iconX = labelX + 0x18B;
                 iconY = labelY + 2;
                 cur = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909E0, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
@@ -2147,11 +2174,11 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 arg0, void *arg1, s32 arg2, s32 arg3, s
                 }
             }
             if (count != 0) {
-                arg0 = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909C2, labelX + 0x16E, labelY + 0x1F, 0, 1, 0, 0, 1, 0, -1);
+                packet = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909C2, labelX + 0x16E, labelY + 0x1F, 0, 1, 0, 0, 1, 0, -1);
                 y += 0x1D;
                 labelX = x + 0x188;
-                arg0 = lSzDuel_DrawWindow_Board_Pipe(arg0, arg4, labelX, y, 1, 1, -1);
-                cur = SzDuel_DrawWindow_Digit_Pipe(arg0, labelX + 4, y + 2, 1, count, 0);
+                packet = lSzDuel_DrawWindow_Board_Pipe(packet, side, labelX, y, 1, 1, -1);
+                cur = SzDuel_DrawWindow_Digit_Pipe(packet, labelX + 4, y + 2, 1, count, 0);
             }
         }
     }
@@ -2206,11 +2233,12 @@ typedef struct {
     s32 width;
 } Text_001B3100;
 
-extern u8 gSzDuel_Icon[];
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern Entry_001B3100 D_00291180[];
 extern u8 D_003181E7;
 
-s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3) {
+/* Draws the button guide for side `side` at (left, top): which commands the square under the cursor allows. */
+s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 packet, s32 side, s64 left, s64 top) {
     extern s32 lSzDuel_DrawWindow_Icon_Pipe();
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
     extern void *SzMsg_GetInfo();
@@ -2235,10 +2263,10 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
 
     state = (State_001B3100 *)duelState.b;
     player = (State_001B3100 *)(duelState.b + D_003181CC * 0x350);
-    x = (s32)arg2 + 4;
-    y = (s32)arg3 + 4;
+    x = (s32)left + 4;
+    y = (s32)top + 4;
     choice = -1;
-    arg0 = lSzDuel_DrawWindow_Frame_Pipe(arg0, arg1, 2, 3, arg2, arg3, 9, 0x12, 1);
+    packet = lSzDuel_DrawWindow_Frame_Pipe(packet, side, 2, 3, left, top, 9, 0x12, 1);
     switch (D_003181E7) {
     case 0x18:
         if (state->card != NULL) {
@@ -2349,7 +2377,7 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
         break;
     }
     if (choice < 0) {
-        return arg0;
+        return packet;
     }
     renderX = x + 10;
     entry = D_00291180 + choice * 4;
@@ -2360,19 +2388,19 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
         entryY = entry->y;
         text = entry->text;
         if (graphic < 0x3FF) {
-            arg0 = lSzDuel_DrawWindow_Icon_Pipe(arg0, gSzDuel_Icon + graphic * 10,
+            packet = lSzDuel_DrawWindow_Icon_Pipe(packet, duelIcons + graphic * 10,
                                   renderX + 0x6C0 + entryX, y + 0x720 + entryY,
                                   0, 1, 0, 0, 1, 0, -1);
         }
         if (text < 0xFFFF) {
-            arg0 = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, text, 0, 0x16));
+            packet = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, text, 0, 0x16));
             info = SzMsg_GetInfo(1);
             if (info->width >= 0x2D) {
                 scale = 44.0f / (f32)info->width;
             } else {
                 scale = 1.0f;
             }
-            arg0 = SzMsg_DrawRatioX_Pipe(arg0, 1, renderX + 0x1A, y, scale, 1.0f, 0,
+            packet = SzMsg_DrawRatioX_Pipe(packet, 1, renderX + 0x1A, y, scale, 1.0f, 0,
                                   SzMsg_DrawRect_Pipe);
             SzMsg_Free(1);
         }
@@ -2380,10 +2408,11 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 arg0, s32 arg1, s64 arg2, s64 arg3)
         y += 0x16;
         entry++;
     } while (count < 4);
-    return arg0;
+    return packet;
 }
 
-s32 lSzDuel_DrawWindow_Field_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Draws the window naming field type `field` at (x, y). */
+s32 lSzDuel_DrawWindow_Field_Pipe(s32 packet, s32 field, s32 x, s32 y) {
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
     s32 id;
@@ -2392,14 +2421,14 @@ s32 lSzDuel_DrawWindow_Field_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     f32 scale;
 
     scale = 1.0f;
-    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, arg1 + 0x47, 0, 0x16));
-    id = lSzDuel_DrawWindow_Frame_Pipe(id, -1, 2, 3, arg2, arg3, 9, 0x12, 1);
-    id = lSzDuel_DrawWindow_Frame_Pipe(id, 5, -1, 3, arg2, arg3 + 0x40, 9, 2, 1);
+    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, field + 0x47, 0, 0x16));
+    id = lSzDuel_DrawWindow_Frame_Pipe(id, -1, 2, 3, x, y, 9, 0x12, 1);
+    id = lSzDuel_DrawWindow_Frame_Pipe(id, 5, -1, 3, x, y + 0x40, 9, 2, 1);
     width = ((s32 *)SzMsg_GetInfo(1))[3];
     if (width > 0x54) {
         scale = 84.0f / (f32)width;
     }
-    result = SzMsg_DrawRatioX_Pipe(id, 1, (arg2 + 0x30) - (s32)((f32)(width >> 1) * scale), arg3 + 0x43,
+    result = SzMsg_DrawRatioX_Pipe(id, 1, (x + 0x30) - (s32)((f32)(width >> 1) * scale), y + 0x43,
                            scale, 1.0f, 0, SzMsg_DrawRect_Pipe);
     SzMsg_Free(1);
     return result;
@@ -2485,18 +2514,20 @@ typedef struct {
     f32 z;
 } Vec_001B3790;
 
+/* Sets a sprite corner's texture coordinates. */
 static inline void set_uv_001B3790(UV_001B3790 *p, s32 u, s32 v) {
     p->u = u;
     p->v = v;
 }
 
-s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
-    extern Source_001B3790 gSzDuel_aaicolRgba[];
+/* Draws a small 3D board piece of `card` in a window, rendered into a texture. */
+s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 start, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
+    extern Source_001B3790 sideColors[];
     extern Params_001B3790 D_002912D0;
     extern s32 D_0031AB80;
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     u8 *state = duelState.b;
-    Source_001B3790 *color = &gSzDuel_aaicolRgba[colorIndex];
+    Source_001B3790 *color = &sideColors[colorIndex];
     s32 left;
     s32 top;
     s32 width = 0x60;
@@ -2523,13 +2554,13 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x
     box.color.q = 1.0f;
     box.vertex0.x = (left + 2) << 4;
     box.vertex0.y = (top + 2) << 4;
-    box.vertex0.z = D_003180E8;
+    box.vertex0.z = duelState.s.depth;
     box.vertex0.fog = 0;
     box.vertex1.x = (left + width - 2) << 4;
     box.vertex1.y = (top + height) << 4;
-    box.vertex1.z = D_003180E8;
+    box.vertex1.z = duelState.s.depth;
     box.vertex1.fog = 0;
-    id = ExSortPrim_Pipe(arg0, (s32)box.tag, 0, 0);
+    id = ExSortPrim_Pipe(start, (s32)box.tag, 0, 0);
     if (SzModel_IsModelDisp(card + 0x4A) == 0) {
         return id;
     }
@@ -2593,14 +2624,15 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 arg0, s32 colorIndex, s32 card, s32 x
     return id;
 }
 
-void lSzDuel_DrawWindow_Icon_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
-                   s32 arg4, s32 arg5, s32 arg6, s32 arg7,
-                   s32 arg8, s32 arg9, s32 arg10) {
+/* Draws an icon: lSzDuel_DrawWindow_ExIcon_Pipe without flips, at full alpha. */
+void lSzDuel_DrawWindow_Icon_Pipe(s32 packet, s32 src, s32 x, s32 y,
+                   s32 background, s32 image, s32 border, s32 shrink,
+                   s32 bright, s32 rgb, s32 blend) {
     extern void lSzDuel_DrawWindow_ExIcon_Pipe(s32, s32, s32, s32, s32, s32, s32, s32,
                               s64, s64, s64, s64, s64, s64);
 
-    lSzDuel_DrawWindow_ExIcon_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
-                  0, 0, (s64) arg8, (s64) arg9, (s64) arg10, 0x80);
+    lSzDuel_DrawWindow_ExIcon_Pipe(packet, src, x, y, background, image, border, shrink,
+                  0, 0, (s64) bright, (s64) rgb, (s64) blend, 0x80);
 }
 
 typedef struct Tag_001B3CC0 {
@@ -2670,6 +2702,7 @@ typedef struct State_001B3CC0 {
 extern u8 D_002909F4[];
 extern u16 D_00318118;
 
+/* Fills a GIF tag. */
 static inline void tag_001B3CC0(Tag_001B3CC0 *tag, s32 count, s32 flags, u64 registers) {
     tag->flags = flags;
     tag->count = count;
@@ -2677,6 +2710,7 @@ static inline void tag_001B3CC0(Tag_001B3CC0 *tag, s32 count, s32 flags, u64 reg
     tag->reserved = 0;
 }
 
+/* Absolute value. */
 static inline s32 abs_001B3CC0(s32 value) {
     if (value >= 0) {
         return value;
@@ -2684,6 +2718,7 @@ static inline s32 abs_001B3CC0(s32 value) {
     return -value;
 }
 
+/* The icon brightness: 0x80 when bright, else 0x30. */
 static inline s32 intensity_001B3CC0(s32 bright) {
     if (bright != 0) {
         return 0x80;
@@ -2691,6 +2726,7 @@ static inline s32 intensity_001B3CC0(s32 bright) {
     return 0x30;
 }
 
+/* Clamps at 0. */
 static inline s32 lower_001B3CC0(s32 value) {
     if (value > 0) {
         return value;
@@ -2698,6 +2734,7 @@ static inline s32 lower_001B3CC0(s32 value) {
     return 0;
 }
 
+/* Clamps at 0x3FFF. */
 static inline s32 upper_001B3CC0(s32 value) {
     if (value < 0x3FFF) {
         return value;
@@ -2705,6 +2742,7 @@ static inline s32 upper_001B3CC0(s32 value) {
     return 0x3FFF;
 }
 
+/* Draws icon `src` at (x, y) with optional background, border, flips, brightness, colour and blending. */
 s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
                   s32 background, s32 image, s32 border, s32 shrink,
                   s32 flipX, s32 flipY, s32 bright, u8 *rgb,
@@ -2802,16 +2840,17 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     return packet;
 }
 
-extern u8 gSzDuel_Icon[];
+extern u8 duelIcons[]; /* original: gSzDuel_Icon */
 extern u16 D_00290864[];
 
 #pragma opt_propagation off
 
-s32 lSzDuel_DrawWindow_Emblem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Draws a card's rank emblem: `rank` stars in rows of three, small or large, optionally mirrored. */
+s32 lSzDuel_DrawWindow_Emblem_Pipe(s32 packet, s32 x, s32 y, s32 rank, s32 small, s32 mirrored) {
     s32 result;
 
-    result = arg0;
-    if (arg3 > 0) {
+    result = packet;
+    if (rank > 0) {
         s32 parts;
         s32 px;
         s32 py;
@@ -2819,30 +2858,30 @@ s32 lSzDuel_DrawWindow_Emblem_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
         s32 quotient;
         u16 *src;
 
-        parts = arg4 ? 0xC : 0x10;
-        if (arg3 > 0) {
-            width = ((arg3 - 1) % 3) + 1;
+        parts = small ? 0xC : 0x10;
+        if (rank > 0) {
+            width = ((rank - 1) % 3) + 1;
         } else {
             width = 0;
         }
         quotient = 0;
-        if (arg3 > 0) {
-            quotient = (arg3 - 1) / 3;
+        if (rank > 0) {
+            quotient = (rank - 1) / 3;
         }
-        src = (u16 *)(gSzDuel_Icon + (quotient + 0xC6) * 10);
-        result = func_001B3CC0(arg0, src, arg1 + 0x6C0, arg2 + 0x720,
-                               0, 1, 0, arg4, (arg5 != 0) ? 1 : 0, 0, 1, 0, -1, 0x80);
+        src = (u16 *)(duelIcons + (quotient + 0xC6) * 10);
+        result = func_001B3CC0(packet, src, x + 0x6C0, y + 0x720,
+                               0, 1, 0, small, (mirrored != 0) ? 1 : 0, 0, 1, 0, -1, 0x80);
         if (width & 1) {
-            px = arg1 + 0x6C0 + ((arg5 != 0) ? 0 : parts);
-            result = func_001B3CC0(result, D_00290864, px, arg2 + 0x720,
-                                   0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
+            px = x + 0x6C0 + ((mirrored != 0) ? 0 : parts);
+            result = func_001B3CC0(result, D_00290864, px, y + 0x720,
+                                   0, 1, 0, small, 0, 0, 1, 0, -1, 0x80);
         }
         if (width & 2) {
-            px = arg1 + 0x6C0 + ((arg5 != 0) ? parts : 0);
-            result = func_001B3CC0(result, D_00290864, px, arg2 + 0x720, 0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
-            px = arg1 + 0x6C0 + ((arg5 != 0) ? 0 : parts);
-            py = arg2 + 0x720 + parts;
-            result = func_001B3CC0(result, D_00290864, px, py, 0, 1, 0, arg4, 0, 0, 1, 0, -1, 0x80);
+            px = x + 0x6C0 + ((mirrored != 0) ? parts : 0);
+            result = func_001B3CC0(result, D_00290864, px, y + 0x720, 0, 1, 0, small, 0, 0, 1, 0, -1, 0x80);
+            px = x + 0x6C0 + ((mirrored != 0) ? 0 : parts);
+            py = y + 0x720 + parts;
+            result = func_001B3CC0(result, D_00290864, px, py, 0, 1, 0, small, 0, 0, 1, 0, -1, 0x80);
         }
     }
     return result;

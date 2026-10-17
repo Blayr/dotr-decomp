@@ -10,7 +10,8 @@ typedef struct Tutorial_00178590 {
     u8 text[1];
 } Tutorial_00178590;
 
-s32 func_00178590(s32 arg0, void *tutorial) {
+/* Runs one frame of tutorial lesson 4. `event` is the duel event (kind in bits 8-15). */
+s32 TaTuto_Lesson4(s32 event, void *tutorial) {
     extern void SzPad_SetAnalogInfo();
     extern void func_00178320();
     extern void func_0027F630();
@@ -1271,8 +1272,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         arg1->step++;
         break;
     case 0xDF:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 4) {
             return 0x8000;
         }
@@ -1289,8 +1290,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         arg1->step++;
         break;
     case 0x104:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 3) {
             return 0x8000;
         }
@@ -1308,8 +1309,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         break;
     case 0x117:
     case 0x127:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 3) {
             return 0x2000;
         }
@@ -1326,8 +1327,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         arg1->step++;
         break;
     case 0x10C:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 3) {
             return 0x2000;
         }
@@ -1358,8 +1359,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         }
         break;
     case 0x120:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 0) {
             return 0x8000;
         }
@@ -1377,8 +1378,8 @@ s32 func_00178590(s32 arg0, void *tutorial) {
         arg1->step++;
         return 0x10;
     case 0x125:
-        lo = arg0 & 0xFF;
-        t = arg0 & 0xFFFF;
+        lo = event & 0xFF;
+        t = event & 0xFFFF;
         if (lo > 3) {
             return 0x8000;
         }
@@ -1408,7 +1409,8 @@ typedef struct Tutorial_0017AA70 {
     u16 wait;
 } Tutorial_0017AA70;
 
-s32 func_0017AA70(s32 arg0, void *tutorial) {
+/* Runs one frame of tutorial lesson 5. `event` is the duel event (kind in bits 8-15). */
+s32 TaTuto_Lesson5(s32 event, void *tutorial) {
     extern void SzPad_SetAnalogInfo();
     extern void func_0027F630();
     extern s32 func_0027F890();

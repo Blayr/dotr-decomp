@@ -10,7 +10,9 @@ typedef struct Tutorial_00175FE0 {
     u8 text[1];
 } Tutorial_00175FE0;
 
-s32 func_00175FE0(s32 arg0, void *tutorial) {
+/* Runs one frame of tutorial lesson 3 (sets up its own board, hands and life points). `event` is the duel event
+   (kind in bits 8-15). */
+s32 TaTuto_Lesson3(s32 event, void *tutorial) {
     extern void SzPad_SetAnalogInfo();
     extern void TaTuto_FocusUnit_00175BA0();
     extern void func_00175E60();
