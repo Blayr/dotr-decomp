@@ -76,7 +76,7 @@ typedef struct {
 } DataHalves_0014C3B0;
 
 typedef struct {
-    u16 coordinates;
+    u16 unitId; /* (side << 8) | unit */
     u8 pad2[2];
     u16 state;
     u8 pad6[2];
@@ -106,18 +106,18 @@ void TaLogic014_CommandBtlUnit(void *pTask) {
     s16 countA;
     s16 countB;
 
-    if (SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF) != 0) {
-        side = Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    if (SzDuel_GetUnit(entry->unitId >> 8, entry->unitId & 0xFF) != 0) {
+        side = Ta_GetCurrentSide(entry->unitId >> 8, entry->unitId & 0xFF);
         other = (side == 0 ? 1 : 0) << 8;
-        pos = SzDuel_GetUnitLoc(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        pos = SzDuel_GetUnitLoc(entry->unitId >> 8, entry->unitId & 0xFF);
         otherPos = SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
-        player = SzDuel_GetUnit(entry->coordinates >> 8, entry->coordinates & 0xFF);
+        player = SzDuel_GetUnit(entry->unitId >> 8, entry->unitId & 0xFF);
         TaLogic_InitIgnoreLst(work);
         for (i = 0; i < 22; i++) {
             list[i].card = 0xFFFF;
             list[i].flag = 0xFF;
         }
-        if (TaLogic_IsRootOpen(entry->coordinates >> 8, entry->coordinates & 0xFF, pos & 0xFF, pos >> 8,
+        if (TaLogic_IsRootOpen(entry->unitId >> 8, entry->unitId & 0xFF, pos & 0xFF, pos >> 8,
                           other >> 8, other & 0xFF, otherPos & 0xFF, otherPos >> 8, 3) > 0) {
             entry->state = 0x2FF;
             entry->data.word = (other << 16) | entry->data.halves.low;
@@ -128,7 +128,7 @@ void TaLogic014_CommandBtlUnit(void *pTask) {
         i = 1;
         while (1) {
             switch (TaLogic014_GetNearUnit(entry, 0, player, pos & 0xFF, pos >> 8,
-                                  Ta_GetCurrentSide(entry->coordinates >> 8, entry->coordinates & 0xFF) == 0 ? 1 : 0,
+                                  Ta_GetCurrentSide(entry->unitId >> 8, entry->unitId & 0xFF) == 0 ? 1 : 0,
                                   (u8)i, TaLogic_GetWarnHideLvl_0014F9B0(side), list, 0,
                                   &countA, &countB, 3, work)) {
             case 3:
@@ -185,14 +185,14 @@ void TaLogic014_CommandEfcMonster(void *pTask) {
     s32 slot;
     s32 kind;
 
-    slot = Ta_IsUnitControl(entry->coordinates >> 8, entry->coordinates & 0xFF);
-    kind = SzDuel_GetUnitCardNo(entry->coordinates >> 8, entry->coordinates & 0xFF);
+    slot = Ta_IsUnitControl(entry->unitId >> 8, entry->unitId & 0xFF);
+    kind = SzDuel_GetUnitCardNo(entry->unitId >> 8, entry->unitId & 0xFF);
     switch (kind) {
     case 0x264:
     case 0x227:
         if (TaLogic014_IsUnitNaturalEffectUse(slot, kind) == 1) {
             entry->state = 0x3FF;
-            entry->data.word = (SzDuel_GetUnitLoc(entry->coordinates >> 8, entry->coordinates & 0xFF) << 16) | entry->data.halves.low;
+            entry->data.word = (SzDuel_GetUnitLoc(entry->unitId >> 8, entry->unitId & 0xFF) << 16) | entry->data.halves.low;
             return;
         }
         break;
@@ -202,7 +202,7 @@ void TaLogic014_CommandEfcMonster(void *pTask) {
         }
         break;
     case 0x23F:
-        if (TaLogic014_IsActiveMode() == 1 && SzDuel_GetUnitStatus(entry->coordinates >> 8, entry->coordinates & 0xFF, 4) == 0 && TaLogic_CommandGunnerUnit(entry, 0) == 1) {
+        if (TaLogic014_IsActiveMode() == 1 && SzDuel_GetUnitStatus(entry->unitId >> 8, entry->unitId & 0xFF, 4) == 0 && TaLogic_CommandGunnerUnit(entry, 0) == 1) {
             return;
         }
         break;
@@ -1137,10 +1137,10 @@ s32 TaLogic_GetMinimumTask_AtkMission_0014E550(void *pTask, s32 nSide, void *pIn
         p++;
     } while (i < 12);
     {
-        s32 card = SzDuel_GetUnit(input->position >> 8, input->position & 0xFF);
+        s32 unitInfo = SzDuel_GetUnit(input->position >> 8, input->position & 0xFF);
         sourceX = sourcePosition & 0xFF;
         sourceY = sourcePosition >> 8;
-        if (GetMoveRev(card, sourceX, sourceY) == 0) {
+        if (GetMoveRev(unitInfo, sourceX, sourceY) == 0) {
             s32 cost;
             output->position = input->position;
             output->action = 6;

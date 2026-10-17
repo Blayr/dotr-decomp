@@ -43,15 +43,17 @@ s32 sceTtyInit(void) {
     return 1;
 }
 
-s32 kputchar(s32 arg0) {
+/* Writes character `c` to the debug console. */
+s32 kputchar(s32 c) {
     do {
 
     } while (*(volatile s32 *)0x1000F130 & 0x8000);
-    *(volatile s8 *)0x1000F180 = (s8) arg0;
-    return arg0;
+    *(volatile s8 *)0x1000F180 = (s8) c;
+    return c;
 }
 
-void deci2Putchar(s32 arg0) {
+/* Writes character `c` to the DECI2 debug console (buffered by line). */
+void deci2Putchar(s32 c) {
     s32 i;
 
     if (D_0028CA08 >= 0x7E) {
@@ -59,24 +61,25 @@ void deci2Putchar(s32 arg0) {
         D_00310D40[0x7F] = 0;
         kputs((s32)D_00310D40);
     }
-    if (arg0 == '\n') {
+    if (c == '\n') {
         i = D_0028CA08;
         D_0028CA08 = 0;
-        D_00310D40[i] = arg0;
+        D_00310D40[i] = c;
         D_00310D40[i + 1] = 0;
         kputs((s32)D_00310D40);
     } else {
-        D_00310D40[D_0028CA08++] = arg0;
+        D_00310D40[D_0028CA08++] = c;
     }
 }
 
-void serialPutchar(s32 arg0) {
-    if (arg0 == 0xA) {
+/* Writes character `c` to the serial debug port. */
+void serialPutchar(s32 c) {
+    if (c == 0xA) {
         kputchar(0xD);
         kputchar(0xA);
         return;
     }
-    kputchar(arg0);
+    kputchar(c);
 }
 
 /* ftoi: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
@@ -155,6 +158,7 @@ void printfloat(s64 bits) {
     }
 }
 
+/* The kernel printf core: formats `fmt` with argument list `ap`. */
 void _printf(char *fmt, u8 *ap) {
     char buf[32];
     char *p;
@@ -363,38 +367,45 @@ void _printf(char *fmt, u8 *ap) {
     }
 }
 
-s32 kprintf(const char *arg0, ...) {
-    return ((s32 (*)(const char *, void *))_printf)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
+/* Prints `fmt` to the kernel debug console. */
+s32 kprintf(const char *fmt, ...) {
+    return ((s32 (*)(const char *, void *))_printf)(fmt, (char *)__builtin_next_arg(fmt) - (8 - __builtin_args_info(0)) * 8);
 }
 
-s32 scePrintf(const char *arg0, ...) {
+/* Prints `fmt` to the debug console. */
+s32 scePrintf(const char *fmt, ...) {
     void (*old)(s32);
     s32 r;
 
     old = _putchar;
     _putchar = deci2Putchar;
-    r = ((s32 (*)(const char *, void *))_printf)(arg0, (char *)__builtin_next_arg(arg0) - (8 - __builtin_args_info(0)) * 8);
+    r = ((s32 (*)(const char *, void *))_printf)(fmt, (char *)__builtin_next_arg(fmt) - (8 - __builtin_args_info(0)) * 8);
     _putchar = old;
     return r;
 }
 
+/* Sets a SIF software register. */
 void _set_sreg(s32 *arg0, s32 *arg1) {
     ((s32 **) arg1)[7][arg0[4]] = arg0[5];
 }
 
+/* Moves a SIF command buffer. */
 void _change_addr(void *arg0, void *arg1) {
     (*(s32 *)((u8 *)arg1 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0x10));
 }
 
-s32 sceSifGetSreg(s32 arg0) {
-    return (&D_00310FC0)[arg0];
+/* SIF software register `reg`. */
+s32 sceSifGetSreg(s32 reg) {
+    return (&D_00310FC0)[reg];
 }
 
-s32 sceSifSetSreg(s32 arg0, s32 arg1) {
-    (&D_00310FC0)[arg0] = arg1;
-    return arg1;
+/* Sets SIF software register `reg` to `value`. */
+s32 sceSifSetSreg(s32 reg, s32 value) {
+    (&D_00310FC0)[reg] = value;
+    return value;
 }
 
+/* The SIF command data table. */
 s32 *sceSifGetDataTable(void) {
     return &D_00310E98;
 }
@@ -482,28 +493,32 @@ void sceSifInitCmd(void) {
     sceSifSendCmd(0x80000002, D_00310E80, 0x14, 0, 0, 0);
 }
 
+/* Shuts the SIF command system down. */
 void sceSifExitCmd(void) {
     func_0017C490(5);
     RemoveDmacHandler(5, D_00310E94);
     _cmd_init_check = 0;
 }
 
-s32 sceSifSetCmdBuffer(s32 arg0, s32 arg1) {
+/* Sets the SIF command buffer (`buf`, `size`); returns the old one. */
+s32 sceSifSetCmdBuffer(s32 buf, s32 size) {
     s32 *p = (s32 *)&D_00310E98;
     s32 old = p[5];
-    p[5] = arg0;
-    p[6] = arg1;
+    p[5] = buf;
+    p[6] = size;
     return old;
 }
 
-s32 sceSifSetSysCmdBuffer(s32 arg0, s32 arg1) {
+/* Sets the SIF system command buffer (`buf`, `size`). */
+s32 sceSifSetSysCmdBuffer(s32 buf, s32 size) {
     s32 *p = (s32 *)&D_00310E98;
     s32 old = p[3];
-    p[3] = arg0;
-    p[4] = arg1;
+    p[3] = buf;
+    p[4] = size;
     return old;
 }
 
+/* Sets the handler of SIF command `cid` to `f` (with `data`). */
 s32 sceSifAddCmdHandler(s32 cid, s32 *f, s32 data) {
     if (cid < 0) {
         D_00310EA4[cid].func = f;
@@ -514,6 +529,7 @@ s32 sceSifAddCmdHandler(s32 cid, s32 *f, s32 data) {
     }
 }
 
+/* Removes the handler of SIF command `cid`. */
 s32 sceSifRemoveCmdHandler(s32 cid) {
     if (cid < 0) {
         D_00310EA4[cid].func = 0;
@@ -564,12 +580,14 @@ s32 _sceSifSendCmd(s32 cid, s32 mode, s32 pkt, s32 pktsize, s32 src, s32 dest, s
     return sceSifSetDma((s32 *)dmat, count);
 }
 
-s32 sceSifSendCmd(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    return _sceSifSendCmd(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5);
+/* Sends SIF command `cid` (`packet`, `size`) and data `src` -> `dst` (`len`) to the IOP. */
+s32 sceSifSendCmd(s32 cid, void *packet, s32 size, s32 src, s32 dst, s32 len) {
+    return _sceSifSendCmd(cid, 0, (s32)packet, size, src, dst, len);
 }
 
-s32 isceSifSendCmd(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    return _sceSifSendCmd(arg0, 1, (s32)arg1, arg2, arg3, arg4, arg5);
+/* Sends a SIF command to the IOP (from an interrupt). */
+s32 isceSifSendCmd(s32 cid, void *packet, s32 size, s32 src, s32 dst, s32 len) {
+    return _sceSifSendCmd(cid, 1, (s32)packet, size, src, dst, len);
 }
 
 /* _sceSifCmdIntrHdlr: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/sifcmd.c; see THIRD_PARTY_NOTICES.md) */
@@ -735,6 +753,7 @@ extern u8 D_00311040[];
 extern u8 D_00311840[];
 extern u8 D_00312040[];
 
+/* Starts the SIF command system once (sceSifInitCmd): handlers, the IOP's buffers, the software registers. */
 void func_0017E240(s32 mode) {
     u32 *cmdp;
 
@@ -773,6 +792,7 @@ void func_0017E240(s32 mode) {
     sceSifSetReg(0x80000002, 1);
 }
 
+/* Shuts the SIF remote call system down. */
 void sceSifExitRpc(void) {
     sceSifExitCmd();
     _sceSifInitCheck = 0;
@@ -809,30 +829,33 @@ void *_sceRpcGetPacket(s32 *data) {
     return 0;
 }
 
-void _sceRpcFreePacket(void *arg0) {
-    (*(s32 *)((u8 *)arg0 + 0x18)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) ((*(s32 *)((u8 *)arg0 + 0x10)) & 0xFFFFFFFE);
+/* Frees remote-call packet `packet`. */
+void _sceRpcFreePacket(void *packet) {
+    (*(s32 *)((u8 *)packet + 0x18)) = 0;
+    (*(s32 *)((u8 *)packet + 0x10)) = (s32) ((*(s32 *)((u8 *)packet + 0x10)) & 0xFFFFFFFE);
 }
 
-void *_sceRpcGetFPacket(s32 arg0) {
+/* A free remote-call packet from `data`. */
+void *_sceRpcGetFPacket(s32 data) {
     u8 *q;
     s32 i;
     u8 *r;
 
-    q = (u8 *)arg0;
+    q = (u8 *)data;
     i = *(s32 *)(q + 0x24) % *(s32 *)(q + 0x18);
     r = *(u8 **)(q + 0x14) + i * 64;
     *(s32 *)(q + 0x24) = i + 1;
     return r;
 }
 
-void *_sceRpcGetFPacket2(void *arg0, s32 arg1) {
+/* A free remote-call packet from `data` at `rid`. */
+void *_sceRpcGetFPacket2(void *data, s32 rid) {
     void *r;
 
-    if (arg1 < 0 || arg1 >= *(s32 *)((u8 *)arg0 + 0x20)) {
-        r = _sceRpcGetFPacket((s32)arg0);
+    if (rid < 0 || rid >= *(s32 *)((u8 *)data + 0x20)) {
+        r = _sceRpcGetFPacket((s32)data);
     } else {
-        r = *(u8 **)((u8 *)arg0 + 0x1C) + arg1 * 0x40;
+        r = *(u8 **)((u8 *)data + 0x1C) + rid * 0x40;
     }
     return r;
 }
@@ -869,21 +892,23 @@ void _request_end(void *pkt, void *data) {
     c->pkt = 0;
 }
 
-void _request_rdata(void *arg0, s32 arg1) {
-    void *temp_v0;
+/* Handles an IOP request for EE data (`packet`, `data`). */
+void _request_rdata(void *packet, s32 data) {
+    void *sceRpcGetFPacket;
     s32 a;
     s32 b;
 
-    temp_v0 = _sceRpcGetFPacket(arg1);
-    a = *(s32 *)((u8 *)arg0 + 0x14);
-    b = *(s32 *)((u8 *)arg0 + 0x1C);
-    (*(s32 *)((u8 *)temp_v0 + 0x14)) = a;
-    (*(s32 *)((u8 *)temp_v0 + 0x1C)) = b;
-    (*(s32 *)((u8 *)temp_v0 + 0x20)) = 0x8000000C;
-    isceSifSendCmd(0x80000008, temp_v0, 0x40, (*(s32 *)((u8 *)arg0 + 0x20)), (*(s32 *)((u8 *)arg0 + 0x24)), (*(s32 *)((u8 *)arg0 + 0x28)));
+    sceRpcGetFPacket = _sceRpcGetFPacket(data);
+    a = *(s32 *)((u8 *)packet + 0x14);
+    b = *(s32 *)((u8 *)packet + 0x1C);
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x14)) = a;
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x1C)) = b;
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x20)) = 0x8000000C;
+    isceSifSendCmd(0x80000008, sceRpcGetFPacket, 0x40, (*(s32 *)((u8 *)packet + 0x20)), (*(s32 *)((u8 *)packet + 0x24)), (*(s32 *)((u8 *)packet + 0x28)));
 }
 
-s32 sceSifGetOtherData(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Reads `size` bytes from IOP address `src` into `dest` (`mode`). */
+s32 sceSifGetOtherData(void *rd, s32 src, s32 dest, s32 size, s32 mode) {
     s32 sp0[8];
     void *p;
 
@@ -891,31 +916,31 @@ s32 sceSifGetOtherData(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (p == NULL) {
         return -1;
     }
-    (*(void **)arg0) = p;
-    (*(s32 *)((u8 *)arg0 + 4)) = (*(s32 *)((u8 *)p + 0x18));
-    (*(s32 *)((u8 *)p + 0x20)) = arg1;
-    (*(s32 *)((u8 *)p + 0x24)) = arg2;
-    (*(s32 *)((u8 *)p + 0x28)) = arg3;
+    (*(void **)rd) = p;
+    (*(s32 *)((u8 *)rd + 4)) = (*(s32 *)((u8 *)p + 0x18));
+    (*(s32 *)((u8 *)p + 0x20)) = src;
+    (*(s32 *)((u8 *)p + 0x24)) = dest;
+    (*(s32 *)((u8 *)p + 0x28)) = size;
     (*(void **)((u8 *)p + 0x14)) = p;
-    (*(void **)((u8 *)p + 0x1C)) = arg0;
-    if (!(arg4 & 1)) {
+    (*(void **)((u8 *)p + 0x1C)) = rd;
+    if (!(mode & 1)) {
         sp0[1] = 1;
         sp0[2] = 0;
-        (*(s32 *)((u8 *)arg0 + 8)) = CreateSema(sp0);
-        if ((*(s32 *)((u8 *)arg0 + 8)) < 0) {
+        (*(s32 *)((u8 *)rd + 8)) = CreateSema(sp0);
+        if ((*(s32 *)((u8 *)rd + 8)) < 0) {
             _sceRpcFreePacket(p);
             return -3;
         }
         if (sceSifSendCmd(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
             _sceRpcFreePacket(p);
-            DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
+            DeleteSema((*(s32 *)((u8 *)rd + 8)));
             return -2;
         }
-        WaitSema((*(s32 *)((u8 *)arg0 + 8)));
-        DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
+        WaitSema((*(s32 *)((u8 *)rd + 8)));
+        DeleteSema((*(s32 *)((u8 *)rd + 8)));
         return 0;
     }
-    (*(s32 *)((u8 *)arg0 + 8)) = -1;
+    (*(s32 *)((u8 *)rd + 8)) = -1;
     if (sceSifSendCmd(0x8000000C, p, 0x40, 0, 0, 0) == 0) {
         _sceRpcFreePacket(p);
         return -2;
@@ -936,15 +961,16 @@ typedef struct SifQ_0017E7B0 {
     struct SifQ_0017E7B0 *next;
 } SifQ_0017E7B0;
 
-void *_search_svdata(s32 arg0, s32 arg1) {
+/* The server of id `sid` in the server list (`data`). */
+void *_search_svdata(s32 sid, s32 data) {
     SifSrv_0017E7B0 *server;
     SifQ_0017E7B0 *queue;
 
-    queue = *(SifQ_0017E7B0 **)((u8 *)arg1 + 0x28);
+    queue = *(SifQ_0017E7B0 **)((u8 *)data + 0x28);
     while (queue) {
         server = queue->link;
         while (server) {
-            if (server->sid == (u32)arg0) {
+            if (server->sid == (u32)sid) {
                 return server;
             }
             server = server->link;
@@ -954,62 +980,64 @@ void *_search_svdata(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-void _request_bind(void *arg0, s32 arg1) {
+/* Handles an IOP bind request (`packet`, `data`). */
+void _request_bind(void *packet, s32 data) {
     s32 hl0;
-    void *temp_v0;
-    void *temp_v0_2;
+    void *sceRpcGetFPacket;
+    void *svdata;
 
-    temp_v0 = _sceRpcGetFPacket(arg1);
-    hl0 = (s32) (*(s32 *)((u8 *)arg0 + 0x14));
-    (*(s32 *)((u8 *)temp_v0 + 0x1C)) = (s32) (*(s32 *)((u8 *)arg0 + 0x1C));
-    (*(s32 *)((u8 *)temp_v0 + 0x14)) = hl0;
-    (*(s32 *)((u8 *)temp_v0 + 0x20)) = 0x80000009;
-    temp_v0_2 = _search_svdata((*(s32 *)((u8 *)arg0 + 0x20)), arg1);
-    if (temp_v0_2 == NULL) {
-        (*(void **)((u8 *)temp_v0 + 0x24)) = NULL;
-        (*(s32 *)((u8 *)temp_v0 + 0x28)) = 0;
-        (*(s32 *)((u8 *)temp_v0 + 0x2C)) = 0;
+    sceRpcGetFPacket = _sceRpcGetFPacket(data);
+    hl0 = (s32) (*(s32 *)((u8 *)packet + 0x14));
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x1C)) = (s32) (*(s32 *)((u8 *)packet + 0x1C));
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x14)) = hl0;
+    (*(s32 *)((u8 *)sceRpcGetFPacket + 0x20)) = 0x80000009;
+    svdata = _search_svdata((*(s32 *)((u8 *)packet + 0x20)), data);
+    if (svdata == NULL) {
+        (*(void **)((u8 *)sceRpcGetFPacket + 0x24)) = NULL;
+        (*(s32 *)((u8 *)sceRpcGetFPacket + 0x28)) = 0;
+        (*(s32 *)((u8 *)sceRpcGetFPacket + 0x2C)) = 0;
     } else {
-        (*(void **)((u8 *)temp_v0 + 0x24)) = temp_v0_2;
-        (*(s32 *)((u8 *)temp_v0 + 0x28)) = (s32) (*(s64 *)((u8 *)temp_v0_2 + 8));
-        (*(s32 *)((u8 *)temp_v0 + 0x2C)) = (s32) (*(s32 *)((u8 *)temp_v0_2 + 0x14));
+        (*(void **)((u8 *)sceRpcGetFPacket + 0x24)) = svdata;
+        (*(s32 *)((u8 *)sceRpcGetFPacket + 0x28)) = (s32) (*(s64 *)((u8 *)svdata + 8));
+        (*(s32 *)((u8 *)sceRpcGetFPacket + 0x2C)) = (s32) (*(s32 *)((u8 *)svdata + 0x14));
     }
-    isceSifSendCmd(0x80000008, temp_v0, 0x40, 0, 0, 0);
+    isceSifSendCmd(0x80000008, sceRpcGetFPacket, 0x40, 0, 0, 0);
 }
 
-s32 sceSifBindRpc(void *arg0, s32 arg1, s32 arg4) {
+/* Binds remote call server `sid` on the IOP into client `cd` (`mode`). */
+s32 sceSifBindRpc(void *cd, s32 sid, s32 mode) {
     s32 sp0[8];
     void *p;
 
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x24)) = 0;
+    (*(s32 *)((u8 *)cd + 0x10)) = 0;
+    (*(s32 *)((u8 *)cd + 0x24)) = 0;
     p = _sceRpcGetPacket(&D_00312840);
     if (p == NULL) {
         return -1;
     }
-    (*(void **)arg0) = p;
-    (*(s32 *)((u8 *)arg0 + 4)) = (*(s32 *)((u8 *)p + 0x18));
-    (*(s32 *)((u8 *)p + 0x20)) = arg1;
+    (*(void **)cd) = p;
+    (*(s32 *)((u8 *)cd + 4)) = (*(s32 *)((u8 *)p + 0x18));
+    (*(s32 *)((u8 *)p + 0x20)) = sid;
     (*(void **)((u8 *)p + 0x14)) = p;
-    (*(void **)((u8 *)p + 0x1C)) = arg0;
-    if (!(arg4 & 1)) {
+    (*(void **)((u8 *)p + 0x1C)) = cd;
+    if (!(mode & 1)) {
         sp0[1] = 1;
         sp0[2] = 0;
-        (*(s32 *)((u8 *)arg0 + 8)) = CreateSema(sp0);
-        if ((*(s32 *)((u8 *)arg0 + 8)) < 0) {
+        (*(s32 *)((u8 *)cd + 8)) = CreateSema(sp0);
+        if ((*(s32 *)((u8 *)cd + 8)) < 0) {
             _sceRpcFreePacket(p);
             return -3;
         }
         if (sceSifSendCmd(0x80000009, p, 0x40, 0, 0, 0) == 0) {
             _sceRpcFreePacket(p);
-            DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
+            DeleteSema((*(s32 *)((u8 *)cd + 8)));
             return -2;
         }
-        WaitSema((*(s32 *)((u8 *)arg0 + 8)));
-        DeleteSema((*(s32 *)((u8 *)arg0 + 8)));
+        WaitSema((*(s32 *)((u8 *)cd + 8)));
+        DeleteSema((*(s32 *)((u8 *)cd + 8)));
         return 0;
     }
-    (*(s32 *)((u8 *)arg0 + 8)) = -1;
+    (*(s32 *)((u8 *)cd + 8)) = -1;
     if (sceSifSendCmd(0x80000009, p, 0x40, 0, 0, 0) == 0) {
         _sceRpcFreePacket(p);
         return -2;
@@ -1120,32 +1148,34 @@ s32 sceSifCallRpc(s32 *client, s32 rpc_number, s32 mode, s32 *sendbuf, s32 ssize
     return 0;
 }
 
-s32 sceSifCheckStatRpc(void *arg0) {
+/* Whether remote call `cd` is still running. */
+s32 sceSifCheckStatRpc(void *cd) {
     void *temp_a1;
 
-    temp_a1 = (*(void **)arg0);
-    if ((temp_a1 == NULL) || ((*(s32 *)((u8 *)arg0 + 4)) != (*(s32 *)((u8 *)temp_a1 + 0x18))) || !((*(s32 *)((u8 *)temp_a1 + 0x10)) & 1)) {
+    temp_a1 = (*(void **)cd);
+    if ((temp_a1 == NULL) || ((*(s32 *)((u8 *)cd + 4)) != (*(s32 *)((u8 *)temp_a1 + 0x18))) || !((*(s32 *)((u8 *)temp_a1 + 0x10)) & 1)) {
         return 0;
     }
     return 1;
 }
 
-void sceSifSetRpcQueue(void *arg0, s32 arg1) {
+/* Sets up remote call queue `qd` for thread `thid`. */
+void sceSifSetRpcQueue(void *qd, s32 thid) {
     u8 *b_D_00312840;
     void *temp_v0;
     void *var_a0;
     void *var_v1;
 
     func_001843E0();
-    (*(s32 *)arg0) = arg1;
-    (*(s32 *)((u8 *)arg0 + 4)) = 0;
-    (*(s32 *)((u8 *)arg0 + 8)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0xC)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x14)) = 0;
+    (*(s32 *)qd) = thid;
+    (*(s32 *)((u8 *)qd + 4)) = 0;
+    (*(s32 *)((u8 *)qd + 8)) = 0;
+    (*(s32 *)((u8 *)qd + 0xC)) = 0;
+    (*(s32 *)((u8 *)qd + 0x10)) = 0;
+    (*(s32 *)((u8 *)qd + 0x14)) = 0;
     b_D_00312840 = (u8 *)&D_00312840;
     if ((*(void **)(b_D_00312840 + 0x28)) == NULL) {
-        (*(void **)(b_D_00312840 + 0x28)) = arg0;
+        (*(void **)(b_D_00312840 + 0x28)) = qd;
     } else {
         var_a0 = (*(void **)(b_D_00312840 + 0x28));
         var_v1 = (*(void **)((u8 *)var_a0 + 0x14));
@@ -1156,11 +1186,12 @@ void sceSifSetRpcQueue(void *arg0, s32 arg1) {
                 var_v1 = temp_v0;
             } while (temp_v0 != NULL);
         }
-        (*(void **)((u8 *)var_a0 + 0x14)) = arg0;
+        (*(void **)((u8 *)var_a0 + 0x14)) = qd;
     }
     func_00184428();
 }
 
+/* Registers remote call server `arg0` (id `arg1`, function `arg2`, buffer `arg3`, ...) in queue `arg6`. */
 void func_0017ED48(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, void *arg6) {
     void *temp_v0;
     void *temp_v0_2;
@@ -1194,18 +1225,19 @@ void func_0017ED48(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     func_00184428();
 }
 
-void *sceSifRemoveRpc(void *arg0, void *arg1) {
+/* Removes server `sd` from queue `qd`. */
+void *sceSifRemoveRpc(void *sd, void *qd) {
     void *p;
     void *n;
 
     func_001843E0();
-    p = (*(void **)((u8 *)arg1 + 8));
-    if (p == arg0) {
-        (*(void **)((u8 *)arg1 + 8)) = (*(void **)((u8 *)p + 0x38));
+    p = (*(void **)((u8 *)qd + 8));
+    if (p == sd) {
+        (*(void **)((u8 *)qd + 8)) = (*(void **)((u8 *)p + 0x38));
     } else {
         for (; p != NULL; p = (*(void **)((u8 *)p + 0x38))) {
-            if ((*(void **)((u8 *)p + 0x38)) == arg0) {
-                (*(void **)((u8 *)p + 0x38)) = (*(void **)((u8 *)arg0 + 0x38));
+            if ((*(void **)((u8 *)p + 0x38)) == sd) {
+                (*(void **)((u8 *)p + 0x38)) = (*(void **)((u8 *)sd + 0x38));
                 break;
             }
         }
@@ -1221,8 +1253,9 @@ typedef struct SifRpcNode_0017EEB0 {
     struct SifRpcNode_0017EEB0 *next;
 } SifRpcNode_0017EEB0;
 
-void *sceSifRemoveRpcQueue(void *arg0) {
-    SifRpcNode_0017EEB0 *sd = arg0;
+/* Removes remote call queue `qd`. */
+void *sceSifRemoveRpcQueue(void *qd) {
+    SifRpcNode_0017EEB0 *sd = qd;
     SifRpcNode_0017EEB0 *p;
     u8 *q;
 
@@ -1244,16 +1277,17 @@ void *sceSifRemoveRpcQueue(void *arg0) {
     return p;
 }
 
-void *sceSifGetNextRequest(void *arg0) {
+/* The next remote call request in queue `qd`. */
+void *sceSifGetNextRequest(void *qd) {
     void *temp_s1;
 
     func_001843E0();
-    temp_s1 = (*(void **)((u8 *)arg0 + 0xC));
+    temp_s1 = (*(void **)((u8 *)qd + 0xC));
     if (temp_s1 == NULL) {
-        (*(s32 *)((u8 *)arg0 + 4)) = 0;
+        (*(s32 *)((u8 *)qd + 4)) = 0;
     } else {
-        (*(s32 *)((u8 *)arg0 + 4)) = 1;
-        (*(void **)((u8 *)arg0 + 0xC)) = (void *) (*(void **)((u8 *)temp_s1 + 0x3C));
+        (*(s32 *)((u8 *)qd + 4)) = 1;
+        (*(void **)((u8 *)qd + 0xC)) = (void *) (*(void **)((u8 *)temp_s1 + 0x3C));
     }
     func_00184428();
     return temp_s1;
@@ -1322,17 +1356,19 @@ void sceSifExecRequest(void *data) {
     } while (r == 0);
 }
 
-void sceSifRpcLoop(void *arg0) {
+/* Serves remote call queue `qd` forever. */
+void sceSifRpcLoop(void *qd) {
     void *sd;
 
     while (1) {
-        while ((sd = sceSifGetNextRequest(arg0)) != NULL) {
+        while ((sd = sceSifGetNextRequest(qd)) != NULL) {
             sceSifExecRequest(sd);
         }
         SleepThread();
     }
 }
 
+/* Creates the remote call library's two semaphores once. */
 void func_0017F1A0(void) {
     s32 sp0[8];
     if (D_0028CAA8 == -1) {

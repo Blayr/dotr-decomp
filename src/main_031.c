@@ -1,20 +1,22 @@
 #include "common.h"
 
-void _clearOnce(void *arg0) {
+/* Clears decoder `mp`'s state once at creation. */
+void _clearOnce(void *mp) {
     u8 *spr;
 
     spr = (u8 *)0x70000000;
     _ipuSetMPEG1(1);
-    *(u8 **)((u8 *)arg0 + 0x590) = spr;
-    *(u8 **)((u8 *)arg0 + 0x594) = spr + 0x1800;
-    *(u8 **)((u8 *)arg0 + 0x6D0) = spr + 0x1B00;
-    *(u8 **)((u8 *)arg0 + 0x6D4) = spr + 0x3300;
-    *(s32 *)((u8 *)arg0 + 0x810) = 0;
+    *(u8 **)((u8 *)mp + 0x590) = spr;
+    *(u8 **)((u8 *)mp + 0x594) = spr + 0x1800;
+    *(u8 **)((u8 *)mp + 0x6D0) = spr + 0x1B00;
+    *(u8 **)((u8 *)mp + 0x6D4) = spr + 0x3300;
+    *(s32 *)((u8 *)mp + 0x810) = 0;
 }
 
-void _clearEach(void *arg0) {
-    (*(s32 *)((u8 *)arg0 + 0x818)) = 1;
-    (*(s32 *)((u8 *)arg0 + 0x1B0)) = 0;
+/* Clears decoder `mp`'s state for each stream. */
+void _clearEach(void *mp) {
+    (*(s32 *)((u8 *)mp + 0x818)) = 1;
+    (*(s32 *)((u8 *)mp + 0x1B0)) = 0;
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
     *(volatile s32 *)0x1000B000 = 0;
@@ -29,30 +31,34 @@ void _clearEach(void *arg0) {
     sceIpuSync(0, 0);
 }
 
-void _ErrMessage(s32 arg0) {
-    func_00199B50(&D_002BCA98, arg0);
+/* Prints MPEG error message `code`. */
+void _ErrMessage(s32 code) {
+    func_00199B50(&D_002BCA98, code);
 }
 
-void _Error1(s32 arg0, void *arg1, s32 arg2) {
+/* Reports MPEG error `code` with detail `detail`. */
+void _Error1(s32 code, void *data, s32 detail) {
     s32 sp0[64];
-    func_0019B648(sp0, arg1, arg2);
-    _Error(arg0, sp0);
+    func_0019B648(sp0, data, detail);
+    _Error(code, sp0);
 }
 
-void _Error(s32 arg0, void *arg1) {
+/* Reports MPEG error `code` through the error callback. */
+void _Error(s32 code, void *data) {
     s32 sp0[4];
     s32 temp_v1;
 
-    temp_v1 = (*(s32 *)((u8 *)arg0 + 0x858));
-    if ((temp_v1 != 0) && (arg0 != 0) && ((*(s32 *)((u8 *)arg0 + 0xC)) != 0)) {
+    temp_v1 = (*(s32 *)((u8 *)code + 0x858));
+    if ((temp_v1 != 0) && (code != 0) && ((*(s32 *)((u8 *)code + 0xC)) != 0)) {
         sp0[0] = 0;
-        sp0[1] = arg1;
+        sp0[1] = data;
         _dispatchMpegCallback(temp_v1, sp0);
         return;
     }
-    _ErrMessage((s32) arg1);
+    _ErrMessage((s32) data);
 }
 
+/* Sends `size` bytes from `data` to the IPU's input. */
 void _sendDataToIPU(s32 buf, u32 data, s32 size) {
     u64 *tag;
     u64 *t;
@@ -83,46 +89,49 @@ void _sendDataToIPU(s32 buf, u32 data, s32 size) {
     func_00184428();
 }
 
-s32 _RefImageInit(void *arg0, s32 arg1, s32 arg2) {
-    (*(s32 *)((u8 *)arg0 + 4)) = arg1;
-    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) (arg1 >> 4);
-    (*(s32 *)((u8 *)arg0 + 8)) = arg2;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) (arg2 >> 4);
+/* Sets up reference picture `ri` (`width`, `height`). */
+s32 _RefImageInit(void *ri, s32 width, s32 height) {
+    (*(s32 *)((u8 *)ri + 4)) = width;
+    (*(s32 *)((u8 *)ri + 0xC)) = (s32) (width >> 4);
+    (*(s32 *)((u8 *)ri + 8)) = height;
+    (*(s32 *)((u8 *)ri + 0x10)) = (s32) (height >> 4);
     return 1;
 }
 
-void _sequenceHeader(void *arg0) {
+/* Reads an MPEG sequence header. */
+void _sequenceHeader(void *d) {
     u32 v;
 
-    (*(s32 *)((u8 *)arg0 + 0xD4)) = 0;
-    v = func_0018BA48(arg0, 0x20);
-    (*(s32 *)((u8 *)arg0 + 0x124)) = v >> 20;
-    (*(s32 *)((u8 *)arg0 + 0x128)) = (v >> 8) & 0xFFF;
-    if ((*(s32 *)((u8 *)arg0 + 0x128)) > 0xAF0) {
-        _Error((s32)arg0, &D_002BCAA8);
+    (*(s32 *)((u8 *)d + 0xD4)) = 0;
+    v = func_0018BA48(d, 0x20);
+    (*(s32 *)((u8 *)d + 0x124)) = v >> 20;
+    (*(s32 *)((u8 *)d + 0x128)) = (v >> 8) & 0xFFF;
+    if ((*(s32 *)((u8 *)d + 0x128)) > 0xAF0) {
+        _Error((s32)d, &D_002BCAA8);
     }
-    v = func_0018BA48(arg0, 0x1E);
-    (*(s32 *)((u8 *)arg0 + 0x134)) = v >> 12;
-    (*(s32 *)((u8 *)arg0 + 0x138)) = (v >> 1) & 0x3FF;
-    if (((*(s32 *)((u8 *)arg0 + 0x840)) = func_0018BA48(arg0, 1)) != 0) {
-        func_0018B580(arg0);
-        func_0018B550(arg0, 0x50000000);
-        func_0018B580(arg0);
+    v = func_0018BA48(d, 0x1E);
+    (*(s32 *)((u8 *)d + 0x134)) = v >> 12;
+    (*(s32 *)((u8 *)d + 0x138)) = (v >> 1) & 0x3FF;
+    if (((*(s32 *)((u8 *)d + 0x840)) = func_0018BA48(d, 1)) != 0) {
+        func_0018B580(d);
+        func_0018B550(d, 0x50000000);
+        func_0018B580(d);
     } else {
-        _setDefaultQM(arg0, 0x50000000, (s32)&D_0028DB80);
+        _setDefaultQM(d, 0x50000000, (s32)&D_0028DB80);
     }
-    if (((*(s32 *)((u8 *)arg0 + 0x844)) = func_0018BA48(arg0, 1)) != 0) {
-        func_0018B580(arg0);
-        func_0018B550(arg0, 0x58000000);
-        func_0018B580(arg0);
+    if (((*(s32 *)((u8 *)d + 0x844)) = func_0018BA48(d, 1)) != 0) {
+        func_0018B580(d);
+        func_0018B550(d, 0x58000000);
+        func_0018B580(d);
     } else {
-        _setDefaultQM(arg0, 0x58000000, (s32)&D_0028DBC0);
+        _setDefaultQM(d, 0x58000000, (s32)&D_0028DBC0);
     }
-    func_0018BE58(arg0);
-    _initSeq(*(void **)((u8 *)arg0 + 0x858));
+    func_0018BE58(d);
+    _initSeq(*(void **)((u8 *)d + 0x858));
 }
 
-void _initSeq(void *arg0) {
+/* Allocates the pictures for a new sequence. */
+void _initSeq(void *dIn) {
     u8 *d;
     s32 dec;
     s32 mbh;
@@ -143,7 +152,7 @@ void _initSeq(void *arg0) {
     u8 *f1;
     u8 *f2;
 
-    d = *(u8 **)((u8 *)arg0 + 0x40);
+    d = *(u8 **)((u8 *)dIn + 0x40);
     dec = *(s32 *)(d + 0x848);
     if (dec == 0) {
         *(s32 *)(d + 0x13C) = 1;
@@ -162,11 +171,11 @@ void _initSeq(void *arg0) {
     *(s32 *)(d + 0x130) = mbh;
     h = mbh * 16;
     w = *(s32 *)(d + 0x12C) * 16;
-    if (w != *(s32 *)arg0 || h != *(s32 *)((u8 *)arg0 + 4)) {
+    if (w != *(s32 *)dIn || h != *(s32 *)((u8 *)dIn + 4)) {
         b2 = d + 0x528;
         do { } while (0); /* empty loop: a scheduling barrier, the bot2 address comes first */
-        *(s32 *)((u8 *)arg0 + 4) = h;
-        *(s32 *)arg0 = w;
+        *(s32 *)((u8 *)dIn + 4) = h;
+        *(s32 *)dIn = w;
         size = (u32)(w * 0x180 * h) >> 8;
         f0 = d + 0x1E8;
         f1 = d + 0x250;
@@ -199,6 +208,7 @@ void _initSeq(void *arg0) {
     }
 }
 
+/* The uncached alias of address `addr`. */
 static inline int uncachedAddr_0018FCE8(int addr) {
     return (addr & 0x0FFFFFFF) | 0x20000000;
 }
@@ -220,25 +230,27 @@ void _initRefImages(int *frame0, int *frame1, int *frame2, int *top0, int *top1,
     *bot2 = uncachedAddr_0018FCE8(cr + size / 512 * 384);
 }
 
-void _setDefaultQM(void *arg0, s32 arg1, s32 arg2) {
+/* Loads the default quantiser matrices into the IPU. */
+void _setDefaultQM(void *d, s32 intra, s32 nonIntra) {
     s32 sp0[8];
     sp0[0] = /* extra? */ 2;
-    _dispatchMpegCallback((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
-    func_0018B580(arg0);
+    _dispatchMpegCallback((*(s32 *)((u8 *)d + 0x858)), sp0);
+    func_0018B580(d);
     *(volatile s32 *)0x10002000 = 0;
-    func_0018B580(arg0);
+    func_0018B580(d);
     func_001843E0();
-    *(volatile s32 *)0x1000B410 = arg2 & 0x0FFFFFFF;
+    *(volatile s32 *)0x1000B410 = nonIntra & 0x0FFFFFFF;
     *(volatile s32 *)0x1000B420 = 4;
     *(volatile s32 *)0x1000B400 = 0x101;
     func_00184428();
-    func_0018B550(arg0, arg1);
-    func_0018B580(arg0);
+    func_0018B550(d, intra);
+    func_0018B580(d);
     sp0[0] = /* extra? */ 3;
-    _dispatchMpegCallback((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
+    _dispatchMpegCallback((*(s32 *)((u8 *)d + 0x858)), sp0);
 }
 
-void _sequenceExtension(void *arg0) {
+/* Reads an MPEG-2 sequence extension. */
+void _sequenceExtension(void *dIn) {
     u8 *d;
     u32 v;
     u32 prof;
@@ -248,23 +260,23 @@ void _sequenceExtension(void *arg0) {
     s32 brext;
     s32 vbvext;
 
-    d = arg0;
+    d = dIn;
     *(s32 *)(d + 0x848) = 1;
     _ipuSetMPEG1(0);
-    v = func_0018BA48(arg0, 28);
+    v = func_0018BA48(dIn, 28);
     brext = (v >> 1) & 0xFFF;
     vext = (v >> 13) & 3;
     hext = (v >> 15) & 3;
     chroma = (v >> 17) & 3;
     *(s32 *)(d + 0x140) = chroma;
     if (chroma != 1) {
-        _Error((s32)arg0, &D_002BCAC0);
+        _Error((s32)dIn, &D_002BCAC0);
     }
     *(s32 *)(d + 0x13C) = (v >> 19) & 1;
     prof = v >> 20;
-    vbvext = (u32)func_0018BA48(arg0, 16) >> 8;
+    vbvext = (u32)func_0018BA48(dIn, 16) >> 8;
     if (prof != 0x48 && prof != 0x58 && prof != 0x44) {
-        _Error((s32)arg0, &D_002BCAE8);
+        _Error((s32)dIn, &D_002BCAE8);
     }
     *(s32 *)(d + 0x124) = (hext << 12) | (*(s32 *)(d + 0x124) & 0xFFF);
     *(s32 *)(d + 0x128) = (vext << 12) | (*(s32 *)(d + 0x128) & 0xFFF);
@@ -272,42 +284,50 @@ void _sequenceExtension(void *arg0) {
     *(s32 *)(d + 0x138) += vbvext << 10;
 }
 
-void _sequenceDisplayExtension(void *arg0, s32 arg1) {
-    func_0018BA48(arg0, 3);
-    if (func_0018BA48(arg0, 1) != 0) {
-        func_0018BA48(arg0, 8);
-        func_0018BA48(arg0, 8);
-        (*(s32 *)((u8 *)arg0 + 0x144)) = func_0018BA48(arg0, 8);
+/* Reads an MPEG-2 sequence display extension. */
+void _sequenceDisplayExtension(void *d, s32 data) {
+    func_0018BA48(d, 3);
+    if (func_0018BA48(d, 1) != 0) {
+        func_0018BA48(d, 8);
+        func_0018BA48(d, 8);
+        (*(s32 *)((u8 *)d + 0x144)) = func_0018BA48(d, 8);
     }
-    (*(s32 *)((u8 *)arg0 + 0x148)) = func_0018BA48(arg0, 0xE);
-    func_0018BA48(arg0, 1);
-    (*(s32 *)((u8 *)arg0 + 0x14C)) = func_0018BA48(arg0, 0xE);
+    (*(s32 *)((u8 *)d + 0x148)) = func_0018BA48(d, 0xE);
+    func_0018BA48(d, 1);
+    (*(s32 *)((u8 *)d + 0x14C)) = func_0018BA48(d, 0xE);
 }
 
-void _sequenceScalableExtension(s32 arg0) {
-    _Error(arg0, D_002BCB08);
+/* Rejects a scalable extension (not supported). */
+void _sequenceScalableExtension(s32 d) {
+    _Error(d, D_002BCB08);
 }
 
-void _unknown_extension(s32 arg0) {
-    _Error(arg0, D_002BCB38);
+/* Rejects an unknown extension. */
+void _unknown_extension(s32 d) {
+    _Error(d, D_002BCB38);
 }
 
-void _pictureSpatialScalableExtension(s32 arg0) {
-    _Error(arg0, D_002BCB50);
+/* Rejects a spatial scalable extension (not supported). */
+void _pictureSpatialScalableExtension(s32 d) {
+    _Error(d, D_002BCB50);
 }
 
-void _pictureTemporalScalableExtension(s32 arg0) {
-    _Error(arg0, D_002BCB88);
+/* Rejects a temporal scalable extension (not supported). */
+void _pictureTemporalScalableExtension(s32 d) {
+    _Error(d, D_002BCB88);
 }
 
-void _defStopDMA(void *arg0) {
-    func_00190190(*(s32 *)((u8 *)arg0 + 0x40) + 0x4C);
+/* Default "stop DMA" callback. */
+void _defStopDMA(void *data) {
+    func_00190190(*(s32 *)((u8 *)data + 0x40) + 0x4C);
 }
 
-void _defRestartDMA(void *arg0) {
-    func_00190278(*(s32 *)((u8 *)arg0 + 0x40) + 0x4C);
+/* Default "restart DMA" callback. */
+void _defRestartDMA(void *data) {
+    func_00190278(*(s32 *)((u8 *)data + 0x40) + 0x4C);
 }
 
+/* Writes IPU-in DMA control `arg0` with the DMA held. */
 void func_001900C0(s32 arg0) {
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
@@ -316,6 +336,7 @@ void func_001900C0(s32 arg0) {
     func_00184428();
 }
 
+/* Writes IPU-out DMA control `arg0` with the DMA held. */
 void func_00190128(s32 arg0) {
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
@@ -324,6 +345,7 @@ void func_00190128(s32 arg0) {
     func_00184428();
 }
 
+/* Stops the IPU DMAs and saves their registers into `arg0`. */
 void func_00190190(s32 arg0) {
     func_00190128(1);
     (*(s32 *)arg0) = (s32) *(volatile s32 *)0x1000B410;
@@ -341,6 +363,7 @@ void func_00190190(s32 arg0) {
     (*(s32 *)((u8 *)arg0 + 0x20)) = (s32) *(volatile s32 *)0x10002010;
 }
 
+/* Restarts the IPU DMAs from the registers saved in `arg0`. */
 void func_00190278(s32 arg0) {
     s32 temp_a1;
     s32 temp_a2;
@@ -379,11 +402,12 @@ void func_00190278(s32 arg0) {
     }
 }
 
-s32 sceIpuSync(s32 arg0, s32 arg1) {
+/* Waits for the IPU (`mode`, `timeout`). */
+s32 sceIpuSync(s32 mode, s32 timeout) {
     u32 r;
 
     r = 0;
-    switch (arg0) {
+    switch (mode) {
     case 0:
         while (*(volatile s32 *)0x10002010 < 0) {
         }
@@ -396,6 +420,7 @@ s32 sceIpuSync(s32 arg0, s32 arg1) {
     return r;
 }
 
+/* Writes IPU-out DMA control `arg0` with the DMA held. */
 void func_00190430(s32 arg0) {
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
@@ -447,6 +472,7 @@ typedef struct CdCd_001906D0 {
     s32 serve;
 } CdCd_001906D0;
 
+/* Binds the IOP disc library's remote call server (retrying until it answers). */
 s32 func_001906D0(void) {
     s32 i;
 
@@ -466,6 +492,7 @@ s32 func_001906D0(void) {
     return 0;
 }
 
+/* Sends `arg2` bytes from `arg0` to IOP address `arg1` by SIF DMA (`arg3` 1 waits). */
 s32 func_00190778(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_v0;
 
@@ -480,6 +507,7 @@ s32 func_00190778(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
+/* Sets the disc library's read mode word to `arg0`; returns the old one. */
 s32 func_00190800(s32 arg0) {
     s32 temp_v0;
 
@@ -488,6 +516,7 @@ s32 func_00190800(s32 arg0) {
     return temp_v0;
 }
 
+/* Sends disc command `arg` with its arguments to the IOP. */
 s32 func_00190810(s32 arg, ...) {
     char *ap;
     s32 command;
@@ -538,25 +567,28 @@ s32 func_00190810(s32 arg, ...) {
     return ret;
 }
 
+/* Alarm handler: signals semaphore `arg2`. */
 void func_00190A00(s32 arg0, s32 arg1, s32 arg2) {
     iSignalSema(arg2);
     __asm__ volatile("sync");
     __asm__ volatile("ei");
 }
 
-void sceCdDelayThread(u16 arg0) {
+/* Sleeps the calling thread for `hsync` horizontal lines. */
+void sceCdDelayThread(u16 hsync) {
     s32 sp0[8];
-    s32 temp_v0;
+    s32 createSema;
 
     sp0[1] = 1;
     sp0[2] = 0;
     sp0[5] = 0;
-    temp_v0 = CreateSema(sp0);
-    _SetAlarm(arg0, &func_00190A00, temp_v0);
-    WaitSema(temp_v0);
-    DeleteSema(temp_v0);
+    createSema = CreateSema(sp0);
+    _SetAlarm(hsync, &func_00190A00, createSema);
+    WaitSema(createSema);
+    DeleteSema(createSema);
 }
 
+/* Sets the disc callback to `arg0` (only when no command is running); returns the old one. */
 s32 func_00190A90(void (*arg0)(void)) {
     s32 old;
 
@@ -595,6 +627,7 @@ void cd_callback(void *data) {
 
 #undef cbfunc_num_00190AE8
 
+/* The disc callback thread: runs disc callbacks as they come. */
 void _Cdvd_cbLoop(void) {
     while (1) {
         WaitSema(cb_semid);
@@ -630,21 +663,22 @@ extern s32 D_003156D8;
 extern ThParam_00190C48 D_00315708;
 extern s32 D_00317EF0;
 
-s32 sceCdInitEeCB(s32 arg0, void *arg1, s32 arg2) {
+/* Starts the disc callback thread (`priority`, `stack`, `size`). */
+s32 sceCdInitEeCB(s32 priority, void *stack, s32 size) {
     s32 ret = 1;
 
     if (cb_thid == 0) {
         D_003156D0 = GetThreadId();
         ReferThreadStatus(D_003156D0, &D_003156D8);
-        D_00315708.stackSize = arg2;
+        D_00315708.stackSize = size;
         D_00315708.gpReg = &D_00317EF0;
         D_00315708.entry = _Cdvd_cbLoop;
-        D_00315708.stack = arg1;
-        D_00315708.initPriority = arg0;
+        D_00315708.stack = stack;
+        D_00315708.initPriority = priority;
         cb_thid = CreateThread(&D_00315708);
         StartThread(cb_thid, 0);
     } else {
-        ChangeThreadPriority(cb_thid, arg0);
+        ChangeThreadPriority(cb_thid, priority);
         ret = 0;
     }
     return ret;
@@ -660,12 +694,13 @@ typedef struct CdDirBuf_00190D20 {
     u8 b2[0x40];
 } CdDirBuf_00190D20;
 
-void cd_read_intr(void *arg0) {
+/* Disc read interrupt: marks the read done and calls the callback. */
+void cd_read_intr(void *data) {
     CdDirBuf_00190D20 *p;
     u8 *d;
     s32 i;
 
-    p = (CdDirBuf_00190D20 *)((u32)arg0 | 0x20000000);
+    p = (CdDirBuf_00190D20 *)((u32)data | 0x20000000);
     if (p->n1 > 0) {
         d = p->d1;
         for (i = 0; i < p->n1; i++) {
@@ -681,6 +716,7 @@ void cd_read_intr(void *arg0) {
     cd_callback(&sceCdCbfunc_num);
 }
 
+/* Creates the disc command semaphores. */
 void cmd_sem_init(void) {
     s32 sp0[8];
 
@@ -696,6 +732,7 @@ void cmd_sem_init(void) {
     }
 }
 
+/* Shuts the disc library down. */
 void cdvd_exit(void) {
     if (cb_thid != 0) {
         *(volatile s32 *)&sceCdCbfunc_num = -1;
@@ -709,6 +746,7 @@ void cdvd_exit(void) {
     func_00184428();
 }
 
+/* Sets the disc power-off callback to `arg0` with `arg1`; returns the old one. */
 s32 func_00190ED8(s32 arg0, s32 arg1) {
     s32 temp_s0;
 
@@ -723,6 +761,7 @@ s32 func_00190ED8(s32 arg0, s32 arg1) {
     return temp_s0;
 }
 
+/* The disc power-off command handler: calls the callback. */
 void func_00190F48(void) {
     if (D_003156C4 != 0) {
         if (D_0028DCE4 == 0) {
@@ -731,6 +770,7 @@ void func_00190F48(void) {
     }
 }
 
+/* Installs the disc power-off command handler. */
 s32 func_00190F88(void) {
     D_0028DCE4 = 1;
     func_001843E0();
@@ -917,6 +957,7 @@ s32 ncmd_prechk(int cmd) {
 #undef scePrintf_001912F0
 #undef cd_001912F0
 
+/* Disc command 0xE (no arguments); returns its result. */
 s32 func_00191460(void) {
     s32 temp_s0;
 
@@ -932,8 +973,9 @@ s32 func_00191460(void) {
     return temp_s0;
 }
 
-s32 sceCdSync(s32 arg0) {
-    if (arg0 == 0) {
+/* Waits for (`mode` 0) or checks (1) the current disc command. */
+s32 sceCdSync(s32 mode) {
+    if (mode == 0) {
         if (SCE_CD_debug > 0) {
             scePrintf(&D_002BCCC0);
         }
@@ -948,8 +990,9 @@ s32 sceCdSync(s32 arg0) {
     return 0;
 }
 
-s32 sceCdSyncS(s32 arg0) {
-    if (arg0 == 0) {
+/* Waits for or checks the current disc system command. */
+s32 sceCdSyncS(s32 mode) {
+    if (mode == 0) {
         if (SCE_CD_debug > 0) {
             scePrintf(&D_002BCCD0);
         }

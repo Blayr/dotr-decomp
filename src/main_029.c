@@ -1,7 +1,8 @@
 #include "common.h"
 
-void _ipuSetMPEG1(s32 arg0) {
-    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (arg0 << 0x17);
+/* Sets the IPU to MPEG-1 or MPEG-2 (`mpeg1`). */
+void _ipuSetMPEG1(s32 mpeg1) {
+    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (mpeg1 << 0x17);
 }
 
 typedef struct MpegCb_0018A3A0 {
@@ -14,7 +15,8 @@ typedef struct MpegCb_0018A3A0 {
 
 extern char D_002BC748[];
 
-s32 _waitBdecOut(void *arg0) {
+/* Waits for the IPU's block decoder to finish (decoder `d`). */
+s32 _waitBdecOut(void *d) {
     MpegCb_0018A3A0 cb;
     MpegCb_0018A3A0 cb2;
     s32 ok;
@@ -23,16 +25,16 @@ s32 _waitBdecOut(void *arg0) {
     s32 n;
 
     ok = 1;
-    func_0018B580(arg0);
+    func_0018B580(d);
     while (*(volatile s32 *)0x1000B020 != 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
         if (*(volatile s32 *)0x1000B420 == 0 && !(*(volatile s32 *)0x1000B400 & 0x100)) {
             cb.type = 1;
-            _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
+            _dispatchMpegCallback(*(s32 *)((u8 *)d + 0x858), &cb);
         }
     }
     bp = *(volatile s32 *)0x10002020;
     top = *(s64 *)0x10002030;
-    *(s32 *)((u8 *)arg0 + 0x838) = top;
+    *(s32 *)((u8 *)d + 0x838) = top;
     if (top < 0) {
         if (bp & 0x1F) {
             n = 0x20 - (bp & 0x1F);
@@ -42,18 +44,18 @@ s32 _waitBdecOut(void *arg0) {
     } else {
         n = 0x20;
     }
-    *(s32 *)((u8 *)arg0 + 0x83C) = n;
+    *(s32 *)((u8 *)d + 0x83C) = n;
     if (*(volatile s32 *)0x10002010 & 0x4000) {
-        /* Both arms are the same: GCC merges them after register allocation; written twice, arg0 gets the
+        /* Both arms are the same: GCC merges them after register allocation; written twice, d gets the
            saved register the original gives it (found by decomp-permuter). */
         if (top) {
-            _Error((s32)arg0, D_002BC748);
+            _Error((s32)d, D_002BC748);
             ok = 0;
             cb2.type = 2;
-            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             *(volatile s32 *)0x10002010 = 0x40000000;
             cb2.type = 3;
-            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             func_001843E0();
             *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
             *(volatile s32 *)0x1000B000 = 0;
@@ -61,13 +63,13 @@ s32 _waitBdecOut(void *arg0) {
             func_00184428();
             *(volatile s32 *)0x1000B020 = 0;
         } else {
-            _Error((s32)arg0, D_002BC748);
+            _Error((s32)d, D_002BC748);
             ok = 0;
             cb2.type = 2;
-            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             *(volatile s32 *)0x10002010 = 0x40000000;
             cb2.type = 3;
-            _dispatchMpegCallback((s32)*(void **)((u8 *)arg0 + 0x858), &cb2);
+            _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             func_001843E0();
             *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
             *(volatile s32 *)0x1000B000 = 0;
@@ -79,10 +81,12 @@ s32 _waitBdecOut(void *arg0) {
     return ok;
 }
 
-s32 _dmVector(s32 arg0) {
-    return func_0018B6D8(arg0, 3);
+/* A dual-prime motion vector part (`code`). */
+s32 _dmVector(s32 code) {
+    return func_0018B6D8(code, 3);
 }
 
+/* The dual-prime motion vectors `DMV` from `dmvector` and (`mvx`, `mvy`). */
 void _dualPrimeVector(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy) {
     if (*(s32 *)((u8 *)arg0 + 0x174) == 3) {
         if (*(s32 *)((u8 *)arg0 + 0x178)) {
@@ -107,7 +111,8 @@ void _dualPrimeVector(void *arg0, s32 DMV[][2], s32 *dmvector, s32 mvx, s32 mvy)
     }
 }
 
-s32 _mbAddressIncrement(void *arg0) {
+/* Reads the next macroblock address increment. */
+s32 _mbAddressIncrement(void *d) {
     s32 inc;
     u32 code;
     s32 n;
@@ -115,24 +120,24 @@ s32 _mbAddressIncrement(void *arg0) {
 
     inc = 0;
     do {
-        code = func_0018B6D8((s32)arg0, 0);
+        code = func_0018B6D8((s32)d, 0);
         switch (code) {
         case 0x23:
             cont = 1;
             inc += 0x21;
             break;
         case 0:
-            n = func_0018B850(arg0, 11);
-            if (*(s32 *)((u8 *)arg0 + 0x848) == 0 || n != 15) {
+            n = func_0018B850(d, 11);
+            if (*(s32 *)((u8 *)d + 0x848) == 0 || n != 15) {
                 goto error;
             }
-            func_0018B958(arg0, 11);
+            func_0018B958(d, 11);
         case 0x22:
             cont = 1;
             break;
         error:
-            _Error1((s32)arg0, &D_002BC768, code);
-            *(s32 *)((u8 *)arg0 + 0x11C) = 1;
+            _Error1((s32)d, &D_002BC768, code);
+            *(s32 *)((u8 *)d + 0x11C) = 1;
             return 1;
         default:
             inc += code;
@@ -143,57 +148,59 @@ s32 _mbAddressIncrement(void *arg0) {
     return inc;
 }
 
-s32 _pictureData0(void *arg0) {
+/* Decodes one picture's slices. */
+s32 _pictureData0(void *d) {
     s32 n;
     s32 ret;
 
-    (*(s32 *)((u8 *)arg0 + 0x810)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x814)) = 0;
-    n = (*(s32 *)((u8 *)arg0 + 0x12C)) * (*(s32 *)((u8 *)arg0 + 0x130));
-    if ((*(s32 *)((u8 *)arg0 + 0x174)) != 3) {
+    (*(s32 *)((u8 *)d + 0x810)) = 0;
+    (*(s32 *)((u8 *)d + 0x814)) = 0;
+    n = (*(s32 *)((u8 *)d + 0x12C)) * (*(s32 *)((u8 *)d + 0x130));
+    if ((*(s32 *)((u8 *)d + 0x174)) != 3) {
         n >>= 1;
     }
     do {
-        ret = _slice0(arg0, n);
+        ret = _slice0(d, n);
     } while (ret == 1 || ret == 3);
-    func_0018B580(arg0);
-    if (_waitBdecOut(arg0) == 0) {
+    func_0018B580(d);
+    if (_waitBdecOut(d) == 0) {
         ret = 2;
     }
     while ((*(volatile u32 *)0x1000D400 >> 8) & 1) {
     }
     if (ret == 0) {
-        func_001893A8(arg0, (*(s32 *)((u8 *)arg0 + 0x810)) == 0);
+        func_001893A8(d, (*(s32 *)((u8 *)d + 0x810)) == 0);
     }
     if (ret == 1 || ret == 2) {
-        _Error((s32)arg0, &D_002BC7A0);
+        _Error((s32)d, &D_002BC7A0);
     }
     return ret == 0;
 }
 
-s32 _sliceA0(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
+/* Reads a slice header (vertical position `vp`). */
+s32 _sliceA0(void *d, s32 vp, s32 *arg2, s32 *arg3, void *arg4) {
     s32 temp_s3;
     s32 temp_v0;
-    s32 temp_v0_2;
+    s32 mbAddressIncrement;
 
-    (*(s32 *)((u8 *)arg0 + 0x11C)) = 0;
-    func_0018BB98(arg0);
-    temp_v0 = func_0018B850(arg0, 0x20);
+    (*(s32 *)((u8 *)d + 0x11C)) = 0;
+    func_0018BB98(d);
+    temp_v0 = func_0018B850(d, 0x20);
     if ((u32) (temp_v0 - 0x101) >= 0xAFU) {
-        _Error1((s32) arg0, &D_002BC7C0, temp_v0);
+        _Error1((s32) d, &D_002BC7C0, temp_v0);
         return 2;
     }
-    func_0018B958(arg0, 0x20);
-    temp_s3 = ((s32 (*)(void *))func_0018BC18)(arg0);
-    temp_v0_2 = _mbAddressIncrement(arg0);
-    *arg3 = temp_v0_2;
-    if ((*(s32 *)((u8 *)arg0 + 0x11C)) != 0) {
-        _Error((s32) arg0, &D_002BC7E8);
+    func_0018B958(d, 0x20);
+    temp_s3 = ((s32 (*)(void *))func_0018BC18)(d);
+    mbAddressIncrement = _mbAddressIncrement(d);
+    *arg3 = mbAddressIncrement;
+    if ((*(s32 *)((u8 *)d + 0x11C)) != 0) {
+        _Error((s32) d, &D_002BC7E8);
         return 1;
     }
-    *arg2 = (((((temp_s3 << 7) + (temp_v0 & 0xFF)) - 1) * (*(s32 *)((u8 *)arg0 + 0x12C))) + temp_v0_2) - 1;
+    *arg2 = (((((temp_s3 << 7) + (temp_v0 & 0xFF)) - 1) * (*(s32 *)((u8 *)d + 0x12C))) + mbAddressIncrement) - 1;
     *arg3 = 1;
-    (*(s32 *)((u8 *)arg0 + 0x1B0)) = 1;
+    (*(s32 *)((u8 *)d + 0x1B0)) = 1;
     (*(s32 *)((u8 *)arg4 + 0x14)) = 0;
     (*(s32 *)((u8 *)arg4 + 0x10)) = 0;
     (*(s32 *)((u8 *)arg4 + 4)) = 0;
@@ -205,7 +212,8 @@ s32 _sliceA0(void *arg0, s32 arg1, s32 *arg2, s32 *arg3, void *arg4) {
     return 0;
 }
 
-s32 _slice0(void *arg0, s32 arg1) {
+/* Decodes one slice (vertical position `vp`). */
+s32 _slice0(void *d, s32 vp) {
     s32 dc[8];
     s32 pmv[4];
     s32 mvfs[4];
@@ -218,87 +226,89 @@ s32 _slice0(void *arg0, s32 arg1) {
 
     MBA = 0;
     MBAinc = 0;
-    if ((ret = _sliceA0(arg0, arg1, &MBA, &MBAinc, dc)) != 0) {
+    if ((ret = _sliceA0(d, vp, &MBA, &MBAinc, dc)) != 0) {
         return ret;
     }
-    *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+    *(s32 *)((u8 *)d + 0x11C) = 0;
     for (;;) {
-        if (MBA >= arg1) {
+        if (MBA >= vp) {
             return 0;
         }
-        *(s32 *)((u8 *)arg0 + *(s32 *)((u8 *)arg0 + 0x810) * 0x140 + 0x6CC) = 0;
-        if (_waitBdecOut(arg0) == 0) {
+        *(s32 *)((u8 *)d + *(s32 *)((u8 *)d + 0x810) * 0x140 + 0x6CC) = 0;
+        if (_waitBdecOut(d) == 0) {
             return 2;
         }
         if (MBAinc == 0) {
-            if (func_0018B850(arg0, 23) == 0 || *(s32 *)((u8 *)arg0 + 0x11C) != 0) {
-                *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+            if (func_0018B850(d, 23) == 0 || *(s32 *)((u8 *)d + 0x11C) != 0) {
+                *(s32 *)((u8 *)d + 0x11C) = 0;
                 return 3;
             }
-            MBAinc = _mbAddressIncrement(arg0);
-            if (*(s32 *)((u8 *)arg0 + 0x11C) != 0) {
+            MBAinc = _mbAddressIncrement(d);
+            if (*(s32 *)((u8 *)d + 0x11C) != 0) {
                 goto fault;
             }
         }
-        if (MBA >= arg1) {
-            _Error((s32)arg0, &D_002BC808);
+        if (MBA >= vp) {
+            _Error((s32)d, &D_002BC808);
             return 2;
         }
         if (MBAinc == 1) {
-            if (_decMB0(arg0, &mbtype, &mtype, &dct, dc, pmv, mvfs) == 0) {
+            if (_decMB0(d, &mbtype, &mtype, &dct, dc, pmv, mvfs) == 0) {
 fault:
-                *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+                *(s32 *)((u8 *)d + 0x11C) = 0;
                 return 1;
             }
         } else {
-            if (_skipMB0(arg0, dc, &mtype, pmv, &mbtype) == 0) {
+            if (_skipMB0(d, dc, &mtype, pmv, &mbtype) == 0) {
                 goto fail;
             }
         }
-        if (func_00188630(arg0, MBA, MBAinc, mbtype, mtype, dc, pmv, mvfs) == 0) {
+        if (func_00188630(d, MBA, MBAinc, mbtype, mtype, dc, pmv, mvfs) == 0) {
 fail:
-            *(s32 *)((u8 *)arg0 + 0x11C) = 0;
+            *(s32 *)((u8 *)d + 0x11C) = 0;
             return 2;
         }
         if (MBA != 0) {
-            func_001893A8(arg0, *(s32 *)((u8 *)arg0 + 0x810) ^ 1);
+            func_001893A8(d, *(s32 *)((u8 *)d + 0x810) ^ 1);
         }
         MBA++;
-        *(s32 *)((u8 *)arg0 + 0x810) ^= 1;
+        *(s32 *)((u8 *)d + 0x810) ^= 1;
         MBAinc--;
     }
 }
 
-s32 _skipMB0(void *arg0, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
+/* Fills skipped macroblocks from the reference pictures. */
+s32 _skipMB0(void *d, void *arg1, s32 *arg2, void *arg3, s32 *arg4) {
     s32 temp_v0;
     s32 var_a5;
 
     var_a5 = 1;
-    (*(s32 *)((u8 *)((((*(s32 *)((u8 *)arg0 + 0x810)) * 0x140) + arg0)) + 0x6CC)) = 1;
-    (*(s32 *)((u8 *)arg0 + 0x1B0)) = 1;
-    if ((*(s32 *)((u8 *)arg0 + 0x150)) == 2) {
+    (*(s32 *)((u8 *)((((*(s32 *)((u8 *)d + 0x810)) * 0x140) + d)) + 0x6CC)) = 1;
+    (*(s32 *)((u8 *)d + 0x1B0)) = 1;
+    if ((*(s32 *)((u8 *)d + 0x150)) == 2) {
         (*(s32 *)((u8 *)arg1 + 0x14)) = 0;
         (*(s32 *)((u8 *)arg1 + 0x10)) = 0;
         (*(s32 *)((u8 *)arg1 + 4)) = 0;
         (*(s32 *)arg1) = 0;
     }
-    if ((*(s32 *)((u8 *)arg0 + 0x174)) == 3) {
+    if ((*(s32 *)((u8 *)d + 0x174)) == 3) {
         *arg2 = 2;
     } else {
         *arg2 = 1;
-        temp_v0 = (*(s32 *)((u8 *)arg0 + 0x174)) == 2;
+        temp_v0 = (*(s32 *)((u8 *)d + 0x174)) == 2;
         (*(s32 *)((u8 *)arg3 + 4)) = temp_v0;
         (*(s32 *)arg3) = temp_v0;
     }
-    if ((*(s32 *)((u8 *)arg0 + 0x150)) == 1) {
-        _Error((s32) arg0, &D_002BC828);
+    if ((*(s32 *)((u8 *)d + 0x150)) == 1) {
+        _Error((s32) d, &D_002BC828);
         var_a5 = 0;
     }
     *arg4 &= ~1;
     return var_a5;
 }
 
-s32 _decMB0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, s32 *arg6) {
+/* Decodes one macroblock. */
+s32 _decMB0(void *dIn, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, s32 *arg6) {
     u8 *d;
     s32 (*PMV)[2][2];
     s32 t;
@@ -309,7 +319,7 @@ s32 _decMB0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, 
     s32 v;
     s32 dmv;
 
-    d = arg0;
+    d = dIn;
     PMV = arg4;
     *(volatile s32 *)0x10002010 = (*(volatile s32 *)0x10002010 & 0xF8FFFFFF) | (*(s32 *)(d + 0x150) << 24);
     t = func_0018B6D8((s32)d, 1);
@@ -401,6 +411,7 @@ s32 _decMB0(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, 
     return 1;
 }
 
+/* Decodes one motion vector part into `pred`. */
 s32 decode_motion_vector(s32 *pred, s32 r_size, s32 motion_code, s32 motion_residual, s32 full_pel_vector) {
     s32 lim, vec;
 
@@ -421,6 +432,7 @@ s32 decode_motion_vector(s32 *pred, s32 r_size, s32 motion_code, s32 motion_resi
     return *pred = full_pel_vector ? (vec << 1) : vec;
 }
 
+/* Reads the motion vectors of one direction `s` (one or two, by `count`) into `PMV` (MPEG motion_vectors()). */
 void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32 s, s32 count, s32 fmt, s32 h_r, s32 v_r, s32 dmv, s32 mvscale) {
     if (count == 1) {
         if (fmt == 0 && dmv == 0) {
@@ -437,6 +449,7 @@ void func_0018B260(s32 arg0, s32 PMV[2][2][2], s32 *dmvector, s32 sel[2][2], s32
     }
 }
 
+/* Reads one motion vector (MPEG motion_vector()): its code and residual, then the dual-prime part. */
 void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     s32 code;
     s32 r;
@@ -461,6 +474,7 @@ void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5,
     }
 }
 
+/* Sends IPU command `arg1` and notes how long it needs. */
 s32 func_0018B550(void *arg0, s32 arg1) {
     s32 temp_v0;
 
@@ -470,6 +484,7 @@ s32 func_0018B550(void *arg0, s32 arg1) {
     return temp_v0;
 }
 
+/* Waits until the IPU is not busy (reports a stall to the MPEG callback every 5000 polls). */
 void func_0018B580(void *arg0) {
     s32 n;
 
@@ -482,6 +497,7 @@ void func_0018B580(void *arg0) {
     }
 }
 
+/* Waits for the IPU command's result and returns it. */
 s64 func_0018B628(void *arg0) {
     s32 i;
     s64 r;
@@ -496,6 +512,7 @@ s64 func_0018B628(void *arg0) {
     return r;
 }
 
+/* Reads a variable-length code from the IPU (table `arg1`). */
 s32 func_0018B6D8(s32 arg0, s32 arg1) {
     s32 n;
     s32 m;
@@ -535,6 +552,7 @@ s32 func_0018B6D8(s32 arg0, s32 arg1) {
     return (s16)r;
 }
 
+/* Shows the next `arg1` bits of the stream without taking them (IPU). */
 s32 func_0018B850(void *arg0, s32 arg1) {
     s32 i;
     s32 *tbl;
@@ -556,6 +574,7 @@ s32 func_0018B850(void *arg0, s32 arg1) {
     return *(u32 *)((u8 *)arg0 + 0x838) >> (32 - arg1);
 }
 
+/* Skips `arg1` bits of the stream (IPU FDEC). */
 void func_0018B958(void *arg0, s32 arg1) {
     s32 i;
     s32 cmd;
@@ -575,6 +594,7 @@ void func_0018B958(void *arg0, s32 arg1) {
 
 }
 
+/* Takes the next `arg1` bits of the stream (IPU). */
 s32 func_0018BA48(void *arg0, s32 arg1) {
     s32 i;
     s32 *tbl;
@@ -603,6 +623,7 @@ s32 func_0018BA48(void *arg0, s32 arg1) {
     return v;
 }
 
+/* Moves to the next start code (byte-aligns, then skips to 0x000001). */
 void func_0018BB98(void *arg0) {
     s32 n;
 
@@ -616,6 +637,7 @@ void func_0018BB98(void *arg0) {
     }
 }
 
+/* Reads a slice's quantiser scale and extra information. */
 s32 func_0018BC18(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)arg0 + 0x1B4)) = func_0018BA48(arg0, 5);
     if (func_0018BA48(arg0, 1) != 0) {
@@ -633,6 +655,7 @@ typedef struct MpegCb_0018BC80 {
     s64 b;
 } MpegCb_0018BC80;
 
+/* Reads headers until the next picture: sequence, GOP and picture headers, end of sequence. */
 s32 func_0018BC80(void *arg0) {
     MpegCb_0018BC80 cb;
     u32 code;
@@ -662,6 +685,7 @@ s32 func_0018BC80(void *arg0) {
     }
 }
 
+/* Reads a picture header (temporal reference, type, the forward/backward vector codes). */
 void func_0018BD90(void *arg0, s32 arg1) {
     s32 temp_s1;
 
@@ -687,6 +711,7 @@ typedef struct ExtTbl_0018BE58 {
 
 extern ExtTbl_0018BE58 D_002BC878;
 
+/* Reads the extension and user-data blocks after a header. */
 void func_0018BE58(void *d) {
     ExtTbl_0018BE58 tbl;
     u32 id;
@@ -708,6 +733,7 @@ void func_0018BE58(void *d) {
     }
 }
 
+/* Reads an MPEG-2 picture coding extension (f codes, DC precision, structure, flags). */
 void func_0018BF80(void *arg0) {
     s32 temp_v0;
 
@@ -739,12 +765,14 @@ void func_0018BF80(void *arg0) {
     }
 }
 
+/* Skips the extra-information bytes of a header. */
 s32 func_0018C170(void *arg0) {
     while (func_0018BA48(arg0, 1) != 0) {
         func_0018B958(arg0, 8);
     }
 }
 
+/* Works out the picture's display order from temporal reference `arg1`. */
 s32 func_0018C1B8(void *arg0, s32 arg1) {
     s32 temp_a0;
     s32 temp_v0;
@@ -774,6 +802,7 @@ s32 func_0018C1B8(void *arg0, s32 arg1) {
     return temp_v0;
 }
 
+/* Reads a GOP header (time code, closed GOP, broken link). */
 void func_0018C230(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)arg0 + 0xE8)) = 0;
     (*(s32 *)((u8 *)arg0 + 0x854)) = 1;
@@ -789,6 +818,7 @@ void func_0018C230(void *arg0, s32 arg1) {
     func_0018BE58(arg0);
 }
 
+/* Reads a quantiser-matrix extension and loads the matrices into the IPU. */
 void func_0018C2D0(void *arg0, s32 arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
@@ -821,6 +851,7 @@ typedef struct DispExt_0018C398 {
     s32 v[3];
 } DispExt_0018C398;
 
+/* Reads a picture display extension (the frame centre offsets). */
 void func_0018C398(void *arg0) {
     u8 *d;
     s32 i;
@@ -856,6 +887,7 @@ void func_0018C398(void *arg0) {
     }
 }
 
+/* Reads a sequence scalable/copyright extension's fields and drops them. */
 void func_0018C490(s32 arg0, s32 arg1) {
     func_0018BA48(arg0, 1);
     func_0018BA48(arg0, 8);
@@ -869,8 +901,9 @@ void func_0018C490(s32 arg0, s32 arg1) {
     func_0018BA48(arg0, 0x16);
 }
 
+/* Decodes the current picture's data (by picture structure). */
 s32 func_0018C520(void *arg0) {
-    s32 temp_v0;
+    s32 pictureData;
     void *var_s1;
 
     if (((*(s32 *)((u8 *)arg0 + 0x174)) == 3) && ((*(s32 *)((u8 *)arg0 + 0x120)) != 0)) {
@@ -892,13 +925,14 @@ s32 func_0018C520(void *arg0) {
         _Error((s32) arg0, &D_002BC920);
         break;
     }
-    temp_v0 = _pictureData0(arg0);
-    if (temp_v0 != 0) {
+    pictureData = _pictureData0(arg0);
+    if (pictureData != 0) {
         (*(s32 *)((u8 *)var_s1 + 0x28)) = 1;
     }
-    return temp_v0;
+    return pictureData;
 }
 
+/* Outputs the decoded picture(s): frame or field pair, by the decode mode. */
 void func_0018C5F0(void *arg0, s32 arg1, s32 arg2) {
     s32 temp_v0;
     s32 var_a1;
@@ -996,6 +1030,7 @@ typedef struct MpegDec_0018C680 {
     u64 f830;
 } MpegDec_0018C680;
 
+/* Picks the frame buffers for the next picture (reference and output), by its type and structure. */
 s32 func_0018C680(void *arg0, s32 second) {
     MpegDec_0018C680 *d = arg0;
     MpegFrame_0018C680 *other;
@@ -1097,6 +1132,7 @@ s32 func_0018C680(void *arg0, s32 second) {
     } while (0);
 }
 
+/* Whether the output buffer is big enough for the picture; reports an error if not. */
 s32 func_0018C938(void *arg0, s32 *arg1) {
     s8 buf[0x100];
     s32 ok;
@@ -1113,6 +1149,7 @@ s32 func_0018C938(void *arg0, s32 *arg1) {
     return ok;
 }
 
+/* Copies a decoded picture to the output by DMA (scratchpad, interleaved). */
 void func_0018C9D8(void *arg0, s32 *s) {
     u8 *d = arg0;
     s32 src;
@@ -1170,6 +1207,7 @@ void func_0018C9D8(void *arg0, s32 *s) {
     }
 }
 
+/* Marks decoder `arg0`'s picture as output (state 2). */
 void func_0018CC48(void *arg0) {
     if ((*(s32 *)((u8 *)arg0 + 8)) != 2) {
         (*(s32 *)((u8 *)arg0 + 8)) = 2;
@@ -1240,6 +1278,7 @@ void func_0018CC70(void *arg0, s32 *img, void *arg2, void *arg3, void *arg4) {
 #undef dts_0018CC70
 #undef flags_0018CC70
 
+/* Outputs a frame picture: its time stamps, then the colour conversion and DMA out. */
 void func_0018CE00(void *d, s32 arg1, s32 unused) {
     s32 *s = (s32 *)arg1;
     u8 *p;
@@ -1276,6 +1315,7 @@ typedef union MpegU64_0018CF10 {
     s32 w[2];
 } MpegU64_0018CF10;
 
+/* Outputs a field picture pair (`arg1`, `arg2`): their time stamps, then the conversion and DMA out. */
 void func_0018CF10(void *d, s32 arg1, s32 arg2, s32 unused) {
     s32 *top = (s32 *)arg1;
     s32 *bot = (s32 *)arg2;
@@ -1348,6 +1388,7 @@ typedef struct SprDec_0018D0C8 {
     s32 cur;
 } SprDec_0018D0C8;
 
+/* Moves decoded macroblocks out of the scratchpad by DMA. */
 void func_0018D0C8(void *arg0) {
     SprDec_0018D0C8 *d;
     s32 cur;
@@ -1380,6 +1421,7 @@ void func_0018D0C8(void *arg0) {
     func_00184428();
 }
 
+/* Starts a DMA of `arg1` bytes from `arg0` into the IPU. */
 void func_0018D220(s32 arg0, s32 arg1) {
     func_001843E0();
     *(volatile s32 *)0x1000B010 = (arg0 & 0x0FFFFFFF) | 0x80000000;
@@ -1388,6 +1430,7 @@ void func_0018D220(s32 arg0, s32 arg1) {
     func_00184428();
 }
 
+/* Converts `arg2` macroblocks at `arg1` to RGB in the IPU and waits. */
 void func_0018D290(void *arg0, s32 arg1, s32 arg2) {
     s32 sp0[8];
     do {
@@ -1417,6 +1460,7 @@ typedef struct {
     s32 n;
 } IpuDmaState;
 
+/* DMA interrupt handler of the IPU output: starts the next chunk or marks the transfer done. */
 s32 func_0018D3A8(s32 ch, void *arg) {
     IpuDmaState *st = arg;
 
@@ -1458,6 +1502,7 @@ typedef struct IpuDmaState_0018D520 {
     s32 n;
 } IpuDmaState_0018D520;
 
+/* Sends `arg2` bytes at `arg1` to the IPU in chunks (DMA interrupt driven). */
 void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
     s32 sp0[8];
     IpuDmaState_0018D520 st;
@@ -1494,6 +1539,7 @@ void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
     RemoveDmacHandler(3, hid);
 }
 
+/* DMA interrupt handler of the IPU input: feeds the next chunk. */
 s32 func_0018D6D0(s32 arg0, void *arg1) {
     u32 temp_v0;
 
@@ -1529,6 +1575,7 @@ typedef struct MpegOut_0018D7D8 {
     u32 addr;
 } MpegOut_0018D7D8;
 
+/* Converts and outputs a decoded picture (colour conversion through the IPU, DMA out). */
 void func_0018D7D8(void *arg0, s32 *arg1) {
     MpegOut_0018D7D8 cb;
     s32 mbs;
@@ -1586,18 +1633,20 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
     _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
 }
 
-void _sysbitInit(u64 *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    (*(s32 *)((u8 *)arg0 + 8)) = arg1;
-    (*(u64 *)arg0) = 0;
-    (*(s32 *)((u8 *)arg0 + 0xC)) = arg1;
-    (*(s32 *)((u8 *)arg0 + 0x10)) = 0;
-    (*(s64 *)((u8 *)arg0 + 0x18)) = 0;
-    (*(s32 *)((u8 *)arg0 + 0x20)) = arg2;
-    (*(s32 *)((u8 *)arg0 + 0x24)) = (s32) (arg2 + arg3);
-    (*(s32 *)((u8 *)arg0 + 0x28)) = arg3;
-    _sysbitFlush(arg0, 0);
+/* Starts bit reader `bs` on data (`addr`, `size`, `bit`). */
+void _sysbitInit(u64 *bs, s32 addr, s32 size, s32 bit) {
+    (*(s32 *)((u8 *)bs + 8)) = addr;
+    (*(u64 *)bs) = 0;
+    (*(s32 *)((u8 *)bs + 0xC)) = addr;
+    (*(s32 *)((u8 *)bs + 0x10)) = 0;
+    (*(s64 *)((u8 *)bs + 0x18)) = 0;
+    (*(s32 *)((u8 *)bs + 0x20)) = size;
+    (*(s32 *)((u8 *)bs + 0x24)) = (s32) (size + bit);
+    (*(s32 *)((u8 *)bs + 0x28)) = bit;
+    _sysbitFlush(bs, 0);
 }
 
-s32 _sysbitNext(u64 *arg0, s32 arg1) {
-    return *arg0 >> (64 - arg1);
+/* The next `n` bits of reader `bs` without taking them. */
+s32 _sysbitNext(u64 *bs, s32 n) {
+    return *bs >> (64 - n);
 }

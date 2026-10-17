@@ -94,6 +94,7 @@ void func_0017F2F8(void) {
     }
 }
 
+/* Creates the file library's semaphore once. */
 void func_0017F6B8(void) {
     s32 sp0[8];
     if (D_0028CAA4 == -1) {
@@ -104,16 +105,19 @@ void func_0017F6B8(void) {
     }
 }
 
+/* Takes the file library's semaphore (creating it first if needed). */
 s32 func_0017F708(void) {
     func_0017F6B8();
     WaitSema(D_0028CAA4);
     return 0;
 }
 
+/* Releases the file-library semaphore. */
 void _cleanup(void) {
     SignalSema(D_0028CAA4);
 }
 
+/* Sets the file library's callback to `arg0` with `arg1`; returns the old callback. */
 s32 func_0017F748(s32 arg0, s32 arg1) {
     u8 *b_D_00313C00 = (u8 *)&D_00313C00;
     s32 temp_s0;
@@ -131,6 +135,7 @@ s32 func_0017F748(s32 arg0, s32 arg1) {
     return temp_s0;
 }
 
+/* Runs the file library's callback (with its argument), then turns interrupts on. */
 void func_0017F7D8(s32 arg0, hcall_t *arg1) {
     if (arg1->fn != NULL) {
         arg1->fn(arg1->arg);
@@ -148,6 +153,7 @@ void func_0017F7D8(s32 arg0, hcall_t *arg1) {
 extern void *D_00312880;
 extern s32 D_00313BC0;
 
+/* Starts the IOP file library: command handler, remote call binding, semaphores. */
 s32 func_0017F808(void) {
     extern void func_0017E240(s32);
     char *p;
@@ -190,6 +196,7 @@ s32 func_0017F808(void) {
     return 0;
 }
 
+/* Whether the file library's IOP module changed since it was bound (its id words differ). */
 s32 func_0017F9D0(void) {
     s32 *a_D_0028C24C = &D_0028C24C;
     s32 *a_D_00313BA8 = &D_00313BA8;
@@ -202,6 +209,7 @@ s32 func_0017F9D0(void) {
     return var_s2;
 }
 
+/* Resets the IOP file library. */
 s32 sceFsReset(void) {
     _fs_init = 0;
     func_00198948(&D_00313BA8, 0, 4U);
@@ -744,6 +752,7 @@ s32 func_00180B38(s32 name, s32 code) {
     return result;
 }
 
+/* File request 6 on `arg0` (through func_00180B38). */
 s32 func_00180CE0(s32 arg0) {
     return func_00180B38(arg0, 6);
 }
@@ -797,6 +806,7 @@ s32 func_00180D00(char *name, s32 mode) {
     return result;
 }
 
+/* File request 8 on `arg0` (through func_00180B38). */
 s32 func_00180EB0(s32 arg0) {
     return func_00180B38(arg0, 8);
 }
@@ -875,6 +885,7 @@ s32 func_00180ED0(u8 *dev, u8 *blockdev, u8 *arg, s32 arglen) {
 extern s32 D_00313500;
 extern s32 D_00313B80;
 
+/* Sends file request 0xF on `arg0` to the IOP and waits for its result. */
 s32 func_00181140(s32 arg0) {
     s32 sp[8];
     s32 result;
@@ -911,6 +922,7 @@ s32 func_00181140(s32 arg0) {
     return result;
 }
 
+/* File request 0x10 on `arg0` (through func_00180B38). */
 s32 func_00181260(s32 arg0) {
     return func_00180B38(arg0, 0x10);
 }
@@ -996,6 +1008,7 @@ s32 func_00181348(u32 fd) {
     return 0;
 }
 
+/* Sends file request 0xB on file `arg0` with `arg1` to the IOP and waits for its result. */
 s32 func_001814B0(s32 arg0, s32 arg1) {
     s32 sp[8];
     s32 result;
@@ -1198,6 +1211,7 @@ s32 func_001819E8(u8 *oldname, u8 *newname) {
     return result;
 }
 
+/* File request 0x12 on `arg0` (through func_00180B38). */
 s32 func_00181BD8(s32 arg0) {
     return func_00180B38(arg0, 0x12);
 }
@@ -1318,6 +1332,7 @@ s32 func_00181D90(u8 *fsname, u8 *devname, s32 flag, u8 *arg, s32 arglen) {
     return result;
 }
 
+/* File request 0x15 on `arg0` (through func_00180B38). */
 s32 func_00182000(s32 arg0) {
     return func_00180B38(arg0, 0x15);
 }
@@ -1583,17 +1598,19 @@ s32 sceSifInitIopHeap(void) {
     return 0;
 }
 
-s32 sceSifAllocIopHeap(s32 arg0) {
+/* Allocates `size` bytes of IOP memory; returns its address. */
+s32 sceSifAllocIopHeap(s32 size) {
     if (_bind < 0) {
         return 0;
     }
-    D_00313CC0 = arg0;
+    D_00313CC0 = size;
     if (sceSifCallRpc(&D_00313C40, 1, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
         return 0;
     }
     return D_00313C80;
 }
 
+/* IOP heap call 4 (`arg0`, `arg1`, `arg2`); returns its result, 0 if not bound. */
 s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
     s32 *p;
 
@@ -1610,17 +1627,19 @@ s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
     return D_00313C80;
 }
 
-s32 sceSifFreeIopHeap(s32 arg0) {
+/* Frees IOP memory at `addr`. */
+s32 sceSifFreeIopHeap(s32 addr) {
     if (_bind < 0) {
         return 0;
     }
-    D_00313CC0 = arg0;
+    D_00313CC0 = addr;
     if (sceSifCallRpc(&D_00313C40, 2, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
         return -1;
     }
     return D_00313C80;
 }
 
+/* Frees IOP memory at `arg0` (sceSifFreeIopHeap). */
 s32 func_00182A28(s32 arg0) {
     return sceSifFreeIopHeap(arg0);
 }
@@ -1632,6 +1651,7 @@ typedef struct IopLoadHeap_00182A48 {
 
 extern IopLoadHeap_00182A48 D_00313D00;
 
+/* Loads file `name` into IOP memory at `addr`. */
 s32 sceSifLoadIopHeap(const char *name, void *addr) {
     s32 i;
 
@@ -1667,6 +1687,7 @@ typedef struct IopVer_00182B38 {
     u8 b[4];
 } IopVer_00182B38;
 
+/* Binds the IOP module loader's remote call server. */
 s32 _lf_bind(void) {
     s32 i;
 
@@ -1690,6 +1711,7 @@ s32 _lf_bind(void) {
     return 0;
 }
 
+/* Whether the IOP module loader changed since it was bound (its id words differ). */
 s32 func_00182C38(void) {
     s32 *a = &D_0028C24C;
     s32 *b = &D_00314028;
@@ -1701,6 +1723,7 @@ s32 func_00182C38(void) {
     return var_s2;
 }
 
+/* Resets the IOP module loader binding. */
 s32 sceSifLoadFileReset(void) {
     _bind_check = -1;
     func_00198948(&D_00314028, 0, 4U);
@@ -1773,6 +1796,7 @@ s32 func_00182F08(s32 addr, s32 arglen, s32 args, s32 *ret) {
     return r;
 }
 
+/* IOP module loader call 8 with `arg0`; returns its result or a negative error. */
 s32 func_00183110(s32 arg0) {
     s32 var_v0;
 

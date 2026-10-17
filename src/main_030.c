@@ -29,20 +29,22 @@ void _sysbitFlush(void *arg0, s32 n) {
     bs_0018DAA8->pos += n;
 }
 
-s32 _sysbitGet(u64 *arg0, s32 arg1) {
-    s32 temp_s2;
+/* Takes the next `n` bits of reader `bs`. */
+s32 _sysbitGet(u64 *bs, s32 n) {
+    s32 sysbitNext;
 
-    temp_s2 = _sysbitNext(arg0, arg1);
-    _sysbitFlush(arg0, arg1);
-    return temp_s2;
+    sysbitNext = _sysbitNext(bs, n);
+    _sysbitFlush(bs, n);
+    return sysbitNext;
 }
 
-s32 _sysbitMarker(u64 *arg0) {
-    s32 temp_s1;
+/* Skips a marker bit of reader `bs`. */
+s32 _sysbitMarker(u64 *bs) {
+    s32 sysbitNext;
 
-    temp_s1 = _sysbitNext(arg0, 1);
-    _sysbitFlush(arg0, 1);
-    return temp_s1;
+    sysbitNext = _sysbitNext(bs, 1);
+    _sysbitFlush(bs, 1);
+    return sysbitNext;
 }
 
 /* _sysbitJump: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
@@ -62,12 +64,13 @@ void _sysbitJump(s32 *bs, s32 bytes) {
     _sysbitFlush(bs, 0);
 }
 
-u32 _sysbitPtr(void *arg0, s32 arg1) {
+/* Reader `bs`'s current address. */
+u32 _sysbitPtr(void *bs, s32 arg1) {
     u32 var_v1;
 
-    var_v1 = (*(s32 *)((u8 *)arg0 + 8)) + (arg1 >> 3);
-    if (var_v1 >= (u32) (*(u32 *)((u8 *)arg0 + 0x24))) {
-        var_v1 -= (*(s32 *)((u8 *)arg0 + 0x28));
+    var_v1 = (*(s32 *)((u8 *)bs + 8)) + (arg1 >> 3);
+    if (var_v1 >= (u32) (*(u32 *)((u8 *)bs + 0x24))) {
+        var_v1 -= (*(s32 *)((u8 *)bs + 0x28));
     }
     return var_v1;
 }
@@ -278,8 +281,9 @@ s32 sceMpegDemuxPssRing(void *arg0, s32 buf, s32 size, s32 ring, s32 ringSize) {
 
 #undef mp_0018DEE8
 
-s32 sceMpegDemuxPss(s32 arg0, s32 arg1, s32 arg2) {
-    return sceMpegDemuxPssRing(arg0, arg1, arg2, 0, -1);
+/* Splits PSS stream data (`addr`, `size`) into its video and audio parts for decoder `mp`. */
+s32 sceMpegDemuxPss(s32 mp, s32 addr, s32 size) {
+    return sceMpegDemuxPssRing(mp, addr, size, 0, -1);
 }
 
 /* sceMpegAddStrCallback: adapted from the ICO decompilation via kfiv-decomp (MIT), see THIRD_PARTY_NOTICES.md */
@@ -309,42 +313,44 @@ s32 sceMpegAddStrCallback(void *arg0, s32 type, s32 ch, void *func, void *data) 
     return ret;
 }
 
-s32 _pack_header(u64 *arg0, void *arg1) {
-    s32 temp_s0;
-    s32 temp_s1;
-    s32 temp_s2;
-    s32 temp_s4;
+/* Reads an MPEG program-stream pack header. */
+s32 _pack_header(u64 *bs, void *hdr) {
+    s32 sysbitGet;
+    s32 sysbitGet2;
+    s32 sysbitGet3;
+    s32 sysbitGet3In;
     u32 var_s5;
 
-    _sysbitGet(arg0, 0x22);
-    temp_s0 = _sysbitGet(arg0, 3);
-    _sysbitMarker(arg0);
-    temp_s1 = _sysbitGet(arg0, 0xF);
-    _sysbitMarker(arg0);
-    temp_s2 = _sysbitGet(arg0, 0xF);
-    _sysbitMarker(arg0);
-    (*(s32 *)arg1) = _sysbitGet(arg0, 9);
-    _sysbitGet(arg0, 0x1E);
-    temp_s4 = _sysbitGet(arg0, 3);
-    (*(s32 *)((u8 *)arg1 + 8)) = (s32) (((u32) temp_s0 >> 2) & 1);
-    (*(s32 *)((u8 *)arg1 + 4)) = (s32) ((temp_s0 << 0x1E) | (temp_s1 << 0xF) | temp_s2);
-    for (var_s5 = 0; var_s5 < (u32) temp_s4; var_s5++) {
-        _sysbitGet(arg0, 8);
+    _sysbitGet(bs, 0x22);
+    sysbitGet = _sysbitGet(bs, 3);
+    _sysbitMarker(bs);
+    sysbitGet2 = _sysbitGet(bs, 0xF);
+    _sysbitMarker(bs);
+    sysbitGet3 = _sysbitGet(bs, 0xF);
+    _sysbitMarker(bs);
+    (*(s32 *)hdr) = _sysbitGet(bs, 9);
+    _sysbitGet(bs, 0x1E);
+    sysbitGet3In = _sysbitGet(bs, 3);
+    (*(s32 *)((u8 *)hdr + 8)) = (s32) (((u32) sysbitGet >> 2) & 1);
+    (*(s32 *)((u8 *)hdr + 4)) = (s32) ((sysbitGet << 0x1E) | (sysbitGet2 << 0xF) | sysbitGet3);
+    for (var_s5 = 0; var_s5 < (u32) sysbitGet3In; var_s5++) {
+        _sysbitGet(bs, 8);
     }
-    if (_sysbitNext(arg0, 0x20) == 0x1BB) {
-        (*(s32 *)((u8 *)arg1 + 0xC)) = 1;
-        _system_header(arg0, arg1);
+    if (_sysbitNext(bs, 0x20) == 0x1BB) {
+        (*(s32 *)((u8 *)hdr + 0xC)) = 1;
+        _system_header(bs, hdr);
     } else {
-        (*(s32 *)((u8 *)arg1 + 0xC)) = 0;
+        (*(s32 *)((u8 *)hdr + 0xC)) = 0;
     }
     return 1;
 }
 
-s32 _system_header(u64 *arg0, void *arg1) {
-    _sysbitGet(arg0, 0x38);
-    _sysbitGet(arg0, 0x28);
-    while (_sysbitNext(arg0, 1) == 1) {
-        _sysbitGet(arg0, 0x18);
+/* Reads an MPEG program-stream system header. */
+s32 _system_header(u64 *bs, void *hdr) {
+    _sysbitGet(bs, 0x38);
+    _sysbitGet(bs, 0x28);
+    while (_sysbitNext(bs, 1) == 1) {
+        _sysbitGet(bs, 0x18);
     }
     return 1;
 }
@@ -516,6 +522,7 @@ s32 _PES_packet(s32 mp, int *bs, void *arg2) {
 #undef pkt_0018E4B8
 #undef bs_0018E4B8
 
+/* Starts the MPEG library. */
 void sceMpegInit(void) {
     func_001843E0();
     *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
@@ -528,32 +535,33 @@ void sceMpegInit(void) {
     func_00190498();
 }
 
-s32 sceMpegCreate(void *arg0, s32 arg1, s32 arg2) {
+/* Creates MPEG decoder `mp` in work area `work` of `size` bytes. */
+s32 sceMpegCreate(void *mp, s32 work, s32 size) {
     s32 temp_s2;
-    s32 temp_v0;
+    s32 alalcAlloc;
     s32 ret;
     u32 temp_a2;
     void *temp_s1;
 
-    func_00198948((void *) arg1, 0, (u32) arg2);
-    temp_s2 = ((u32) (arg1 + 3) >> 2) * 4;
-    temp_a2 = arg2 - (temp_s2 - arg1);
+    func_00198948((void *) work, 0, (u32) size);
+    temp_s2 = ((u32) (work + 3) >> 2) * 4;
+    temp_a2 = size - (temp_s2 - work);
     if (temp_a2 < 0x10C0U) {
         _Error(temp_s2, &D_002BC9D0);
         ret = 0;
     } else {
     temp_s1 = temp_s2 + 0x108;
-    (*(s32 *)((u8 *)arg0 + 0x40)) = temp_s2;
+    (*(s32 *)((u8 *)mp + 0x40)) = temp_s2;
     _alalcInit(temp_s1, temp_s2 + 0x10C0, temp_a2 - 0x10C0);
-    (*(s32 *)arg0) = 0;
-    (*(s32 *)((u8 *)arg0 + 4)) = 0;
-    (*(s32 *)((u8 *)arg0 + 8)) = 0;
-    (*(s64 *)((u8 *)arg0 + 0x10)) = -1;
-    (*(s64 *)((u8 *)arg0 + 0x18)) = -1;
-    (*(s64 *)((u8 *)arg0 + 0x20)) = 0;
-    (*(s64 *)((u8 *)arg0 + 0x28)) = -1;
-    (*(s64 *)((u8 *)arg0 + 0x30)) = -1;
-    (*(s64 *)((u8 *)arg0 + 0x38)) = 0;
+    (*(s32 *)mp) = 0;
+    (*(s32 *)((u8 *)mp + 4)) = 0;
+    (*(s32 *)((u8 *)mp + 8)) = 0;
+    (*(s64 *)((u8 *)mp + 0x10)) = -1;
+    (*(s64 *)((u8 *)mp + 0x18)) = -1;
+    (*(s64 *)((u8 *)mp + 0x20)) = 0;
+    (*(s64 *)((u8 *)mp + 0x28)) = -1;
+    (*(s64 *)((u8 *)mp + 0x30)) = -1;
+    (*(s64 *)((u8 *)mp + 0x38)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0xB4)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0xB8)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0xBC)) = 0;
@@ -577,7 +585,7 @@ s32 sceMpegCreate(void *arg0, s32 arg1, s32 arg2) {
     (*(s64 *)((u8 *)temp_s2 + 0xF0)) = -1;
     (*(void (**)(void *))((u8 *)temp_s2 + 0x1C)) = _defStopDMA;
     (*(void (**)(void *))((u8 *)temp_s2 + 0x24)) = _defRestartDMA;
-    temp_v0 = _alalcAlloc(temp_s2, temp_s1, 0x600, 8);
+    alalcAlloc = _alalcAlloc(temp_s2, temp_s1, 0x600, 8);
     (*(s32 *)((u8 *)temp_s2 + 0x48)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0xFC)) = 0;
     (*(s32 *)((u8 *)temp_s2 + 0x100)) = 0;
@@ -591,12 +599,12 @@ s32 sceMpegCreate(void *arg0, s32 arg1, s32 arg2) {
     (*(s32 *)((u8 *)temp_s2 + 0x94)) = -1;
     (*(s32 *)((u8 *)temp_s2 + 0x98)) = -1;
     (*(s32 *)((u8 *)temp_s2 + 0x9C)) = -1;
-    (*(void **)((u8 *)temp_s2 + 0x858)) = arg0;
-    (*(s32 *)((u8 *)temp_s2 + 0x44)) = temp_v0;
+    (*(void **)((u8 *)temp_s2 + 0x858)) = mp;
+    (*(s32 *)((u8 *)temp_s2 + 0x44)) = alalcAlloc;
     (*(s32 *)((u8 *)temp_s2 + 0xB0)) = 1;
     _clearOnce(temp_s2);
-    sceMpegReset(arg0);
-    sceMpegClearRefBuff(arg0);
+    sceMpegReset(mp);
+    sceMpegClearRefBuff(mp);
     (*(s32 *)((u8 *)temp_s2 + 0x1B8)) = (s32) (temp_s2 + 0x1E8);
     (*(s32 *)((u8 *)temp_s2 + 0x1BC)) = (s32) (temp_s2 + 0x250);
     (*(s32 *)((u8 *)temp_s2 + 0x1C4)) = (s32) (temp_s2 + 0x2B8);
@@ -616,84 +624,94 @@ s32 sceMpegCreate(void *arg0, s32 arg1, s32 arg2) {
     return ret;
 }
 
-s32 sceMpegDelete(s32 unused0) {
+/* Deletes MPEG decoder `mp` (nothing to free here). */
+s32 sceMpegDelete(s32 mp) {
     return 1;
 }
 
+/* Sends `arg2` bytes at `arg1` (rounded up) to the IPU for decoder `arg0`. */
 void func_0018ED18(void *arg0, s32 arg1, s32 arg2) {
     _sendDataToIPU(*(s32 *)((u8 *)arg0 + 0x40), arg1, (arg2 + 0x13) / 16 * 16);
 }
 
-s32 sceMpegGetPicture(void *arg0, s32 arg1, s32 arg2) {
+/* Decodes the next picture of decoder `mp` into `rgb32` (`mbcount` macroblocks). */
+s32 sceMpegGetPicture(void *mp, s32 rgb32, s32 mbcount) {
     void *temp_a3;
 
-    temp_a3 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_a3 = (*(void **)((u8 *)mp + 0x40));
     (*(s32 *)((u8 *)temp_a3 + 0xB0)) = 1;
-    (*(s32 *)((u8 *)temp_a3 + 0xD8)) = (s32) ((arg1 & 0x0FFFFFFF) | 0x20000000);
-    (*(s32 *)((u8 *)temp_a3 + 0xE4)) = arg2;
+    (*(s32 *)((u8 *)temp_a3 + 0xD8)) = (s32) ((rgb32 & 0x0FFFFFFF) | 0x20000000);
+    (*(s32 *)((u8 *)temp_a3 + 0xE4)) = mbcount;
     (*(s32 *)((u8 *)temp_a3 + 0xE0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xDC)) = 0;
-    return _getpic(arg0);
+    return _getpic(mp);
 }
 
-s32 sceMpegGetPictureRAW8(void *arg0, s32 arg1, s32 arg2) {
+/* Decodes the next picture of decoder `mp` into `raw8` (`mbcount` macroblocks). */
+s32 sceMpegGetPictureRAW8(void *mp, s32 raw8, s32 mbcount) {
     void *temp_a3;
 
-    temp_a3 = (*(void **)((u8 *)arg0 + 0x40));
-    (*(s32 *)((u8 *)temp_a3 + 0xE4)) = arg2;
-    (*(s32 *)((u8 *)temp_a3 + 0xD8)) = (s32) ((arg1 & 0x0FFFFFFF) | 0x20000000);
+    temp_a3 = (*(void **)((u8 *)mp + 0x40));
+    (*(s32 *)((u8 *)temp_a3 + 0xE4)) = mbcount;
+    (*(s32 *)((u8 *)temp_a3 + 0xD8)) = (s32) ((raw8 & 0x0FFFFFFF) | 0x20000000);
     (*(s32 *)((u8 *)temp_a3 + 0xB0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xE0)) = 0;
     (*(s32 *)((u8 *)temp_a3 + 0xDC)) = 0;
-    return _getpic(arg0);
+    return _getpic(mp);
 }
 
-s32 sceMpegGetPictureRAW8xy(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Decodes the next picture into `raw8` at macroblock (`mbx`, `mby`). */
+s32 sceMpegGetPictureRAW8xy(void *mp, s32 raw8, s32 mbx, s32 mby) {
     void *temp_v1;
 
-    temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
-    (*(s32 *)((u8 *)temp_v1 + 0xE0)) = (s32) (arg3 * 0x10);
-    (*(s32 *)((u8 *)temp_v1 + 0xD8)) = (s32) ((arg1 & 0x0FFFFFFF) | 0x20000000);
-    (*(s32 *)((u8 *)temp_v1 + 0xE4)) = (s32) (arg2 * arg3);
-    (*(s32 *)((u8 *)temp_v1 + 0xDC)) = (s32) (arg2 * 0x10);
+    temp_v1 = (*(void **)((u8 *)mp + 0x40));
+    (*(s32 *)((u8 *)temp_v1 + 0xE0)) = (s32) (mby * 0x10);
+    (*(s32 *)((u8 *)temp_v1 + 0xD8)) = (s32) ((raw8 & 0x0FFFFFFF) | 0x20000000);
+    (*(s32 *)((u8 *)temp_v1 + 0xE4)) = (s32) (mbx * mby);
+    (*(s32 *)((u8 *)temp_v1 + 0xDC)) = (s32) (mbx * 0x10);
     (*(s32 *)((u8 *)temp_v1 + 0xB0)) = 0;
-    return _getpic(arg0);
+    return _getpic(mp);
 }
 
-void sceMpegSetDecodeMode(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Sets decoder `mp`'s mode (`ni`, `np`, `nb`: which picture types to decode). */
+void sceMpegSetDecodeMode(void *mp, s32 ni, s32 np, s32 nb) {
     void *temp_v0;
 
-    temp_v0 = (*(void **)((u8 *)arg0 + 0x40));
-    (*(s32 *)((u8 *)temp_v0 + 0x94)) = arg1;
-    (*(s32 *)((u8 *)temp_v0 + 0x98)) = arg2;
-    (*(s32 *)((u8 *)temp_v0 + 0x9C)) = arg3;
+    temp_v0 = (*(void **)((u8 *)mp + 0x40));
+    (*(s32 *)((u8 *)temp_v0 + 0x94)) = ni;
+    (*(s32 *)((u8 *)temp_v0 + 0x98)) = np;
+    (*(s32 *)((u8 *)temp_v0 + 0x9C)) = nb;
 }
 
-void sceMpegGetDecodeMode(void *arg0, s32 *arg1, s32 *arg2, s32 *arg3) {
+/* Decoder `mp`'s mode into `ni`, `np`, `nb`. */
+void sceMpegGetDecodeMode(void *mp, s32 *ni, s32 *np, s32 *nb) {
     void *temp_t0;
 
-    temp_t0 = (*(void **)((u8 *)arg0 + 0x40));
-    *arg1 = (*(s32 *)((u8 *)temp_t0 + 0x94));
-    *arg2 = (*(s32 *)((u8 *)temp_t0 + 0x98));
-    *arg3 = (*(s32 *)((u8 *)temp_t0 + 0x9C));
+    temp_t0 = (*(void **)((u8 *)mp + 0x40));
+    *ni = (*(s32 *)((u8 *)temp_t0 + 0x94));
+    *np = (*(s32 *)((u8 *)temp_t0 + 0x98));
+    *nb = (*(s32 *)((u8 *)temp_t0 + 0x9C));
 }
 
-s32 sceMpegIsEnd(void *arg0) {
-    return *(*(s32 **)((u8 *)arg0 + 0x40));
+/* Whether decoder `mp` reached the end of its stream. */
+s32 sceMpegIsEnd(void *mp) {
+    return *(*(s32 **)((u8 *)mp + 0x40));
 }
 
-s32 sceMpegIsRefBuffEmpty(void *arg0) {
-    return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 4)) == 0;
+/* Whether decoder `mp`'s reference buffers are empty. */
+s32 sceMpegIsRefBuffEmpty(void *mp) {
+    return (*(s32 *)((u8 *)((*(void **)((u8 *)mp + 0x40))) + 4)) == 0;
 }
 
-void sceMpegReset(void *arg0) {
+/* Resets decoder `mp` for a new stream. */
+void sceMpegReset(void *mp) {
     void *temp_s0;
 
-    temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_s0 = (*(void **)((u8 *)mp + 0x40));
     (*(s32 *)temp_s0) = 0;
     (*(s32 *)((u8 *)temp_s0 + 4)) = 0;
     (*(s32 *)((u8 *)temp_s0 + 8)) = 0;
-    (*(s32 *)((u8 *)arg0 + 8)) = 0;
+    (*(s32 *)((u8 *)mp + 8)) = 0;
     (*(s32 *)((u8 *)temp_s0 + 0xAC)) = 0;
     (*(s32 *)((u8 *)temp_s0 + 0x80)) = -1;
     _clearEach(temp_s0);
@@ -701,7 +719,8 @@ void sceMpegReset(void *arg0) {
     _initSeqAgain(temp_s0);
 }
 
-s32 sceMpegClearRefBuff(void *arg0) {
+/* Clears decoder `mp`'s reference pictures. */
+s32 sceMpegClearRefBuff(void *mp) {
     void *temp_v0;
     void *temp_v0_2;
     void *temp_v0_3;
@@ -710,7 +729,7 @@ s32 sceMpegClearRefBuff(void *arg0) {
     void *temp_v0_6;
     void *temp_v1;
 
-    temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_v1 = (*(void **)((u8 *)mp + 0x40));
     temp_v0 = (*(void **)((u8 *)temp_v1 + 0x1B8));
     if (temp_v0 != NULL) {
         (*(s32 *)((u8 *)temp_v0 + 0x28)) = 0;
@@ -738,20 +757,21 @@ s32 sceMpegClearRefBuff(void *arg0) {
     return 1;
 }
 
-s32 sceMpegAddCallback(void *arg0, s32 arg1, s32 (*arg2)(), s32 arg3) {
+/* Sets decoder `mp`'s callback `func` for event `type` (`data`). */
+s32 sceMpegAddCallback(void *mp, s32 type, s32 (*func)(), s32 data) {
     u8 *d;
     s32 (**p)();
     s32 (*old)();
     s32 (**t)();
     s32 *e;
 
-    d = *(u8 **)((u8 *)arg0 + 0x40);
+    d = *(u8 **)((u8 *)mp + 0x40);
     t = (s32 (**)())(d + 0xC);
-    p = t + arg1 * 2;
-    e = (s32 *)(d + arg1 * 8);
-    e[4] = arg3;
+    p = t + type * 2;
+    e = (s32 *)(d + type * 8);
+    e[4] = data;
     old = *p;
-    *p = arg2;
+    *p = func;
     return (s32)old;
 }
 
@@ -775,80 +795,94 @@ s32 _dispatchMpegCallback(s32 arg0, void *arg1) {
     return rv;
 }
 
-void _dispatchMpegCbNodata(s32 arg0) {
+/* Calls the MPEG callback for event `type` with no data. */
+void _dispatchMpegCbNodata(s32 type) {
     s32 sp0[8];
     sp0[0] = /* extra? */ 1;
-    _dispatchMpegCallback(arg0, sp0);
+    _dispatchMpegCallback(type, sp0);
 }
 
-void sceMpegSetDefaultPtsGap(void *arg0, s64 arg1) {
+/* Sets decoder `mp`'s default time-stamp gap. */
+void sceMpegSetDefaultPtsGap(void *mp, s64 gap) {
     void *temp_v0;
 
-    temp_v0 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_v0 = (*(void **)((u8 *)mp + 0x40));
     (*(s32 *)((u8 *)temp_v0 + 0x70)) = 1;
-    (*(s64 *)((u8 *)temp_v0 + 0x78)) = arg1;
+    (*(s64 *)((u8 *)temp_v0 + 0x78)) = gap;
 }
 
-void sceMpegResetDefaultPtsGap(void *arg0) {
-    u8 *p = *(u8 **)((u8 *)arg0 + 0x40);
+/* Resets decoder `mp`'s default time-stamp gap. */
+void sceMpegResetDefaultPtsGap(void *mp) {
+    u8 *p = *(u8 **)((u8 *)mp + 0x40);
 
     *(s32 *)(p + 0x70) = 0;
     *(s64 *)(p + 0x78) = 0;
 }
 
+/* Sets a flag word of decoder `arg0`'s state to `arg1`. */
 void func_0018EFE8(void *arg0, s32 arg1) {
     (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xD8)) = arg1;
 }
 
-s32 sceMpegDispWidth(void *arg0) {
-    return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xCC));
+/* Decoder `mp`'s picture width. */
+s32 sceMpegDispWidth(void *mp) {
+    return (*(s32 *)((u8 *)((*(void **)((u8 *)mp + 0x40))) + 0xCC));
 }
 
-s32 sceMpegDispHeight(void *arg0) {
-    return (*(s32 *)((u8 *)((*(void **)((u8 *)arg0 + 0x40))) + 0xD0));
+/* Decoder `mp`'s picture height. */
+s32 sceMpegDispHeight(void *mp) {
+    return (*(s32 *)((u8 *)((*(void **)((u8 *)mp + 0x40))) + 0xD0));
 }
 
-s32 sceMpegDispCenterOffX(void *arg0) {
-    return (*(s32 *)((u8 *)arg0 + 0x40)) + 0xB4;
+/* Decoder `mp`'s picture centre offset across. */
+s32 sceMpegDispCenterOffX(void *mp) {
+    return (*(s32 *)((u8 *)mp + 0x40)) + 0xB4;
 }
 
-s32 sceMpegDispCenterOffY(void *arg0) {
-    return (*(s32 *)((u8 *)arg0 + 0x40)) + 0xB4;
+/* Decoder `mp`'s picture centre offset down. */
+s32 sceMpegDispCenterOffY(void *mp) {
+    return (*(s32 *)((u8 *)mp + 0x40)) + 0xB4;
 }
 
-s32 sceSetBrokenLink(void *arg0, s32 arg1) {
+/* Sets decoder `mp`'s broken-link flag. */
+s32 sceSetBrokenLink(void *mp, s32 flag) {
     s32 temp_v0;
     void *temp_v1;
 
-    temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_v1 = (*(void **)((u8 *)mp + 0x40));
     temp_v0 = (*(s32 *)((u8 *)temp_v1 + 0xE8));
-    (*(s32 *)((u8 *)temp_v1 + 0xE8)) = arg1;
+    (*(s32 *)((u8 *)temp_v1 + 0xE8)) = flag;
     return temp_v0;
 }
 
-void sceSetPtm(void *arg0, s64 arg1) {
+/* Sets decoder `mp`'s presentation time. */
+void sceSetPtm(void *mp, s64 time) {
     void *temp_v1;
 
-    temp_v1 = (*(void **)((u8 *)arg0 + 0x40));
-    (*(s64 *)((u8 *)temp_v1 + 0xF0)) = arg1;
+    temp_v1 = (*(void **)((u8 *)mp + 0x40));
+    (*(s64 *)((u8 *)temp_v1 + 0xF0)) = time;
     (*(s32 *)((u8 *)temp_v1 + 0xF8)) = 1;
 }
 
-void _alalcInit(void *arg0, s32 arg1, s32 arg2) {
-    (*(s32 *)((u8 *)arg0 + 4)) = arg2;
-    (*(s32 *)arg0) = arg1;
-    (*(s32 *)((u8 *)arg0 + 8)) = arg1;
-    (*(s32 *)((u8 *)arg0 + 0xC)) = arg1;
+/* Starts the MPEG work-area allocator over `size` bytes at `addr`. */
+void _alalcInit(void *a, s32 addr, s32 size) {
+    (*(s32 *)((u8 *)a + 4)) = size;
+    (*(s32 *)a) = addr;
+    (*(s32 *)((u8 *)a + 8)) = addr;
+    (*(s32 *)((u8 *)a + 0xC)) = addr;
 }
 
-void _alalcSetDynamic(void *arg0) {
-    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) (*(s32 *)((u8 *)arg0 + 8));
+/* Marks the MPEG work-area allocator's current point. */
+void _alalcSetDynamic(void *a) {
+    (*(s32 *)((u8 *)a + 0xC)) = (s32) (*(s32 *)((u8 *)a + 8));
 }
 
-void _alalcFree(void *arg0) {
-    (*(s32 *)((u8 *)arg0 + 8)) = (s32) (*(s32 *)((u8 *)arg0 + 0xC));
+/* Frees back to the marked point. */
+void _alalcFree(void *a) {
+    (*(s32 *)((u8 *)a + 8)) = (s32) (*(s32 *)((u8 *)a + 0xC));
 }
 
+/* Allocates from the MPEG work area. */
 s32 _alalcAlloc(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
     s32 temp_v0;
     u32 temp_a0;
@@ -863,18 +897,20 @@ s32 _alalcAlloc(s32 arg0, void *arg1, s32 arg2, u32 arg3) {
     return 0;
 }
 
+/* How much MPEG work area is left. */
 s32 _alalcRest(s32 *arg0) {
     return (arg0[0] + arg0[1]) - arg0[2];
 }
 
-s32 _getpic(void *arg0) {
+/* Decodes the next picture of decoder `mp`. */
+s32 _getpic(void *mp) {
     s32 *p;
     s32 ret;
     u32 st;
 
     st = 1;
     ret = 0;
-    p = *(s32 **)((u8 *)arg0 + 0x40);
+    p = *(s32 **)((u8 *)mp + 0x40);
     p[0] = 0;
     if (p[0xD8 / 4] & 0x3F) {
         _Error1((s32)p, D_002BCA18, p[0xD8 / 4]);
@@ -889,23 +925,23 @@ s32 _getpic(void *arg0) {
         }
         switch (st) {
         case 0:
-            _sceMpegFlush(arg0);
+            _sceMpegFlush(mp);
             p[0] = 1;
             break;
         case 1:
             p[0xA8 / 4] = 0;
             p[0xA4 / 4] = 0;
             p[0xA0 / 4] = 0;
-            ret = _decodeOrSkip(arg0, 0, p[0x94 / 4]);
+            ret = _decodeOrSkip(mp, 0, p[0x94 / 4]);
             p[0xA0 / 4]++;
             break;
         case 2:
-            ret = _decodeOrSkip(arg0, p[0xA4 / 4], p[0x98 / 4]);
+            ret = _decodeOrSkip(mp, p[0xA4 / 4], p[0x98 / 4]);
             p[0xA4 / 4]++;
             break;
         case 3:
         case 4:
-            ret = _decodeOrSkip(arg0, p[0xA8 / 4], p[0x9C / 4]);
+            ret = _decodeOrSkip(mp, p[0xA8 / 4], p[0x9C / 4]);
             p[0xA8 / 4]++;
             break;
         }
@@ -916,17 +952,18 @@ s32 _getpic(void *arg0) {
     return 1;
 }
 
-s32 _decodeOrSkipFrame(void *arg0, s32 arg1, s32 arg2) {
+/* Decodes or skips one frame picture. */
+s32 _decodeOrSkipFrame(void *mp, s32 arg1, s32 arg2) {
     s32 var_s2;
     s32 var_s3;
     register s32 var_v1 __asm__("$3");
     void *temp_s0;
 
     var_s3 = 0;
-    temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_s0 = (*(void **)((u8 *)mp + 0x40));
     if ((arg2 == -1) || (arg1 < arg2)) {
         if ((*(s32 *)((u8 *)temp_s0 + 8)) == 0) {
-            (*(s32 *)((u8 *)arg0 + 8)) = 0;
+            (*(s32 *)((u8 *)mp + 8)) = 0;
             (*(s32 *)((u8 *)temp_s0 + 8)) = 1;
         }
         if (func_0018C680(temp_s0, 0) == 0) {
@@ -937,14 +974,14 @@ s32 _decodeOrSkipFrame(void *arg0, s32 arg1, s32 arg2) {
         var_s2 = var_v1;
     } else {
         var_s2 = func_0018C680(temp_s0, 0);
-        _dispatchMpegCbNodata((s32) arg0);
+        _dispatchMpegCbNodata((s32) mp);
         var_s3 = 1;
     }
     func_0018C5F0(temp_s0, (*(s32 *)((u8 *)temp_s0 + 0x118)), (*(s32 *)((u8 *)temp_s0 + 4)));
     if (((*(s32 *)((u8 *)temp_s0 + 0x174)) != 3) && (var_s3 == 0)) {
         (*(s32 *)((u8 *)temp_s0 + 0x120)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x120)) == 0);
     }
-    (*(s32 *)((u8 *)arg0 + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
+    (*(s32 *)((u8 *)mp + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
     if ((*(s32 *)((u8 *)temp_s0 + 0x120)) == 0) {
         (*(s32 *)((u8 *)temp_s0 + 0x118)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) + 1);
         (*(s32 *)((u8 *)temp_s0 + 4)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 4)) + 1);
@@ -952,18 +989,20 @@ s32 _decodeOrSkipFrame(void *arg0, s32 arg1, s32 arg2) {
     return var_s2;
 }
 
-s32 _decodeOrSkip(void *arg0, s32 arg1, s32 arg2) {
+/* Decodes or skips the next picture (frame or field). */
+s32 _decodeOrSkip(void *mp, s32 arg1, s32 arg2) {
     s32 ret;
 
-    if (*(s32 *)(*(u8 **)((u8 *)arg0 + 0x40) + 0x174) != 3) {
-        ret = _decodeOrSkipField(arg0, arg1, arg2);
+    if (*(s32 *)(*(u8 **)((u8 *)mp + 0x40) + 0x174) != 3) {
+        ret = _decodeOrSkipField(mp, arg1, arg2);
     } else {
-        ret = _decodeOrSkipFrame(arg0, arg1, arg2);
+        ret = _decodeOrSkipFrame(mp, arg1, arg2);
     }
     return ret;
 }
 
-s32 _decodeOrSkipField(void *arg0, s32 arg1, s32 arg2) {
+/* Decodes or skips one field picture pair. */
+s32 _decodeOrSkipField(void *mp, s32 arg1, s32 arg2) {
     u8 *d;
     s32 skip;
     s32 ret;
@@ -971,13 +1010,13 @@ s32 _decodeOrSkipField(void *arg0, s32 arg1, s32 arg2) {
     s32 c;
 
     skip = 0;
-    d = *(u8 **)((u8 *)arg0 + 0x40);
+    d = *(u8 **)((u8 *)mp + 0x40);
     *(s32 *)(d + 0x120) = 0;
     if (arg2 == -1 || arg1 < arg2) {
         skip = 1;
     }
     if (*(s32 *)(d + 8) == 0) {
-        *(s32 *)((u8 *)arg0 + 8) = 0;
+        *(s32 *)((u8 *)mp + 8) = 0;
         *(s32 *)(d + 8) = 1;
     }
     if (func_0018C680(d, 0) != 0 && skip != 0) {
@@ -985,7 +1024,7 @@ s32 _decodeOrSkipField(void *arg0, s32 arg1, s32 arg2) {
     }
     *(s32 *)(d + 0x120) = 1;
     if (func_0018BC80(d) == 0) {
-        _sceMpegFlush(arg0);
+        _sceMpegFlush(mp);
         *(s32 *)d = 1;
         return 0;
     }
@@ -1008,49 +1047,52 @@ s32 _decodeOrSkipField(void *arg0, s32 arg1, s32 arg2) {
     }
     func_0018C5F0(d, *(s32 *)(d + 0x118), *(s32 *)(d + 4));
     *(s32 *)(d + 0x120) = 0;
-    *(s32 *)((u8 *)arg0 + 8) = *(s32 *)(d + 0x118) - *(s32 *)(d + 0xAC);
+    *(s32 *)((u8 *)mp + 8) = *(s32 *)(d + 0x118) - *(s32 *)(d + 0xAC);
     *(s32 *)(d + 0x118) += 1;
     *(s32 *)(d + 4) += 1;
     if (skip == 0) {
-        _dispatchMpegCbNodata((s32)arg0);
+        _dispatchMpegCbNodata((s32)mp);
     }
     return ret;
 }
 
-s32 _sceMpegFlush(void *arg0) {
+/* Outputs the last picture at the end of a stream. */
+s32 _sceMpegFlush(void *mp) {
     s32 var_a0;
     void *temp_s0;
 
-    temp_s0 = (*(void **)((u8 *)arg0 + 0x40));
+    temp_s0 = (*(void **)((u8 *)mp + 0x40));
     var_a0 = 0;
     if ((*(s32 *)((u8 *)temp_s0 + 4)) != 0) {
         if ((*(s32 *)((u8 *)temp_s0 + 8)) != 0) {
             _lastFrame(temp_s0);
             var_a0 = 1;
-            (*(s32 *)((u8 *)arg0 + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
+            (*(s32 *)((u8 *)mp + 8)) = (s32) ((*(s32 *)((u8 *)temp_s0 + 0x118)) - (*(s32 *)((u8 *)temp_s0 + 0xAC)));
             (*(s32 *)((u8 *)temp_s0 + 4)) = 0;
         }
     }
     return var_a0;
 }
 
-void _initSeqAgain(void *arg0) {
-    *(s32 *)((u8 *)arg0 + 0x848) = 0;
+/* Sets the IPU up again for the current sequence. */
+void _initSeqAgain(void *mp) {
+    *(s32 *)((u8 *)mp + 0x848) = 0;
     _ipuSetMPEG1(1);
 }
 
-void _lastFrame(void *arg0) {
+/* Outputs the held last frame. */
+void _lastFrame(void *mp) {
     s32 temp_a2;
 
-    temp_a2 = (*(s32 *)((u8 *)arg0 + 0x118));
-    if ((*(s32 *)((u8 *)arg0 + 0x120)) != 0) {
-        _Error((s32) arg0, &D_002BCA78);
+    temp_a2 = (*(s32 *)((u8 *)mp + 0x118));
+    if ((*(s32 *)((u8 *)mp + 0x120)) != 0) {
+        _Error((s32) mp, &D_002BCA78);
     } else {
-        if ((*(s32 *)((u8 *)arg0 + 0x174)) == 3) {
-            func_0018CE00(arg0, (*(s32 *)((u8 *)arg0 + 0x1BC)), temp_a2 - 1);
+        if ((*(s32 *)((u8 *)mp + 0x174)) == 3) {
+            func_0018CE00(mp, (*(s32 *)((u8 *)mp + 0x1BC)), temp_a2 - 1);
         } else {
-            func_0018CF10(arg0, (*(s32 *)((u8 *)arg0 + 0x1CC)), (*(s32 *)((u8 *)arg0 + 0x1DC)), temp_a2 - 1);
+            func_0018CF10(mp, (*(s32 *)((u8 *)mp + 0x1CC)), (*(s32 *)((u8 *)mp + 0x1DC)), temp_a2 - 1);
         }
     }
-    (*(s32 *)((u8 *)arg0 + 0x120)) = 0;
+    (*(s32 *)((u8 *)mp + 0x120)) = 0;
 }

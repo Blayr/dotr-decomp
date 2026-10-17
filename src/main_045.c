@@ -1800,7 +1800,7 @@ typedef struct Card_001E1760 {
     u8 x;
     u8 y;
     u8 pad42[3];
-    u8 type;
+    u8 slot; /* the unit's slot: 0 leader, 1..10 cards */
 } Card_001E1760;
 
 
@@ -1812,7 +1812,7 @@ s32 SzDuel_CalcUnitMovable(void) {
     card = SzDuel_GetCardInfo();
     if (card == NULL) {
         card = NULL;
-    } else if (card->type >= 11) {
+    } else if (card->slot >= 11) {
         card = NULL;
     }
     if (card != NULL) {
@@ -1826,7 +1826,7 @@ typedef struct {
     u8 x;
     u8 y;
     u8 padding_42[3];
-    u8 type;
+    u8 slot; /* the unit's slot: 0 leader, 1..10 cards */
 } Card_001E17D0;
 
 
@@ -1838,7 +1838,7 @@ static inline void *get_card_001E17D0(void) {
     if (card == NULL) {
         return NULL;
     }
-    if (card->type >= 11) {
+    if (card->slot >= 11) {
         return NULL;
     }
     return card;

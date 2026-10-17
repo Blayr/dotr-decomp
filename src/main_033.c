@@ -1,8 +1,9 @@
 #include "common.h"
 
-s32 sceMcClose(s32 arg0) {
+/* Closes memory-card file `fd`. */
+s32 sceMcClose(s32 fd) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -12,19 +13,20 @@ s32 sceMcClose(s32 arg0) {
         SignalSema(D_0028F794);
         return -0x64;
     }
-    D_00315CC0 = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 3, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    D_00315CC0 = fd;
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 3, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 3;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on file `arg0` with `arg1`..`arg3` (sends the remote call; -200 when busy). */
 s32 func_00193DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -37,13 +39,13 @@ s32 func_00193DD0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     (*(s32 *)(&D_00315CC0)) = arg0;
     (*(s32 *)((u8 *)(&D_00315CC0) + 0x10)) = arg1;
     (*(s32 *)((u8 *)(&D_00315CC0) + 0x14)) = arg2;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 4, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 4, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 4;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
 typedef struct McDirBuf_00193EA8 {
@@ -55,12 +57,13 @@ typedef struct McDirBuf_00193EA8 {
     u8 b2[0x40];
 } McDirBuf_00193EA8;
 
-void mceIntrReadFixAlign(void *arg0) {
+/* Memory-card read finish: copies the unaligned ends of the read into place. */
+void mceIntrReadFixAlign(void *data) {
     McDirBuf_00193EA8 *p;
     u8 *d;
     s32 i;
 
-    p = (McDirBuf_00193EA8 *)((u32)arg0 | 0x20000000);
+    p = (McDirBuf_00193EA8 *)((u32)data | 0x20000000);
     if (p->n1 != 0) {
         d = p->d1;
         for (i = 0; i < p->n1; i++) {
@@ -75,9 +78,10 @@ void mceIntrReadFixAlign(void *arg0) {
     }
 }
 
+/* Writes `arg2` bytes from `arg1` to memory-card file `arg0` (-200 when busy). */
 s32 func_00193F38(s32 arg0, s32 *arg1, s32 arg2) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -93,13 +97,13 @@ s32 func_00193F38(s32 arg0, s32 *arg1, s32 arg2) {
     (*(s32 *)((u8 *)(&D_00315CC0) + 0xC)) = arg2;
     func_0017E190(arg1, arg2);
     func_0017E190(&D_00316140, 0xC0);
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 5, 1, &D_00315CC0, 0x30, &D_00317200, 4, (s32) &mceIntrReadFixAlign, (s32) &D_00316140);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 5, 1, &D_00315CC0, 0x30, &D_00317200, 4, (s32) &mceIntrReadFixAlign, (s32) &D_00316140);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 5;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
 typedef struct McWriteDesc_00194058 {
@@ -114,6 +118,7 @@ typedef struct McWriteDesc_00194058 {
     u8 data[16];
 } McWriteDesc_00194058;
 
+/* Reads `arg2` bytes from memory-card file `arg0` into `arg1` (sceMcRead; -200 when busy). */
 s32 func_00194058(s32 arg0, void *arg1, s32 arg2) {
 
     u8 *p;
@@ -154,17 +159,21 @@ s32 func_00194058(s32 arg0, void *arg1, s32 arg2) {
     return ret;
 }
 
+/* Alarm handler: wakes thread `arg2`. */
 void func_001941D8(s32 arg0, s32 arg1, s32 arg2) {
     iWakeupThread(arg2);
     __asm__ volatile("sync");
     __asm__ volatile("ei");
 }
 
+/* Sleeps the calling thread for `arg0` horizontal lines. */
 void func_00194200(s32 arg0) {
     _SetAlarm(arg0 & 0xFFFF, &func_001941D8, GetThreadId());
     SleepThread();
 }
 
+/* Waits for (`arg0` 0) or checks (1) the running memory-card call (sceMcSync); its command and result into `arg1`,
+   `arg2`. */
 s32 func_00194248(s32 arg0, s32 *arg1, s32 *arg2) {
     s32 ret;
 
@@ -192,10 +201,11 @@ s32 func_00194248(s32 arg0, s32 *arg1, s32 *arg2) {
     return ret;
 }
 
-void mceGetInfoApdx(s32 arg0) {
+/* Memory-card info finish: copies the card details out (`result`). */
+void mceGetInfoApdx(s32 result) {
     s32 temp_a0;
 
-    temp_a0 = arg0 | 0x20000000;
+    temp_a0 = result | 0x20000000;
     if (D_00315C68 != NULL) {
         *D_00315C68 = (*(s32 *)temp_a0);
     }
@@ -218,6 +228,8 @@ typedef struct McInfoDesc_00194380 {
     s32 *rbuf;
 } McInfoDesc_00194380;
 
+/* The type, free space and format of the card in port `arg0`, slot `arg1` into `arg2`..`arg4` (sceMcGetInfo; -200
+   when busy). */
 s32 func_00194380(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
     u8 *p;
     s32 ret;
@@ -261,6 +273,7 @@ s32 func_00194380(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3, s32 *arg4) {
     return ret;
 }
 
+/* Memory-card module call 0x35; returns its result. */
 s32 func_00194508(void) {
     if (sceSifCallRpc(&D_00315C40, 0x35, 0, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0) != 0) {
         func_00199B50(&D_002BD0A0);
@@ -269,9 +282,10 @@ s32 func_00194508(void) {
     return D_00317200;
 }
 
+/* Lists memory-card folder `arg2` on port `arg0`, slot `arg1` into `arg5` (at most `arg4` entries; sceMcGetDir). */
 s32 func_00194578(s32 arg0, s32 arg1, void *arg2, u32 arg3, s32 arg4, void *arg5) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -295,34 +309,36 @@ s32 func_00194578(s32 arg0, s32 arg1, void *arg2, u32 arg3, s32 arg4, void *arg5
     if (arg4 >= 0) {
         func_0017E190(arg5, arg4 << 6);
     }
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xD, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0xD, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0xD;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
-void mceStorePwd(void *arg0) {
+/* Stores the memory-card password `pwd`. */
+void mceStorePwd(void *pwd) {
     s32 temp_s0;
     s32 var_s0;
 
-    if (arg0 != NULL) {
+    if (pwd != NULL) {
         temp_s0 = (s32) &D_00316200 | 0x20000000;
         if (func_0019BEF0((s8 *) temp_s0) < 0x400U) {
             var_s0 = func_0019BEF0((s8 *) temp_s0);
         } else {
             var_s0 = 0x3FF;
         }
-        func_00198790(arg0, (void *) ((s32) &D_00316200 | 0x20000000), var_s0);
-        *(s8 *)(arg0 + var_s0) = 0;
+        func_00198790(pwd, (void *) ((s32) &D_00316200 | 0x20000000), var_s0);
+        *(s8 *)(pwd + var_s0) = 0;
     }
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` with paths `arg2`, `arg3` (-200 when busy). */
 s32 func_00194758(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -342,19 +358,20 @@ s32 func_00194758(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     func_0019C2B8((u8 *)&D_00315CF0 + 0x14, arg2, 0x3FFU);
     (*(s8 *)((u8 *)(&D_00315CF0) + 0x413)) = 0;
     func_0017E190(&D_00316200, 0x400);
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xC, 1, &D_00315CF0, 0x414, &D_00317200, 4, (s32) mceStorePwd, (s32) arg3);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0xC, 1, &D_00315CF0, 0x414, &D_00317200, 4, (s32) mceStorePwd, (s32) arg3);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0xC;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` (-200 when busy). */
 s32 func_001948A8(s32 arg0, s32 arg1) {
     u8 *b_D_00315CC0;
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -367,20 +384,21 @@ s32 func_001948A8(s32 arg0, s32 arg1) {
     b_D_00315CC0 = (u8 *)&D_00315CC0;
     (*(s32 *)(b_D_00315CC0 + 8)) = arg1;
     (*(s32 *)(b_D_00315CC0 + 4)) = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x10, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0x10, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0x10;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` with path `arg2` (-200 when busy). */
 s32 func_00194970(s32 arg0, s32 arg1, s8 *arg2) {
     u8 *b_D_00315C40;
     u8 *b_D_00315D04;
     s32 *temp_v1;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -401,18 +419,19 @@ s32 func_00194970(s32 arg0, s32 arg1, s8 *arg2) {
     (*(s32 *)((u8 *)temp_v1 + 4)) = arg1;
     (*(s8 *)((u8 *)temp_v1 + 0x413)) = 0;
     (*(s32 *)((u8 *)temp_v1 + 8)) = 0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xF, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0xF, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0xF;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
-s32 sceMcFlush(s32 arg0) {
+/* Writes memory-card file `fd`'s buffers out. */
+s32 sceMcFlush(s32 fd) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -422,14 +441,14 @@ s32 sceMcFlush(s32 arg0) {
         SignalSema(D_0028F794);
         return -0x64;
     }
-    D_00315CC0 = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0xA, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    D_00315CC0 = fd;
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0xA, 1, &D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0xA;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
 extern s32 D_00315C80;
@@ -443,6 +462,8 @@ typedef struct McFileInfoDesc_00194B50 {
     s8 name[0x400];
 } McFileInfoDesc_00194B50;
 
+/* Sets the details `arg3` (which ones: `arg4`) of memory-card file `arg2` on port `arg0`, slot `arg1`
+   (sceMcSetFileInfo). */
 s32 func_00194B50(s32 arg0, s32 arg1, s8 *arg2, void *arg3, s32 arg4) {
     McFileInfoDesc_00194B50 *d;
     s32 *p;
@@ -479,8 +500,9 @@ s32 func_00194B50(s32 arg0, s32 arg1, s8 *arg2, void *arg3, s32 arg4) {
     return ret;
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` with path `arg2` and buffer `arg3` (-200 when busy). */
 s32 func_00194D28(s32 arg0, s32 arg1, s8 *arg2, void *arg3) {
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
     void *temp_s0;
     s32 *p;
 
@@ -506,19 +528,20 @@ s32 func_00194D28(s32 arg0, s32 arg1, s8 *arg2, void *arg3) {
     (*(s8 *)((u8 *)temp_s0 + 0x3F)) = 0;
     (*(void **)((u8 *)(&D_00315CF0) + 0x10)) = temp_s0;
     FlushCache(0);
-    temp_v0 = sceSifCallRpc(p, 0xE, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc(p, 0xE, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0x13;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` (-200 when busy). */
 s32 func_00194E90(s32 arg0, s32 arg1) {
     u8 *b_D_00315CC0;
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -531,18 +554,19 @@ s32 func_00194E90(s32 arg0, s32 arg1) {
     b_D_00315CC0 = (u8 *)&D_00315CC0;
     (*(s32 *)(b_D_00315CC0 + 8)) = arg1;
     (*(s32 *)(b_D_00315CC0 + 4)) = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x11, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0x11, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0x11;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on port `arg0`, slot `arg1` with path `arg2` (-200 when busy). */
 s32 func_00194F58(s32 arg0, s32 arg1, s8 *arg2) {
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -560,11 +584,11 @@ s32 func_00194F58(s32 arg0, s32 arg1, s8 *arg2) {
     (*(s32 *)((u8 *)(&D_00315CF0) + 4)) = arg1;
     func_0019C2B8((u8 *)&D_00315CF0 + 0x14, arg2, 0x3FFU);
     (*(s8 *)((u8 *)(&D_00315CF0) + 0x413)) = 0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x12, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0x12, 1, &D_00315CF0, 0x414, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0x12;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }

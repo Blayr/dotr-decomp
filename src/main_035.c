@@ -1,6 +1,7 @@
 #include "common.h"
 #include "sce/libc.h"
 
+/* newlib isnan: whether `x` is not a number. */
 s32 func_0019AE78(double x) {
     s32 hx, lx;
 
@@ -54,6 +55,7 @@ double func_0019AEB8(double x, s32 n) {
     return x * 5.55111512312578270212e-17;
 }
 
+/* newlib _sbrk_r: sbrk() for re-entrancy record `ptr` (errno into it). */
 void *func_0019B0A0(s32 *ptr, s32 incr) {
     void *ret;
     D_003512F8 = 0;
@@ -62,14 +64,17 @@ void *func_0019B0A0(s32 *ptr, s32 incr) {
     return ret;
 }
 
+/* newlib setenv: sets environment setting `arg0` to `arg1` (`arg2`: replace). */
 void func_0019B0F8(s32 arg0, s32 arg1, s32 arg2) {
     func_0019B148(D_0028FA98, arg0, arg1, arg2);
 }
 
+/* newlib unsetenv: removes environment setting `arg0`. */
 void func_0019B128(s32 arg0) {
     func_0019B418(D_0028FA98, arg0);
 }
 
+/* newlib _setenv_r: sets environment setting `name` (re-entrant). */
 s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
     const char *value = (const char *)arg2;
     char *C;
@@ -133,6 +138,7 @@ s32 func_0019B148(s32 reent_ptr, s32 name, s32 arg2, s32 rewrite) {
     return 0;
 }
 
+/* newlib _unsetenv_r: removes environment setting `name` (re-entrant). */
 s32 func_0019B418(s32 reent_ptr, s32 name) {
     char **P;
     s32 offset;
@@ -145,6 +151,7 @@ s32 func_0019B418(s32 reent_ptr, s32 name) {
     ((void (*)(s32))__env_unlock)(reent_ptr);
 }
 
+/* newlib copysignf: `fparg0` with the sign of `fparg1`. */
 f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
     u32 gw0;
     u32 gw4;
@@ -155,6 +162,7 @@ f32 func_0019B4B8(f32 fparg0, f32 fparg1) {
     return fparg0;
 }
 
+/* newlib scalbnf: `x` times 2^`n`. */
 f32 func_0019B4F8(f32 x, s32 n) {
     s32 k, ix;
     u32 hx;
@@ -188,6 +196,7 @@ f32 func_0019B4F8(f32 x, s32 n) {
     return x * (f32)0.0000000298023241640521519002504646778106689453125;
 }
 
+/* newlib _sprintf_r: sprintf for re-entrancy record `ptr`. */
 s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...) {
     s32 ret;
     __builtin_va_list ap;
@@ -204,6 +213,7 @@ s32 func_0019B5C0(void *ptr, char *str, const char *fmt, ...) {
     return ret;
 }
 
+/* newlib sprintf: prints `fmt` into string `str`. */
 s32 func_0019B648(char *str, const char *fmt, ...) {
     s32 ret;
     __builtin_va_list ap;
@@ -220,10 +230,12 @@ s32 func_0019B648(char *str, const char *fmt, ...) {
     return ret;
 }
 
+/* A stream read that always hits the end (sscanf's string stream). */
 s32 eofread(void) {
     return 0;
 }
 
+/* Reads values from string `str` by format `fmt`. */
 s32 sscanf(const char *str, const char *fmt, ...) {
     s32 ret;
     __builtin_va_list ap;
@@ -242,6 +254,7 @@ s32 sscanf(const char *str, const char *fmt, ...) {
     return ret;
 }
 
+/* stdio read for a file stream. */
 s32 __sread(void *cookie, char *buf, s32 n) {
     sread_FILE *fp = (sread_FILE *)cookie;
     s32 ret;
@@ -254,14 +267,16 @@ s32 __sread(void *cookie, char *buf, s32 n) {
     return ret;
 }
 
-s32 __swrite(void *arg0, s32 arg1, s32 arg2) {
-    if ((*(u16 *)((u8 *)arg0 + 0xC)) & 0x100) {
-        _lseek_r((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), 0, 2);
+/* stdio write for a file stream. */
+s32 __swrite(void *cookie, s32 buf, s32 n) {
+    if ((*(u16 *)((u8 *)cookie + 0xC)) & 0x100) {
+        _lseek_r((*(s32 *)((u8 *)cookie + 0x54)), (*(s16 *)((u8 *)cookie + 0xE)), 0, 2);
     }
-    (*(u16 *)((u8 *)arg0 + 0xC)) = (u16) ((*(s32 *)((u8 *)arg0 + 0xC)) & 0xEFFF);
-    return func_001A0478((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)), arg1, arg2);
+    (*(u16 *)((u8 *)cookie + 0xC)) = (u16) ((*(s32 *)((u8 *)cookie + 0xC)) & 0xEFFF);
+    return func_001A0478((*(s32 *)((u8 *)cookie + 0x54)), (*(s16 *)((u8 *)cookie + 0xE)), buf, n);
 }
 
+/* stdio seek for a file stream. */
 s64 __sseek(void *cookie, s64 offset, s32 whence) {
     sseek_FILE *fp = (sseek_FILE *)cookie;
     s64 ret;
@@ -276,8 +291,9 @@ s64 __sseek(void *cookie, s64 offset, s32 whence) {
     return ret;
 }
 
-void __sclose(void *arg0) {
-    func_001951F8((*(s32 *)((u8 *)arg0 + 0x54)), (*(s16 *)((u8 *)arg0 + 0xE)));
+/* stdio close for a file stream. */
+void __sclose(void *cookie) {
+    func_001951F8((*(s32 *)((u8 *)cookie + 0x54)), (*(s16 *)((u8 *)cookie + 0xE)));
 }
 
 #define tolower_0019B8F8(c) ({ int __x = (c); ((D_002BD0C0 + 1)[(int)(__x)] & 01) ? (__x - 'A' + 'a') : __x; })
@@ -1063,6 +1079,7 @@ void *strncpy(void *dst, const void *src, u32 n) {
     return (void *)r8;
 }
 
+/* The last `i` in string `s`, or NULL. */
 char *strrchr(const char *s, s32 i) {
     const char *last = NULL;
     char c = i;

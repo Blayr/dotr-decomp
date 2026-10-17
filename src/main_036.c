@@ -68,6 +68,7 @@ extern const u8 D_002BDB30[];
         (count) = 32 - (D_002BDB30[__xr >> __a] + __a); \
     } while (0)
 
+/* libgcc __udivmoddi4: 64-bit unsigned divide (remainder into `rp`). */
 static inline u64 __udivmoddi4_001A0660(u64 n, u64 d, u64 *rp) {
     DIunion_001A0660 ww;
     DIunion_001A0660 nn, dd;
@@ -186,6 +187,7 @@ static inline u64 __udivmoddi4_001A0660(u64 n, u64 d, u64 *rp) {
     return ww.ll;
 }
 
+/* libgcc __negdi2: negates a 64-bit integer. */
 static inline s64 __negdi2_001A0660(s64 u) {
     DIunion_001A0660 w;
     DIunion_001A0660 uu;
@@ -198,6 +200,7 @@ static inline s64 __negdi2_001A0660(s64 u) {
     return w.ll;
 }
 
+/* libgcc __divdi3: 64-bit signed divide. */
 s64 func_001A0660(s64 u, s64 v) {
     s32 c = 0;
     DIunion_001A0660 uu, vv;
@@ -294,6 +297,7 @@ extern const u8 D_002BDC30[];
         (count) = 32 - (D_002BDC30[__xr >> __a] + __a); \
     } while (0)
 
+/* libgcc __udivmoddi4: 64-bit unsigned divide (remainder into `rp`). */
 static inline u64 __udivmoddi4_001A0CF8(u64 n, u64 d, u64 *rp) {
     DIunion_001A0CF8 ww;
     DIunion_001A0CF8 nn, dd;
@@ -412,6 +416,7 @@ static inline u64 __udivmoddi4_001A0CF8(u64 n, u64 d, u64 *rp) {
     return ww.ll;
 }
 
+/* libgcc __negdi2: negates a 64-bit integer. */
 static inline s64 __negdi2_001A0CF8(s64 u) {
     DIunion_001A0CF8 w;
     DIunion_001A0CF8 uu;
@@ -424,6 +429,7 @@ static inline s64 __negdi2_001A0CF8(s64 u) {
     return w.ll;
 }
 
+/* libgcc __moddi3: 64-bit signed remainder. */
 s64 func_001A0CF8(s64 u, s64 v) {
     s32 c = 0;
     DIunion_001A0CF8 uu, vv;
@@ -520,6 +526,7 @@ extern const u8 D_002BDD30[];
         (count) = 32 - (D_002BDD30[__xr >> __a] + __a); \
     } while (0)
 
+/* libgcc __udivmoddi4: 64-bit unsigned divide (remainder into `rp`). */
 static inline u64 __udivmoddi4_001A1388(u64 n, u64 d, u64 *rp) {
     DIunion_001A1388 ww;
     DIunion_001A1388 nn, dd;
@@ -638,6 +645,7 @@ static inline u64 __udivmoddi4_001A1388(u64 n, u64 d, u64 *rp) {
     return ww.ll;
 }
 
+/* libgcc __udivdi3: 64-bit unsigned divide. */
 u64 func_001A1388(u64 n, u64 d) {
     return __udivmoddi4_001A1388(n, d, (u64 *)0);
 }
@@ -718,6 +726,7 @@ extern const u8 D_002BDE30[];
         (count) = 32 - (D_002BDE30[__xr >> __a] + __a); \
     } while (0)
 
+/* libgcc __udivmoddi4: 64-bit unsigned divide (remainder into `rp`). */
 static inline u64 __udivmoddi4_001A1908(u64 n, u64 d, u64 *rp) {
     DIunion_001A1908 ww;
     DIunion_001A1908 nn, dd;
@@ -836,6 +845,7 @@ static inline u64 __udivmoddi4_001A1908(u64 n, u64 d, u64 *rp) {
     return ww.ll;
 }
 
+/* libgcc __umoddi3: 64-bit unsigned remainder. */
 u64 func_001A1908(u64 u, u64 v) {
     u64 w;
 
@@ -1256,6 +1266,7 @@ double func_001A28B0(double arg_a, double arg_b) {
    func_ name GCC sees its body earlier in this file, which changes a branch here. */
 double __pack_d(fp_number_d *src);
 
+/* Multiplies two unpacked doubles (soft float). */
 static __inline__ fp_number_d *_fpmul_parts(fp_number_d *a, fp_number_d *b, fp_number_d *tmp) {
     u64 low = 0;
     u64 high = 0;
@@ -1345,6 +1356,7 @@ static __inline__ fp_number_d *_fpmul_parts(fp_number_d *a, fp_number_d *b, fp_n
     return tmp;
 }
 
+/* libgcc soft float __muldf3: `arg_a` times `arg_b`. */
 double func_001A2918(double arg_a, double arg_b) {
     fp_number_d a;
     fp_number_d b;
@@ -1419,6 +1431,7 @@ static __inline__ fp_number_d *_fpdiv_parts(fp_number_d *a, fp_number_d *b) {
     }
 }
 
+/* libgcc soft float __divdf3: `arg_a` divided by `arg_b`. */
 double func_001A2BC8(double arg_a, double arg_b) {
     fp_number_d a;
     fp_number_d b;
@@ -1779,6 +1792,7 @@ double func_001A3130(double x, double y)
  return s*z;
 }
 
+/* newlib __ieee754_sqrt: square root of double `x`. */
 double func_001A4088(double x) {
     double z;
     s32 sign = (int)0x80000000;
@@ -1868,6 +1882,7 @@ double func_001A4088(double x) {
     return z;
 }
 
+/* newlib __ieee754_acosf: arc cosine of `x`. */
 f32 func_001A43A8(f32 x) {
     f32 t, w, p, q, c, r, s;
     s32 hx, ix;
@@ -1911,6 +1926,7 @@ f32 func_001A43A8(f32 x) {
     if (hx > 0) return t; else return -t;
 }
 
+/* newlib __ieee754_atan2f: the angle of (`x`, `y`). */
 f32 func_001A4760(f32 y, f32 x) {
     f32 z;
     s32 k, m, hx, hy, ix, iy;
@@ -1971,6 +1987,7 @@ f32 func_001A4760(f32 y, f32 x) {
     }
 }
 
+/* newlib __ieee754_fmodf: remainder of `x` / `y`. */
 f32 func_001A4948(f32 x, f32 y) {
     s32 n, hx, hy, hz, ix, iy, sx, i;
 
@@ -2038,6 +2055,7 @@ f32 func_001A4948(f32 x, f32 y) {
     return x;
 }
 
+/* newlib __ieee754_powf: `x` to the power `y`. */
 f32 func_001A4B18(f32 x, f32 y) {
     f32 z, ax, z_h, z_l, p_h, p_l;
     f32 y1, t1, t2, r, s, t, u, v, w;
@@ -2205,6 +2223,7 @@ f32 func_001A4B18(f32 x, f32 y) {
     return s * z;
 }
 
+/* newlib __ieee754_rem_pio2f: `x` reduced by multiples of pi/2 (into `y`); returns the multiple. */
 s32 func_001A5338(f32 x, f32 *y) {
     f32 z, w, t, r, fn;
     f32 tx[3];
@@ -2290,6 +2309,7 @@ s32 func_001A5338(f32 x, f32 *y) {
     return n;
 }
 
+/* newlib __ieee754_sqrtf: square root of `x`. */
 f32 func_001A5700(f32 x) {
     f32 z;
     u32 r, hx;
@@ -2338,6 +2358,7 @@ f32 func_001A5700(f32 x) {
     return z;
 }
 
+/* newlib __kernel_cosf: cosine on [-pi/4, pi/4] (`x` + tail `y`). */
 f32 func_001A57D8(f32 x, f32 y) {
     f32 a, hz, z, r, qx;
     s32 ix;
@@ -2364,6 +2385,7 @@ f32 func_001A57D8(f32 x, f32 y) {
     }
 }
 
+/* newlib __kernel_rem_pio2f: big-argument reduction by pi/2. */
 s32 func_001A5948(f32 *x, f32 *y, s32 e0, s32 nx, s32 prec, const s32 *ipio2) {
     s32 jz, jx, jv, jp, jk, carry, n, iq[20], i, j, k, m, q0, ih;
     f32 z, fw, f[20], fq[20], q[20];
@@ -2502,6 +2524,7 @@ recompute:
     return n & 7;
 }
 
+/* newlib __kernel_sinf: sine on [-pi/4, pi/4] (`x` + tail `y`; `iy` says whether `y` counts). */
 f32 func_001A61F0(f32 x, f32 y, s32 iy) {
     f32 z, r, v;
     s32 ix;
@@ -2521,6 +2544,7 @@ f32 func_001A61F0(f32 x, f32 y, s32 iy) {
         return x - ((z * ((f32)0.5000000298023223876953125 * y - v * r) - y) - v * (f32)-0.166666679084300994873046875);
 }
 
+/* newlib __kernel_tanf: tangent on [-pi/4, pi/4] (`iy` 1 for tan, -1 for -1/tan). */
 f32 func_001A6318(f32 x, f32 y, s32 iy) {
     f32 z, r, v, w, s;
     s32 ix, hx;
@@ -2569,6 +2593,7 @@ f32 func_001A6318(f32 x, f32 y, s32 iy) {
     }
 }
 
+/* newlib fabs: absolute value of double `x`. */
 double func_001A65C0(double x) {
     u32 high;
 
@@ -2577,6 +2602,7 @@ double func_001A65C0(double x) {
     return x;
 }
 
+/* newlib atanf: arc tangent of `x`. */
 f32 func_001A65F8(f32 x) {
     f32 w, s1, s2, z;
     s32 ix, hx, id;
@@ -2648,6 +2674,7 @@ f32 func_001A6898(f32 x) {
     }
 }
 
+/* newlib fabsf: absolute value of `x`. */
 f32 func_001A6970(f32 x) {
     u32 ix;
     do { fshape gf_u; gf_u.value = (x); (ix) = gf_u.word; } while (0);
@@ -2655,6 +2682,7 @@ f32 func_001A6970(f32 x) {
     return x;
 }
 
+/* newlib floorf: `x` rounded down. */
 f32 func_001A6998(f32 x) {
     s32 i0, j0;
     u32 i, ix;
@@ -2688,6 +2716,7 @@ f32 func_001A6998(f32 x) {
     return x;
 }
 
+/* newlib sinf: sine of `x`. */
 f32 func_001A6A88(f32 x) {
     f32 y[2], z = 0.0f;
     s32 n, ix;
@@ -2711,6 +2740,7 @@ f32 func_001A6A88(f32 x) {
     }
 }
 
+/* newlib tanf: tangent of `x`. */
 f32 func_001A6B70(f32 x) {
     f32 y[2], z = 0.0f;
     s32 n, ix;
@@ -2725,30 +2755,36 @@ f32 func_001A6B70(f32 x) {
     }
 }
 
+/* Calls func_001A3130 with (`arg0`, `arg1`) (a libgcc helper). */
 s32 func_001A6BE8(s64 arg0, s32 arg1) {
     return ((s32 (*)(s64, s32))func_001A3130)(arg0, arg1);
 }
 
+/* newlib acosf: arc cosine of `x`. */
 f32 func_001A6C00(f32 x) {
     extern f32 func_001A43A8(f32);
     return func_001A43A8(x);
 }
 
+/* newlib atan2f: the angle of (`x`, `y`). */
 f32 func_001A6C18(f32 y, f32 x) {
     extern f32 func_001A4760(f32, f32);
     return func_001A4760(y, x);
 }
 
+/* newlib fmodf: remainder of `x` / `y`. */
 f32 func_001A6C30(f32 x, f32 y) {
     extern f32 func_001A4948(f32, f32);
     return func_001A4948(x, y);
 }
 
+/* newlib powf: `y` to the power `x` (as the library wrapper's arguments are named here). */
 f32 func_001A6C48(f32 y, f32 x) {
     extern f32 func_001A4B18(f32, f32);
     return func_001A4B18(y, x);
 }
 
+/* newlib sqrtf: square root of `x`. */
 f32 func_001A6C60(f32 x) {
     extern f32 func_001A5700(f32);
     return func_001A5700(x);

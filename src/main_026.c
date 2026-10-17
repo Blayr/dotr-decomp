@@ -8,6 +8,7 @@ typedef struct KPatch_00184650 {
     s32 val;
 } KPatch_00184650;
 
+/* Installs the OSD-settings kernel patch when the console needs it. */
 void func_00184650(void) {
     KPatch_00184650 *t;
     u32 i;
@@ -25,30 +26,37 @@ void func_00184650(void) {
     }
 }
 
+/* Sets up the TLB before leaving the program. */
 void func_00184700(void) {
     func_00183E10();
 }
 
+/* Runs a loaded program (ExecPS2) after setting up the TLB. */
 s32 func_00184708(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_00184700();
     return ExecPS2(arg0, arg1, arg2, arg3);
 }
 
+/* Loads and runs a program (LoadExecPS2) after setting up the TLB. */
 void func_00184768(s32 arg0, s32 arg1, s32 arg2) {
     func_00184700();
     LoadExecPS2(arg0, arg1, arg2);
 }
 
+/* Ends the program (Exit with `arg0`) after setting up the TLB. */
 void func_001847B0(s32 arg0) {
     func_00184700();
     Exit(arg0);
 }
 
+/* Returns to the console's browser (ExecOSD) after setting up the TLB. */
 void func_001847D8(s32 arg0, s32 arg1) {
     func_00184700();
     ExecOSD(arg0, arg1);
 }
 
+/* Resets the GS (sceGsResetGraph): `arg0` 0 = full reset with video mode `arg1` (interlace), `arg2` (mode), `arg3`
+   (field). */
 void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     s16 *p;
 
@@ -83,6 +91,7 @@ void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     }
 }
 
+/* The GS settings record (interlace, mode, field). */
 s32 *sceGsGetGParam(void) {
     return &D_0028D8F0;
 }
@@ -91,6 +100,7 @@ s32 *sceGsGetGParam(void) {
 
 extern dk_int128 D_0028D900[2];
 
+/* Resets the GIF paths and the VIF1 unit. */
 void sceGsResetPath(void) {
     register u32 s __asm__("$4");
 
@@ -206,10 +216,11 @@ void sceGsSetDefDispEnv(void *arg0, s16 psm, s16 w, s16 h, s16 dx, s16 dy) {
     disp->bgcolor = 0;
 }
 
-s32 sceGsPutDispEnv(void *arg0) {
+/* Sends display environment `dispIn` to the GS. */
+s32 sceGsPutDispEnv(void *dispIn) {
     u64 *disp;
 
-    disp = arg0;
+    disp = dispIn;
     if (((s16 *)sceGsGetGParam())[3] == 1) {
         *(volatile u64 *)0x12000000 = disp[0];
         *(volatile u64 *)0x12000070 = disp[2];
@@ -234,17 +245,18 @@ typedef struct GsGParam_00184D48 {
     u64 unk10;
 } GsGParam_00184D48;
 
-s32 sceGszbufaddr(s16 arg0, s16 arg1, s16 arg2) {
+/* The GS address of the Z buffer for a `w` x `h` screen of format `psm`. */
+s32 sceGszbufaddr(s16 psm, s16 w, s16 h) {
     GsGParam_00184D48 *p;
     s32 bw;
     s32 bh;
 
     p = (GsGParam_00184D48 *)sceGsGetGParam();
-    bw = (arg1 + 63) / 64;
-    if (arg0 & 2) {
-        bh = (arg2 + 63) / 64;
+    bw = (w + 63) / 64;
+    if (psm & 2) {
+        bh = (h + 63) / 64;
     } else {
-        bh = (arg2 + 31) / 32;
+        bh = (h + 31) / 32;
     }
     if (p->inter == 1 && p->ffmode == 0) {
         return (s16)(bw * bh);
@@ -286,8 +298,9 @@ typedef struct {
     u64 test1addr;
 } sceGsDrawEnv1E10;
 
-s32 sceGsSetDefDrawEnv(void *arg0, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm) {
-    sceGsDrawEnv1E10 *dp = arg0;
+/* Fills draw environment `draw` for a `w` x `h` screen (format `psm`, Z test `ztest`, Z format `zpsm`). */
+s32 sceGsSetDefDrawEnv(void *draw, s16 psm, s16 w, s16 h, s16 ztest, s16 zpsm) {
+    sceGsDrawEnv1E10 *dp = draw;
 
     dp->frame1addr = 0x4C;
     dp->frame1 = ((u64)(((w + 63) >> 6) & 0x3F) << 16) | ((u64)(psm & 0xF) << 24);
@@ -336,8 +349,9 @@ typedef struct {
     u64 testbaddr;
 } sceGsClear;
 
-s32 sceGsSetDefClear(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z) {
-    sceGsClear *cp = arg0;
+/* Fills clear packet `clear` (Z test, area, colour, depth). */
+s32 sceGsSetDefClear(void *clear, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b, u8 a, u32 z) {
+    sceGsClear *cp = clear;
 
     cp->testaaddr = 0x47;
     cp->testa = 0x30000;
@@ -359,7 +373,8 @@ s32 sceGsSetDefClear(void *arg0, s16 ztest, s16 x, s16 y, s16 w, s16 h, u8 r, u8
     return 6;
 }
 
-s32 sceGsPutDrawEnv(void *arg0) {
+/* Sends draw environment `giftag` to the GS. */
+s32 sceGsPutDrawEnv(void *giftag) {
     u32 i;
 
     i = 0;
@@ -369,11 +384,11 @@ s32 sceGsPutDrawEnv(void *arg0) {
             return -1;
         }
     }
-    *(volatile s32 *)0x1000A020 = (s32)(*(u64 *)arg0 & 0x7FFF) + 1;
-    if (((u32)arg0 & 0x70000000) == 0x70000000) {
-        *(volatile s32 *)0x1000A010 = ((u32)arg0 & 0x0FFFFFFF) | 0x80000000;
+    *(volatile s32 *)0x1000A020 = (s32)(*(u64 *)giftag & 0x7FFF) + 1;
+    if (((u32)giftag & 0x70000000) == 0x70000000) {
+        *(volatile s32 *)0x1000A010 = ((u32)giftag & 0x0FFFFFFF) | 0x80000000;
     } else {
-        *(volatile s32 *)0x1000A010 = (u32)arg0 & 0x0FFFFFFF;
+        *(volatile s32 *)0x1000A010 = (u32)giftag & 0x0FFFFFFF;
     }
     *(volatile s32 *)0x1000A000 = 0x101;
     return 0;
@@ -447,8 +462,9 @@ typedef struct {
     GsClear_001851E8 clear1;
 } GsDBuff_001851E8;
 
-void sceGsSetDefDBuff(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 flag) {
-    GsDBuff_001851E8 *db = arg0;
+/* Fills double-buffer record `dbIn` for a `w` x `h` screen. */
+void sceGsSetDefDBuff(void *dbIn, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16 flag) {
+    GsDBuff_001851E8 *db = dbIn;
     GParam_001851E8 *gp = (GParam_001851E8 *)sceGsGetGParam();
     s32 zb;
     s16 fbp;
@@ -481,21 +497,23 @@ void sceGsSetDefDBuff(void *arg0, s16 psm, s16 w, s16 h, s16 ztst, s16 zpsm, s16
     }
 }
 
-s32 sceGsSwapDBuff(u8 *arg0, s32 arg1) {
+/* Shows buffer `field` of double-buffer record `db` and draws into the other. */
+s32 sceGsSwapDBuff(u8 *db, s32 field) {
     s32 odd;
     s32 ret;
 
-    odd = arg1 & 1;
-    sceGsPutDispEnv(arg0 + odd * 0x28);
+    odd = field & 1;
+    sceGsPutDispEnv(db + odd * 0x28);
     if (odd != 0) {
-        ret = sceGsPutDrawEnv(arg0 + 0x140);
+        ret = sceGsPutDrawEnv(db + 0x140);
     } else {
-        ret = sceGsPutDrawEnv(arg0 + 0x50);
+        ret = sceGsPutDrawEnv(db + 0x50);
     }
     return ret;
 }
 
-s32 sceGsSyncV(s32 arg0) {
+/* Waits for the next vertical blank; returns the field (`mode`). */
+s32 sceGsSyncV(s32 mode) {
     s32 *p;
     s64 v;
 
@@ -724,6 +742,7 @@ extern char D_002BC548[];
 #define sp ((StoreImage_59D0 *)arg0)
 #define dstaddr ((__int128 *)arg1)
 
+/* Copies an image from GS memory (record `arg0`) into main memory at `arg1` (the names stay: a macro uses them). */
 s32 sceGsExecStoreImage(void *arg0, void *arg1) {
     u32 timeout = 0;
     s32 dummy = 0;
@@ -935,24 +954,26 @@ typedef struct GsScissor_00186060 {
     u64 pad59 : 5;
 } GsScissor_00186060;
 
-void sceGsSetHalfOffset(u8 *arg0, s16 arg1, s16 arg2, s16 arg3) {
+/* Sets the half-pixel offset of draw environment `draw` (`centerX`, `centerY`, `halfOff`). */
+void sceGsSetHalfOffset(u8 *draw, s16 centerX, s16 centerY, s16 halfOff) {
     GsScissor_00186060 *sc;
     u64 x;
     u64 y;
 
-    sc = (GsScissor_00186060 *)((u8 *)arg0 + 0x30);
-    y = (arg2 - ((u64)(sc->SCAY1 + 1) >> 1)) << 4;
-    x = (arg1 - ((u64)(sc->SCAX1 + 1) >> 1)) << 4;
-    *(u64 *)((u8 *)arg0 + 0x20) = x | ((arg3 ? y + 8 : y) << 32);
+    sc = (GsScissor_00186060 *)((u8 *)draw + 0x30);
+    y = (centerY - ((u64)(sc->SCAY1 + 1) >> 1)) << 4;
+    x = (centerX - ((u64)(sc->SCAX1 + 1) >> 1)) << 4;
+    *(u64 *)((u8 *)draw + 0x20) = x | ((halfOff ? y + 8 : y) << 32);
 }
 
-void memclr(s8 *arg0, s32 arg1) {
+/* Clears `size` bytes at `ptr`. */
+void memclr(s8 *ptr, s32 size) {
     s32 var_v0;
     s8 *var_a0;
 
-    var_a0 = arg0;
-    var_v0 = arg1 - 1;
-    if (arg1 != 0) {
+    var_a0 = ptr;
+    var_v0 = size - 1;
+    if (size != 0) {
         do {
             *var_a0 = 0;
             var_v0 -= 1;
@@ -961,14 +982,16 @@ void memclr(s8 *arg0, s32 arg1) {
     }
 }
 
-s32 sceDmaGetChan(s32 arg0) {
-    if ((u32) arg0 < 0xAU) {
-        return ((s32 *)&dch)[arg0];
+/* The register block of DMA channel `id`. */
+s32 sceDmaGetChan(s32 id) {
+    if ((u32) id < 0xAU) {
+        return ((s32 *)&dch)[id];
     }
     return 0;
 }
 
-s32 sceDmaReset(s32 arg0) {
+/* Resets the DMA controller (`mode` 1) and clears its settings. */
+s32 sceDmaReset(s32 mode) {
     s32 sp0[8];
     s32 prev;
     s32 i;
@@ -990,17 +1013,18 @@ s32 sceDmaReset(s32 arg0) {
     *(volatile s32 *)0x1000E010 &= 0xFF1F0000;
     memclr((s8 *)sp0, 0x14);
     sceDmaPutEnv(sp0);
-    if (arg0 == 1) {
+    if (mode == 1) {
         *(volatile s32 *)0x1000E000 = *(volatile s32 *)0x1000E000 | 1;
     }
     return prev;
 }
 
-s32 sceDmaDebug(s32 arg0) {
+/* Turns DMA debug checks on or off (`mode`). */
+s32 sceDmaDebug(s32 mode) {
     s32 temp_v0;
 
     temp_v0 = sceDmaDebugMode;
-    sceDmaDebugMode = arg0;
+    sceDmaDebugMode = mode;
     return temp_v0;
 }
 
@@ -1071,21 +1095,24 @@ s32 sceDmaPutEnv(void *arg0) {
     return 0;
 }
 
-void *sceDmaGetEnv(void *arg0) {
-    *(GsDef_00186410 *)arg0 = sceDmaCurrentEnv;
-    return arg0;
+/* The DMA controller settings into `env`. */
+void *sceDmaGetEnv(void *env) {
+    *(GsDef_00186410 *)env = sceDmaCurrentEnv;
+    return env;
 }
 
-s32 sceDmaPutStallAddr(u32 arg0) {
+/* Sets the DMA stall address `addr`. */
+s32 sceDmaPutStallAddr(u32 addr) {
     s32 old = *(volatile s32 *)0x1000E060;
-    if (arg0 != 0xFFFFFFFF) {
-        *(volatile s32 *)0x1000E060 = arg0;
+    if (addr != 0xFFFFFFFF) {
+        *(volatile s32 *)0x1000E060 = addr;
     }
     return old;
 }
 
-void sceDmaSend(void *arg0, void *tag) {
-    sceDmaChan *d = arg0;
+/* Sends DMA chain `tag` on channel `dIn`. */
+void sceDmaSend(void *dIn, void *tag) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1107,8 +1134,9 @@ void sceDmaSend(void *arg0, void *tag) {
     d->chcr.STR = 1;
 }
 
-void sceDmaSendN(void *arg0, void *addr, s32 size) {
-    sceDmaChan *d = arg0;
+/* Sends `size` quadwords from `addr` on channel `dIn` (normal mode). */
+void sceDmaSendN(void *dIn, void *addr, s32 size) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1130,8 +1158,9 @@ void sceDmaSendN(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void sceDmaSendI(void *arg0, void *addr, s32 size) {
-    sceDmaChan *d = arg0;
+/* Sends `size` quadwords from `addr` on channel `dIn` (interleave). */
+void sceDmaSendI(void *dIn, void *addr, s32 size) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1153,8 +1182,9 @@ void sceDmaSendI(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void sceDmaRecv(void *arg0) {
-    sceDmaChan *d = arg0;
+/* Receives by DMA chain on channel `dIn`. */
+void sceDmaRecv(void *dIn) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1173,8 +1203,9 @@ void sceDmaRecv(void *arg0) {
     d->chcr.STR = 1;
 }
 
-void sceDmaRecvN(void *arg0, void *addr, s32 size) {
-    sceDmaChan *d = arg0;
+/* Receives `size` quadwords to `addr` on channel `dIn` (normal mode). */
+void sceDmaRecvN(void *dIn, void *addr, s32 size) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1196,8 +1227,9 @@ void sceDmaRecvN(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-void sceDmaRecvI(void *arg0, void *addr, s32 size) {
-    sceDmaChan *d = arg0;
+/* Receives `size` quadwords to `addr` on channel `dIn` (interleave). */
+void sceDmaRecvI(void *dIn, void *addr, s32 size) {
+    sceDmaChan *d = dIn;
     s32 i = 0x1000000;
 
     if ((*(volatile u32 *)&d->chcr & 0x100)) {
@@ -1219,8 +1251,9 @@ void sceDmaRecvI(void *arg0, void *addr, s32 size) {
     d->chcr.STR = 1;
 }
 
-s32 sceDmaSync(void *arg0, s32 mode, s32 timeout) {
-    sceDmaChan *d = arg0;
+/* Waits for channel `dIn` to finish (`mode`: 0 wait, 1 poll; `timeout`). */
+s32 sceDmaSync(void *dIn, s32 mode, s32 timeout) {
+    sceDmaChan *d = dIn;
 
     if (mode == 1) {
         return d->chcr.STR;
@@ -1241,8 +1274,9 @@ s32 sceDmaSync(void *arg0, s32 mode, s32 timeout) {
     return 0;
 }
 
-s32 sceDmaWatch(void *arg0, void *addr, s32 mode, s32 timeout) {
-    sceDmaChan *d = arg0;
+/* Waits for channel `dIn` to reach `addr` (`mode`, `timeout`). */
+s32 sceDmaWatch(void *dIn, void *addr, s32 mode, s32 timeout) {
+    sceDmaChan *d = dIn;
 
     if (mode == 1) {
         return *(volatile u32 *)&d->madr < (u32)addr;
@@ -1263,6 +1297,7 @@ s32 sceDmaWatch(void *arg0, void *addr, s32 mode, s32 timeout) {
     return 0;
 }
 
+/* Clears bit 8 of DMA register `arg0` with the DMA held (DMA enable register). */
 void func_00186B58(volatile u32 *arg0) {
     if (*(volatile s32 *)0x1000F520 == 0) {
         *(volatile s32 *)0x1000F590 = 0x1000;
@@ -1275,6 +1310,7 @@ void func_00186B58(volatile u32 *arg0) {
     *(volatile s32 *)0x1000F590 = 0;
 }
 
+/* Sets DMA register `arg0` to `arg1`; returns its old bit 8. */
 s32 func_00186BA0(u32 *arg0, u32 arg1) {
     u32 temp_v0;
 
@@ -1302,6 +1338,7 @@ void sceDevVu0Reset(void) {
     __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
 }
 
+/* Stops VU0's micro program. */
 s32 sceDevVu0Pause(void) {
     s32 ret;
 
@@ -1320,14 +1357,15 @@ s32 sceDevVu0Pause(void) {
     return ret;
 }
 
+/* Restarts VU0's micro program where it stopped. */
 s32 sceDevVu0Continue(void) {
-    s32 temp_v0;
+    s32 sceDevVu0Sync2;
     s32 var_v0;
 
     var_v0 = 0;
-    temp_v0 = sceDevVu0Sync();
-    if (temp_v0 < 4) {
-        if (temp_v0 > 0) {
+    sceDevVu0Sync2 = sceDevVu0Sync();
+    if (sceDevVu0Sync2 < 4) {
+        if (sceDevVu0Sync2 > 0) {
             sceDevVu0Exec(sceDevVu0GetTpc());
             var_v0 = 1;
         }

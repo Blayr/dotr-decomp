@@ -1,15 +1,18 @@
 #include "common.h"
 #include "sce/libc.h"
 
-void _getenv_r(s32 arg0, s32 arg1) {
+/* The value of environment setting `name` (re-entrant). */
+void _getenv_r(s32 reent, s32 name) {
     s32 sp0[4];
-    _findenv_r(arg0, arg1, (s32) sp0);
+    _findenv_r(reent, name, (s32) sp0);
 }
 
+/* Calls func_0019BB00 with `arg0`, `arg1` (a newlib string helper). */
 char *func_001976D8(char *arg0, s32 arg1) {
     return func_0019BB00(arg0, arg1);
 }
 
+/* Sets the locale (only "C" here). */
 s32 _setlocale_r(s32 p, s32 category, s32 locale) {
     if (locale) {
         if (func_0019BC90((const char *)locale, D_002BD270) && func_0019BC90((const char *)locale, D_002BD260))
@@ -20,18 +23,22 @@ s32 _setlocale_r(s32 p, s32 category, s32 locale) {
     return (s32)D_002BD270;
 }
 
+/* The locale settings (re-entrant). */
 s32 *_localeconv_r(void) {
     return &lconv;
 }
 
-void setlocale(s32 arg0, s32 arg1) {
-    _setlocale_r(D_0028FA98, arg0, arg1);
+/* Sets the locale (only "C" here). */
+void setlocale(s32 category, s32 locale) {
+    _setlocale_r(D_0028FA98, category, locale);
 }
 
+/* The locale settings. */
 s32 *localeconv(void) {
     return ((s32 *(*)(s32))_localeconv_r)(D_0028FA98);
 }
 
+/* Moves file `fd`'s position (re-entrant; sets errno). */
 s32 _lseek_r(s32 *ptr, s32 fd, s32 pos, s32 whence) {
     s32 ret;
     D_003512F8 = 0;
@@ -67,8 +74,9 @@ typedef struct mb_FILE {
 } mb_FILE;
 typedef struct mb_stat { s16 st_dev; u16 st_ino; u32 st_mode; u8 pad8[0x68]; } mb_stat;
 
-void __smakebuf(void *arg0) {
-    mb_FILE *fp = arg0;
+/* Gives stdio stream `fpIn` a buffer. */
+void __smakebuf(void *fpIn) {
+    mb_FILE *fp = fpIn;
     u32 size, couldbetty;
     void *p;
     mb_stat st;
@@ -105,6 +113,7 @@ void __smakebuf(void *arg0) {
     }
 }
 
+/* newlib memalign: `arg1` bytes aligned to `arg0`, under the heap lock. */
 void *func_00197990(s32 arg0, s32 arg1) {
     void *temp_s1;
 
@@ -133,9 +142,10 @@ typedef struct ma_chunk {
 #define ma_long_sub_size_t(x, y) \
     (sizeof(long) > sizeof(u32) && x < y ? -(long)(y - x) : (long)(x - y))
 
-void *_memalign_r(s32 reent_ptr, s32 arg1, s32 arg2) {
-    u32 alignment = arg1;
-    u32 bytes = arg2;
+/* Allocates `bytesIn` bytes aligned to `alignmentIn` (re-entrant). */
+void *_memalign_r(s32 reent_ptr, s32 alignmentIn, s32 bytesIn) {
+    u32 alignment = alignmentIn;
+    u32 bytes = bytesIn;
     u32 nb;
     char *m;
     ma_chunk *p;
@@ -192,6 +202,7 @@ void *_memalign_r(s32 reent_ptr, s32 arg1, s32 arg2) {
     return ma_chunk2mem(p);
 }
 
+/* newlib malloc: `arg0` bytes from the heap, under the heap lock. */
 s32 func_00197BC0(s32 arg0) {
     s32 temp_s1;
 
@@ -201,6 +212,7 @@ s32 func_00197BC0(s32 arg0) {
     return temp_s1;
 }
 
+/* newlib free: returns block `arg0` to the heap, under the heap lock. */
 s32 func_00197C18(s32 arg0) {
     func_00198A08(D_0028FA98);
     _free_r(D_0028FA98, arg0);
@@ -666,6 +678,7 @@ void *_malloc_r(s32 reent_ptr, s32 bytes) {
 #undef clear_last_remainder
 #undef long_sub_size_t
 
+/* Converts a multibyte character to a wide character (re-entrant). */
 s32 _mbtowc_r(void *r, s32 *pwc, const char *s, u32 n, s32 *state) {
     s32 dummy;
     u8 *t = (u8 *)s;
@@ -1009,6 +1022,7 @@ void *memset(void *dst, s32 c, u32 n) {
     return (void *)r4;
 }
 
+/* newlib __malloc_lock: takes the heap lock (re-entrant per thread). */
 void func_00198A08(s32 r) {
     s32 id = GetThreadId();
 
@@ -1021,6 +1035,7 @@ void func_00198A08(s32 r) {
     }
 }
 
+/* newlib __malloc_unlock: releases the heap lock when the thread's count drops to 0. */
 s32 func_00198A88(s32 r) {
     if (--D_0028FF04 == 0) {
         D_0028FF00 = -1;
@@ -1028,6 +1043,7 @@ s32 func_00198A88(s32 r) {
     }
 }
 
+/* A big-number block of 2^`k` words (dtoa). */
 i2b_Bigint *_Balloc(void *ptr, s32 k) {
     s32 x;
     i2b_Bigint *rv;
@@ -1050,16 +1066,18 @@ i2b_Bigint *_Balloc(void *ptr, s32 k) {
     return rv;
 }
 
-void _Bfree(void *arg0, void *arg1) {
+/* Frees big-number block `v` (dtoa). */
+void _Bfree(void *ptr, void *v) {
     void **temp_v0;
 
-    if (arg1 != NULL) {
-        temp_v0 = ((*(s32 *)((u8 *)arg1 + 4)) * 4) + (*(s32 *)((u8 *)arg0 + 0x4C));
-        (*(void **)arg1) = (void *) *temp_v0;
-        *temp_v0 = arg1;
+    if (v != NULL) {
+        temp_v0 = ((*(s32 *)((u8 *)v + 4)) * 4) + (*(s32 *)((u8 *)ptr + 0x4C));
+        (*(void **)v) = (void *) *temp_v0;
+        *temp_v0 = v;
     }
 }
 
+/* newlib dtoa __multadd: big number `b` times `m` plus `a`. */
 i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a) {
     s32 i, wds;
     u32 *x, y;
@@ -1089,6 +1107,7 @@ i2b_Bigint *func_00198BB0(void *ptr, i2b_Bigint *b, s32 m, s32 a) {
     return b;
 }
 
+/* newlib dtoa __s2b: a big number from the decimal digits in `s`. */
 i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9) {
     i2b_Bigint *b;
     s32 i, k;
@@ -1114,6 +1133,7 @@ i2b_Bigint *func_00198CB8(void *ptr, const char *s, s32 nd0, s32 nd, u32 y9) {
     return b;
 }
 
+/* newlib dtoa __hi0bits: how many high zero bits `x` has. */
 s32 func_00198DE8(u32 x) {
     s32 k = 0;
 
@@ -1141,6 +1161,7 @@ s32 func_00198DE8(u32 x) {
     return k;
 }
 
+/* newlib dtoa __lo0bits: how many low zero bits `*y` has (shifts them out). */
 s32 func_00198E68(u32 *y) {
     s32 k;
     u32 x = *y;
@@ -1182,6 +1203,7 @@ s32 func_00198E68(u32 *y) {
     return k;
 }
 
+/* newlib dtoa __i2b: a big number holding `i`. */
 i2b_Bigint *func_00198F28(void *ptr, s32 i) {
     i2b_Bigint *b;
 
@@ -1193,6 +1215,7 @@ i2b_Bigint *func_00198F28(void *ptr, s32 i) {
 
 #define MU_Storeinc(a, b, c) (((u16 *)a)[1] = (u16)b, ((u16 *)a)[0] = (u16)c, a++)
 
+/* newlib dtoa __multiply: big numbers `a` times `b`. */
 i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
     i2b_Bigint *c;
     s32 k, wa, wb, wc;
@@ -1254,6 +1277,7 @@ i2b_Bigint *func_00198F60(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
     return c;
 }
 
+/* newlib dtoa __pow5mult: big number `b` times 5^`k`. */
 i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k) {
     p5_reent *ptr = arg0;
     i2b_Bigint *b1, *p5, *p51;
@@ -1285,6 +1309,7 @@ i2b_Bigint *func_00199170(void *arg0, i2b_Bigint *b, s32 k) {
     return b;
 }
 
+/* newlib dtoa __lshift: big number `b` shifted left by `k` bits. */
 i2b_Bigint *func_00199270(void *ptr, i2b_Bigint *b, s32 k) {
     s32 i, k1, n, n1;
     i2b_Bigint *b1;
@@ -1319,6 +1344,7 @@ i2b_Bigint *func_00199270(void *ptr, i2b_Bigint *b, s32 k) {
     return b1;
 }
 
+/* newlib dtoa __mcmp: compares big numbers `a` and `b`. */
 s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b) {
     u32 *xa, *xa0, *xb, *xb0;
     s32 i, j;
@@ -1342,6 +1368,7 @@ s32 func_001993C8(mcmp_Bigint *a, mcmp_Bigint *b) {
 
 #define md_Storeinc(a, b, c) (((u16 *)a)[1] = (u16)b, ((u16 *)a)[0] = (u16)c, a++)
 
+/* newlib dtoa __mdiff: big numbers `a` minus `b`. */
 i2b_Bigint *func_00199430(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
     s32 i, wa, wb;
     i2b_Bigint *c;
@@ -1393,6 +1420,7 @@ i2b_Bigint *func_00199430(void *ptr, i2b_Bigint *a, i2b_Bigint *b) {
     return c;
 }
 
+/* newlib dtoa __ulp: one unit in the last place of `_x`. */
 double func_001995C0(double _x) {
     ulp_du x, a;
     s32 L;
@@ -1416,6 +1444,7 @@ double func_001995C0(double _x) {
     return a.d;
 }
 
+/* newlib dtoa __b2d: big number `a` as a double (exponent into `e`). */
 double func_00199690(i2b_Bigint *a, s32 *e) {
     u32 *xa, *xa0, w, y, z;
     s32 k;
@@ -1496,6 +1525,7 @@ i2b_Bigint *func_00199828(void *ptr, double dd, s32 *e, s32 *bits) {
 #undef word0_00199828
 #undef word1_00199828
 
+/* newlib dtoa __ratio: big numbers `a` / `b` as a double. */
 double func_001999B0(i2b_Bigint *a, i2b_Bigint *b) {
     ratio_du da, db;
     s32 k, ka, kb;
@@ -1512,6 +1542,7 @@ double func_001999B0(i2b_Bigint *a, i2b_Bigint *b) {
     return da.d / db.d;
 }
 
+/* newlib _mprec_log10: 10 to the power `dig`. */
 double func_00199A80(s32 dig) {
     double v = 1.0;
 
@@ -1524,6 +1555,7 @@ double func_00199A80(s32 dig) {
     return v;
 }
 
+/* newlib _printf_r: printf for re-entrancy record `ptr`. */
 s32 func_00199AF0(vf_reent *ptr, const char *fmt, ...) {
     s32 ret;
     __builtin_va_list ap;
@@ -1538,6 +1570,7 @@ typedef __builtin_va_list va_list;
 #define va_start(v, l) __builtin_stdarg_start((v), l)
 #define va_end(v) __builtin_va_end(v)
 
+/* newlib printf: prints `fmt` to standard output (the debug console). */
 void func_00199B50(const char *fmt, ...) {
     s32 ret;
     va_list ap;
@@ -1568,6 +1601,7 @@ typedef s32 (*cmp_t_00199BC0)(const void *, const void *);
 #define SWAPINIT(a, es) swaptype = ((char *)a - (char *)0) % sizeof(long) || \
     es % sizeof(long) ? 2 : es == sizeof(long) ? 0 : 1;
 
+/* qsort's swap of `n` bytes at `a` and `b`. */
 static inline void swapfunc_00199BC0(char *a, char *b, int n, int swaptype) {
     if (swaptype <= 1)
         swapcode(long, a, b, n)
@@ -1585,12 +1619,14 @@ static inline void swapfunc_00199BC0(char *a, char *b, int n, int swaptype) {
 
 #define vecswap(a, b, n) if ((n) > 0) swapfunc_00199BC0(a, b, n, swaptype)
 
+/* qsort's median of three. */
 static inline char *med3_00199BC0(char *a, char *b, char *c, cmp_t_00199BC0 cmp) {
     return cmp(a, b) < 0 ?
            (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a))
            : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c));
 }
 
+/* newlib qsort: sorts `n` items of `es` bytes at `arg0` with comparison `arg3`. */
 void func_00199BC0(s32 arg0, u32 n, u32 es, void (*arg3)(void)) {
     cmp_t_00199BC0 cmp = (cmp_t_00199BC0)arg3;
     void *a = (void *)arg0;
@@ -1673,10 +1709,12 @@ loop:
 #undef swap
 #undef vecswap
 
+/* newlib srand: seeds the random numbers with `arg0`. */
 void func_0019A5B0(s64 arg0) {
     (*(u64 *)((u8 *)D_0028FA98 + 0xA8)) = (u64) ((u64) (arg0 << 0x20) >> 0x20);
 }
 
+/* newlib rand: the next random number (0..0x7FFFFFFF). */
 s32 func_0019A5C8(void) {
     u8 *r = (u8 *)D_0028FA98;
 
@@ -1684,6 +1722,7 @@ s32 func_0019A5C8(void) {
     return (s32)((*(u64 *)(r + 0xA8) >> 32) & 0x7fffffff);
 }
 
+/* newlib _read_r: read() for re-entrancy record `ptr` (errno into it). */
 s64 func_0019A630(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
     D_003512F8 = 0;
@@ -1936,6 +1975,7 @@ split:
 #undef prev_inuse
 #undef MALLOC_COPY
 
+/* stdio: flushes stream `arg0` if it is open for writing (an _fwalk callback). */
 s32 func_0019AC30(void *arg0) {
     if (((*(u16 *)((u8 *)arg0 + 0xC)) & 9) == 9) {
         return fflush(arg0);
@@ -1969,6 +2009,7 @@ typedef struct sr_FILE {
     sr_reent *_data;
 } sr_FILE;
 
+/* stdio: sets up or flushes stream `arg0` (newlib internal). */
 s32 func_0019AC68(void *arg0) {
     sr_FILE *fp = arg0;
 
@@ -2027,6 +2068,7 @@ s32 func_0019AC68(void *arg0) {
     return 0;
 }
 
+/* newlib copysign: `x` with the sign of `y`. */
 double func_0019ADE8(double x, double y) {
     u32 hx, hy;
 
@@ -2036,6 +2078,7 @@ double func_0019ADE8(double x, double y) {
     return x;
 }
 
+/* newlib finite: whether `x` is finite. */
 s32 func_0019AE30(double x) {
     s32 hx, lx;
 

@@ -1,8 +1,9 @@
 #include "common.h"
 
-s32 SD_Init(s32 arg0) {
-    g_SDValue = (s32 *)arg0;
-    g_SDBuffer = arg0 + 0x2A80;
+/* Starts the sound driver: clears the transfer queue and sets up the IOP side (`mode`). */
+s32 SD_Init(s32 mode) {
+    g_SDValue = (s32 *)mode;
+    g_SDBuffer = mode + 0x2A80;
     func_00198948(g_SDValue, 0, 0x2A80);
     *(s32 *)((u8 *)g_SDValue + 0x1DC) = -1;
     *(s32 *)((u8 *)g_SDValue + 0x1F4) = -1;
@@ -17,18 +18,21 @@ s32 SD_Init(s32 arg0) {
     return 1;
 }
 
+/* Shuts the sound driver down on the IOP. */
 void SD_Term(void) {
     SDRPC_SendCommand(0xF004, g_SDValue[5]);
 }
 
-void SD_SuspendSoundSystem(s32 arg0) {
-    if (arg0 != 0) {
+/* Pauses (`suspend` 1) or resumes the sound system, muting the music while paused. */
+void SD_SuspendSoundSystem(s32 suspend) {
+    if (suspend != 0) {
         SD_BGMSetSourceLevel(0, 0);
         SDRPC_SendCommand(0x5004, 0x7FFF);
     }
-    SDRPC_SendCommand(0xF006, arg0);
+    SDRPC_SendCommand(0xF006, suspend);
 }
 
+/* The sound driver's per-frame work: IOP commands, file reads, the streamed music's watchdog. */
 void SD_CallEveryVSync(void) {
     s32 temp_v0;
 
@@ -51,7 +55,8 @@ void SD_CallEveryVSync(void) {
     }
 }
 
-s32 SD_BGMPreLoad(s32 arg0, s32 arg1) {
+/* Preloads music `bgm` (`mode`) so it can start without a wait. */
+s32 SD_BGMPreLoad(s32 bgm, s32 mode) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
     }
@@ -59,15 +64,16 @@ s32 SD_BGMPreLoad(s32 arg0, s32 arg1) {
         return 1;
     }
     if (g_SDValue[0] & 1) {
-        if (arg1 != 0) {
-            SD_iPlayBGMByAutoDMA(arg0);
+        if (mode != 0) {
+            SD_iPlayBGMByAutoDMA(bgm);
         } else {
-            SD_iPreparePreBlockOnIOP(arg0);
+            SD_iPreparePreBlockOnIOP(bgm);
         }
     }
     return 1;
 }
 
+/* Whether the sound driver is still reading from the disc. */
 s32 SD_IsLoadingNow(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
@@ -75,14 +81,16 @@ s32 SD_IsLoadingNow(void) {
     return (*g_SDValue & 0x2000) ? 1 : 0;
 }
 
-void SD_SetOutputType(s32 arg0) {
+/* Sets the sound output (`type`: stereo or mono). */
+void SD_SetOutputType(s32 type) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
-    SDRPC_SendCommand(0xF003, arg0);
-    *(s32 *)((u8 *)g_SDValue + 0x2A6C) = arg0;
+    SDRPC_SendCommand(0xF003, type);
+    *(s32 *)((u8 *)g_SDValue + 0x2A6C) = type;
 }
 
+/* Stops the music and every sound effect. */
 void SD_StopAll(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
@@ -91,6 +99,7 @@ void SD_StopAll(void) {
     SD_SEStopAll();
 }
 
+/* Stops the streamed music. */
 void SD_BGMStop(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
@@ -103,15 +112,17 @@ void SD_BGMStop(void) {
     }
 }
 
-void SD_BGMFadeOut(s16 arg0) {
+/* Fades the music out over `frames` frames. */
+void SD_BGMFadeOut(s16 frames) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if (g_SDValue[1] & 2) {
-        SDRPC_SendCommand(0x5003, arg0);
+        SDRPC_SendCommand(0x5003, frames);
     }
 }
 
+/* The sound driver's first status word (0 before it is set up). */
 static inline u32 flags_0010A0F0(void) {
     if (g_SDValue == NULL) {
         return 0;
@@ -119,6 +130,7 @@ static inline u32 flags_0010A0F0(void) {
     return *(u32 *)g_SDValue;
 }
 
+/* The music's current volume. */
 s32 SD_BGMGetVolume(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return 0;
@@ -129,28 +141,31 @@ s32 SD_BGMGetVolume(void) {
     return 0;
 }
 
-void SD_BGMSetSourceLevel(s32 arg0, s32 arg1) {
+/* Sets the music's level (`level`) for channel `channel`. */
+void SD_BGMSetSourceLevel(s32 channel, s32 level) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if ((g_SDValue[1] & 2) && (g_SDValue[0] & 1)) {
-        if (arg1 < 0) {
-            arg1 = -arg1;
+        if (level < 0) {
+            level = -level;
         }
-        SDRPC_SendCommand(0x5005, arg0, arg1);
+        SDRPC_SendCommand(0x5005, channel, level);
     }
 }
 
-void SD_SEPlay2(s32 arg0, s32 arg1, s32 arg2) {
+/* Plays sound effect `se` of group `group` (`param`). */
+void SD_SEPlay2(s32 group, s32 se, s32 param) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
-        SDRPC_SendCommand(0x5210, arg0, arg1, arg2, 0);
+        SDRPC_SendCommand(0x5210, group, se, param, 0);
     }
 }
 
-void SD_SEPlayWithParam6(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Plays sound effect `se` of group `group` with volume, pan, pitch and flags. */
+void SD_SEPlayWithParam6(s32 group, s32 se, s32 volume, s32 pan, s32 pitch, s32 flags) {
     s32 sp78;
     s32 sp7C;
     u8 *bytes;
@@ -160,32 +175,35 @@ void SD_SEPlayWithParam6(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         bytes = (u8 *)&sp78;
-        bytes[0] = arg0;
-        bytes[1] = arg1;
-        bytes[2] = arg1;
-        bytes[3] = arg4;
+        bytes[0] = group;
+        bytes[1] = se;
+        bytes[2] = se;
+        bytes[3] = pitch;
         bytes = (u8 *)&sp7C;
-        bytes[0] = (arg2 == 0) ? 0 : 1;
-        bytes[1] = arg2 & 0x7F;
-        bytes[2] = arg3 & 0x7F;
-        bytes[3] = arg5;
+        bytes[0] = (volume == 0) ? 0 : 1;
+        bytes[1] = volume & 0x7F;
+        bytes[2] = pan & 0x7F;
+        bytes[3] = flags;
         SDRPC_SendCommand(0x5220, sp78, sp7C);
     }
 }
 
-void SD_SEPlayOnlyOnce(s32 arg0, s32 arg1, s32 arg2) {
-    SD_SEPlayWithParam6(arg0, arg1, 0, 0, 0, arg2);
+/* Plays sound effect `se` of group `group` unless it is already playing. */
+void SD_SEPlayOnlyOnce(s32 group, s32 se, s32 param) {
+    SD_SEPlayWithParam6(group, se, 0, 0, 0, param);
 }
 
-void SD_SEStop(s32 arg0, s32 arg1) {
+/* Stops sound effect `se` of group `group`. */
+void SD_SEStop(s32 group, s32 se) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
-        SDRPC_SendCommand(0x5201, arg0, arg1);
+        SDRPC_SendCommand(0x5201, group, se);
     }
 }
 
+/* Stops every sound effect. */
 void SD_SEStopAll(void) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
@@ -215,11 +233,13 @@ typedef struct State_0010A4D0 {
 
 extern u8 D_002B9090[];
 
+/* Stores `value` as result `index` of the sound driver's IOP status block. */
 static inline void set_result_0010A4D0(s32 index, s32 value) {
     State_0010A4D0 *state = (State_0010A4D0 *)g_SDValue;
     ((State_0010A4D0 *)((index << 2) + (s32)state))->results[0] = value;
 }
 
+/* Starts ambience streams on the IOP when their files are ready. */
 void SD_vRunAmbienceOnIopProc(void) {
     s32 i;
     State_0010A4D0 *slot;
@@ -281,7 +301,8 @@ void SD_vRunAmbienceOnIopProc(void) {
     }
 }
 
-s32 _iDecodeLPCM(s32 arg0) {
+/* Decodes the music block in buffer `buf` (LPCM) for the IOP. */
+s32 _iDecodeLPCM(s32 buf) {
     s16 left;
     s16 *src;
     s16 *dst;
@@ -293,7 +314,7 @@ s32 _iDecodeLPCM(s32 arg0) {
     FlushCache(0);
     row = 0;
     src = (s16 *)(g_SDBuffer + 0x800);
-    src += arg0 >> 1;
+    src += buf >> 1;
     dst = (s16 *)((u8 *)g_SDBuffer + 0x181800);
     do {
         dst2 = dst + 0x100;
@@ -321,18 +342,20 @@ s32 _iDecodeLPCM(s32 arg0) {
             }
             column++;
         } while (column < 0x80U);
-        arg0 += 0x200;
+        buf += 0x200;
         dst = dst2;
-        arg0 %= 0x100000;
+        buf %= 0x100000;
         row++;
     } while (row < 0x80);
-    return arg0;
+    return buf;
 }
 
+/* The sound driver's status word. */
 s32 SD_iGetSDStatus(void) {
     return *g_SDValue;
 }
 
+/* Reads the sound driver's file table from the disc. */
 void SD_vInitializeFileHandler(void) {
     extern s32 SDFS_ReadToEEBlock();
 
@@ -353,6 +376,7 @@ typedef struct Table_0010A8D0 {
     Entry_0010A8D0 entries[0x100];
 } Table_0010A8D0;
 
+/* The music-file table entry with id `id`, or -1. */
 static inline s32 find_0010A8D0(s32 id) {
     s32 i = 0;
     do {
@@ -364,6 +388,8 @@ static inline s32 find_0010A8D0(s32 id) {
     return -1;
 }
 
+/* Clears `count` bytes (at most 128 KB) of the music ring buffer from the write point plus `offset`, wrapping at 1
+   MB. */
 static inline void clear_0010A8D0(s32 count, s32 offset) {
     __int128 *ptr;
 
@@ -385,7 +411,8 @@ static inline void clear_0010A8D0(s32 count, s32 offset) {
     }
 }
 
-void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
+/* Loads music block `block` of file `file` into main memory (`mode`). */
+void _vLoadBGMFileToEE(s32 file, s32 block, s32 mode) {
     s32 temp_a1;
     s32 temp_a1_2;
     s32 temp_s2;
@@ -402,9 +429,9 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
     s32 var_s3;
     s32 var_s7;
 
-    var_s0 = arg2;
-    var_s1 = arg1;
-    var_a0 = find_0010A8D0(arg0);
+    var_s0 = mode;
+    var_s1 = block;
+    var_a0 = find_0010A8D0(file);
     if (var_a0 >= 0) {
         temp_s3 = g_SDValue[var_a0 * 4 + 0x84];
         temp_s4 = g_SDValue[var_a0 * 4 + 0x86] * 4;
@@ -413,12 +440,12 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
         temp_s4 &= ~0xF;
         temp_s5 &= ~0xF;
         if (var_s1 < temp_s3) {
-            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
+            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, file);
             if (temp_s5 != 0) {
                 while (var_s1 + var_s0 > temp_s5) {
                     temp_s3_2 = temp_s5 - var_s1;
                     var_s7 = temp_s3_2;
-                    func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
+                    func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, file);
                     temp_a1 = *(s32 *) ((u8 *) g_SDValue + 0x1D0);
                     if ((temp_a1 + temp_s3_2) >= 0x100000) {
                         temp_s6 = 0x100000 - temp_a1;
@@ -441,7 +468,7 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
             }
             var_s3 = var_s0;
             var_s2 = var_s1;
-            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, arg0);
+            func_0019B648((u8 *) g_SDValue + 0x1210, D_002B90A0, file);
             temp_a1_2 = *(s32 *) ((u8 *) g_SDValue + 0x1D0);
             if ((temp_a1_2 + var_s0) >= 0x100000) {
                 temp_s2 = 0x100000 - temp_a1_2;
@@ -460,6 +487,7 @@ void _vLoadBGMFileToEE(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
+/* The music block entry (of 256) holding `value`, or -1. */
 static inline s32 find_0010AC20(s32 *base, s32 value) {
     u8 *entry;
     s32 i;
@@ -472,7 +500,8 @@ static inline s32 find_0010AC20(s32 *base, s32 value) {
     return -1;
 }
 
-void _vDecodeLPCMThenSendToIOP(s32 arg0) {
+/* Decodes music buffer `buf` and sends it to the IOP. */
+void _vDecodeLPCMThenSendToIOP(s32 buf) {
     s32 index;
     s32 end;
 
@@ -502,6 +531,7 @@ void _vDecodeLPCMThenSendToIOP(s32 arg0) {
     g_SDValue[0x1D8 / 4] = 1 - g_SDValue[0x1D8 / 4];
 }
 
+/* Keeps the streamed music fed: loads and decodes the next blocks, restarts the stream when it stops. */
 void SD_vAutoDMASequentialWatchDog(void) {
     s32 flags;
     s32 input;
@@ -609,6 +639,7 @@ void SD_vAutoDMASequentialWatchDog(void) {
     }
 }
 
+/* Starts the music stream's automatic DMA on the IOP. */
 s32 SD_iStartAutoDMA(void) {
     g_SDValue[0] |= 0x100;
     g_SDValue[0x1FC / 4] &= ~4;
@@ -618,6 +649,7 @@ s32 SD_iStartAutoDMA(void) {
     return 1;
 }
 
+/* Stops the music stream's automatic DMA. */
 s32 SD_iStopAutoDMA(void) {
     s32 temp_v1;
 
@@ -639,6 +671,7 @@ s32 SD_iStopAutoDMA(void) {
     return 1;
 }
 
+/* Sets up the sound driver's thread state. */
 void SD_vInitSDThread(void) {
     s32 temp_a0;
 
@@ -648,6 +681,7 @@ void SD_vInitSDThread(void) {
     }
 }
 
+/* Sets up the music stream's automatic DMA on the IOP. */
 void SD_vInitializeAutoDMA(void) {
     if (!(g_SDValue[0] & 0x40)) {
         SDRPC_SendCommand(0x5000);
@@ -656,6 +690,7 @@ void SD_vInitializeAutoDMA(void) {
     }
 }
 
+/* The music block entry (of 256) holding `value`, or -1. */
 static inline s32 find_0010B3C0(s32 *base, s32 value) {
     u8 *entry;
     s32 i;
@@ -668,16 +703,17 @@ static inline s32 find_0010B3C0(s32 *base, s32 value) {
     return -1;
 }
 
-s32 SD_iPreparePreBlockOnIOP(s32 value) {
+/* Sends the first block of music `bgm` to the IOP ahead of play. */
+s32 SD_iPreparePreBlockOnIOP(s32 bgm) {
     if (!(g_SDValue[1] & 2)) {
         return 0;
     }
 
     SD_BGMFadeOut(0x100);
-    *(s32 *)((u8 *)g_SDValue + 0x2248) = value;
+    *(s32 *)((u8 *)g_SDValue + 0x2248) = bgm;
 
-    if (find_0010B3C0(g_SDValue, value) < 0) {
-        if (value != 0x23A7) {
+    if (find_0010B3C0(g_SDValue, bgm) < 0) {
+        if (bgm != 0x23A7) {
             return 0;
         }
     }
@@ -688,6 +724,7 @@ s32 SD_iPreparePreBlockOnIOP(s32 value) {
     return 1;
 }
 
+/* The music-file table entry with id `id`, or -1. */
 static inline s32 find_0010B490(s32 id) {
     s32 *entry;
     s32 i;
@@ -705,7 +742,8 @@ static inline s32 find_0010B490(s32 id) {
     return -1;
 }
 
-s32 SD_iPlayBGMByAutoDMA(s32 id) {
+/* Starts music `bgm` streaming by automatic DMA. */
+s32 SD_iPlayBGMByAutoDMA(s32 bgm) {
     s32 i;
     s32 current;
 
@@ -713,14 +751,14 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
         return 0;
     }
 
-    i = find_0010B490(id);
-    if (i < 0 && id != 0x23A7) {
+    i = find_0010B490(bgm);
+    if (i < 0 && bgm != 0x23A7) {
         return 0;
     }
 
-    g_SDValue[0x892] = id;
+    g_SDValue[0x892] = bgm;
     current = g_SDValue[0x77];
-    if (current == id && (g_SDValue[0] & 0x100) != 0) {
+    if (current == bgm && (g_SDValue[0] & 0x100) != 0) {
         if (g_SDValue[0x7B] < 0x7FFF) {
             SDRPC_SendCommand(0x5004, 0x100);
         }
@@ -730,7 +768,7 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
         return 1;
     }
 
-    if (g_SDValue[0x7F] == 4 && current == id) {
+    if (g_SDValue[0x7F] == 4 && current == bgm) {
         g_SDValue[0] |= 0x100;
         g_SDValue[0x7F] &= ~4;
         g_SDValue[0x75] = 0;
@@ -743,9 +781,9 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
         s32 j;
 
         SD_BGMFadeOut(0x100);
-        g_SDValue[0x892] = id;
-        j = find_0010B490(id);
-        if (j >= 0 || id == 0x23A7) {
+        g_SDValue[0x892] = bgm;
+        j = find_0010B490(bgm);
+        if (j >= 0 || bgm == 0x23A7) {
             g_SDValue[0x7F] = 1;
             g_SDValue[0x79] = 0x64;
             g_SDValue[0] |= 0x2000;
@@ -756,6 +794,7 @@ s32 SD_iPlayBGMByAutoDMA(s32 id) {
     return 1;
 }
 
+/* Moves loaded sound-effect groups from main memory to the IOP, one step per call. */
 void SD_vTransferSEGrpToIopProc(void) {
     u8 request[0x1C];
     s32 command;
@@ -868,6 +907,7 @@ void SD_vTransferSEGrpToIopProc(void) {
     }
 }
 
+/* Queues a sound-effect group transfer to the IOP. */
 s32 SD_iTransferSEGrpToIop(void) {
     extern s32 SD_AddToXferQueue();
 
@@ -883,14 +923,16 @@ s32 SD_iTransferSEGrpToIop(void) {
     return 0;
 }
 
-void SD_KickSEGroupReadSequence(s32 arg0, s32 arg1) {
-    *(s32 *)((u8 *)g_SDValue + 0x20B4) = arg0;
-    func_0019B648((u8 *)g_SDValue + 0x2070, D_002B90B0, arg1);
+/* Starts reading sound-effect group `group` from the disc into slot `slot`. */
+void SD_KickSEGroupReadSequence(s32 group, s32 slot) {
+    *(s32 *)((u8 *)g_SDValue + 0x20B4) = group;
+    func_0019B648((u8 *)g_SDValue + 0x2070, D_002B90B0, slot);
     SD_AddReadToEeReq((u8 *)g_SDValue + 0x2070, (u8 *)g_SDBuffer + 0x101800, 0, 0x80800);
     *g_SDValue |= 0x4000;
     *(s32 *)((u8 *)g_SDValue + 0x20B0) = 0x1E;
 }
 
+/* Adds transfer `value` (data `src`) to the transfer queue. */
 s32 SD_AddToXferQueue(s32 value, void *src) {
     s32 next;
     s32 offset;
@@ -908,7 +950,8 @@ s32 SD_AddToXferQueue(s32 value, void *src) {
     return 1;
 }
 
-s32 SD_FetchFromXferQueue(s32 *arg0, void *arg1) {
+/* Takes the next transfer off the queue into `outValue` and `outData`. */
+s32 SD_FetchFromXferQueue(s32 *outValue, void *outData) {
     s32 temp_v1_2;
     s8 temp_v1;
 
@@ -918,16 +961,18 @@ s32 SD_FetchFromXferQueue(s32 *arg0, void *arg1) {
     }
     *(s8 *)((u8 *)g_SDValue + 0x20C5) = (s8)((temp_v1 + 1) & 7);
     temp_v1_2 = temp_v1 << 5;
-    *arg0 = *(s32 *)(temp_v1_2 + (u32)g_SDValue + 0x20C8);
-    func_0019C2B8(arg1, (u8 *)g_SDValue + temp_v1_2 + 0x20CC, 0x1C);
+    *outValue = *(s32 *)(temp_v1_2 + (u32)g_SDValue + 0x20C8);
+    func_0019C2B8(outData, (u8 *)g_SDValue + temp_v1_2 + 0x20CC, 0x1C);
     return 1;
 }
 
+/* Empties the transfer queue. */
 void SD_ClearXferQueue(void) {
     *((s8 *)g_SDValue + 0x20C5) = 0;
     *((s8 *)g_SDValue + 0x20C4) = 0;
 }
 
+/* Whether any disc read is waiting. */
 s32 SD_DoesExistAnyCDReq(void) {
     s32 temp_v0;
     s32 temp_v0_2;
@@ -943,6 +988,7 @@ s32 SD_DoesExistAnyCDReq(void) {
     return 0;
 }
 
+/* Whether any IOP transfer is waiting. */
 s32 SD_DoesExistAnySIFReq(void) {
     s32 temp_v0;
     s32 temp_v0_2;
@@ -987,6 +1033,7 @@ typedef struct {
     s32 state2;
 } Queues_0010BE60;
 
+/* Runs the next waiting disc read or IOP transfer. */
 void SD_vDoFsCommandQueue(void) {
     extern s32 s_iHowManyTimesCDAreUsed;
     Queues_0010BE60 *queues;
@@ -1073,17 +1120,18 @@ typedef struct {
     s32 index;
 } Queue_0010C110;
 
-void SD_AddReadToEeReq(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+/* Queues a disc read of file `name` into `dst` (`offset`, `size`). */
+void SD_AddReadToEeReq(void *name, void *dst, s32 offset, s32 size) {
     Request_0010C110 *request;
 
     request = &((Queue_0010C110 *)g_SDValue)->requests[((Queue_0010C110 *)g_SDValue)->index];
-    func_0019BDD8(request->name, (const char *)arg0);
-    request->data = arg1;
-    request->offset = arg2;
-    request->size = arg3;
+    func_0019BDD8(request->name, (const char *)name);
+    request->data = dst;
+    request->offset = offset;
+    request->size = size;
     request->offset &= ~0x7FF;
-    request->data -= arg2 - request->offset;
-    request->size += arg2 - request->offset;
+    request->data -= offset - request->offset;
+    request->size += offset - request->offset;
     request->size += 0x7FF;
     request->size &= ~0x7FF;
     ((Queue_0010C110 *)g_SDValue)->index = (((Queue_0010C110 *)g_SDValue)->index + 1) % 16;
@@ -1104,17 +1152,19 @@ typedef struct Queue_0010C220 {
     s32 write_index;
 } Queue_0010C220;
 
-void SD_AddEeToIopReq(s32 arg0, s32 arg1, s32 arg2) {
+/* Queues a transfer of `size` bytes from `src` to IOP address `dst`. */
+void SD_AddEeToIopReq(s32 src, s32 dst, s32 size) {
     QueueEntry_0010C220 *entry;
 
     entry = &((Queue_0010C220 *)g_SDValue)->entries[((Queue_0010C220 *)g_SDValue)->write_index];
-    entry->value0 = arg0;
-    entry->value1 = arg1;
-    entry->value2 = arg2;
+    entry->value0 = src;
+    entry->value1 = dst;
+    entry->value2 = size;
     ((Queue_0010C220 *)g_SDValue)->write_index = (((Queue_0010C220 *)g_SDValue)->write_index + 1) % 16;
     ((Queue_0010C220 *)g_SDValue)->count++;
 }
 
+/* Whether the sound driver has a disc job running. */
 s32 SD_IsAnyJobOnCD(void) {
     s32 var_v0;
 
@@ -1125,21 +1175,23 @@ s32 SD_IsAnyJobOnCD(void) {
     return var_v0;
 }
 
+/* Whether the sound driver's file reader is busy. */
 s32 SDFS_IsUsingNow(void) {
     return s_iUsingNow;
 }
 
-s32 SDFS_ReadToEE(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (!(arg1 & 0xF)) {
-        if ((arg2 % 2048) == 0) {
-            if ((arg3 % 2048) == 0) {
+/* Starts reading file `file` (`position`, `size`) into `destination`; finishes by callback. */
+s32 SDFS_ReadToEE(s32 file, s32 destination, s32 position, s32 size) {
+    if (!(destination & 0xF)) {
+        if ((position % 2048) == 0) {
+            if ((size % 2048) == 0) {
                 D_0030FFA0.src = 0;
                 D_0030FFA0.offset = 0;
                 D_0030FFA0.size = 0;
                 D_0030FFA0.position = 0;
                 D_0030FFA0.left = 0;
-                func_00199B50(D_002B90C0, arg0, arg1);
-                if (RhFile_ReadAndCallbackByFileName(arg0, arg2, arg3, arg1, lSDFS_FinishCallback, 0, 0x20) == 0) {
+                func_00199B50(D_002B90C0, file, destination);
+                if (RhFile_ReadAndCallbackByFileName(file, position, size, destination, lSDFS_FinishCallback, 0, 0x20) == 0) {
                     return -1;
                 }
             }
@@ -1149,6 +1201,7 @@ s32 SDFS_ReadToEE(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
+/* Reads file `file` (`position`, `size`) into `destination` and waits. */
 s32 SDFS_ReadToEEBlock(s32 file, s32 destination, s32 position, s32 size) {
     s32 handle;
     s32 blockStart;
@@ -1186,6 +1239,7 @@ s32 SDFS_ReadToEEBlock(s32 file, s32 destination, s32 position, s32 size) {
     return 1;
 }
 
+/* Called when a sound-driver file read finishes. */
 void lSDFS_FinishCallback(void) {
     s32 position;
     s32 size;
@@ -1226,6 +1280,7 @@ typedef char *VaList_0010C720;
 #define VA_ARG_0010C720(ap, T) (*(T *)((ap += 8) - 8))
 
 
+/* Sends command `cmd` with its arguments to the IOP sound driver. */
 s32 SDRPC_SendCommand(s32 cmd, ...) {
     s32 id;
     s32 i;
@@ -1243,20 +1298,23 @@ s32 SDRPC_SendCommand(s32 cmd, ...) {
     return sceSifCallRpc(&g_SDValue[7], id, 0, &g_SDValue[0x20], 0x40, &g_SDValue[0x60], 0x10, 0, 0);
 }
 
-s32 SDRPC_StartTransferToIop(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts a DMA of `size` bytes from `src` to IOP address `dst`. */
+s32 SDRPC_StartTransferToIop(s32 src, s32 dst, s32 size) {
     FlushCache(0);
-    g_SDValue[0x11] = arg0;
-    g_SDValue[0x12] = arg1;
-    g_SDValue[0x13] = arg2;
+    g_SDValue[0x11] = src;
+    g_SDValue[0x12] = dst;
+    g_SDValue[0x13] = size;
     g_SDValue[0x14] = 0;
     g_SDValue[0x19] = sceSifSetDma(&g_SDValue[0x11], 1);
     return g_SDValue[0x19];
 }
 
+/* Whether the last DMA to the IOP is still running. */
 s32 SDRPC_TranserToIopStatus(void) {
     return sceSifDmaStat(g_SDValue[0x64 / sizeof(s32)]);
 }
 
+/* Binds the IOP sound driver's remote call server. */
 s32 SDRPC_Init(void) {
     s32 count;
 

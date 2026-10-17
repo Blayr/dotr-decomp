@@ -1,6 +1,7 @@
 #include "common.h"
 #include "sce/libkernl.h"
 
+/* Disc system command 0x22 with `arg0`; returns its result. */
 s32 func_00191C50(s32 arg0) {
     u8 *b_D_0028F300 = (u8 *)&D_0028F300;
     s32 temp_s0;
@@ -109,6 +110,7 @@ s32 func_00191D18(s32 lsn, s32 sectors, s32 buf, void *arg3) {
 #undef mode_00191D18
 #undef scePrintf_00191D18
 
+/* Disc system command 4 (no arguments); returns its result. */
 s32 func_00191EF8(void) {
     s32 temp_s0;
 
@@ -124,26 +126,31 @@ s32 func_00191EF8(void) {
     return temp_s0;
 }
 
-s32 sceCdStInit(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts disc streaming into a ring of `bufmax` sectors at `buffer` (`bankmax` banks). */
+s32 sceCdStInit(s32 bufmax, s32 bankmax, s32 buffer) {
     stm_status = 0;
-    return sceCdStream(arg0, arg1, arg2, 5, &dum_mode);
+    return sceCdStream(bufmax, bankmax, buffer, 5, &dum_mode);
 }
 
-s32 sceCdStStart(s32 arg0, s32 *arg1) {
+/* Starts streaming from sector `lbn` (`mode`). */
+s32 sceCdStStart(s32 lbn, s32 *mode) {
     stm_status = 1;
-    return sceCdStream(arg0, 0, 0, 1, arg1);
+    return sceCdStream(lbn, 0, 0, 1, mode);
 }
 
-s32 sceCdStSeekF(s32 arg0) {
+/* Moves streaming to sector `lbn` (fast). */
+s32 sceCdStSeekF(s32 lbn) {
 
-    return sceCdStream(arg0, 0, 0, 9, &dum_mode);
+    return sceCdStream(lbn, 0, 0, 9, &dum_mode);
 }
 
-s32 sceCdStSeek(s32 arg0) {
+/* Moves streaming to sector `lbn`. */
+s32 sceCdStSeek(s32 lbn) {
 
-    return sceCdStream(arg0, 0, 0, 4, &dum_mode);
+    return sceCdStream(lbn, 0, 0, 4, &dum_mode);
 }
 
+/* Stops disc streaming. */
 s32 sceCdStStop(void) {
     stm_status = 0;
     return sceCdStream(0, 0, 0, 3, &dum_mode);
@@ -203,6 +210,7 @@ s32 sceCdStRead(s32 sectors, s32 buf, s32 mode, s32 *err) {
 
 #undef scePrintf_00192090
 
+/* Pauses disc streaming. */
 s32 sceCdStPause(void) {
     stm_status = 0;
     if (SCE_CD_debug > 0) {
@@ -211,6 +219,7 @@ s32 sceCdStPause(void) {
     return sceCdStream(0, 0, 0, 7, &dum_mode);
 }
 
+/* Resumes disc streaming. */
 s32 sceCdStResume(void) {
     stm_status = 1;
     if (SCE_CD_debug > 0) {
@@ -219,6 +228,7 @@ s32 sceCdStResume(void) {
     return sceCdStream(0, 0, 0, 8, &dum_mode);
 }
 
+/* How many sectors the stream buffer holds. */
 s32 sceCdStStat(void) {
     if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCE88);
@@ -240,7 +250,8 @@ typedef struct CdRead_00192308 {
     u8 mode[4];
 } CdRead_00192308;
 
-s32 sceCdStream(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
+/* Sends disc streaming command `cmd` (`lbn`, `size`, `buf`, `mode`) to the IOP. */
+s32 sceCdStream(s32 lbn, s32 size, s32 buf, s32 cmd, s32 *mode) {
     CdRead_00192308 *p;
     s32 *q;
     s32 r;
@@ -252,14 +263,14 @@ s32 sceCdStream(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
     if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCEA0);
     }
-    p->lbn = arg0;
-    p->sectors = arg1;
-    p->buf = arg2;
-    p->unkC = arg3;
-    if (arg4 != NULL) {
-        p->mode[0] = ((u8 *)arg4)[0];
-        p->mode[1] = ((u8 *)arg4)[1];
-        p->mode[2] = ((u8 *)arg4)[2];
+    p->lbn = lbn;
+    p->sectors = size;
+    p->buf = buf;
+    p->unkC = cmd;
+    if (mode != NULL) {
+        p->mode[0] = ((u8 *)mode)[0];
+        p->mode[1] = ((u8 *)mode)[1];
+        p->mode[2] = ((u8 *)mode)[2];
     }
     if (SCE_CD_debug > 0) {
         scePrintf(&D_002BCEB8);
@@ -278,6 +289,7 @@ s32 sceCdStream(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4) {
     return r;
 }
 
+/* Sends pad `port`/`slot`'s request to the IOP. */
 s32 _send_to_iop(s32 port, s32 slot) {
     s32 dma[64];
     u32 *buf;
@@ -371,6 +383,7 @@ s32 scePadInit2(s32 a0) {
     return (&D_00315BC0)[3];
 }
 
+/* Shuts the pad library down. */
 s32 scePadEnd(void) {
     (*(s32 *)(&D_00315BC0)) = 0xF;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
@@ -436,6 +449,7 @@ s32 scePadPortOpen(s32 port, s32 slot, void *addr) {
     return (&D_00315BC0)[3];
 }
 
+/* Closes pad `port`, `slot`. */
 s32 scePadPortClose(s32 port, s32 slot) {
     u8 *b;
 
@@ -454,11 +468,12 @@ s32 scePadPortClose(s32 port, s32 slot) {
     return *(s32 *)(b + 0xC);
 }
 
-u8 *scePadGetDmaStr(s32 arg0, s32 arg1) {
+/* The DMA buffer of pad `port`, `slot`. */
+u8 *scePadGetDmaStr(s32 port, s32 slot) {
     u8 *p;
     s32 i;
 
-    p = ((PadSlot_00192A88 *)((u8 *)&D_003159D0 + arg1 * 0x1C + arg0 * 0x70))->buf;
+    p = ((PadSlot_00192A88 *)((u8 *)&D_003159D0 + slot * 0x1C + port * 0x70))->buf;
     SyncDCache((u32)p, (u32)(p + 0x100));
     i = *(s32 *)(p + 0x58) < *(s32 *)(p + 0xD8);
     return p + i * 0x80;
@@ -475,6 +490,7 @@ s32 scePadGetFrameCount(s32 port, s32 slot) {
     return *(s32 *)(scePadGetDmaStr(port, slot) + 0x58);
 }
 
+/* Reads pad `port`, `slot`'s buttons into `data`; returns its length. */
 s32 scePadRead(s32 port, s32 slot, u8 *data) {
     u8 *p;
 
@@ -486,6 +502,7 @@ s32 scePadRead(s32 port, s32 slot, u8 *data) {
     return *(s32 *)(p + 0x60);
 }
 
+/* Pad `port`, `slot`'s connection state. */
 s32 scePadGetState(s32 port, s32 slot) {
     u8 *p;
 
@@ -501,14 +518,16 @@ s32 scePadGetState(s32 port, s32 slot) {
     return p[0x70];
 }
 
-void scePadStateIntToStr(u32 arg0, s8 *arg1) {
-    if (arg0 < 8U) {
-        func_0019BDD8(arg1, (&PadStateStr)[arg0]);
+/* Pad state `state` as text into `str`. */
+void scePadStateIntToStr(u32 state, s8 *str) {
+    if (state < 8U) {
+        func_0019BDD8(str, (&PadStateStr)[state]);
         return;
     }
-    *arg1 = (s8) D_002BD000;
+    *str = (s8) D_002BD000;
 }
 
+/* Sets pad `port`, `slot`'s request state. */
 s32 scePadSetReqState(s32 port, s32 slot, s32 state) {
     if (D_003159D0[port][slot].open == 0) {
         return 0;
@@ -517,6 +536,7 @@ s32 scePadSetReqState(s32 port, s32 slot, s32 state) {
     return 1;
 }
 
+/* Pad `port`, `slot`'s request state. */
 u8 scePadGetReqState(s32 port, s32 slot) {
     if (D_003159D0[port][slot].open == 0) {
         return 0;
@@ -524,12 +544,13 @@ u8 scePadGetReqState(s32 port, s32 slot) {
     return scePadGetDmaStr(port, slot)[0x71];
 }
 
-void scePadReqIntToStr(u32 arg0, s8 *arg1) {
-    if (arg0 < 4U) {
-        func_0019BDD8(arg1, (&ReqStateStr)[arg0]);
+/* Pad request state `state` as text into `str`. */
+void scePadReqIntToStr(u32 state, s8 *str) {
+    if (state < 4U) {
+        func_0019BDD8(str, (&ReqStateStr)[state]);
         return;
     }
-    *arg1 = (s8) D_002BD000;
+    *str = (s8) D_002BD000;
 }
 
 typedef struct PadInfo_00192D58 {
@@ -538,6 +559,7 @@ typedef struct PadInfo_00192D58 {
     u8 act[8][4];
 } PadInfo_00192D58;
 
+/* Pad `port`, `slot`'s vibration motors' info (`term`, `offs`). */
 s32 scePadInfoAct(s32 port, s32 slot, s32 term, s32 offs) {
     u8 *p;
 
@@ -576,6 +598,7 @@ typedef struct PadInfo_00192E78 {
     u8 act[8][4];
 } PadInfo_00192E78;
 
+/* Pad `port`, `slot`'s mode combinations (`actno`, `term`). */
 s32 scePadInfoComb(s32 port, s32 slot, s32 actno, s32 term) {
     u8 *p;
 
@@ -613,6 +636,7 @@ typedef struct PadMode_00192F98 {
     u16 table[12];
 } PadMode_00192F98;
 
+/* Pad `port`, `slot`'s mode info (`term`, `offs`). */
 s32 scePadInfoMode(s32 port, s32 slot, s32 term, s32 offs) {
     u8 *p;
 
@@ -657,23 +681,25 @@ s32 scePadInfoMode(s32 port, s32 slot, s32 term, s32 offs) {
     return 0;
 }
 
-s32 scePadSetMainMode(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Sets pad `port`, `slot` to mode `offs` and locks it (`lock`). */
+s32 scePadSetMainMode(s32 port, s32 slot, s32 offs, s32 lock) {
     u8 *b_D_00315BC0 = (u8 *)&D_00315BC0;
 
-    (*(s32 *)(b_D_00315BC0 + 0xC)) = arg2;
-    (*(s32 *)(b_D_00315BC0 + 0x10)) = arg3;
+    (*(s32 *)(b_D_00315BC0 + 0xC)) = offs;
+    (*(s32 *)(b_D_00315BC0 + 0x10)) = lock;
     (*(s32 *)(&D_00315BC0)) = 6;
-    (*(s32 *)(b_D_00315BC0 + 4)) = arg0;
-    (*(s32 *)(b_D_00315BC0 + 8)) = arg1;
+    (*(s32 *)(b_D_00315BC0 + 4)) = port;
+    (*(s32 *)(b_D_00315BC0 + 8)) = slot;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
         return 0;
     }
     if ((*(s32 *)(b_D_00315BC0 + 0x14)) == 1) {
-        scePadSetReqState(arg0, arg1, 2);
+        scePadSetReqState(port, slot, 2);
     }
     return ((*(s32 *)(b_D_00315BC0 + 0x14)));
 }
 
+/* Sets pad `port`, `slot`'s vibration from `data`. */
 s32 scePadSetActDirect(s32 port, s32 slot, u8 *data) {
     u8 *p;
     u8 *q;
@@ -706,27 +732,29 @@ typedef struct CdRpcBuf_00193248 {
     s32 result;
 } CdRpcBuf_00193248;
 
-s32 scePadSetActAlign(s32 arg0, s32 arg1, u8 *arg2) {
+/* Maps pad `port`, `slot`'s vibration motors (`data`). */
+s32 scePadSetActAlign(s32 port, s32 slot, u8 *data) {
     CdRpcBuf_00193248 *p;
     s32 i;
 
     p = (CdRpcBuf_00193248 *)&D_00315BC0;
 
     p->cmd = 8;
-    p->arg0 = arg0;
-    p->arg1 = arg1;
+    p->arg0 = port;
+    p->arg1 = slot;
     for (i = 0; i < 6; i++) {
-        p->data[i] = arg2[i];
+        p->data[i] = data[i];
     }
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, (s32 *)p, 0x80, (s32 *)p, 0x80, 0, 0) < 0) {
         return 0;
     }
     if (p->result == 1) {
-        scePadSetReqState(arg0, arg1, 2);
+        scePadSetReqState(port, slot, 2);
     }
     return p->result;
 }
 
+/* Pad `port`, `slot`'s button mask. */
 s32 scePadGetButtonMask(s32 port, s32 slot) {
     u8 *p;
 
@@ -746,19 +774,20 @@ s32 scePadGetButtonMask(s32 port, s32 slot) {
     return p[0x79] + ((long)p[0x7A] << 8) + ((long)p[0x7B] << 16) + ((long)p[0x7C] << 24);
 }
 
-s32 scePadSetButtonInfo(s32 arg0, s32 arg1, s32 arg2) {
+/* Turns pressure sensing of pad `port`, `slot` on or off (`info`). */
+s32 scePadSetButtonInfo(s32 port, s32 slot, s32 info) {
     u8 *b_D_00315BC0 = (u8 *)&D_00315BC0;
     s32 temp_v0;
 
-    (*(s32 *)(b_D_00315BC0 + 0xC)) = arg2;
+    (*(s32 *)(b_D_00315BC0 + 0xC)) = info;
     (*(s32 *)(&D_00315BC0)) = 0xA;
-    (*(s32 *)(b_D_00315BC0 + 4)) = arg0;
-    (*(s32 *)(b_D_00315BC0 + 8)) = arg1;
+    (*(s32 *)(b_D_00315BC0 + 4)) = port;
+    (*(s32 *)(b_D_00315BC0 + 8)) = slot;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
         return 0;
     }
     if ((*(s32 *)(b_D_00315BC0 + 0x10)) == 1) {
-        scePadSetReqState(arg0, arg1, 2);
+        scePadSetReqState(port, slot, 2);
     }
     return (*(s32 *)(b_D_00315BC0 + 0x10));
 }
@@ -772,6 +801,7 @@ s32 scePadInfoPressMode(s32 port, s32 slot) {
     return scePadGetButtonMask(port, slot) == 0x3FFFF;
 }
 
+/* Turns pressure sensing of pad `port`, `slot` on. */
 s32 scePadEnterPressMode(s32 port, s32 slot) {
     if (D_003159D0[port][slot].open == 0) {
         return 0;
@@ -779,6 +809,7 @@ s32 scePadEnterPressMode(s32 port, s32 slot) {
     return scePadSetButtonInfo(port, slot, 0xFFF);
 }
 
+/* Turns pressure sensing of pad `port`, `slot` off. */
 s32 scePadExitPressMode(s32 port, s32 slot) {
     if (D_003159D0[port][slot].open == 0) {
         return 0;
@@ -786,6 +817,7 @@ s32 scePadExitPressMode(s32 port, s32 slot) {
     return scePadSetButtonInfo(port, slot, 0);
 }
 
+/* Sets pad `port`, `slot`'s pressure reference from `data`. */
 s32 scePadSetVrefParam(s32 port, s32 slot, u8 *data) {
     u8 *b = (u8 *)&D_00315BC0;
 
@@ -802,6 +834,7 @@ s32 scePadSetVrefParam(s32 port, s32 slot, u8 *data) {
     return *(s32 *)(b + 0x1C);
 }
 
+/* How many pad ports there are. */
 s32 scePadGetPortMax(void) {
     (*(s32 *)(&D_00315BC0)) = 0xC;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
@@ -810,15 +843,17 @@ s32 scePadGetPortMax(void) {
     return (*(s32 *)((u8 *)(&D_00315BC0) + 0xC));
 }
 
-s32 scePadGetSlotMax(s32 arg0) {
+/* How many slots pad port `port` has. */
+s32 scePadGetSlotMax(s32 port) {
     (*(s32 *)(&D_00315BC0)) = 0xD;
-    (*(s32 *)((u8 *)(&D_00315BC0) + 4)) = arg0;
+    (*(s32 *)((u8 *)(&D_00315BC0) + 4)) = port;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
         return 0;
     }
     return (*(s32 *)((u8 *)(&D_00315BC0) + 0xC));
 }
 
+/* The IOP pad module's version. */
 s32 scePadGetModVersion(void) {
     (*(s32 *)(&D_00315BC0)) = 0x12;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
@@ -827,9 +862,10 @@ s32 scePadGetModVersion(void) {
     return (*(s32 *)((u8 *)(&D_00315BC0) + 0xC));
 }
 
-s32 scePadSetWarningLevel(s32 arg0) {
+/* Sets the pad library's warning level. */
+s32 scePadSetWarningLevel(s32 level) {
     (*(s32 *)(&D_00315BC0)) = 0x14;
-    (*(s32 *)((u8 *)(&D_00315BC0) + 4)) = arg0;
+    (*(s32 *)((u8 *)(&D_00315BC0) + 4)) = level;
     if (sceSifCallRpc((s32 *)D_00315980, 1, 0, &D_00315BC0, 0x80, &D_00315BC0, 0x80, 0, 0) < 0) {
         return 0;
     }
@@ -845,6 +881,7 @@ typedef struct McCd_00193808 {
     s32 serve;
 } McCd_00193808;
 
+/* Starts the memory-card library (sceMcInit): binds the IOP card module and checks its version. */
 s32 func_00193808(void) {
     s32 sp0[8];
     s32 ret;
@@ -891,6 +928,7 @@ s32 func_00193808(void) {
     return D_00317200;
 }
 
+/* Ends the memory-card library (sceMcEnd). */
 s32 func_001939C0(void) {
     if (D_0028F794 >= 0) {
         DeleteSema(D_0028F794);
@@ -899,6 +937,7 @@ s32 func_001939C0(void) {
     return 1;
 }
 
+/* The memory-card library's result word and command number (into `arg0`, `arg1`); returns its call block. */
 s32 *func_00193A00(s32 **arg0, s32 **arg1) {
     *arg0 = &D_00317200;
     *arg1 = &mcRunCmdNo;
@@ -906,10 +945,11 @@ s32 *func_00193A00(s32 **arg0, s32 **arg1) {
     return &D_00315C40;
 }
 
+/* A memory-card call on file `arg0` (sends the remote call; -200 when busy). */
 s32 func_00193A30(s32 arg0) {
     u8 *b_D_00315CC0;
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -921,19 +961,20 @@ s32 func_00193A30(s32 arg0) {
     }
     b_D_00315CC0 = (u8 *)&D_00315CC0;
     (*(s32 *)(b_D_00315CC0 + 0x14)) = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x14, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0x14, 1, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 0x14;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
+/* A memory-card call on file `arg0` (sends the remote call; -200 when busy). */
 s32 func_00193AE8(s32 arg0) {
     u8 *b_D_00315CC0;
     u8 *b_D_00315C40;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -945,20 +986,21 @@ s32 func_00193AE8(s32 arg0) {
     }
     b_D_00315CC0 = (u8 *)&D_00315CC0;
     (*(s32 *)(b_D_00315CC0 + 4)) = arg0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 0x15, 0, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
-    if (temp_v0 != 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 0x15, 0, (void *)b_D_00315CC0, 0x30, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 != 0) {
         SignalSema(D_0028F794);
-        return temp_v0;
+        return sceSifCallRpc2;
     }
     SignalSema(D_0028F794);
     return D_00317200;
 }
 
+/* Opens memory-card file `arg2` on port `arg0`, slot `arg1` with mode `arg3` (sceMcOpen; -200 when busy). */
 s32 func_00193BA8(s32 arg0, s32 arg1, s8 *arg2, s32 arg3) {
     u8 *b_D_00315D04;
     u8 *b_D_00315C40;
     s32 *temp_v1;
-    s32 temp_v0;
+    s32 sceSifCallRpc2;
 
     if (PollSema(D_0028F794) < 0) {
         return -0xC8;
@@ -979,19 +1021,20 @@ s32 func_00193BA8(s32 arg0, s32 arg1, s8 *arg2, s32 arg3) {
     (*(s32 *)((u8 *)temp_v1 + 8)) = arg3;
     (*(s32 *)((u8 *)temp_v1 + 4)) = arg1;
     (*(s8 *)((u8 *)temp_v1 + 0x413)) = 0;
-    temp_v0 = sceSifCallRpc((void *)b_D_00315C40, 2, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
-    if (temp_v0 == 0) {
+    sceSifCallRpc2 = sceSifCallRpc((void *)b_D_00315C40, 2, 1, temp_v1, 0x414, &D_00317200, 4, 0, 0);
+    if (sceSifCallRpc2 == 0) {
         mcRunCmdNo = 2;
     } else {
         SignalSema(D_0028F794);
     }
-    return temp_v0;
+    return sceSifCallRpc2;
 }
 
-s32 sceMcMkdir(s32 arg0, s32 arg1, void *arg2) {
+/* Makes folder `name` on memory card `port`, `slot`. */
+s32 sceMcMkdir(s32 port, s32 slot, void *name) {
     s32 ret;
 
-    ret = func_00193BA8(arg0, arg1, arg2, 0x40);
+    ret = func_00193BA8(port, slot, name, 0x40);
     if (ret == 0) {
         mcRunCmdNo = 0xB;
     }

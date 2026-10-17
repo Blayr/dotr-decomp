@@ -1,13 +1,16 @@
 #include "common.h"
 
+/* newlib system call: does nothing. */
 s32 ioctl(void) {
     return -1;
 }
 
+/* newlib system call: no seeking here (-1). */
 s32 lseek(void) {
     return -1;
 }
 
+/* newlib system call: grows the heap by `incr` bytes, up to EndOfHeap. */
 u32 sbrk(s32 incr) {
     s32 eie, st, old, new;
     __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
@@ -35,32 +38,38 @@ u32 sbrk(s32 incr) {
     return old;
 }
 
+/* newlib system call: whether a file is a terminal. */
 s32 isatty(void) {
     return 1;
 }
 
-s32 fstat(s32 arg0, void *arg1) {
-    (*(s64 *)((u8 *)arg1 + 0x48)) = 0;
-    (*(s32 *)((u8 *)arg1 + 4)) = 0x2000;
+/* newlib system call: a file's status into `st` (always a character device). */
+s32 fstat(s32 fd, void *st) {
+    (*(s64 *)((u8 *)st + 0x48)) = 0;
+    (*(s32 *)((u8 *)st + 4)) = 0x2000;
     return 0;
 }
 
+/* newlib system call: the process id (always 1). */
 s32 getpid(void) {
     return 1;
 }
 
-s32 kill(s32 arg0, s32 arg1) {
-    if (arg0 == 1) {
-        func_001847B0(arg1);
+/* newlib system call: ends the program with signal `sig`. */
+s32 kill(s32 pid, s32 sig) {
+    if (pid == 1) {
+        func_001847B0(sig);
     }
     return 0;
 }
 
+/* newlib system call: no files here (sets errno). */
 s32 stat(void) {
     *(s32 *)__errno() = 5;
     return -1;
 }
 
+/* newlib system call: no files here (errno 5, -1). */
 s32 unlink(void) {
     *(s32 *)__errno() = 5;
     return -1;
@@ -117,21 +126,23 @@ void _sceSDC(u32 start, u32 end) {
        );
 }
 
-void SyncDCache(u32 arg0, u32 arg1) {
+/* Writes the data cache back for `start`..`end`. */
+void SyncDCache(u32 start, u32 end) {
     s32 eie;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    _sceSDC(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    _sceSDC(start & 0xFFFFFFC0, end & 0xFFFFFFC0);
     if (eie) {
         func_00184428();
     }
 }
 
-void iSyncDCache(u32 arg0, u32 arg1) {
-    _sceSDC(arg0 & ~0x3F, arg1 & ~0x3F);
+/* Writes the data cache back for `start`..`end` (from an interrupt). */
+void iSyncDCache(u32 start, u32 end) {
+    _sceSDC(start & ~0x3F, end & ~0x3F);
 }
 
 /* _sceIDC: Sony's hand-written libkernl assembly, kept as asm (kfiv-decomp, MIT, writes it as an asm block in src/sce/libkernl/cache.c; see THIRD_PARTY_NOTICES.md) */
@@ -185,37 +196,41 @@ void _sceIDC(u32 start, u32 end) {
        );
 }
 
-void InvalidDCache(u32 arg0, u32 arg1) {
+/* Discards the data cache for `start`..`end`. */
+void InvalidDCache(u32 start, u32 end) {
     s32 eie;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    _sceIDC(arg0 & 0xFFFFFFC0, arg1 & 0xFFFFFFC0);
+    _sceIDC(start & 0xFFFFFFC0, end & 0xFFFFFFC0);
     if (eie) {
         func_00184428();
     }
 }
 
-void iInvalidDCache(u32 arg0, u32 arg1) {
-    _sceIDC(arg0 & ~0x3F, arg1 & ~0x3F);
+/* Discards the data cache for `start`..`end` (from an interrupt). */
+void iInvalidDCache(u32 start, u32 end) {
+    _sceIDC(start & ~0x3F, end & ~0x3F);
 }
 
+/* Whether interrupts are off (the COP0 status IE bit is clear). */
 s32 func_0017C3B0(void) {
     s32 s;
     __asm__ volatile("mfc0\t%0, $12" : "=r"(s));
     return (s ^ 1) & 1;
 }
 
-s32 func_0017C3C0(s32 arg0) {
+/* DisableIntc with interrupts held: disables interrupt cause `cause`. */
+s32 func_0017C3C0(s32 cause) {
     s32 eie, ret;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    ret = _DisableIntc(arg0);
+    ret = _DisableIntc(cause);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -223,14 +238,15 @@ s32 func_0017C3C0(s32 arg0) {
     return ret;
 }
 
-s32 func_0017C428(s32 arg0) {
+/* EnableIntc with interrupts held: enables interrupt cause `cause`. */
+s32 func_0017C428(s32 cause) {
     s32 eie, ret;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    ret = _EnableIntc(arg0);
+    ret = _EnableIntc(cause);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -238,14 +254,15 @@ s32 func_0017C428(s32 arg0) {
     return ret;
 }
 
-s32 func_0017C490(s32 arg0) {
+/* DisableDmac with interrupts held: disables DMA channel `channel`'s interrupt. */
+s32 func_0017C490(s32 channel) {
     s32 eie, ret;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    ret = _DisableDmac(arg0);
+    ret = _DisableDmac(channel);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -253,14 +270,15 @@ s32 func_0017C490(s32 arg0) {
     return ret;
 }
 
-s32 func_0017C4F8(s32 arg0) {
+/* EnableDmac with interrupts held: enables DMA channel `channel`'s interrupt. */
+s32 func_0017C4F8(s32 channel) {
     s32 eie, ret;
     __asm__ volatile("mfc0	%0, $12" : "=r"(eie));
     eie &= 0x10000;
     if (eie) {
         func_001843E0();
     }
-    ret = _EnableDmac(arg0);
+    ret = _EnableDmac(channel);
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
@@ -268,59 +286,68 @@ s32 func_0017C4F8(s32 arg0) {
     return ret;
 }
 
+/* Enables an interrupt cause (from an interrupt). */
 void iEnableIntc(void) {
     _iEnableIntc();
     __asm__ volatile("sync");
 }
 
+/* Disables an interrupt cause (from an interrupt). */
 void iDisableIntc(void) {
     _iDisableIntc();
     __asm__ volatile("sync");
 }
 
+/* Enables a DMA channel's interrupt (from an interrupt). */
 void iEnableDmac(void) {
     _iEnableDmac();
     __asm__ volatile("sync");
 }
 
+/* Disables a DMA channel's interrupt (from an interrupt). */
 void iDisableDmac(void) {
     _iDisableDmac();
     __asm__ volatile("sync");
 }
 
+/* EE kernel call 0x74 (SetSyscall): sets kernel call `arg0` to `arg1` (the names stay: the call reads them from
+   registers). */
 void func_0017C5E0(int arg0, int arg1) {
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
 }
 
+/* EE kernel call 0x5A (kernel copy): copies `arg2` bytes from `arg1` into kernel memory at `arg0`. */
 int func_0017C5F0(int arg0, int *arg1, int arg2) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Copies `arg2` bytes (whole words) from `arg1` to `arg0`; returns 0. */
 s32 func_0017C600(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
     s32 *var_a1;
     s32 temp_v1;
     u32 temp_a2;
-    u32 var_a3;
+    u32 i;
 
     var_a0 = arg0;
     var_a1 = arg1;
     temp_a2 = arg2 >> 2;
-    var_a3 = 0;
+    i = 0;
     if (temp_a2 != 0) {
         do {
             temp_v1 = *var_a1;
-            var_a3 += 1;
+            i += 1;
             var_a1 += 1;
             *var_a0 = temp_v1;
             var_a0 += 1;
-        } while (var_a3 < temp_a2);
+        } while (i < temp_a2);
     }
     return 0;
 }
 
+/* EE kernel call 0x5B: reads kernel word `arg0`. */
 int func_0017C638(int arg0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5B\n\tsyscall" : "=r" (ret));
@@ -336,6 +363,7 @@ typedef struct KPatch_0017C648 {
     s32 val;
 } KPatch_0017C648;
 
+/* Installs the library's kernel patches (on consoles that need them): new kernel code and syscall entries. */
 void func_0017C648(void) {
     KPatch_0017C648 *t;
     u32 i;
@@ -421,6 +449,7 @@ typedef struct {
 extern u8 D_00310110[];
 extern s32 D_00317EF0;
 
+/* Sets up the library's thread support: the main thread's id and priority, the helper semaphores. */
 s32 InitThread(void) {
     ThParam_0017C7F8 tp;
     SemParam_0017C7F8 sp;
@@ -454,11 +483,12 @@ s32 InitThread(void) {
     return topId;
 }
 
-s32 iWakeupThread(s32 arg0) {
+/* Wakes thread `thid` (from an interrupt). */
+s32 iWakeupThread(s32 thid) {
     s32 tid;
     __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
-    if (tid != arg0) {
-        return _iWakeupThread(arg0);
+    if (tid != thid) {
+        return _iWakeupThread(thid);
     }
     if ((u32)tid >= 0x100 || topId == 0) {
         return -1;
@@ -474,8 +504,9 @@ s32 iWakeupThread(s32 arg0) {
     return tid;
 }
 
-s32 iRotateThreadReadyQueue(u32 arg0) {
-    if (arg0 >= 0x80 || topId == 0) {
+/* Rotates the ready queue of priority `priority` (from an interrupt). */
+s32 iRotateThreadReadyQueue(u32 priority) {
+    if (priority >= 0x80 || topId == 0) {
         return -1;
     }
     {
@@ -483,17 +514,18 @@ s32 iRotateThreadReadyQueue(u32 arg0) {
         u32 i = r->count & 0x1FF;
         r->count = i + 1;
         r->e[i].a = 1;
-        r->e[i].b = arg0;
+        r->e[i].b = priority;
         iSignalSema(D_00310510);
     }
-    return arg0;
+    return priority;
 }
 
-s32 iSuspendThread(s32 arg0) {
+/* Suspends thread `thid` (from an interrupt). */
+s32 iSuspendThread(s32 thid) {
     s32 tid;
     __asm__ volatile("addiu $3, $0, -0x2F\n\tsyscall\n\tdaddu %0, $2, $0" : "=r"(tid));
-    if (tid != arg0) {
-        return _iSuspendThread(arg0);
+    if (tid != thid) {
+        return _iSuspendThread(thid);
     }
     if ((u32)tid >= 0x100 || topId == 0) {
         return -1;
@@ -509,85 +541,96 @@ s32 iSuspendThread(s32 arg0) {
     return tid;
 }
 
-s32 sceDeci2Open(s32 arg0, s32 arg1, s32 arg2) {
+/* Opens DECI2 debug protocol `protocol` with handler `handler` (`opt`). */
+s32 sceDeci2Open(s32 protocol, s32 opt, s32 handler) {
     s32 sp0[4];
-    sp0[0] = /* extra? */ (arg0 & 0xFFFF);
-    sp0[1] = /* extra? */ arg1;
-    sp0[2] = /* extra? */ arg2;
+    sp0[0] = /* extra? */ (protocol & 0xFFFF);
+    sp0[1] = /* extra? */ opt;
+    sp0[2] = /* extra? */ handler;
     sp0[3] = /* extra? */ ((s32) &D_00310920 | 0x20000000);
     return Deci2Call(1, sp0);
 }
 
-void sceDeci2Close(s32 arg0) {
+/* Closes DECI2 socket `s`. */
+void sceDeci2Close(s32 s) {
     s32 sp0[4];
-    sp0[0] = arg0;
+    sp0[0] = s;
     Deci2Call(2, sp0);
 }
 
-void sceDeci2ReqSend(s32 arg0, s8 arg1) {
+/* Asks to send on DECI2 socket `s` to node `dest`. */
+void sceDeci2ReqSend(s32 s, s8 dest) {
     s32 sp0[4];
-    sp0[0] = arg0;
-    sp0[1] = (s32) arg1;
+    sp0[0] = s;
+    sp0[1] = (s32) dest;
     Deci2Call(3, sp0);
 }
 
-void sceDeci2Poll(s32 arg0) {
+/* Polls DECI2 socket `s`. */
+void sceDeci2Poll(s32 s) {
     s32 sp0[4];
-    sp0[0] = arg0;
+    sp0[0] = s;
     Deci2Call(4, sp0);
 }
 
-void sceDeci2ExRecv(s32 arg0, s32 arg1, s32 arg2) {
+/* Receives `len` bytes on DECI2 socket `s` into `buf`. */
+void sceDeci2ExRecv(s32 s, s32 buf, s32 len) {
     s32 sp0[4];
     s32 temp_a2;
 
-    temp_a2 = arg2 & 0xFFFF;
-    sp0[0] = arg0;
-    sp0[1] = arg1;
+    temp_a2 = len & 0xFFFF;
+    sp0[0] = s;
+    sp0[1] = buf;
     sp0[2] = temp_a2;
     Deci2Call(-5, sp0);
 }
 
-void sceDeci2ExSend(s32 arg0, s32 arg1, s32 arg2) {
+/* Sends `len` bytes from `buf` on DECI2 socket `s`. */
+void sceDeci2ExSend(s32 s, s32 buf, s32 len) {
     s32 sp0[4];
     s32 temp_a2;
 
-    temp_a2 = arg2 & 0xFFFF;
-    sp0[0] = arg0;
-    sp0[1] = arg1;
+    temp_a2 = len & 0xFFFF;
+    sp0[0] = s;
+    sp0[1] = buf;
     sp0[2] = temp_a2;
     Deci2Call(-6, sp0);
 }
 
-void sceDeci2ExReqSend(s32 arg0, s8 arg1) {
+/* Asks to send on DECI2 socket `s` to node `dest`. */
+void sceDeci2ExReqSend(s32 s, s8 dest) {
     s32 sp0[4];
-    sp0[0] = arg0;
-    sp0[1] = (s32) arg1;
+    sp0[0] = s;
+    sp0[1] = (s32) dest;
     Deci2Call(-7, sp0);
 }
 
-void sceDeci2ExLock(s32 arg0) {
+/* Locks DECI2 socket `s`. */
+void sceDeci2ExLock(s32 s) {
     s32 sp0[4];
-    sp0[0] = arg0;
+    sp0[0] = s;
     Deci2Call(-8, sp0);
 }
 
-void sceDeci2ExUnLock(s32 arg0) {
+/* Unlocks DECI2 socket `s`. */
+void sceDeci2ExUnLock(s32 s) {
     s32 sp0[4];
-    sp0[0] = arg0;
+    sp0[0] = s;
     Deci2Call(-9, sp0);
 }
 
-void kputs(s32 arg0) {
+/* Writes string `s` to the debug console. */
+void kputs(s32 s) {
     s32 sp0[4];
-    sp0[0] = arg0;
+    sp0[0] = s;
     Deci2Call(0x10, sp0);
 }
 
-s32 *QueueInit(s32 arg0) {
+/* Clears debug-console queue `q`. */
+s32 *QueueInit(s32 q) {
     void *temp_a0;
 
-    (*(s32 *)(&D_00310980)) = arg0;
+    (*(s32 *)(&D_00310980)) = q;
     temp_a0 = (u8 *)&D_00310980 + 0x10;
     (*(s32 *)((u8 *)(&D_00310980) + 4)) = 0;
     (*(void **)((u8 *)(&D_00310980) + 0xC)) = temp_a0;
@@ -595,25 +638,27 @@ s32 *QueueInit(s32 arg0) {
     return &D_00310980;
 }
 
-void QueuePeekWriteDone(void *arg0) {
+/* Marks the next write slot of queue `q` used. */
+void QueuePeekWriteDone(void *q) {
     void *temp_a0;
 
-    (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) + 1);
-    temp_a0 = (*(void **)((u8 *)arg0 + 0xC)) + 1;
-    (*(void **)((u8 *)arg0 + 0xC)) = temp_a0;
-    if (temp_a0 == (arg0 + ((*(s32 *)arg0) + 0x10))) {
-        (*(void **)((u8 *)arg0 + 0xC)) = (void *) (arg0 + 0x10);
+    (*(s32 *)((u8 *)q + 4)) = (s32) ((*(s32 *)((u8 *)q + 4)) + 1);
+    temp_a0 = (*(void **)((u8 *)q + 0xC)) + 1;
+    (*(void **)((u8 *)q + 0xC)) = temp_a0;
+    if (temp_a0 == (q + ((*(s32 *)q) + 0x10))) {
+        (*(void **)((u8 *)q + 0xC)) = (void *) (q + 0x10);
     }
 }
 
-void QueuePeekReadDone(void *arg0) {
+/* Takes the next byte off queue `q`. */
+void QueuePeekReadDone(void *q) {
     void *temp_a0;
 
-    (*(s32 *)((u8 *)arg0 + 4)) = (s32) ((*(s32 *)((u8 *)arg0 + 4)) - 1);
-    temp_a0 = (*(void **)((u8 *)arg0 + 8)) + 1;
-    (*(void **)((u8 *)arg0 + 8)) = temp_a0;
-    if (temp_a0 == (arg0 + ((*(s32 *)arg0) + 0x10))) {
-        (*(void **)((u8 *)arg0 + 8)) = (void *) (arg0 + 0x10);
+    (*(s32 *)((u8 *)q + 4)) = (s32) ((*(s32 *)((u8 *)q + 4)) - 1);
+    temp_a0 = (*(void **)((u8 *)q + 8)) + 1;
+    (*(void **)((u8 *)q + 8)) = temp_a0;
+    if (temp_a0 == (q + ((*(s32 *)q) + 0x10))) {
+        (*(void **)((u8 *)q + 8)) = (void *) (q + 0x10);
     }
 }
 
@@ -757,12 +802,13 @@ s32 sceTtyWrite(const char *buf, int len) {
 }
 
 
-s32 sceTtyRead(char *arg0, s32 arg1) {
+/* Reads up to `nIn` bytes from the debug console into `buf`. */
+s32 sceTtyRead(char *buf, s32 nIn) {
     s32 i;
     char *p;
 
-    for (i = 0; i < arg1; i++) {
-        p = &arg0[i];
+    for (i = 0; i < nIn; i++) {
+        p = &buf[i];
         while (D_00310A90.q->count == 0) {
         }
         *p = *(*(Deci2Tty_0017CFF0 *)&D_00310A90).q->rptr;

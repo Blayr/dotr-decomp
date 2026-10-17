@@ -1,6 +1,7 @@
 #include "common.h"
 #include "sce/libkernl.h"
 
+/* IOP module loader call with the text `arg0`; returns its result or a negative error. */
 s32 func_001831A0(void *arg0) {
     u8 *b_D_00313E08;
     s32 *temp_v1;
@@ -25,6 +26,7 @@ s32 func_001831A0(void *arg0) {
     return (*(s32 *)(b_D_00313E08 + -8));
 }
 
+/* IOP module loader call 0xA with `arg0`; returns its result or a negative error. */
 s32 func_00183240(s32 arg0) {
     s32 var_v0;
 
@@ -44,11 +46,13 @@ s32 func_00183240(s32 arg0) {
     return D_00313E00;
 }
 
+/* func_00182D00 with a scratch result buffer. */
 s32 func_001832D0(s32 arg0, s32 arg1, s32 arg2) {
     s32 buf[4];
     return ((s32 (*)(s32, s32, s32, s32 *))func_00182D00)(arg0, arg1, arg2, buf);
 }
 
+/* func_00182D00 with `arg0` only. */
 s32 func_001832F0(s32 arg0) {
     return ((s32 (*)(s32))func_00182D00)(arg0);
 }
@@ -88,11 +92,13 @@ s32 func_00183310(s32 name, s32 arglen, s32 args, s32 ret, s32 rpcno) {
     return r;
 }
 
+/* func_00183310 with a scratch result buffer. */
 void func_00183538(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
     func_00183310(arg0, arg1, arg2, (s32) sp0, 0);
 }
 
+/* func_00183310 with `arg0`..`arg3` and 0. */
 s32 func_00183558(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return func_00183310(arg0, arg1, arg2, arg3, 0);
 }
@@ -126,12 +132,14 @@ s32 _sceSifLoadElfPart(s32 name, s32 sec, s32 out, s32 rpcno) {
     return 0;
 }
 
-s32 sceSifLoadElfPart(s32 arg0, s32 arg1, s32 arg2) {
-    return _sceSifLoadElfPart(arg0, arg1, arg2, 1);
+/* Loads the `section` part of ELF file `name` into main memory (`data`). */
+s32 sceSifLoadElfPart(s32 name, s32 section, s32 data) {
+    return _sceSifLoadElfPart(name, section, data, 1);
 }
 
-s32 sceSifLoadElf(s32 arg0, s32 arg1) {
-    return _sceSifLoadElfPart(arg0, (s32) &D_002BC1E8, arg1, 1);
+/* Loads ELF file `name` into main memory (`data`). */
+s32 sceSifLoadElf(s32 name, s32 data) {
+    return _sceSifLoadElfPart(name, (s32) &D_002BC1E8, data, 1);
 }
 
 
@@ -140,30 +148,31 @@ typedef struct IopPeek_001836C8 {
     s32 type;
 } IopPeek_001836C8;
 
-s32 sceSifGetIopAddr(s32 arg0, void *arg1, u32 arg2) {
+/* Reads `size` bytes from IOP address `iop` into `ee`. */
+s32 sceSifGetIopAddr(s32 iop, void *ee, u32 size) {
     IopPeek_001836C8 *p;
 
     if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
-    if (arg2 >= 3) {
+    if (size >= 3) {
         goto bad;
     }
     p = (IopPeek_001836C8 *)&D_00313E00;
-    p->addr = arg0;
-    p->type = arg2;
+    p->addr = iop;
+    p->type = size;
     if (sceSifCallRpc(&D_00314000, 3, 0, (s32 *)p, 0x20, (s32 *)p, 0x20, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
-    if (arg2 == 0) {
-        *(u8 *)arg1 = *(u8 *)&D_00313E00;
-    } else if (arg2 == 1) {
-        *(u16 *)arg1 = *(u16 *)&D_00313E00;
-    } else if (arg2 != 2) {
+    if (size == 0) {
+        *(u8 *)ee = *(u8 *)&D_00313E00;
+    } else if (size == 1) {
+        *(u16 *)ee = *(u16 *)&D_00313E00;
+    } else if (size != 2) {
 bad:
         return 0xFFFEFFFE;
     } else {
-        *(s32 *)arg1 = D_00313E00;
+        *(s32 *)ee = D_00313E00;
     }
     return 0;
 }
@@ -177,21 +186,22 @@ typedef struct IopPoke_001837B8 {
     s32 val;
 } IopPoke_001837B8;
 
-s32 sceSifSetIopAddr(s32 arg0, void *arg1, s32 arg2) {
+/* Writes `size` bytes from `ee` to IOP address `iop`. */
+s32 sceSifSetIopAddr(s32 iop, void *ee, s32 size) {
     IopPoke_001837B8 *p;
 
     if (_lf_bind() < 0) {
         return 0xFFFF0000;
     }
     p = (IopPoke_001837B8 *)&D_00313E00;
-    p->addr = arg0;
-    p->type = arg2;
-    if (arg2 == 0) {
-        *(u8 *)&p->val = *(u8 *)arg1;
-    } else if (arg2 == 1) {
-        *(u16 *)&p->val = *(u16 *)arg1;
-    } else if (arg2 == 2) {
-        p->val = *(s32 *)arg1;
+    p->addr = iop;
+    p->type = size;
+    if (size == 0) {
+        *(u8 *)&p->val = *(u8 *)ee;
+    } else if (size == 1) {
+        *(u16 *)&p->val = *(u16 *)ee;
+    } else if (size == 2) {
+        p->val = *(s32 *)ee;
     } else {
         return 0xFFFEFFFE;
     }
@@ -215,6 +225,7 @@ typedef struct {
     char arg[80];
 } Reset_00183898;
 
+/* Reboots the IOP with image `arg` (`mode`). */
 s32 sceSifResetIop(char *arg, s32 mode) {
     sceSifDmaData dma;
     s32 i;
@@ -247,6 +258,7 @@ s32 sceSifResetIop(char *arg, s32 mode) {
     return 0;
 }
 
+/* Whether the IOP is running. */
 s32 sceSifIsAliveIop(void) {
     s32 x;
 
@@ -254,6 +266,7 @@ s32 sceSifIsAliveIop(void) {
     return x != 0;
 }
 
+/* Whether the IOP asked for a reboot (SIF register 4 bit 18); runs kernel call func_0017BD60 then. */
 s32 func_00183A00(void) {
     if (sceSifGetReg(4) & 0x40000) {
         func_0017BD60();
@@ -292,6 +305,7 @@ s32 func_00183A38(char *arg) {
     return sceSifResetIop(buf, 0);
 }
 
+/* Sets the TLB-refill handlers 1..3 to the library's, keeping `arg0`; returns it. */
 s32 func_00183B48(s32 arg0) {
     D_0028CDF0 = arg0;
     SetVTLBRefillHandler(1, &func_00184080);
@@ -300,6 +314,7 @@ s32 func_00183B48(s32 arg0) {
     return arg0;
 }
 
+/* Sets exception handler `arg0` (1..13) to `arg1` through the library's dispatcher; returns the old one or -1. */
 u32 func_00183BA8(s32 arg0, s32 arg1) {
     s32 *temp_v1;
     s32 temp_s0;
@@ -320,41 +335,45 @@ u32 func_00183BA8(s32 arg0, s32 arg1) {
     return temp_s0;
 }
 
+/* EE kernel call 0x5A (kernel copy): copies `arg2` bytes from `arg1` into kernel memory at `arg0`. */
 int func_00183C30(int arg0, int *arg1, int arg2) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Copies `arg2` bytes (whole words) from `arg1` to `arg0`; returns 0. */
 s32 func_00183C40(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
     s32 *var_a1;
     s32 temp_v1;
     u32 temp_a2;
-    u32 var_a3;
+    u32 i;
 
     var_a0 = arg0;
     var_a1 = arg1;
     temp_a2 = arg2 >> 2;
-    var_a3 = 0;
+    i = 0;
     if (temp_a2 != 0) {
         do {
             temp_v1 = *var_a1;
-            var_a3 += 1;
+            i += 1;
             var_a1 += 1;
             *var_a0 = temp_v1;
             var_a0 += 1;
-        } while (var_a3 < temp_a2);
+        } while (i < temp_a2);
     }
     return 0;
 }
 
+/* EE kernel call 0x5B: reads kernel word `arg0`. */
 int func_00183C78(int arg0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5B\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call 0x74 (SetSyscall): sets kernel call `arg0` to `arg1`. */
 void func_00183C88(int arg0, int arg1) {
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
 }
@@ -367,6 +386,7 @@ typedef struct KPatch_00183C98 {
     s32 val;
 } KPatch_00183C98;
 
+/* Installs the library's second set of kernel patches. */
 void func_00183C98(void) {
     KPatch_00183C98 *t;
     u32 i;
@@ -383,24 +403,28 @@ void func_00183C98(void) {
     }
 }
 
+/* EE kernel call 0x55. */
 int func_00183D50(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x55\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call -0x55 (from an interrupt). */
 int func_00183D60(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x55\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call 0x56 with `arg0`..`arg4`. */
 int func_00183D70(int arg0, int arg1, int arg2, int arg3, int arg4) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x56\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Kernel call 0x56 for entry `arg0` 13..47 (-1 otherwise). */
 s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 r;
 
@@ -412,42 +436,49 @@ s32 func_00183D80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return r;
 }
 
+/* EE kernel call -0x56 (from an interrupt). */
 int func_00183DB0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x56\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call 0x57. */
 int func_00183DC0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x57\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call -0x57 (from an interrupt). */
 int func_00183DD0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x57\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call 0x58. */
 int func_00183DE0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x58\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call -0x58 (from an interrupt). */
 int func_00183DF0(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,-0x58\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* EE kernel call 0x59. */
 int func_00183E00(void) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x59\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Sets up the TLB for 32 MB consoles (func_00183E50), else kernel call 0x82. */
 s32 func_00183E10(void) {
     if (GetMemorySize() == 0x02000000) {
         return func_00183E50();
@@ -465,6 +496,7 @@ typedef struct {
     s32 a, b, c, d;
 } TlbEnt;
 
+/* Writes the TLB for 32 MB memory (prints the ranges first). */
 s32 func_00183E50(void) {
     register s32 i __asm__("$25");
     s32 *d;
@@ -752,6 +784,7 @@ __asm__(
     "\t.set reorder\n"
     "\t.set at\n");
 
+/* Turns interrupts off and waits until they are; returns whether they were on. */
 s32 func_001843E0(void) {
     s32 eie, res, st;
     __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
@@ -770,6 +803,7 @@ s32 func_001843E0(void) {
     return res;
 }
 
+/* Turns interrupts on; returns whether they were on before. */
 s32 func_00184428(void) {
     s32 eie;
     __asm__ volatile("mfc0\t%0, $12" : "=r"(eie));
@@ -778,6 +812,7 @@ s32 func_00184428(void) {
     return eie != 0;
 }
 
+/* Creates the library's two startup semaphores. */
 void func_00184440(void) {
     s32 a[8];
     s32 b[8];
@@ -790,6 +825,7 @@ void func_00184440(void) {
     D_0028D118 = CreateSema(b);
 }
 
+/* The first kernel-memory word equal to `arg0` (searching from 0x80000000). */
 s32 *func_00184488(s32 arg0) {
     s32 *p = (s32 *)0x80000000;
     while (*p != arg0) {
@@ -798,26 +834,31 @@ s32 *func_00184488(s32 arg0) {
     return p;
 }
 
+/* EE kernel call 0x83 with `arg0`. */
 s32 func_001844C0(s32 *arg0) {
     register s32 ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x83\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Sets a kernel call from the startup table and returns the patched entry's address. */
 s32 func_001844D0(void) {
     func_00184510((*(s32 *)(&D_0028D108)), (*(s32 *)((u8 *)(&D_0028D108) + 4)));
     return func_001844C0(&func_00184488) - 0x20C;
 }
 
+/* EE kernel call 0x74 (SetSyscall): sets kernel call `arg0` to `arg1`. */
 void func_00184510(int arg0, int arg1) {
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
 }
 
+/* EE kernel call 0x74, then entry `arg0` of the startup table. */
 s32 *func_00184520(s32 arg0) {
     __asm__ volatile("addiu $3, $0, 0x74\n\tsyscall");
     return D_0028D11C + arg0;
 }
 
+/* The library's start-up: semaphores, kernel patches, threads, OSD settings. */
 void func_00184540(void) {
     func_00184440();
     func_001844D0();
@@ -827,45 +868,50 @@ void func_00184540(void) {
     func_00183C98();
 }
 
+/* EE kernel call 0x74 (SetSyscall): sets kernel call `arg0` to `arg1`. */
 void func_00184580(int arg0, int arg1) {
     __asm__ __volatile__("addiu\t$3,$0,0x74\n\tsyscall");
 }
 
+/* EE kernel call 0x5A (kernel copy): copies `arg2` bytes from `arg1` into kernel memory at `arg0`. */
 int func_00184590(int arg0, int *arg1, int arg2) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5A\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Copies `arg2` bytes (whole words) from `arg1` to `arg0`; returns 0. */
 s32 func_001845A0(s32 *arg0, s32 *arg1, u32 arg2) {
     s32 *var_a0;
     s32 *var_a1;
     s32 temp_v1;
     u32 temp_a2;
-    u32 var_a3;
+    u32 i;
 
     var_a0 = arg0;
     var_a1 = arg1;
     temp_a2 = arg2 >> 2;
-    var_a3 = 0;
+    i = 0;
     if (temp_a2 != 0) {
         do {
             temp_v1 = *var_a1;
-            var_a3 += 1;
+            i += 1;
             var_a1 += 1;
             *var_a0 = temp_v1;
             var_a0 += 1;
-        } while (var_a3 < temp_a2);
+        } while (i < temp_a2);
     }
     return 0;
 }
 
+/* EE kernel call 0x5B: reads kernel word `arg0`. */
 int func_001845D8(int arg0) {
     register int ret __asm__("$2");
     __asm__ __volatile__("addiu\t$3,$0,0x5B\n\tsyscall" : "=r" (ret));
     return ret;
 }
 
+/* Whether the console's settings need the OSD patch (a test write of the setting does not stick). */
 s32 func_001845E8(void) {
     u32 sp0;
     u32 sp4;

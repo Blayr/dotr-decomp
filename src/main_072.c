@@ -2134,7 +2134,7 @@ s32 Ta_CalcCtrlRate(u16 bRate, s32 Flip, s32 Sign) {
     return bRate;
 }
 
-/* Whether unit (nSide, nID) is controlled by the other side. */
+/* The side unit (nSide, nID) plays for now (the other side while it is controlled). */
 s32 Ta_IsUnitControl(s32 nSide, s32 nID) {
     return Ta_GetCurrentSide(nSide, nID);
 }
@@ -2152,7 +2152,7 @@ typedef struct {
     Flags_00250370 flags;
 } Data_00250370;
 
-/* Whether a unit (record `pVarInfo`) is controlled by the other side. */
+/* The side a unit (record `pVarInfo`) plays for now (the other side while it is controlled). */
 s32 Ta_IsUnitControl2(void *pVarInfo) {
     Data_00250370 *data = pVarInfo;
 
