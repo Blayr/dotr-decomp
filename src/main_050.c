@@ -21,17 +21,18 @@ typedef struct State_001F3790 {
     s32 pending;
 } State_001F3790;
 
+/* Clears the 24 effect slots and the loaded effect modules. */
 void SzEffect_Clear(void) {
-    extern State_001F3790 gSzEffect_el;
+    extern State_001F3790 effectState;
     extern Slot_001F3790 D_0031BC50[];
     State_001F3790 *state;
     Entry_001F3790 *entry;
     Slot_001F3790 *slot;
     s32 i;
 
-    state = &gSzEffect_el;
+    state = &effectState;
     slot = D_0031BC50;
-    entry = gSzEffect_el.entries;
+    entry = effectState.entries;
     for (i = 0; i < 24; i++, slot++) {
         slot->state = 0;
     }
@@ -55,12 +56,13 @@ typedef struct Entry_001F3870 {
     u64 reserved : 48;
 } Entry_001F3870;
 
+/* Frees the effect modules no running effect uses. */
 void SzEffect_TrimModule(void) {
-    extern Entry_001F3870 gSzEffect_el[];
+    extern Entry_001F3870 effectState[];
     Entry_001F3870 *entry;
     s32 i;
 
-    entry = gSzEffect_el;
+    entry = effectState;
     for (i = 0; (s64)i < 32; i++, entry++) {
         if (entry->state == 2 && SzEffect_IsUse2(entry->source, entry->target) == 0) {
             entry->state = 3;
@@ -76,15 +78,17 @@ typedef struct {
     s32 resource;
 } Entry_001F3910;
 
+/* Loads the effect module for effect `card` of `kind` (0 common, 1 battle overlay, 2 monster overlay); returns
+   where it sits, or 0. */
 s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
-    extern Entry_001F3910 gSzEffect_el[];
+    extern Entry_001F3910 effectState[];
     extern u8 bCachePos;
     extern char D_002CFBB0[];
     extern char D_002CFBC6[];
     extern void lSzEffect_LoadOverlayCB();
     extern s32 func_0019B648();
     extern s32 SzFile_ReadRequestParam();
-    Entry_001F3910 *entries = gSzEffect_el;
+    Entry_001F3910 *entries = effectState;
     s32 count;
     s32 candidate;
     Entry_001F3910 *scan;
@@ -95,7 +99,7 @@ s32 SzEffect_LoadModule(s32 kind, s32 card, s32 mode, void *unused) {
     s8 letter;
     char path[128];
 
-    scan = gSzEffect_el;
+    scan = effectState;
     for (i = 0; i < 32L; i++, scan++) {
         if (scan->kind == kind && scan->card == card) {
             if (scan->state == 2) {
@@ -191,32 +195,33 @@ typedef struct Entry_001F3CB0 {
     u8 pad4[4];
 } Entry_001F3CB0;
 
-void lSzEffect_LoadOverlayCB(void *arg0, s32 arg1) {
+/* An effect module has loaded (`ok`): relocates it and loads its sound-effect table. */
+void lSzEffect_LoadOverlayCB(void *request, s32 ok) {
     extern s32 func_0019C100();
     extern s32 SzFile_ReadRequestParam();
     extern u8 D_002CFBC6[];
     extern u8 D_002CFBCB[];
     extern u8 D_002CFBCF[];
-    extern Entry_001F3CB0 gSzEffect_el[];
+    extern Entry_001F3CB0 effectState[];
     Obj_001F3CB0 *obj;
     Entry_001F3CB0 *entry;
     u8 sp50[0x80];
     s32 size;
 
-    obj = arg0;
-    entry = &gSzEffect_el[obj->f1C];
-    if (arg1 != 0) {
+    obj = request;
+    entry = &effectState[obj->f1C];
+    if (ok != 0) {
         if (func_0019C100(obj->f14, D_002CFBCB, 3) != 0) {
             if (obj->hi != 0) {
                 SzMem_Free(obj->f14);
             }
-            arg1 = 0;
+            ok = 0;
         }
         if (entry->state != 1) {
-            arg1 = 0;
+            ok = 0;
         }
     }
-    if (arg1 == 0) {
+    if (ok == 0) {
         entry->state = 0;
         return;
     }
@@ -224,9 +229,9 @@ void lSzEffect_LoadOverlayCB(void *arg0, s32 arg1) {
     if (entry->sub == 0) {
         size = entry->big << 11;
         func_0019B648(sp50, D_002CFBCF, (s32)SzFile_GetEnv((s32)D_002CFBC6));
-        arg0 = (void *)SzFile_ReadRequestParam(0xC00, 0, sp50, 0, 0x800, size, 0x800, lSzEffect_LoadSECtlCB,
+        request = (void *)SzFile_ReadRequestParam(0xC00, 0, sp50, 0, 0x800, size, 0x800, lSzEffect_LoadSECtlCB,
                                      (s64)obj->f1C);
-        if (arg0 == NULL) {
+        if (request == NULL) {
             entry->state = 3;
         }
     } else {
@@ -247,15 +252,16 @@ typedef struct Input_001F3E40 {
     s32 index;
 } Input_001F3E40;
 
-void lSzEffect_LoadSECtlCB(void *arg0, s32 arg1) {
-    extern Entry_001F3E40 gSzEffect_el[];
-    Input_001F3E40 *input = arg0;
-    Entry_001F3E40 *entry = &gSzEffect_el[input->index];
+/* An effect's sound-effect table has loaded (`ok`). */
+void lSzEffect_LoadSECtlCB(void *request, s32 ok) {
+    extern Entry_001F3E40 effectState[];
+    Input_001F3E40 *input = request;
+    Entry_001F3E40 *entry = &effectState[input->index];
 
     if (entry->state == 1) {
         entry->state = 3;
     }
-    if (arg1 != 0) {
+    if (ok != 0) {
         entry->value = input->value;
     }
 }
@@ -270,16 +276,17 @@ typedef struct {
     u16 id : 10;
 } Id_001F3EA0;
 
-u8 *SzEffect_GetModuleInfo(s32 arg0, s32 arg1) {
-    extern u8 gSzEffect_el[];
+/* The loaded module record for effect `card` of `kind`, or NULL. */
+u8 *SzEffect_GetModuleInfo(s32 kind, s32 card) {
+    extern u8 effectState[];
     u8 *entry;
     s32 i;
 
-    entry = gSzEffect_el;
+    entry = effectState;
     i = 0;
     while ((s64)i < 32) {
-        if ((arg0 < 0 || ((Flags_001F3EA0 *)entry)->kind == arg0) &&
-            (arg1 < 0 || ((Id_001F3EA0 *)entry)->id == arg1)) {
+        if ((kind < 0 || ((Flags_001F3EA0 *)entry)->kind == kind) &&
+            (card < 0 || ((Id_001F3EA0 *)entry)->id == card)) {
             return entry;
         }
         i++;
@@ -310,12 +317,13 @@ typedef struct Cue_001F3F20 {
     u16 id;
 } Cue_001F3F20;
 
+/* The link between two effect slots, or NULL. */
 static inline Link_001F3F20 *find_001F3F20(s32 source, s32 target) {
-    extern Link_001F3F20 gSzEffect_el[];
+    extern Link_001F3F20 effectState[];
     Link_001F3F20 *slot;
     s32 i;
 
-    slot = gSzEffect_el;
+    slot = effectState;
     for (i = 0; (s64)i < 32; i++, slot++) {
         if ((source < 0 || slot->from == source) && (target < 0 || slot->to == target)) {
             return slot;
@@ -324,6 +332,7 @@ static inline Link_001F3F20 *find_001F3F20(s32 source, s32 target) {
     return NULL;
 }
 
+/* Plays the sound effects the running effects ask for at this frame. */
 void SzEffect_ReqSE(void) {
     extern Entry_001F3F20 D_0031BC50[];
     extern s32 SzGame_GetFrameSpeed();
@@ -403,12 +412,13 @@ typedef struct Table_001F40D0 {
     s32 count;
 } Table_001F40D0;
 
+/* The link between two effect slots, or NULL. */
 static inline Link_001F40D0 *find_001F40D0(s32 source, s32 target) {
-    extern State_001F40D0 gSzEffect_el;
+    extern State_001F40D0 effectState;
     Link_001F40D0 *link;
     s32 i;
 
-    link = gSzEffect_el.links;
+    link = effectState.links;
     for (i = 0; i < 32L; i++, link++) {
         if ((source < 0 || link->from == source) && (target < 0 || link->to == target)) {
             return link;
@@ -417,6 +427,7 @@ static inline Link_001F40D0 *find_001F40D0(s32 source, s32 target) {
     return NULL;
 }
 
+/* Restarts a model's animation (looping or not). */
 static inline void restart_001F40D0(s32 model, s32 loop) {
     SzModel_SetAnimSpeed(model, 0.0f);
     if (loop >= 0) {
@@ -427,10 +438,11 @@ static inline void restart_001F40D0(s32 model, s32 loop) {
     SzModel_SetAnimSpeed(model, 1.0f);
 }
 
+/* Runs and draws the effects of draw group `group`. */
 void SzEffect_Draw(s32 group) {
-    extern State_001F40D0 gSzEffect_el;
+    extern State_001F40D0 effectState;
     extern Entry_001F40D0 D_0031BC50[];
-    extern Table_001F40D0 gSzEffect_aEffFuncTbl[];
+    extern Table_001F40D0 effectKindTable[];
     extern void iFlushCache(s32);
     extern s32 SzModel_GetAnim(s32);
     extern s32 SzModel_GetAnimParam(s32, s32);
@@ -460,7 +472,7 @@ void SzEffect_Draw(s32 group) {
     f32 frame;
     f32 start;
 
-    links = gSzEffect_el.links;
+    links = effectState.links;
     entry = D_0031BC50;
     SzGame_GetMode(1);
     RhGeom_PushMatrix(0);
@@ -495,7 +507,7 @@ void SzEffect_Draw(s32 group) {
             }
             data = (void *)(0x1EE0000 + (long)(link - links) * 0x8000);
         }
-        state = &gSzEffect_el;
+        state = &effectState;
         target = entry->target;
         source = entry->source;
         if (state->group != source || state->entry != target) {
@@ -510,7 +522,7 @@ void SzEffect_Draw(s32 group) {
         if (entry->source != 1) {
             addr = (void *)base;
         }
-        entry->result = result = gSzEffect_aEffFuncTbl[entry->source].plays[entry->target](addr, flags);
+        entry->result = result = effectKindTable[entry->source].plays[entry->target](addr, flags);
         entry->time++;
         if (entry->source == 1) {
             lo = entry->model;
@@ -606,8 +618,9 @@ void SzEffect_Draw(s32 group) {
     RhGeom_PopMatrix();
 }
 
-void SzEffect_Entry(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    SzEffect_EntryCallback(arg0, arg1, arg2, arg3, arg4, 0, 0);
+/* Starts effect `card` of `kind` from unit `from` on unit `target` (no callback). */
+void SzEffect_Entry(s32 kind, s32 card, s32 mode, s32 from, s32 target) {
+    SzEffect_EntryCallback(kind, card, mode, from, target, 0, 0);
 }
 
 typedef struct Slot_001F4900 {
@@ -639,11 +652,13 @@ typedef struct Dispatch_001F4900 {
 } Dispatch_001F4900;
 
 extern s32 D_0031BE90;
-extern Dispatch_001F4900 gSzEffect_aEffFuncTbl[];
+extern Dispatch_001F4900 effectKindTable[]; /* original: gSzEffect_aEffFuncTbl */
 extern s32 D_00292FF8[];
 
-s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    extern Cache_001F4900 gSzEffect_el;
+/* Starts effect `card` of `kind` (0..2) from unit `from` on unit `target` (units as (side << 8) | unit), calling
+   `callback` with `callbackArg` when it ends. Returns its slot, or -1. */
+s32 SzEffect_EntryCallback(s32 kind, s32 card, s32 mode, s32 from, s32 target, s32 callback, s32 callbackArg) {
+    extern Cache_001F4900 effectState;
     extern Slot_001F4900 D_0031BC50[];
     Slot_001F4900 *slot;
     void *source;
@@ -653,28 +668,28 @@ s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     s32 result;
     extern s32 SzEffect_LoadModule();
 
-    buffer = (u8 *)&gSzEffect_el;
+    buffer = (u8 *)&effectState;
     slot = D_0031BC50;
     source = 0;
-    if (arg0 < 0 || arg0 >= 3) {
+    if (kind < 0 || kind >= 3) {
         return -1;
     }
-    if (arg1 < 0 || arg1 >= D_00292FF8[arg0 * 3]) {
+    if (card < 0 || card >= D_00292FF8[kind * 3]) {
         return -1;
     }
-    if (arg0 == 1 && SzEffect_IsUse2(1, -1) != 0) {
+    if (kind == 1 && SzEffect_IsUse2(1, -1) != 0) {
         return -1;
     }
-    switch (arg0) {
+    switch (kind) {
     case 1:
-        source = (void *)SzModel_GetOverlayB(SzDuel_GetUnitModelID(arg4 >> 8, arg4 & 0xFF));
+        source = (void *)SzModel_GetOverlayB(SzDuel_GetUnitModelID(target >> 8, target & 0xFF));
         break;
     case 2:
-        source = (void *)SzModel_GetOverlayM(SzDuel_GetUnitModelID(arg4 >> 8, arg4 & 0xFF));
+        source = (void *)SzModel_GetOverlayM(SzDuel_GetUnitModelID(target >> 8, target & 0xFF));
         break;
     }
     if (source == 0) {
-        s32 allocation = SzEffect_LoadModule(arg0, arg1, 1);
+        s32 allocation = SzEffect_LoadModule(kind, card, 1);
         if (allocation == 0) {
             return -1;
         }
@@ -684,35 +699,35 @@ s32 SzEffect_EntryCallback(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     do {
         destination = (void *)0x01ED0000;
         if (slot->state == 0) {
-            Cache_001F4900 *cache = &gSzEffect_el;
-            if (D_0031BE90 != arg0 || cache->entry != arg1) {
+            Cache_001F4900 *cache = &effectState;
+            if (D_0031BE90 != kind || cache->entry != card) {
                 RhMem_CopyMemory16((void *)0x01E00000, (void *)source, 0x800);
                 iFlushCache(0);
                 mwOverlayInit(0x01E00000, *(s32 *)0x01E0001C + 0xFE200000);
-                cache->group = arg0;
-                cache->entry = arg1;
+                cache->group = kind;
+                cache->entry = card;
             }
-            SzEffect_SetTarget(arg3);
-            SzEffect_SetFrom(arg4);
+            SzEffect_SetTarget(from);
+            SzEffect_SetFrom(target);
             RhGeom_PushMatrix(0);
-            if (arg0 != 1) {
+            if (kind != 1) {
                 destination = (void *)(((s64)index << 15) + 0x01E10000);
             }
-            result = gSzEffect_aEffFuncTbl[arg0].handlers[arg1](destination, arg2);
+            result = effectKindTable[kind].handlers[card](destination, mode);
             RhGeom_PopMatrix();
             slot->state = 1;
-            slot->group = arg0;
-            slot->entry = arg1;
-            slot->arg2 = arg2;
-            slot->arg3 = arg3;
-            slot->arg4 = arg4;
+            slot->group = kind;
+            slot->entry = card;
+            slot->arg2 = mode;
+            slot->arg3 = from;
+            slot->arg4 = target;
             slot->flagA = 0;
             slot->flagB = 0;
             slot->flagC = 0;
             slot->counter = 0;
             slot->timer = 0;
-            slot->arg5 = arg5;
-            slot->arg6 = arg6;
+            slot->arg5 = callback;
+            slot->arg6 = callbackArg;
             if (result == 8) {
                 SzEffect_Destroy(index);
                 index = -1;
@@ -753,12 +768,13 @@ typedef struct {
 } Data_001F4CB0;
 
 
+/* The link between two effect slots, or NULL. */
 static inline void *find_001F4CB0(s32 source, s32 target) {
-    extern Data_001F4CB0 gSzEffect_el;
+    extern Data_001F4CB0 effectState;
     Entry_001F4CB0 *entry;
     s32 i;
 
-    entry = gSzEffect_el.entries;
+    entry = effectState.entries;
     for (i = 0; (s64)i < 32; i++, entry++) {
         if ((source < 0 || entry->source == source) && (target < 0 || entry->target == target)) {
             return entry;
@@ -767,12 +783,13 @@ static inline void *find_001F4CB0(s32 source, s32 target) {
     return NULL;
 }
 
-s32 SzEffect_Destroy(s32 arg0) {
-    extern Data_001F4CB0 gSzEffect_el;
-    Slot_001F4CB0 *slot = &gSzEffect_el.slots[arg0];
+/* Stops effect slot `slot` at once. */
+s32 SzEffect_Destroy(s32 effectSlot) {
+    extern Data_001F4CB0 effectState;
+    Slot_001F4CB0 *slot = &effectState.slots[effectSlot];
     Entry_001F4CB0 *entry;
 
-    if (arg0 < 0 || arg0 >= 24) {
+    if (effectSlot < 0 || effectSlot >= 24) {
         return 0;
     }
     if (slot->kind == 1 || slot->kind == 2) {
@@ -803,23 +820,24 @@ typedef struct Entry_001F4E50 {
 
 extern struct Entry_001F5240 D_0031BC50[];
 
-s32 SzEffect_Destroy2(s32 arg0, s32 arg1) {
-    Entry_001F4E50 *var_s0;
-    s32 var_s1;
-    s32 var_s2;
+/* Stops every effect of `kind` and `card` (-1 for any). Returns whether any was running. */
+s32 SzEffect_Destroy2(s32 kind, s32 card) {
+    Entry_001F4E50 *entry;
+    s32 result;
+    s32 slot;
 
-    var_s0 = (Entry_001F4E50 *)D_0031BC50;
-    var_s1 = 0;
-    var_s2 = 0;
+    entry = (Entry_001F4E50 *)D_0031BC50;
+    result = 0;
+    slot = 0;
     do {
-        if ((arg0 < 0 || var_s0->category == arg0) &&
-            (arg1 < 0 || var_s0->kind == arg1)) {
-            var_s1 |= SzEffect_Destroy(var_s2);
+        if ((kind < 0 || entry->category == kind) &&
+            (card < 0 || entry->kind == card)) {
+            result |= SzEffect_Destroy(slot);
         }
-        var_s2 += 1;
-        var_s0++;
-    } while (var_s2 < 0x18);
-    return var_s1;
+        slot += 1;
+        entry++;
+    } while (slot < 0x18);
+    return result;
 }
 
 typedef struct Entry_001F4F10 {
@@ -832,20 +850,21 @@ typedef struct Entry_001F4F10 {
     u8 pad4[0x14];
 } Entry_001F4F10;
 
-s32 SzEffect_Sleep(s32 arg0, s32 arg1) {
-    extern u8 gSzEffect_el[];
+/* Pauses (`on`) or resumes effect slot `slot`. */
+s32 SzEffect_Sleep(s32 slot, s32 on) {
+    extern u8 effectState[];
     Entry_001F4F10 *entry;
     s32 state;
 
-    entry = (Entry_001F4F10 *)(gSzEffect_el + arg0 * 0x18 + 0x100);
-    if ((arg0 < 0) || (arg0 >= 0x18)) {
+    entry = (Entry_001F4F10 *)(effectState + slot * 0x18 + 0x100);
+    if ((slot < 0) || (slot >= 0x18)) {
         return 0;
     }
     state = entry->state;
     if (state == 0) {
         return 0;
     }
-    if (arg1 != 0) {
+    if (on != 0) {
         if (state != 1) {
             return 0;
         }
@@ -855,7 +874,7 @@ s32 SzEffect_Sleep(s32 arg0, s32 arg1) {
         }
         entry->state = 1;
     }
-    entry->flag = arg1;
+    entry->flag = on;
     return 1;
 }
 
@@ -869,24 +888,25 @@ typedef struct Entry_001F4FD0 {
 
 extern struct Entry_001F5240 D_0031BC50[];
 
-s32 SzEffect_Sleep2(s32 arg0, s32 arg1, s32 arg2) {
-    Entry_001F4FD0 *var_s0;
-    s32 var_s1;
-    s32 var_s2;
+/* Pauses (`on`) or resumes every effect of `kind` and `card` (-1 for any). */
+s32 SzEffect_Sleep2(s32 kind, s32 card, s32 on) {
+    Entry_001F4FD0 *entry;
+    s32 result;
+    s32 slot;
 
-    var_s0 = (Entry_001F4FD0 *)D_0031BC50;
-    var_s1 = 0;
-    var_s2 = 0;
+    entry = (Entry_001F4FD0 *)D_0031BC50;
+    result = 0;
+    slot = 0;
     do {
-        if (arg0 < 0 || var_s0->category == arg0) {
-            if (arg1 < 0 || var_s0->group == arg1) {
-                var_s1 |= SzEffect_Sleep(var_s2, arg2);
+        if (kind < 0 || entry->category == kind) {
+            if (card < 0 || entry->group == card) {
+                result |= SzEffect_Sleep(slot, on);
             }
         }
-        var_s2 += 1;
-        var_s0++;
-    } while (var_s2 < 0x18);
-    return var_s1;
+        slot += 1;
+        entry++;
+    } while (slot < 0x18);
+    return result;
 }
 
 typedef struct {
@@ -907,9 +927,10 @@ typedef struct {
 
 extern struct Entry_001F5240 D_0031BC50[];
 
+/* Whether effect slot `index` is running. */
 static inline s32 act_001F5090(s32 index) {
-    extern u8 gSzEffect_el[];
-    Entry_001F5090 *entry = (Entry_001F5090 *)(gSzEffect_el + 0x100 + index * 0x18);
+    extern u8 effectState[];
+    Entry_001F5090 *entry = (Entry_001F5090 *)(effectState + 0x100 + index * 0x18);
 
     if (index < 0 || index >= 24) {
         return 0;
@@ -924,7 +945,8 @@ static inline s32 act_001F5090(s32 index) {
     }
 }
 
-s32 SzEffect_Erase2(s32 arg0, s32 arg1) {
+/* Lets every effect of `kind` and `card` (-1 for any) end by itself. */
+s32 SzEffect_Erase2(s32 kind, s32 card) {
     Entry_001F5090 *entry;
     s32 result;
     s32 index;
@@ -933,8 +955,8 @@ s32 SzEffect_Erase2(s32 arg0, s32 arg1) {
     result = 0;
     index = 0;
     do {
-        if (arg0 < 0 || entry->category == arg0) {
-            if (arg1 < 0 || entry->variant == arg1) {
+        if (kind < 0 || entry->category == kind) {
+            if (card < 0 || entry->variant == card) {
                 result |= act_001F5090(index);
             }
         }
@@ -954,25 +976,26 @@ typedef struct State_001F51D0 {
     Entry_001F51D0 entries[0x18];
 } State_001F51D0;
 
-s32 SzEffect_IsUse(s32 arg0) {
-    extern State_001F51D0 gSzEffect_el;
+/* Whether effect slot `slot` is running (1) or ending (2). */
+s32 SzEffect_IsUse(s32 slot) {
+    extern State_001F51D0 effectState;
     Entry_001F51D0 *entry;
-    s32 temp_a0;
-    s32 var_v0;
+    s32 state;
+    s32 result;
 
-    entry = &gSzEffect_el.entries[arg0];
-    var_v0 = 0;
-    if ((arg0 < 0) || (arg0 >= 0x18)) {
+    entry = &effectState.entries[slot];
+    result = 0;
+    if ((slot < 0) || (slot >= 0x18)) {
         return 0;
     }
-    temp_a0 = entry->flags & 7;
-    if (temp_a0 == 1) {
-        var_v0 |= 1;
+    state = entry->flags & 7;
+    if (state == 1) {
+        result |= 1;
     }
-    if (temp_a0 == 2) {
-        var_v0 |= 2;
+    if (state == 2) {
+        result |= 2;
     }
-    return var_v0;
+    return result;
 }
 
 typedef struct Entry_001F5240 {
@@ -987,7 +1010,8 @@ typedef struct Entry_001F5240 {
 
 extern Entry_001F5240 D_0031BC50[];
 
-s32 SzEffect_IsUse2(s32 arg0, s32 arg1) {
+/* Whether any effect of `kind` and `card` (-1 for any) is running or ending. */
+s32 SzEffect_IsUse2(s32 kind, s32 card) {
     Entry_001F5240 *entry;
     s32 result;
     s32 i;
@@ -997,8 +1021,8 @@ s32 SzEffect_IsUse2(s32 arg0, s32 arg1) {
     result = 0;
     i = 0;
     do {
-        if (arg0 < 0 || entry->kind == arg0) {
-            if (arg1 < 0 || entry->value == arg1) {
+        if (kind < 0 || entry->kind == kind) {
+            if (card < 0 || entry->value == card) {
                 state = entry->state;
                 if (state == 1) {
                     result |= 1;
@@ -1025,13 +1049,14 @@ typedef struct {
     Entry_001F52D0 entries[0x18];
 } Data_001F52D0;
 
-extern Data_001F52D0 gSzEffect_el;
+extern Data_001F52D0 effectState; /* original: gSzEffect_el */
 
-s32 SzEffect_GetStatus(s32 arg0) {
-    Entry_001F52D0 *entry = &gSzEffect_el.entries[arg0];
+/* Effect slot `slot`'s status word, or -1. */
+s32 SzEffect_GetStatus(s32 slot) {
+    Entry_001F52D0 *entry = &effectState.entries[slot];
     s32 ret;
 
-    if ((arg0 < 0) || (arg0 >= 0x18)) {
+    if ((slot < 0) || (slot >= 0x18)) {
         ret = -1;
     } else {
         ret = entry->unk10;
@@ -1044,43 +1069,51 @@ typedef struct Bits_001F5320 {
     u16 value : 13;
 } Bits_001F5320;
 
-s32 SzEffect_GetCount(s32 arg0) {
-    Entry_001F52D0 *entry = &gSzEffect_el.entries[arg0];
+/* How many frames effect slot `slot` has run, or -1. */
+s32 SzEffect_GetCount(s32 slot) {
+    Entry_001F52D0 *entry = &effectState.entries[slot];
 
-    if ((arg0 < 0) || (arg0 >= 0x18)) {
+    if ((slot < 0) || (slot >= 0x18)) {
         return -1;
     }
     return ((Bits_001F5320 *)entry)->value;
 }
 
-void SzEffect_SetTarget(s32 arg0) {
-    D_0031BE98 = arg0;
+/* Sets the unit the running effect script targets. */
+void SzEffect_SetTarget(s32 unit) {
+    D_0031BE98 = unit;
 }
 
-s32 SzEffect_GetTarget(u8 arg0) {
+/* The target unit of effect slot `slot`. */
+s32 SzEffect_GetTarget(u8 slot) {
     return D_0031BE98;
 }
 
-void SzEffect_SetFrom(s32 arg0) {
-    D_0031BE9C = arg0;
+/* Sets the unit the running effect script starts from. */
+void SzEffect_SetFrom(s32 unit) {
+    D_0031BE9C = unit;
 }
 
-s32 SzEffect_GetFrom(u8 arg0) {
+/* The starting unit of effect slot `slot`. */
+s32 SzEffect_GetFrom(u8 slot) {
     return D_0031BE9C;
 }
 
-void SzEffect_GetPos(s32 arg0, s32 arg1) {
-    SzEffect_GetPos2(arg0, D_0031BE98, arg1);
+/* The position an effect uses for one of its units. */
+void SzEffect_GetPos(s32 what, s32 unit) {
+    SzEffect_GetPos2(what, D_0031BE98, unit);
 }
 
-s32 SzEffect_GetPos2(s32 arg0, s32 arg1, s32 arg2) {
+/* The position of unit `unit` ((side << 8) | unit) for an effect into `out`: its card (`what` 0), its model's
+   centre (1), or the battle model (2). */
+s32 SzEffect_GetPos2(s32 what, s32 unit, s32 out) {
     s32 hi;
     s32 lo;
     f32 *vec;
 
-    vec = (f32 *)arg2;
-    hi = arg1 >> 8;
-    lo = arg1 & 0xFF;
+    vec = (f32 *)out;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     vec[2] = 0.0f;
     vec[1] = 0.0f;
     vec[0] = 0.0f;
@@ -1088,36 +1121,37 @@ s32 SzEffect_GetPos2(s32 arg0, s32 arg1, s32 arg2) {
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg1 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg1 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return 0;
     }
-    switch (arg0) {
+    switch (what) {
     case 0:
         return SzDuel_GetCardPos(hi, lo, vec);
     case 1:
-        return SzModel_GetCenter(arg1, vec);
+        return SzModel_GetCenter(unit, vec);
     case 2:
         return SzModel_GetPos(8, vec);
     }
     return 0;
 }
 
-s32 SzEffect_GetRefNum2(s32 arg0) {
+/* How many references unit `unit`'s model has. */
+s32 SzEffect_GetRefNum2(s32 unit) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return -1;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return -1;
     }
-    return SzModel_GetRefNum(arg0);
+    return SzModel_GetRefNum(unit);
 }
 
 typedef struct {
@@ -1125,32 +1159,34 @@ typedef struct {
     s32 unk340;
 } State_001F5560;
 
-s32 SzEffect_SetRefID2(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets reference `ref` of unit `unit`'s model to `id`. */
+s32 SzEffect_SetRefID2(s32 unit, s32 ref, s32 id) {
     extern s32 SzModel_SetRefID(s32, s32, s32);
-    State_001F5560 *state = (State_001F5560 *)&gSzEffect_el;
+    State_001F5560 *state = (State_001F5560 *)&effectState;
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return -1;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return -1;
     }
-    if (arg1 >= 0) {
-        arg1 = ((state->unk340 << 8) & 0x7F00) | (arg1 & 0xFF);
+    if (ref >= 0) {
+        ref = ((state->unk340 << 8) & 0x7F00) | (ref & 0xFF);
     }
-    return SzModel_SetRefID(arg0, arg1, arg2);
+    return SzModel_SetRefID(unit, ref, id);
 }
 
-s32 SzEffect_GetRef2(s32 arg0, s32 arg1, s32 arg2) {
+/* Reference `ref` of unit `unit`'s model (`which` picks the word). */
+s32 SzEffect_GetRef2(s32 unit, s32 ref, s32 which) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
-    s32 hi = arg0 >> 8;
-    s32 lo = arg0 & 0xFF;
-    f32 *vec = (f32 *)arg2;
+    s32 hi = unit >> 8;
+    s32 lo = unit & 0xFF;
+    f32 *vec = (f32 *)which;
 
     vec[2] = 0.0f;
     vec[1] = 0.0f;
@@ -1159,178 +1195,191 @@ s32 SzEffect_GetRef2(s32 arg0, s32 arg1, s32 arg2) {
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return 0;
     }
-    return SzModel_GetRef(arg0, arg1, arg2);
+    return SzModel_GetRef(unit, ref, which);
 }
 
-s32 SzEffect_ClearRefID2(s32 arg0, s32 arg1) {
+/* Clears reference id `id` of unit `unit`'s model. */
+s32 SzEffect_ClearRefID2(s32 unit, s32 id) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
     s32 i;
     s32 value;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return 0;
     }
     for (i = 0; i < 8; i++) {
-        value = SzModel_InqRefID(arg0, i);
-        if (value >= 0 && value < 8 && ((value & 0x7F00) >> 8) == arg1) {
-            SzModel_SetRefID_RefNo(arg0, -1, i);
+        value = SzModel_InqRefID(unit, i);
+        if (value >= 0 && value < 8 && ((value & 0x7F00) >> 8) == id) {
+            SzModel_SetRefID_RefNo(unit, -1, i);
         }
     }
     return 1;
 }
 
-void SzEffect_SetMaxOT(s32 arg0) {
-    SzEffect_SetMaxOT2(D_0031BE9C, arg0);
+/* Sets the effects' deepest draw-order level. */
+void SzEffect_SetMaxOT(s32 level) {
+    SzEffect_SetMaxOT2(D_0031BE9C, level);
 }
 
-s32 SzEffect_SetMaxOT2(s32 arg0, s32 arg1) {
+/* Sets the deepest draw-order level of unit `unit`'s model. */
+s32 SzEffect_SetMaxOT2(s32 unit, s32 level) {
     s32 SzDuel_GetUnitModelID(s32, s32);
     s32 SzModel_SetMaxOT(s32, s32);
     s32 row;
     s32 column;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if (row < 0 || row >= 3 || column < 0 || column >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(row, column);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(row, column);
+    if (unit < 0) {
         return 0;
     }
-    return SzModel_SetMaxOT(arg0, arg1);
+    return SzModel_SetMaxOT(unit, level);
 }
 
+/* An effect target's bounding radius. */
 void SzEffect_GetRadius(void) {
     SzEffect_GetRadius2(D_0031BE98);
 }
 
-f32 SzEffect_GetRadius2(s32 arg0) {
+/* The bounding radius of unit `unit`'s model. */
+f32 SzEffect_GetRadius2(s32 unit) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0.0f;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return 0.0f;
     }
-    return SzModel_GetRadius(arg0);
+    return SzModel_GetRadius(unit);
 }
 
-s32 SzEffect_GetCamDist2(s32 arg0) {
+/* The camera distance used to show unit `unit`'s monster. */
+s32 SzEffect_GetCamDist2(s32 unit) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     extern s32 SzModel_GetModelNo(s32);
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = unit >> 8;
+    lo = unit & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return -1;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    unit = SzDuel_GetUnitModelID(hi, lo);
+    if (unit < 0) {
         return -1;
     }
-    return SzDuel_GetCamDist(SzDuel_Xax2New(SzModel_GetModelNo(arg0)));
+    return SzDuel_GetCamDist(SzDuel_Xax2New(SzModel_GetModelNo(unit)));
 }
 
-s32 SzEffect_SetBusyFlag2(s32 arg0, s32 arg1) {
-    s32 temp_a1;
-    s32 temp_v1;
+/* Marks unit `unit` ((side << 8) | unit) busy or not. */
+s32 SzEffect_SetBusyFlag2(s32 unit, s32 on) {
+    s32 slot;
+    s32 side;
 
-    temp_v1 = arg0 >> 8;
-    temp_a1 = arg0 & 0xFF;
-    if ((temp_v1 < 0) || (temp_v1 >= 3) ||
-        (temp_a1 < 0) || (temp_a1 >= 0xB)) {
+    side = unit >> 8;
+    slot = unit & 0xFF;
+    if ((side < 0) || (side >= 3) ||
+        (slot < 0) || (slot >= 0xB)) {
         return 0;
     }
-    return SzDuel_SetBusyFlag(temp_v1, temp_a1, arg1);
+    return SzDuel_SetBusyFlag(side, slot, on);
 }
 
-s32 SzEffect_SetCardBusyFlag2(s32 arg0, s32 arg1) {
+/* Marks unit `unit`'s card busy or not. */
+s32 SzEffect_SetCardBusyFlag2(s32 unit, s32 on) {
     s32 column;
     s32 row;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if (row < 0 || row >= 3 || column < 0 || column >= 11) {
         return 0;
     }
-    return SzDuel_SetCardBusyFlag(row, column, arg1);
+    return SzDuel_SetCardBusyFlag(row, column, on);
 }
 
-s32 SzEffect_SetCardColBusyFlag2(s32 arg0, s32 arg1) {
+/* Marks unit `unit`'s card colour busy or not. */
+s32 SzEffect_SetCardColBusyFlag2(s32 unit, s32 on) {
     s32 row;
     s32 column;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if (row < 0 || row >= 3 || column < 0 || column >= 11) {
         return 0;
     }
-    return SzDuel_SetCardColBusyFlag(row, column, arg1);
+    return SzDuel_SetCardColBusyFlag(row, column, on);
 }
 
-s32 SzEffect_SetModelBusyFlag2(s32 arg0, s32 arg1) {
+/* Marks unit `unit`'s model busy or not. */
+s32 SzEffect_SetModelBusyFlag2(s32 unit, s32 on) {
     s32 column;
     s32 row;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if (row < 0 || row >= 3 || column < 0 || column >= 11) {
         return 0;
     }
-    return SzDuel_SetModelBusyFlag(row, column, arg1);
+    return SzDuel_SetModelBusyFlag(row, column, on);
 }
 
-s32 SzEffect_IsCardStandby2(s32 arg0) {
-    s32 temp_v0;
+/* Whether unit `unit`'s card is idle. */
+s32 SzEffect_IsCardStandby2(s32 unit) {
+    s32 info;
 
-    temp_v0 = SzDuel_GetUnit(arg0 >> 8, arg0 & 0xFF);
-    if (temp_v0 == 0) {
+    info = SzDuel_GetUnit(unit >> 8, unit & 0xFF);
+    if (info == 0) {
         return 0;
     }
-    return (*(s32 *)((u8 *)temp_v0 + 4) != 0) ? 1 : 0;
+    return (*(s32 *)((u8 *)info + 4) != 0) ? 1 : 0;
 }
 
-s32 SzEffect_GetCardRequest2(s32 arg0) {
-    s32 *temp_v0;
+/* A card request record for unit `unit`'s card. */
+s32 SzEffect_GetCardRequest2(s32 unit) {
+    s32 *request;
 
-    temp_v0 = (s32 *)SzDuel_GetUnit(arg0 >> 8, arg0 & 0xFF);
-    if (temp_v0 == 0) {
+    request = (s32 *)SzDuel_GetUnit(unit >> 8, unit & 0xFF);
+    if (request == 0) {
         return 0;
     }
-    return temp_v0[1];
+    return request[1];
 }
 
-s32 SzEffect_SetCardPos2(s32 arg0, s32 arg1) {
-    s32 temp_a1;
-    s32 temp_v1;
+/* Sets unit `unit`'s card position offset. */
+s32 SzEffect_SetCardPos2(s32 unit, s32 pos) {
+    s32 slot;
+    s32 side;
 
-    temp_v1 = arg0 >> 8;
-    temp_a1 = arg0 & 0xFF;
-    if (temp_v1 < 0 || temp_v1 >= 3 || temp_a1 < 0 || temp_a1 >= 0xB) {
+    side = unit >> 8;
+    slot = unit & 0xFF;
+    if (side < 0 || side >= 3 || slot < 0 || slot >= 0xB) {
         return 0;
     }
-    return SzDuel_SetCardPos(temp_v1, temp_a1, arg1);
+    return SzDuel_SetCardPos(side, slot, pos);
 }
 
 typedef struct Vec4_001F5BD0 {
@@ -1341,13 +1390,14 @@ typedef struct Vec4_001F5BD0 {
 } Vec4_001F5BD0;
 
 
-s32 SzEffect_GetCardPos2(s32 arg0, void *arg1) {
+/* Unit `unit`'s card position offset into `out`. */
+s32 SzEffect_GetCardPos2(s32 unit, void *outVec) {
     s32 index;
     s32 group;
-    Vec4_001F5BD0 *out = arg1;
+    Vec4_001F5BD0 *out = outVec;
 
-    group = arg0 >> 8;
-    index = arg0 & 0xFF;
+    group = unit >> 8;
+    index = unit & 0xFF;
     out->z = 0.0f;
     out->y = 0.0f;
     out->x = 0.0f;
@@ -1358,22 +1408,24 @@ s32 SzEffect_GetCardPos2(s32 arg0, void *arg1) {
     return SzDuel_GetCardPos(group, index, out);
 }
 
-s32 SzEffect_SetCardRot2(s32 arg0, s32 arg1) {
+/* Sets unit `unit`'s card rotation. */
+s32 SzEffect_SetCardRot2(s32 unit, s32 rot) {
     s32 column;
     s32 row;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if ((row < 0) || (row >= 3) || (column < 0) || (column >= 11)) {
         return 0;
     }
-    return SzDuel_SetCardRot(row, column, arg1);
+    return SzDuel_SetCardRot(row, column, rot);
 }
 
-s32 SzEffect_GetCardRot2(s32 arg0, void *arg1) {
-    s32 row = arg0 >> 8;
-    s32 column = arg0 & 0xFF;
-    s32 *out = arg1;
+/* Unit `unit`'s card rotation into `out`. */
+s32 SzEffect_GetCardRot2(s32 unit, void *outVec) {
+    s32 row = unit >> 8;
+    s32 column = unit & 0xFF;
+    s32 *out = outVec;
 
     out[3] = 0;
     out[2] = 0;
@@ -1382,19 +1434,20 @@ s32 SzEffect_GetCardRot2(s32 arg0, void *arg1) {
     if (row < 0 || row >= 3 || column < 0 || column >= 11) {
         return 0;
     }
-    return SzDuel_GetCardRot(row, column, arg1);
+    return SzDuel_GetCardRot(row, column, outVec);
 }
 
-s32 SzEffect_SetCardScale2(s32 arg0, s32 arg1) {
-    s32 temp_a1;
-    s32 temp_v1;
+/* Sets unit `unit`'s card scale. */
+s32 SzEffect_SetCardScale2(s32 unit, s32 scale) {
+    s32 slot;
+    s32 side;
 
-    temp_v1 = arg0 >> 8;
-    temp_a1 = arg0 & 0xFF;
-    if (temp_v1 < 0 || temp_v1 >= 3 || temp_a1 < 0 || temp_a1 >= 0xB) {
+    side = unit >> 8;
+    slot = unit & 0xFF;
+    if (side < 0 || side >= 3 || slot < 0 || slot >= 0xB) {
         return 0;
     }
-    return SzDuel_SetCardScale(temp_v1, temp_a1, arg1);
+    return SzDuel_SetCardScale(side, slot, scale);
 }
 
 typedef struct {
@@ -1402,10 +1455,11 @@ typedef struct {
 } Vec4_001F5D70;
 
 
-s32 SzEffect_GetCardScale2(s32 arg0, void *arg1) {
-    Vec4_001F5D70 *out = (Vec4_001F5D70 *)arg1;
-    s32 a = arg0 >> 8;
-    s32 b = arg0 & 0xFF;
+/* Unit `unit`'s card scale into `out`. */
+s32 SzEffect_GetCardScale2(s32 unit, void *outVec) {
+    Vec4_001F5D70 *out = (Vec4_001F5D70 *)outVec;
+    s32 a = unit >> 8;
+    s32 b = unit & 0xFF;
 
     out->z = 0.0f;
     out->y = 0.0f;
@@ -1417,44 +1471,48 @@ s32 SzEffect_GetCardScale2(s32 arg0, void *arg1) {
     return SzDuel_GetCardScale(a, b, out);
 }
 
-s32 SzEffect_SetCardRgba2(s32 arg0, s32 arg1) {
+/* Sets unit `unit`'s card colour. */
+s32 SzEffect_SetCardRgba2(s32 unit, s32 rgba) {
     s32 row;
     s32 column;
 
-    row = arg0 >> 8;
-    column = arg0 & 0xFF;
+    row = unit >> 8;
+    column = unit & 0xFF;
     if (row < 0 || row >= 3 || column < 0 || column >= 11) {
         return 0;
     }
-    return SzDuel_SetCardRgba(row, column, arg1);
+    return SzDuel_SetCardRgba(row, column, rgba);
 }
 
-s32 SzEffect_GetCardRgba2(s32 arg0, u8 *arg1) {
+/* Unit `unit`'s card colour into `out`. */
+s32 SzEffect_GetCardRgba2(s32 unit, u8 *out) {
     s32 index;
     s32 bank;
 
-    bank = arg0 >> 8;
-    index = arg0 & 0xFF;
-    arg1[3] = 0x80;
-    arg1[0] = 0x80;
-    arg1[1] = 0x80;
-    arg1[2] = 0x80;
+    bank = unit >> 8;
+    index = unit & 0xFF;
+    out[3] = 0x80;
+    out[0] = 0x80;
+    out[1] = 0x80;
+    out[2] = 0x80;
     if (bank < 0 || bank >= 3 || index < 0 || index >= 11) {
         return 0;
     }
-    return SzDuel_GetCardRgba(bank, index, arg1);
+    return SzDuel_GetCardRgba(bank, index, out);
 }
 
+/* Whether an effect target's model is idle. */
 s32 SzEffect_IsModelStandby(void) {
     return SzEffect_IsModelStandby2(D_0031BE98);
 }
 
-s32 SzEffect_IsModelStandby2(s32 arg0) {
-    s32 temp_v0;
+/* Whether unit `unit`'s model is idle. */
+s32 SzEffect_IsModelStandby2(s32 unit) {
+    s32 model;
 
-    temp_v0 = SzDuel_GetUnit(arg0 >> 8, arg0 & 0xFF);
-    if (temp_v0 != 0) {
-        return SzModel_IsModelDisp(*((u8 *)temp_v0 + 0x46));
+    model = SzDuel_GetUnit(unit >> 8, unit & 0xFF);
+    if (model != 0) {
+        return SzModel_IsModelDisp(*((u8 *)model + 0x46));
     }
     return 0;
 }

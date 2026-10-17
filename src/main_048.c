@@ -1,12 +1,13 @@
 #include "common.h"
 
-void lSzModel_EffectCB(s32 arg0) {
+/* An effect attached to model slot `index` has finished: clears the model's effect reference. */
+void lSzModel_EffectCB(s32 index) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj != NULL) {
         *(s32 *)((u8 *)obj + 0x1EC) = -1;
     }
@@ -51,6 +52,8 @@ typedef struct {
     Flags_001ED4A0 options;
 } Fields_001ED4A0;
 
+/* Advances model slot `index`'s animation by one game frame (speed, blending, loops, the end of a one-shot
+   motion). */
 s32 SzModel_Motion(s32 index)
 {
     Fields_001ED4A0 *fields;
@@ -66,7 +69,7 @@ s32 SzModel_Motion(s32 index)
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -289,6 +292,7 @@ struct DotrObjectCue {
 };
 extern int func_001A8760_b(void);
 
+/* Plays the sound effects model slot `index`'s current animation asks for at this frame, on `channel`. */
 int SzModel_ReqSE(int channel, int index)
 {
     struct DotrObject *p;
@@ -384,6 +388,7 @@ typedef struct {
     u8 pad6C[4];
 } Entry_001EDCB0;
 
+/* Starts a motion blur trail on model slot `index` for `duration` frames, fading from colour0 to colour1. */
 s32 SzModel_ReqMotionBlur(s32 index, s16 duration, s32 mode, void *color0, void *color1, s32 enabled) {
     extern Entry_001EDCB0 D_0031AD70[];
     Obj_0031ABB0 *obj;
@@ -391,7 +396,7 @@ s32 SzModel_ReqMotionBlur(s32 index, s16 duration, s32 mode, void *color0, void 
     s32 i;
     s32 j;
 
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -449,27 +454,29 @@ typedef struct Entry_001EDF20 {
 
 extern Entry_001EDF20 D_0031AD70[];
 
-void SzModel_CancelMotionBlur(s32 arg0) {
-    s32 var_a3;
-    Entry_001EDF20 *var_t0;
-    s32 temp_v1;
+/* Stops model slot `index`'s motion blur (-1: every model's). */
+void SzModel_CancelMotionBlur(s32 index) {
+    s32 i;
+    Entry_001EDF20 *entry;
+    s32 entryIndex;
 
-    var_a3 = 1;
-    var_t0 = D_0031AD70;
+    i = 1;
+    entry = D_0031AD70;
     do {
-        temp_v1 = var_t0->id;
-        if (temp_v1 >= 0) {
-            if (arg0 < 0 || temp_v1 == arg0) {
-                var_t0->id = -1;
+        entryIndex = entry->id;
+        if (entryIndex >= 0) {
+            if (index < 0 || entryIndex == index) {
+                entry->id = -1;
             }
         }
-        var_a3 += 1;
-        var_t0++;
-    } while (var_a3 < 0x20);
+        i += 1;
+        entry++;
+    } while (i < 0x20);
 }
 
-void SzModel_DrawMotionBlur(s32 arg0) {
-    RhBase_SetVifPacketArea(SzModel_DrawMotionBlur_Pipe(RhBase_GetVifPacketArea(), arg0));
+/* Draws the motion blur trails of model `index` (-1: all). */
+void SzModel_DrawMotionBlur(s32 index) {
+    RhBase_SetVifPacketArea(SzModel_DrawMotionBlur_Pipe(RhBase_GetVifPacketArea(), index));
 }
 
 typedef struct Vec3_001EDFD0 {
@@ -513,10 +520,11 @@ typedef struct View_001EDFD0 {
     u8 : 6;
 } View_001EDFD0;
 
-s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
-    extern Slot_001EDFD0 gSzModel_aBlur;
+/* Draws the motion blur trails of model `index` (-1: all) from their saved poses. */
+s32 SzModel_DrawMotionBlur_Pipe(s32 packet, s32 modelIndex) {
+    extern Slot_001EDFD0 motionBlurs;
     extern Slot_001EDFD0 D_0031BA90;
-    extern s32 gSzModel_nBlurMode;
+    extern s32 motionBlurMode;
     extern s32 SzModel_ExSort_Pipe();
     Slot_001EDFD0 *scratch;
     s32 ready;
@@ -525,21 +533,21 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
     Slot_001EDFD0 *slot;
     s32 i;
 
-    scratch = &gSzModel_aBlur;
+    scratch = &motionBlurs;
     ready = 0;
-    gSzModel_nBlurMode = (arg1 < 0) ? 2 : 1;
+    motionBlurMode = (modelIndex < 0) ? 2 : 1;
     remaining = 31;
     slot = &D_0031BA90;
     do {
-        if (slot->index >= 0 && (arg1 < 0 || slot->index == arg1)) {
+        if (slot->index >= 0 && (modelIndex < 0 || slot->index == modelIndex)) {
             if (SzModel_IsModelDisp(slot->index) == 0) {
                 slot->index = -1;
             } else {
-                obj = (View_001EDFD0 *)gSzModel_ahModel[slot->index];
+                obj = (View_001EDFD0 *)modelSlots[slot->index];
                 if (obj == NULL) {
                     goto next;
                 }
-                if (arg1 < 0) {
+                if (modelIndex < 0) {
                     if (!slot->alternate) {
                         goto next;
                     }
@@ -573,9 +581,9 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
                                    slot->duration;
                     obj->style = slot->style;
                     if (slot->alternate) {
-                        arg0 = SzModel_ExSort_Pipe(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                        packet = SzModel_ExSort_Pipe(packet, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
                     } else {
-                        arg0 = SzModel_Draw_Pipe(arg0, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
+                        packet = SzModel_Draw_Pipe(packet, slot->index, 0, 0, 0, 0, 0x80FFFFF5);
                     }
                     for (i = 0; i < 2; i++) {
                         obj->pos[i] = scratch->pos[i];
@@ -597,41 +605,44 @@ s32 SzModel_DrawMotionBlur_Pipe(s32 arg0, s32 arg1) {
     if (ready) {
         SzModel_SetDrawCache(0);
     }
-    gSzModel_nBlurMode = 0;
-    return arg0;
+    motionBlurMode = 0;
+    return packet;
 }
 
-void SzModel_SetDrawCache(s32 arg0) {
-    gSzModel_pfhCache = arg0;
+/* Sets the draw cache function used by the model drawing. */
+void SzModel_SetDrawCache(s32 cache) {
+    modelDrawCache = cache;
 }
 
-s32 SzModel_Draw_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    Obj_0031ABB0 *temp_v1;
-    s8 temp_v1_2;
-    void *temp_t4;
+/* Draws model slot `index`, moved by `pos`, `rot` and `scale` if given (texture-animated kinds draw through their
+   own function). */
+s32 SzModel_Draw_Pipe(s32 packet, s32 index, s32 pos, s32 rot, s32 scale, s32 header, s32 flags) {
+    Obj_0031ABB0 *obj;
+    s8 kind;
+    void *data;
     void (*callback)(void) = NULL;
 
-    if ((arg1 < 0) || (arg1 >= 0x54)) {
-        return arg0;
+    if ((index < 0) || (index >= 0x54)) {
+        return packet;
     }
-    temp_v1 = gSzModel_ahModel[arg1];
-    if (temp_v1 == NULL) {
-        return arg0;
+    obj = modelSlots[index];
+    if (obj == NULL) {
+        return packet;
     }
-    if (*(s32 *)((u8 *)temp_v1 + 0x138) == 0) {
-        return arg0;
+    if (*(s32 *)((u8 *)obj + 0x138) == 0) {
+        return packet;
     }
-    temp_t4 = *(void **)((u8 *)temp_v1 + 0x13C);
-    if (temp_t4 == NULL) {
-        return arg0;
+    data = *(void **)((u8 *)obj + 0x13C);
+    if (data == NULL) {
+        return packet;
     }
-    temp_v1_2 = *(s8 *)((u8 *)temp_v1 + 0x1F3);
-    if ((temp_v1_2 == 4) || (temp_v1_2 == 5U) || (temp_v1_2 == 6)) {
-        if (*(s32 *)((u8 *)temp_t4 + 0x1C) != 0) {
+    kind = *(s8 *)((u8 *)obj + 0x1F3);
+    if ((kind == 4) || (kind == 5U) || (kind == 6)) {
+        if (*(s32 *)((u8 *)data + 0x1C) != 0) {
             callback = lSzModel_Draw_DefFunc;
         }
     }
-    return SzModel_DrawWithFunc_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6, callback, 0);
+    return SzModel_DrawWithFunc_Pipe(packet, index, pos, rot, scale, header, flags, callback, 0);
 }
 
 typedef struct {
@@ -665,7 +676,8 @@ typedef struct {
     u64 extra[3];
 } Packet_001EE570;
 
-void lSzModel_Draw_DefFunc(s32 arg0) {
+/* The default per-model draw callback: copies the frame buffer into a texture and draws it back masked. */
+void lSzModel_Draw_DefFunc(s32 cursor) {
     extern s32 ExFrameBuffer2Texture_Pipe();
     extern s32 RhBase_MaskFBuffer();
     Packet_001EE570 packet;
@@ -691,7 +703,7 @@ void lSzModel_Draw_DefFunc(s32 arg0) {
     packet.t0 = 0.0f;
     packet.s1 = 0.625f;
     packet.t1 = 0.875f;
-    RhBase_MaskFBuffer(RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode(RhBase_MaskFBuffer(RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(RhText_SetTextureFlush(arg0), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
+    RhBase_MaskFBuffer(RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode(RhBase_MaskFBuffer(RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(RhText_SetTextureFlush(cursor), -1, 0, &packet.extra[1], &packet.extra[2])), 0xFF000000), 0), (s32)(&packet.dmatag + 1), 0, 0), 1), 0);
 }
 
 typedef union { __int128 q; f32 f[4]; } Vector_001EE6C0;
@@ -763,42 +775,45 @@ typedef struct {
 
 extern Vector_001EE6C0 D_00292FD0;
 extern Vector_001EE6C0 D_00292FE0;
-extern s32 gSzModel_nBlurMode;
+extern s32 motionBlurMode; /* original: gSzModel_nBlurMode */
 
 /* Missing fields in the shared Obj_0031ABB0 declaration, accessed by casts:
- * needs shared field: gSzModel_ahModel +0x080 f32[4]
- * needs shared field: gSzModel_ahModel +0x090 f32[4]
- * needs shared field: gSzModel_ahModel +0x0A0 f32[8][4]
- * needs shared field: gSzModel_ahModel +0x120 f32
- * needs shared field: gSzModel_ahModel +0x124 f32
- * needs shared field: gSzModel_ahModel +0x128 f32
- * needs shared field: gSzModel_ahModel +0x134 u8*
- * needs shared field: gSzModel_ahModel +0x138 s32
- * needs shared field: gSzModel_ahModel +0x13C u8*
- * needs shared field: gSzModel_ahModel +0x19C f32
- * needs shared field: gSzModel_ahModel +0x1A0 f32
- * needs shared field: gSzModel_ahModel +0x1A8 f32
- * needs shared field: gSzModel_ahModel +0x1AC f32
- * needs shared field: gSzModel_ahModel +0x1B0 u16[8]
- * needs shared field: gSzModel_ahModel +0x1E4 f32
- * needs shared field: gSzModel_ahModel +0x1E8 f32
- * needs shared field: gSzModel_ahModel +0x1F0 u16
- * needs shared field: gSzModel_ahModel +0x1F2 s8
- * needs shared field: gSzModel_ahModel +0x1F3 s8
- * needs shared field: gSzModel_ahModel +0x1F8 TextureFlags_001EE6C0
- * needs shared field: gSzModel_ahModel +0x1FE u8
- * needs shared field: gSzModel_ahModel +0x1FF u8
- * needs shared field: gSzModel_ahModel +0x20C ObjectFlags_001EE6C0
+ * needs shared field: modelSlots +0x080 f32[4]
+ * needs shared field: modelSlots +0x090 f32[4]
+ * needs shared field: modelSlots +0x0A0 f32[8][4]
+ * needs shared field: modelSlots +0x120 f32
+ * needs shared field: modelSlots +0x124 f32
+ * needs shared field: modelSlots +0x128 f32
+ * needs shared field: modelSlots +0x134 u8*
+ * needs shared field: modelSlots +0x138 s32
+ * needs shared field: modelSlots +0x13C u8*
+ * needs shared field: modelSlots +0x19C f32
+ * needs shared field: modelSlots +0x1A0 f32
+ * needs shared field: modelSlots +0x1A8 f32
+ * needs shared field: modelSlots +0x1AC f32
+ * needs shared field: modelSlots +0x1B0 u16[8]
+ * needs shared field: modelSlots +0x1E4 f32
+ * needs shared field: modelSlots +0x1E8 f32
+ * needs shared field: modelSlots +0x1F0 u16
+ * needs shared field: modelSlots +0x1F2 s8
+ * needs shared field: modelSlots +0x1F3 s8
+ * needs shared field: modelSlots +0x1F8 TextureFlags_001EE6C0
+ * needs shared field: modelSlots +0x1FE u8
+ * needs shared field: modelSlots +0x1FF u8
+ * needs shared field: modelSlots +0x20C ObjectFlags_001EE6C0
  */
 
+/* Absolute value. */
 static inline f32 abs_001EE6C0(f32 x) {
     return (x >= 0.0f) ? x : -x;
 }
 
 #pragma global_optimizer off
 
-s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
-                 s32 arg5, s32 arg6, void (*arg7)(void), s32 arg_sp0) {
+/* Draws model slot `index` with draw callback `func`: its transform (plus `pos`, `rot`, `scale`), lights, fog,
+   textures and render frame. */
+s32 SzModel_DrawWithFunc_Pipe(s32 out, s32 index, s32 pos, s32 rot, s32 scaleIn,
+                 s32 headerIn, s32 flags, void (*func)(void), s32 arg_sp0) {
     Matrix_001EE6C0 matrix;
     Vector_001EE6C0 origin;
     Vector_001EE6C0 offset;
@@ -840,63 +855,63 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         !(SzEffect_IsUse2(2, -1) & 1)) {
         enabled = 0;
     }
-    if (arg5) {
-        Header_001EE6C0 *header = (Header_001EE6C0 *)arg5;
+    if (headerIn) {
+        Header_001EE6C0 *header = (Header_001EE6C0 *)headerIn;
         header->type = 7;
         header->count = 0;
         header->tag = 0;
         header->pad04 = 0;
     }
-    if (arg1 < 0 || arg1 >= 0x54) {
-        return arg0;
+    if (index < 0 || index >= 0x54) {
+        return out;
     }
-    obj = gSzModel_ahModel[arg1];
+    obj = modelSlots[index];
     if (obj == NULL) {
-        return arg0;
+        return out;
     }
     if (*(s8 *)((u8 *)obj + 0x1F2) < 0) {
-        return arg0;
+        return out;
     }
     if (*(s32 *)((u8 *)obj + 0x138) == 0) {
-        return arg0;
+        return out;
     }
     if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b3) {
-        return arg0;
+        return out;
     }
     if (!((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b1) {
-        return arg0;
+        return out;
     }
-    if (arg5 == 0) {
+    if (headerIn == 0) {
         s32 type;
         if (obj->pad040[0xEF] == 0) {
-            return arg0;
+            return out;
         }
         type = *(s8 *)((u8 *)obj + 0x1F3);
         if (type != 4 && type != 5 && type != 6) {
             if (abs_001EE6C0(*(f32 *)((u8 *)obj + 0x128)) <= 0.000001f) {
-                return arg0;
+                return out;
             }
             if (abs_001EE6C0(*(f32 *)((u8 *)obj + 0x120)) <= 0.000001f &&
                 abs_001EE6C0(*(f32 *)((u8 *)obj + 0x124)) <= 0.000001f) {
-                return arg0;
+                return out;
             }
         }
     }
     RhMem_CopyMemory16(&transform, obj, 4);
-    if (0 != arg2) {
-        transform.position.f[0] += ((f32 *)arg2)[0];
-        transform.position.f[1] += ((f32 *)arg2)[1];
-        transform.position.f[2] += ((f32 *)arg2)[2];
+    if (0 != pos) {
+        transform.position.f[0] += ((f32 *)pos)[0];
+        transform.position.f[1] += ((f32 *)pos)[1];
+        transform.position.f[2] += ((f32 *)pos)[2];
     }
-    if (arg3 != 0) {
-        transform.rotation[0] += ((s32 *)arg3)[0];
-        transform.rotation[1] += ((s32 *)arg3)[1];
-        transform.rotation[2] += ((s32 *)arg3)[2];
+    if (rot != 0) {
+        transform.rotation[0] += ((s32 *)rot)[0];
+        transform.rotation[1] += ((s32 *)rot)[1];
+        transform.rotation[2] += ((s32 *)rot)[2];
     }
-    if (0 != arg4) {
-        transform.scale.f[0] *= ((f32 *)arg4)[0];
-        transform.scale.f[1] *= ((f32 *)arg4)[1];
-        transform.scale.f[2] *= ((f32 *)arg4)[2];
+    if (0 != scaleIn) {
+        transform.scale.f[0] *= ((f32 *)scaleIn)[0];
+        transform.scale.f[1] *= ((f32 *)scaleIn)[1];
+        transform.scale.f[2] *= ((f32 *)scaleIn)[2];
     }
     sx = &transform.scale.f[0];
     sy = &transform.scale.f[1];
@@ -908,12 +923,12 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         scale = *sz;
     }
     if (abs_001EE6C0(scale) <= 0.000001f) {
-        return arg0;
+        return out;
     }
     if (((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->overlay && obj->pad040[0xF3]) {
         overlay = 1;
     }
-    if (arg5 || overlay || gSzModel_nBlurMode || ((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base ||
+    if (headerIn || overlay || motionBlurMode || ((TextureFlags_001EE6C0 *)((u8 *)obj + 0x1F8))->base ||
         obj->pad040[0xEE] != 0x80 || obj->pad040[0xED] != 0x80 ||
         obj->pad040[0xEC] != 0x80 || obj->pad040[0xEF] != 0x80) {
         if (enabled) {
@@ -923,27 +938,27 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         }
     }
     if (draw) {
-        if (gSzModel_nBlurMode != 1) {
-            gSzModel_pfhCache = 0;
+        if (motionBlurMode != 1) {
+            modelDrawCache = 0;
         }
-        arg0 = (s32)RhBase_EnableRenderFrame((void *)arg0);
-        arg0 = (s32)RhBase_ClearRenderFrame((u8 *)arg0, 0);
+        out = (s32)RhBase_EnableRenderFrame((void *)out);
+        out = (s32)RhBase_ClearRenderFrame((u8 *)out, 0);
         if (enabled && RhView_PushStack()) {
             RhView_GetCurView(&effect0);
             RhView_SetClipZ(1.0f, 1024.0f);
             RhView_Modify(&effect0);
-            arg0 = RhView_SendViewParameters(arg0);
+            out = RhView_SendViewParameters(out);
         }
-        if (arg7) {
-            arg0 = ((s32 (*)(s32))arg7)(arg0);
+        if (func) {
+            out = ((s32 (*)(s32))func)(out);
         }
     }
-    arg0 = SzView_SetLight_Pipe((s32)SzView_SetFog_Pipe((void *)arg0, 0, *(s8 *)((u8 *)obj + 0x1F3),
+    out = SzView_SetLight_Pipe((s32)SzView_SetFog_Pipe((void *)out, 0, *(s8 *)((u8 *)obj + 0x1F3),
                         *(f32 *)((u8 *)obj + 0x128)), 0, *(s8 *)((u8 *)obj + 0x1F3));
-    if (gSzModel_pfhCache != *(s32 *)((u8 *)obj + 0x138)) {
+    if (modelDrawCache != *(s32 *)((u8 *)obj + 0x138)) {
         s32 result;
-        arg0 = SzModel_LoadTexture_Pipe(arg0, arg1, *(void **)((u8 *)obj + 0x138), &result);
-        gSzModel_pfhCache = *(s32 *)((u8 *)obj + 0x138);
+        out = SzModel_LoadTexture_Pipe(out, index, *(void **)((u8 *)obj + 0x138), &result);
+        modelDrawCache = *(s32 *)((u8 *)obj + 0x138);
     }
     {
         s8 *lv = &obj->lv[0];
@@ -986,7 +1001,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         if (*(u8 *)((u8 *)obj + 0x1FE) &&
             ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
             BookingGetAnyCoordinate(1);
-            if (0 == gSzModel_nBlurMode) {
+            if (0 == motionBlurMode) {
                 if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF) {
                     BookingGetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0));
                 }
@@ -1017,7 +1032,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         *(f32 *)((u8 *)obj + 0x1E4) * scale;
     if (*(s8 *)((u8 *)obj + 0x1F3) == 4 || *(s8 *)((u8 *)obj + 0x1F3) == 5 || *(s8 *)((u8 *)obj + 0x1F3) == 6) {
         s32 bounds;
-        bounds = lSzModel_GetGNode(arg1, 1, NULL);
+        bounds = lSzModel_GetGNode(index, 1, NULL);
         if (bounds) {
             f32 denominator;
             f32 *o1 = &origin.f[1];
@@ -1051,7 +1066,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         RhGeom_MulMatrix(0, &matrix);
         RhGeom_GetTransMatrix(&matrix, origin.f);
         RhGeom_MulMatrix(0, &matrix);
-        packet = RhModel_Draw((void *)arg0, &model);
+        packet = RhModel_Draw((void *)out, &model);
         if (*(u8 *)((u8 *)obj + 0x1FE) &&
             ((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
             if (f0->b2 && GetAnyCoordinate(1, &matrix)) {
@@ -1065,7 +1080,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                 RhGeom_MulMatrixRev(0, (s32)&matrix);
                 RhGeom_MulMatrixVector(&obj->pad040[0x40], NULL, &obj->pad040[0x50]);
             }
-            if (!gSzModel_nBlurMode && f0->b2) {
+            if (!motionBlurMode && f0->b2) {
                 if (*(u8 *)((u8 *)obj + 0x1F0) < 0xFF &&
                     GetAnyCoordinate(*(u8 *)((u8 *)obj + 0x1F0), obj->pad040)) {
                     *(u16 *)((u8 *)obj + 0x1F0) |= 0x8000;
@@ -1093,7 +1108,7 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         RhGeom_ScaleRotXYZTransMatrix(0, 0, (s32 *)&transform.extra, transform.position.f);
         RhGeom_GetScaleRotXYZTransMatrix(&matrix, (f32 *)&transform.scale, transform.rotation, NULL);
         RhGeom_MulMatrix(0, &matrix);
-        packet = RhModel_Draw((void *)arg0, &model);
+        packet = RhModel_Draw((void *)out, &model);
         if (((ObjectFlags_001EE6C0 *)((u8 *)obj + 0x20C))->b6) {
             RhView_GetWorldViewMatrix(&matrix);
             RhGeom_InvertMatrix(&matrix, &matrix);
@@ -1104,15 +1119,15 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
     }
     RhGeom_PopMatrix();
     *(s32 *)&model.depth = depth = Ex3d_GetSampleZ(&obj->pad040[0x40], 0.0f);
-    if (arg6 && !(arg6 & 0x80000000)) {
-        *(s32 *)arg6 = *(s32 *)&model.depth;
+    if (flags && !(flags & 0x80000000)) {
+        *(s32 *)flags = *(s32 *)&model.depth;
         if (draw == 0 && *(s32 *)(*(u8 **)((u8 *)obj + 0x13C) + 0x1C) == 0) {
-            *(s32 *)arg6 = 0;
+            *(s32 *)flags = 0;
         }
     }
     if (draw != 0) {
-        if (0x80000000 & arg6) {
-            depth = arg6 & 0x7FFFFFFF;
+        if (0x80000000 & flags) {
+            depth = flags & 0x7FFFFFFF;
         }
         if (overlay) {
             ((Header_001EE6C0 *)&sprite.header)->type = 6;
@@ -1171,13 +1186,13 @@ s32 SzModel_DrawWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
             packet = (void *)RhView_SendViewParameters((s32)packet);
         }
         RhBase_FreeRenderFrame();
-        if (arg5 != 0) {
-            *(Primitive_001EE6C0 *)arg5 = primitive;
+        if (headerIn != 0) {
+            *(Primitive_001EE6C0 *)headerIn = primitive;
         } else {
             packet = ExDitherMode_Pipe((void *)RhBase_SetZBufferMode(ExSortPrim_Pipe(RhBase_SetZBufferMode((s32)ExDitherMode_Pipe(packet, 0), 0), (s32)&primitive, 0, 0), 1), 1);
         }
-        if (1 != gSzModel_nBlurMode) {
-            gSzModel_pfhCache = 0;
+        if (1 != motionBlurMode) {
+            modelDrawCache = 0;
         }
     }
     return (s32)packet;
@@ -1192,6 +1207,7 @@ extern long func_00208680_b(int, int);
 extern int func_002084D0_b(int, long);
 extern int func_00207500_b(void);
 
+/* Draws model slot `index` sorted by depth (with its motion blur), between anchors. */
 int SzModel_ExSort_Pipe(int cursor, int index, int c, int d, int e, int f, int g)
 {
     struct DotrExSortVec position;
@@ -1203,7 +1219,7 @@ int SzModel_ExSort_Pipe(int cursor, int index, int c, int d, int e, int f, int g
     float z;
     int result;
 
-    gSzModel_pfhCache = 0;
+    modelDrawCache = 0;
     out = ExDitherMatrixEz_Pipe(ExSetAnchor_Pipe(cursor), 2);
     if (D_0031BB00_1ef8a0 == 0) {
         out = SzModel_DrawMotionBlur_Pipe(RhBase_SetZBufferMode(out, 0), index);
@@ -1230,34 +1246,36 @@ int SzModel_ExSort_Pipe(int cursor, int index, int c, int d, int e, int f, int g
     return result;
 }
 
-s32 SzModel_DrawWithOutCalc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Draws model slot `index` with its matrices left as they are (calculation turned off for this draw). */
+s32 SzModel_DrawWithOutCalc_Pipe(s32 packet, s32 index, s32 pos, s32 rot, s32 scale, s32 header, s32 flags) {
     s32 saved;
 
-    saved = SzModel_GetCalcFlag(arg1);
-    SzModel_SetCalcFlag(arg1, 0);
-    arg0 = SzModel_Draw_Pipe(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-    SzModel_SetCalcFlag(arg1, saved);
-    return arg0;
+    saved = SzModel_GetCalcFlag(index);
+    SzModel_SetCalcFlag(index, 0);
+    packet = SzModel_Draw_Pipe(packet, index, pos, rot, scale, header, flags);
+    SzModel_SetCalcFlag(index, saved);
+    return packet;
 }
 
-s32 lSzModel_GetGNode(s32 arg0, s32 arg1, s32 *arg2) {
-    s32 sp1C;
-    Obj_0031ABB0 *temp_v1;
-    s32 temp_a2;
+/* Finds node `node` of model slot `index`'s node tree; the tree's depth through `maxDepth`. */
+s32 lSzModel_GetGNode(s32 index, s32 node, s32 *maxDepth) {
+    s32 count;
+    Obj_0031ABB0 *obj;
+    s32 root;
 
-    sp1C = 0;
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    count = 0;
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    temp_v1 = gSzModel_ahModel[arg0];
-    if (temp_v1 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (arg2 != NULL) {
-        *arg2 = 1;
+    if (maxDepth != NULL) {
+        *maxDepth = 1;
     }
-    temp_a2 = *(s32 *)((u8 *)temp_v1 + 0x134);
-    return lSzModel_TraceGNode(arg1, temp_a2, temp_a2, &sp1C, 0, arg2, 0);
+    root = *(s32 *)((u8 *)obj + 0x134);
+    return lSzModel_TraceGNode(node, root, root, &count, 0, maxDepth, 0);
 }
 
 typedef struct Node_001EFBD0 {
@@ -1267,6 +1285,7 @@ typedef struct Node_001EFBD0 {
     s32 sibling;
 } Node_001EFBD0;
 
+/* Walks a model's node tree looking for node `target`. */
 s32 lSzModel_TraceGNode(s32 target, s32 base, s32 node, s32 *index,
                   s32 depthAddress, s32 *maxDepth, s32 callbackAddress) {
     s32 nextDepth;
@@ -1308,8 +1327,9 @@ s32 lSzModel_TraceGNode(s32 target, s32 base, s32 node, s32 *index,
     return 0;
 }
 
-void SzModel_ShotTextureWithFunc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    RhBase_SetVifPacketArea(SzModel_ShotTextureWithFunc_Pipe(RhBase_GetVifPacketArea(), arg0, arg1, arg2, arg3, arg4, arg5));
+/* Renders model `index` into a texture (SzModel_ShotTextureWithFunc_Pipe). */
+void SzModel_ShotTextureWithFunc(s32 index, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    RhBase_SetVifPacketArea(SzModel_ShotTextureWithFunc_Pipe(RhBase_GetVifPacketArea(), index, arg1, arg2, arg3, arg4, arg5));
 }
 
 typedef struct Bits_001EFDC0 {
@@ -1330,28 +1350,30 @@ typedef struct Info_001EFDC0 {
     Bits_001EFDC0 bits;
 } Info_001EFDC0;
 
-s32 SzModel_ShotTextureWithFunc_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+/* Renders model slot `index` into a texture of `size`, with draw callback `func` if given; the texture's words
+   through outWord / outBits. */
+s32 SzModel_ShotTextureWithFunc_Pipe(s32 packet, s32 index, s32 size, s32 outWord, s32 outBits, s32 func, s32 funcArg) {
     extern s32 SzModel_DrawWithFunc_Pipe();
     extern s32 ExClampMode_Pipe();
     Info_001EFDC0 info;
     s32 saved;
     s32 ret;
 
-    saved = SzModel_GetCalcFlag(arg1);
-    gSzModel_pfhCache = 0;
-    arg0 = ExDitherMatrixEz_Pipe(arg0, 2);
-    arg0 = RhBase_SetZBufferMode(arg0, 1);
-    SzModel_SetCalcFlag(arg1, 0);
-    if (arg5 != 0 || arg6 != 0) {
-        arg0 = SzModel_DrawWithFunc_Pipe(arg0, arg1, 0, 0, 0, (s32)info.data, 0, arg5, arg6);
+    saved = SzModel_GetCalcFlag(index);
+    modelDrawCache = 0;
+    packet = ExDitherMatrixEz_Pipe(packet, 2);
+    packet = RhBase_SetZBufferMode(packet, 1);
+    SzModel_SetCalcFlag(index, 0);
+    if (func != 0 || funcArg != 0) {
+        packet = SzModel_DrawWithFunc_Pipe(packet, index, 0, 0, 0, (s32)info.data, 0, func, funcArg);
     } else {
-        arg0 = SzModel_Draw_Pipe(arg0, arg1, 0, 0, 0, (s32)info.data, 0);
+        packet = SzModel_Draw_Pipe(packet, index, 0, 0, 0, (s32)info.data, 0);
     }
-    SzModel_SetCalcFlag(arg1, saved);
-    ret = ExClampMode_Pipe(ExDitherMatrixEz_Pipe(RhBase_SetZBufferMode(arg0, 0), 3), ExGetRegVal(0, 4));
-    info.bits.flag = info.bits.kind = arg2;
-    *(Word_001EFDC0 *)arg3 = info.word;
-    *(Bits_001EFDC0 *)arg4 = info.bits;
+    SzModel_SetCalcFlag(index, saved);
+    ret = ExClampMode_Pipe(ExDitherMatrixEz_Pipe(RhBase_SetZBufferMode(packet, 0), 3), ExGetRegVal(0, 4));
+    info.bits.flag = info.bits.kind = size;
+    *(Word_001EFDC0 *)outWord = info.word;
+    *(Bits_001EFDC0 *)outBits = info.bits;
     return ret;
 }
 
@@ -1362,25 +1384,26 @@ typedef struct Flags_001EFF70 {
     s64 rest : 60;
 } Flags_001EFF70;
 
-s32 lSzModel_LoadModel(s32 arg0, void *arg1) {
+/* Starts loading model file `path` into model slot `index`. */
+s32 lSzModel_LoadModel(s32 index, void *path) {
     extern void lSzModel_FreeModel(s32);
     extern void lSzModel_LoadModelCB();
     extern s32 SzFile_ReadRequest();
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
     if (((Flags_001EFF70 *)&obj->lv[0x2C])->pending) {
         return 0;
     }
-    lSzModel_FreeModel(arg0);
+    lSzModel_FreeModel(index);
     ((Flags_001EFF70 *)&obj->lv[0x2C])->loaded = 1;
-    if (SzFile_ReadRequest(arg0, arg1, 0, -1, lSzModel_LoadModelCB, arg0) != 0) {
+    if (SzFile_ReadRequest(index, path, 0, -1, lSzModel_LoadModelCB, index) != 0) {
         ((Flags_001EFF70 *)&obj->lv[0x2C])->pending = 1;
     }
     return 1;
@@ -1393,25 +1416,26 @@ typedef struct {
     s8 bit3 : 1;
 } Obj_001F0060;
 
-s32 lSzModel_LoadModelPack(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Starts loading part of packed model file `path` into model slot `index`. */
+s32 lSzModel_LoadModelPack(s32 index, void *path, s32 address, s32 size, s32 offset, s32 readSize) {
     extern void lSzModel_FreeModel(s32);
     extern s32 lSzModel_LoadModelPackCB();
     extern s32 SzFile_ReadRequestParam();
     Obj_001F0060 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = (Obj_001F0060 *)gSzModel_ahModel[arg0];
+    obj = (Obj_001F0060 *)modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
     if (obj->bit3) {
         return 0;
     }
-    lSzModel_FreeModel(arg0);
-    obj->bit0 = (arg2 != 0) ? 0 : 1;
-    if (SzFile_ReadRequestParam(arg0, 0, (s32)arg1, arg2, arg3, arg4, arg5, (s32)lSzModel_LoadModelPackCB, arg0) != 0) {
+    lSzModel_FreeModel(index);
+    obj->bit0 = (address != 0) ? 0 : 1;
+    if (SzFile_ReadRequestParam(index, 0, (s32)path, address, size, offset, readSize, (s32)lSzModel_LoadModelPackCB, index) != 0) {
         obj->bit3 = 1;
     }
     return 1;
@@ -1438,27 +1462,28 @@ typedef struct Request_001F01A0 {
     s32 index;
 } Request_001F01A0;
 
-void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
+/* A model file has loaded (`ok`): binds it, then loads its textures, effect textures and motions. */
+void lSzModel_LoadModelCB(void *request, s32 ok) {
     extern void func_0019B648();
     extern void lSzModel_LoadCB(s32);
-    extern s32 gSzModel_apchBase[];
+    extern s32 modelFolderNames[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFB94[];
     s32 index;
     Fields_001F01A0 *obj;
 
-    index = ((Request_001F01A0 *)arg0)->index;
+    index = ((Request_001F01A0 *)request)->index;
     if (index < 0 || index >= 0x54) {
         return;
     }
-    obj = (Fields_001F01A0 *)gSzModel_ahModel[index];
+    obj = (Fields_001F01A0 *)modelSlots[index];
     if (obj != NULL) {
-        if (arg1 == 0) {
+        if (ok == 0) {
             obj->busy = 0;
             return;
         }
         lSzModel_Clean(index);
-        obj->header = ((Request_001F01A0 *)arg0)->header;
+        obj->header = ((Request_001F01A0 *)request)->header;
         obj->data = obj->header + 4;
         obj->header[1] = 0;
         RhModel_BindAddress(obj->header);
@@ -1474,7 +1499,7 @@ void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
             s32 i;
 
             value = obj->value;
-            base = gSzModel_apchBase[obj->kind];
+            base = modelFolderNames[obj->kind];
             func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             for (i = 0; i < 8; i++) {
                 func_0019B648(path, format, value, value, i + 0x61);
@@ -1492,7 +1517,7 @@ void lSzModel_LoadModelCB(void *arg0, s32 arg1) {
             s32 base;
 
             value = obj->value;
-            base = gSzModel_apchBase[obj->kind];
+            base = modelFolderNames[obj->kind];
             func_0019B648(format, D_002CFB94, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, value, value, 0x61);
             lSzModel_LoadMotion(index, 0, (s32)path);
@@ -1521,11 +1546,12 @@ typedef struct Request_001F0390 {
     s32 index;
 } Request_001F0390;
 
-void lSzModel_LoadModelPackCB(s32 arg0, s32 arg1) {
+/* A packed model has loaded (`ok`): binds it, or falls back to the single model file. */
+void lSzModel_LoadModelPackCB(s32 request, s32 ok) {
     extern void func_0019B648();
     extern void lSzModel_LoadModelCB();
     extern s32 SzFile_ReadRequest();
-    extern s32 gSzModel_apchBase[];
+    extern s32 modelFolderNames[];
     extern u8 D_002CFA17[];
     extern u8 D_002CFA1D[];
     u8 format[128];
@@ -1534,25 +1560,25 @@ void lSzModel_LoadModelPackCB(s32 arg0, s32 arg1) {
     Fields_001F0390 *obj;
     s32 base;
 
-    index = ((Request_001F0390 *)arg0)->index;
+    index = ((Request_001F0390 *)request)->index;
     if (index < 0 || index >= 0x54) {
         return;
     }
-    obj = (Fields_001F0390 *)gSzModel_ahModel[index];
+    obj = (Fields_001F0390 *)modelSlots[index];
     if (obj != NULL) {
-        if (arg1 != 0 && *((Request_001F0390 *)arg0)->header != 0x304852) {
-            arg1 = 0;
+        if (ok != 0 && *((Request_001F0390 *)request)->header != 0x304852) {
+            ok = 0;
         }
-        if (arg1 == 0) {
-            base = gSzModel_apchBase[obj->kind];
+        if (ok == 0) {
+            base = modelFolderNames[obj->kind];
             func_0019B648(format, D_002CFA1D, SzFile_GetEnv((s32)D_002CFA17), base, base);
             func_0019B648(path, format, obj->value, obj->value);
             obj->loaded = 1;
-            arg0 = SzFile_ReadRequest(index, path, 0, -1, lSzModel_LoadModelCB, index);
-            obj->busy = (arg0 != 0) ? 1 : 0;
+            request = SzFile_ReadRequest(index, path, 0, -1, lSzModel_LoadModelCB, index);
+            obj->busy = (request != 0) ? 1 : 0;
         } else {
             lSzModel_Clean(index);
-            lSzModel_BindModelByAddr(index, ((Request_001F0390 *)arg0)->header);
+            lSzModel_BindModelByAddr(index, ((Request_001F0390 *)request)->header);
         }
     }
 }
@@ -1563,105 +1589,107 @@ typedef struct {
 } FixedBlock_001F0500;
 
 
-s32 lSzModel_BindModelByAddr(s32 arg0, void *arg1) {
-    Obj_0031ABB0 *temp_s0;
-    u8 *var_s1;
-    s32 var_s2;
-    Obj_0031ABB0 *var_s3;
-    Obj_0031ABB0 *var_s2_2;
+/* Binds the model data at `address` to model slot `index`: its node tree, textures and up to eight motions. */
+s32 lSzModel_BindModelByAddr(s32 index, void *address) {
+    Obj_0031ABB0 *obj;
+    u8 *motionData;
+    s32 motion;
+    Obj_0031ABB0 *objMotion;
+    Obj_0031ABB0 *cur;
     s32 var_s3_2;
     u8 *temp_v1;
 
-    temp_s0 = gSzModel_ahModel[arg0];
-    if (temp_s0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    *(u8 **)&temp_s0->pad040[0xF8] = arg1;
-    *(u8 **)((u8 *)temp_s0 + 0x13C) = *(u8 **)&temp_s0->pad040[0xF8] + 0x10;
-    RhModel_BindAddress(*(u8 **)&temp_s0->pad040[0xF8]);
-    SzModel_BindTextureFile(arg0);
-    temp_v1 = *(u8 **)&temp_s0->pad040[0xF8];
-    var_s2 = 0;
-    var_s3 = temp_s0;
-    var_s1 = temp_v1 + *(s32 *)(temp_v1 + 0xC);
+    *(u8 **)&obj->pad040[0xF8] = address;
+    *(u8 **)((u8 *)obj + 0x13C) = *(u8 **)&obj->pad040[0xF8] + 0x10;
+    RhModel_BindAddress(*(u8 **)&obj->pad040[0xF8]);
+    SzModel_BindTextureFile(index);
+    temp_v1 = *(u8 **)&obj->pad040[0xF8];
+    motion = 0;
+    objMotion = obj;
+    motionData = temp_v1 + *(s32 *)(temp_v1 + 0xC);
     do {
-        if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << var_s2)) {
-            var_s3->slots[0] = (ObjSlot_0031ABB0 *)var_s1;
-            NjaReloc_Adjust_M3DMOT(var_s3->slots[0]);
-            var_s3->vals[0] = var_s3->slots[0]->f14->f4;
-            var_s1 += *(s32 *)(var_s1 + 4);
+        if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & (1 << motion)) {
+            objMotion->slots[0] = (ObjSlot_0031ABB0 *)motionData;
+            NjaReloc_Adjust_M3DMOT(objMotion->slots[0]);
+            objMotion->vals[0] = objMotion->slots[0]->f14->f4;
+            motionData += *(s32 *)(motionData + 4);
         } else {
-            var_s3->vals[0] = 1;
-            var_s3->slots[0] = NULL;
+            objMotion->vals[0] = 1;
+            objMotion->slots[0] = NULL;
         }
-        var_s2 += 1;
-        var_s3 = (Obj_0031ABB0 *)((u8 *)var_s3 + 4);
-    } while (var_s2 < 8);
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x100) {
-        *(u8 **)((u8 *)temp_s0 + 0x164) = var_s1;
-        var_s1 = ((FixedBlock_001F0500 *)var_s1)->data + 0x7FF8;
+        motion += 1;
+        objMotion = (Obj_0031ABB0 *)((u8 *)objMotion + 4);
+    } while (motion < 8);
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x100) {
+        *(u8 **)((u8 *)obj + 0x164) = motionData;
+        motionData = ((FixedBlock_001F0500 *)motionData)->data + 0x7FF8;
     } else {
-        *(u8 **)((u8 *)temp_s0 + 0x164) = NULL;
+        *(u8 **)((u8 *)obj + 0x164) = NULL;
     }
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x200) {
-        RhText_BindAddress((s32) var_s1);
-        *(u8 **)((u8 *)temp_s0 + 0x140) = var_s1;
-        var_s1 += *(s32 *)(var_s1 + 8);
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x200) {
+        RhText_BindAddress((s32) motionData);
+        *(u8 **)((u8 *)obj + 0x140) = motionData;
+        motionData += *(s32 *)(motionData + 8);
     } else {
-        *(u8 **)((u8 *)temp_s0 + 0x140) = NULL;
+        *(u8 **)((u8 *)obj + 0x140) = NULL;
     }
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x400) {
-        *(u8 **)((u8 *)temp_s0 + 0x168) = var_s1;
-        var_s1 = ((FixedBlock_001F0500 *)var_s1)->data + 0x7FF8;
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x400) {
+        *(u8 **)((u8 *)obj + 0x168) = motionData;
+        motionData = ((FixedBlock_001F0500 *)motionData)->data + 0x7FF8;
     } else {
-        *(u8 **)((u8 *)temp_s0 + 0x168) = NULL;
+        *(u8 **)((u8 *)obj + 0x168) = NULL;
     }
     var_s3_2 = 0;
-    var_s2_2 = temp_s0;
+    cur = obj;
     do {
-        if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & (1 << (var_s3_2 + 0xB))) {
-            RhText_BindAddress((s32) var_s1);
-            *(u8 **)((u8 *)var_s2_2 + 0x144) = var_s1;
-            var_s1 += *(s32 *)(var_s1 + 8);
+        if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & (1 << (var_s3_2 + 0xB))) {
+            RhText_BindAddress((s32) motionData);
+            *(u8 **)((u8 *)cur + 0x144) = motionData;
+            motionData += *(s32 *)(motionData + 8);
         } else {
-            *(u8 **)((u8 *)var_s2_2 + 0x144) = NULL;
+            *(u8 **)((u8 *)cur + 0x144) = NULL;
         }
         var_s3_2 += 1;
-        var_s2_2 = (Obj_0031ABB0 *)((u8 *)var_s2_2 + 4);
+        cur = (Obj_0031ABB0 *)((u8 *)cur + 4);
     } while (var_s3_2 < 8);
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x80000) {
-        s32 size = (*(s32 *)(var_s1 + 8) + 0xF) & ~0xF;
-        *(u8 **)((u8 *)temp_s0 + 0x16C) = var_s1;
-        var_s1 += size;
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x80000) {
+        s32 size = (*(s32 *)(motionData + 8) + 0xF) & ~0xF;
+        *(u8 **)((u8 *)obj + 0x16C) = motionData;
+        motionData += size;
     }
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x100000) {
-        s32 size = (*(s32 *)(var_s1 + 8) + 0xF) & ~0xF;
-        *(u8 **)((u8 *)temp_s0 + 0x170) = var_s1;
-        var_s1 += size;
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x100000) {
+        s32 size = (*(s32 *)(motionData + 8) + 0xF) & ~0xF;
+        *(u8 **)((u8 *)obj + 0x170) = motionData;
+        motionData += size;
     }
-    if (*(s32 *)(*(u8 **)&temp_s0->pad040[0xF8] + 4) & 0x200000) {
-        *(u8 **)((u8 *)temp_s0 + 0x174) = var_s1;
+    if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x200000) {
+        *(u8 **)((u8 *)obj + 0x174) = motionData;
     } else {
-        *(u8 **)((u8 *)temp_s0 + 0x174) = NULL;
+        *(u8 **)((u8 *)obj + 0x174) = NULL;
     }
-    lSzModel_LoadCB(arg0);
+    lSzModel_LoadCB(index);
     return 1;
 }
 
-s32 lSzModel_LoadMotion(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts loading motion file `path` into motion slot `motion` (0..7) of model slot `index`. */
+s32 lSzModel_LoadMotion(s32 index, s32 motion, s32 path) {
     extern void SzFile_ReadRequest();
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (motion < 0 || motion >= 8) {
         return 0;
     }
-    if (gSzModel_ahModel[arg0] == NULL) {
+    if (modelSlots[index] == NULL) {
         return 0;
     }
-    lSzModel_FreeMotion(arg0, arg1);
-    SzFile_ReadRequest(arg0, arg2, 0, -1, lSzModel_LoadMotionCB, (arg0 << 8) | arg1);
+    lSzModel_FreeMotion(index, motion);
+    SzFile_ReadRequest(index, path, 0, -1, lSzModel_LoadMotionCB, (index << 8) | motion);
     return 1;
 }
 
@@ -1673,8 +1701,9 @@ typedef struct {
 } Arg_001F0830;
 
 
-void lSzModel_LoadMotionCB(void *arg0, s32 arg1) {
-    Arg_001F0830 *a = (Arg_001F0830 *)arg0;
+/* A motion file has loaded (`ok`): relocates it and binds it to its model. */
+void lSzModel_LoadMotionCB(void *request, s32 ok) {
+    Arg_001F0830 *a = (Arg_001F0830 *)request;
     s32 v;
     s32 idx;
     s32 sub;
@@ -1686,8 +1715,8 @@ void lSzModel_LoadMotionCB(void *arg0, s32 arg1) {
     if (idx < 0 || idx >= 0x54) {
         return;
     }
-    base = gSzModel_ahModel[idx];
-    if (base != NULL && arg1 != 0) {
+    base = modelSlots[idx];
+    if (base != NULL && ok != 0) {
         base->slots[sub] = a->f14;
         NjaReloc_Adjust_M3DMOT(base->slots[sub]);
         base->vals[sub] = base->slots[sub]->f14->f4;
@@ -1701,32 +1730,37 @@ typedef struct {
     s8 rest : 4;
 } Flags_001F08D0;
 
+/* Reads a word of a model record. */
 static inline s32 read_001F08D0(void *obj, s32 offset) {
     return *(s32 *)((u8 *)obj + offset);
 }
 
+/* Clears a word of a model record. */
 static inline void clear_001F08D0(void *obj, s32 offset) {
     *(s32 *)((u32)obj + offset) = 0;
 }
 
+/* Whether a model record is still loading. */
 static inline s32 busy_001F08D0(void *obj) {
     return ((Flags_001F08D0 *)obj)[0x20C].busy;
 }
 
+/* Whether a model record owns its data. */
 static inline s32 owns_001F08D0(void *obj) {
     return ((Flags_001F08D0 *)((u32)obj + 0x20C))->owns_data;
 }
 
 #pragma global_optimizer off
 
-s32 lSzModel_FreeModel(s32 arg0) {
+/* Frees model slot `index`'s model, motions, effects and camera requests. */
+s32 lSzModel_FreeModel(s32 index) {
     u8 *data;
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -1795,7 +1829,7 @@ s32 lSzModel_FreeModel(s32 arg0) {
         }
         slot = 0;
         do {
-            lSzModel_FreeMotion(arg0, slot);
+            lSzModel_FreeMotion(index, slot);
             slot++;
         } while (slot < 8);
         resource = read_001F08D0(obj, 0x140);
@@ -1856,7 +1890,7 @@ s32 lSzModel_FreeModel(s32 arg0) {
         entry = D_0031AD70;
         clear_001F08D0(obj, 0x138);
         do {
-            if (entry->id >= 0 && (arg0 < 0 || entry->id == arg0)) {
+            if (entry->id >= 0 && (index < 0 || entry->id == index)) {
                 entry->id = -1;
             }
             n++;
@@ -1867,32 +1901,34 @@ s32 lSzModel_FreeModel(s32 arg0) {
 }
 #pragma global_optimizer reset
 
-s32 lSzModel_FreeMotion(s32 arg0, s32 arg1) {
+/* Frees motion slot `motion` (0..7) of model slot `index`. */
+s32 lSzModel_FreeMotion(s32 index, s32 motion) {
     void SzMem_Free(void *);
     Obj_0031ABB0 *obj;
     ObjSlot_0031ABB0 *slot;
 
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 8)) {
+    if ((motion < 0) || (motion >= 8)) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    slot = obj->slots[arg1];
+    slot = obj->slots[motion];
     if (slot == NULL) {
         return 1;
     }
     SzMem_Free(slot);
-    obj->slots[arg1] = NULL;
-    obj->vals[arg1] = 1;
+    obj->slots[motion] = NULL;
+    obj->vals[motion] = 1;
     return 1;
 }
 
-s32 SzModel_BattleSeq(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts side `side`'s battle motion (`start`) with its camera (`close` for the close one) and effects. */
+s32 SzModel_BattleSeq(s32 side, s32 start, s32 close) {
     Obj_0031ABB0 *obj;
     s32 s1;
     s32 s2;
@@ -1901,13 +1937,13 @@ s32 SzModel_BattleSeq(s32 arg0, s32 arg1, s32 arg2) {
     Obj_0031ABB0 *ptr;
     extern s32 SzEffect_EntryCallback();
 
-    s1 = SzBattle_InqEntry(arg0);
-    s2 = SzBattle_InqEntry(arg0 ^ 1);
+    s1 = SzBattle_InqEntry(side);
+    s2 = SzBattle_InqEntry(side ^ 1);
     index = SzDuel_GetUnitModelID(s1 >> 8, s1 & 0xFF);
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -1923,74 +1959,78 @@ s32 SzModel_BattleSeq(s32 arg0, s32 arg1, s32 arg2) {
         ptr = (Obj_0031ABB0 *)((u8 *)ptr + 4);
     } while (i < 8);
     *(s32 *)((u8 *)obj + 0x1EC) = SzEffect_EntryCallback(1, *(u16 *)((u8 *)obj + 0x206), *(u16 *)((u8 *)obj + 0x208), s2, s1, lSzModel_EffectCB, index);
-    if (arg1 != 0) {
+    if (start != 0) {
         if (*(s32 *)((u8 *)obj + 0x16C) != 0) {
-            SzView_ReqCamera(0, 1, ((arg2 != 0) ? 1 : 0) + 8, *(u16 *)((u8 *)obj + 0x202), index, (void *)*(s32 *)((u8 *)obj + 0x16C));
+            SzView_ReqCamera(0, 1, ((close != 0) ? 1 : 0) + 8, *(u16 *)((u8 *)obj + 0x202), index, (void *)*(s32 *)((u8 *)obj + 0x16C));
         }
     }
     return 1;
 }
 
-s32 SzModel_BattleSeq2(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts side `side`'s second battle motion with its camera. */
+s32 SzModel_BattleSeq2(s32 side, s32 start, s32 close) {
     s32 index;
     Obj_0031ABB0 *obj;
     void *data;
 
-    index = SzBattle_InqEntry(arg0);
-    SzBattle_InqEntry(arg0 ^ 1);
+    index = SzBattle_InqEntry(side);
+    SzBattle_InqEntry(side ^ 1);
     index = SzDuel_GetUnitModelID(index >> 8, index & 0xFF);
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
     SzModel_SetAnimIntr(index, 5);
-    if (arg1 != 0) {
+    if (start != 0) {
         data = *(void **)((u8 *)obj + 0x170);
         if (data != NULL) {
-            SzView_ReqCamera(0, 1, (arg2 != 0 ? 1 : 0) + 8, 0, index, data);
+            SzView_ReqCamera(0, 1, (close != 0 ? 1 : 0) + 8, 0, index, data);
         }
     }
     return 1;
 }
 
-f32 SzModel_GetRadius(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s bounding radius. */
+f32 SzModel_GetRadius(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1.0f;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1.0f;
     }
-    return *(f32 *)((u8 *)temp_v0 + 0x1E4);
+    return *(f32 *)((u8 *)obj + 0x1E4);
 }
 
-u8 *SzModel_GetEffTextureB(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s second effect texture. */
+u8 *SzModel_GetEffTextureB(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return NULL;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return NULL;
     }
-    return &temp_v0->pad040[0x104];
+    return &obj->pad040[0x104];
 }
 
-s32 SzModel_GetOverlayM(s32 arg0) {
+/* Model slot `index`'s monster overlay (its module), or 0. */
+s32 SzModel_GetOverlayM(s32 index) {
     Obj_0031ABB0 *obj;
     void *data;
     s32 ret;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         ret = 0;
     } else {
-        obj = gSzModel_ahModel[arg0];
+        obj = modelSlots[index];
         if (obj == NULL) {
             ret = 0;
         } else {
@@ -2007,38 +2047,40 @@ s32 SzModel_GetOverlayM(s32 arg0) {
     return ret;
 }
 
-s32 SzModel_LoadOverlayB(s32 arg0) {
-    Obj_0031ABB0 *temp_a1;
-    s8 temp_v1;
-    void *temp_a3;
+/* Loads model slot `index`'s battle overlay module. Returns 1 if it started. */
+s32 SzModel_LoadOverlayB(s32 index) {
+    Obj_0031ABB0 *obj;
+    s8 kind;
+    void *data;
 
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    temp_a1 = gSzModel_ahModel[arg0];
-    if (temp_a1 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    temp_a3 = *(void **)((u8 *)temp_a1 + 0x138);
-    if (temp_a3 == NULL) {
+    data = *(void **)((u8 *)obj + 0x138);
+    if (data == NULL) {
         return 0;
     }
-    temp_v1 = *(s8 *)((u8 *)temp_a1 + 0x1F3);
-    if ((temp_v1 != 4) && (temp_v1 != 5) && (temp_v1 != 6)) {
+    kind = *(s8 *)((u8 *)obj + 0x1F3);
+    if ((kind != 4) && (kind != 5) && (kind != 6)) {
         return 1;
     }
-    *(s32 *)((u8 *)temp_a3 + 4) &= ~0x400;
-    return (SzEffect_LoadModule(1, *(s16 *)((u8 *)temp_a1 + 0x1F4), 0, temp_a3) != 0) ? 1 : 0;
+    *(s32 *)((u8 *)data + 4) &= ~0x400;
+    return (SzEffect_LoadModule(1, *(s16 *)((u8 *)obj + 0x1F4), 0, data) != 0) ? 1 : 0;
 }
 
-s32 SzModel_GetOverlayB(s32 arg0) {
+/* Model slot `index`'s battle overlay (its module), or 0. */
+s32 SzModel_GetOverlayB(s32 index) {
     Obj_0031ABB0 *obj;
     void *state;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -2052,26 +2094,27 @@ s32 SzModel_GetOverlayB(s32 arg0) {
     return *(s32 *)((u8 *)obj + 0x168);
 }
 
-s32 SzModel_GetCamera(s32 arg0, s32 arg1) {
+/* Camera `which` (0 or 1) of model slot `index`, or 0. */
+s32 SzModel_GetCamera(s32 index, s32 which) {
     s32 ret = 0;
-    Obj_0031ABB0 *temp_a0;
+    Obj_0031ABB0 *obj;
 
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    temp_a0 = gSzModel_ahModel[arg0];
-    if (temp_a0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return ret;
     }
-    if (*(s32 *)((u8 *)temp_a0 + 0x138) == 0) {
+    if (*(s32 *)((u8 *)obj + 0x138) == 0) {
         return ret;
     }
-    switch (arg1) {
+    switch (which) {
     case 19:
-        ret = *(s32 *)((u8 *)temp_a0 + 0x16C);
+        ret = *(s32 *)((u8 *)obj + 0x16C);
         break;
     case 20:
-        ret = *(s32 *)((u8 *)temp_a0 + 0x170);
+        ret = *(s32 *)((u8 *)obj + 0x170);
         break;
     }
     return ret;
@@ -2082,13 +2125,14 @@ typedef struct {
     s8 active : 1;
 } Flags_001F1240;
 
-s32 SzModel_IsModelReady(s32 arg0) {
+/* Whether model slot `index` has a model bound. */
+s32 SzModel_IsModelReady(s32 index) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -2100,35 +2144,37 @@ typedef struct {
     s8 active : 1;
 } Flags_001F12A0;
 
-s32 SzModel_IsModelLoading(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index` is still loading. */
+s32 SzModel_IsModelLoading(s32 index) {
+    Obj_0031ABB0 *obj;
     s32 ret;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         ret = 0;
     } else {
-        temp_v0 = gSzModel_ahModel[arg0];
-        if (temp_v0 == NULL) {
+        obj = modelSlots[index];
+        if (obj == NULL) {
             ret = 0;
         } else {
-            ret = ((Flags_001F12A0 *)((u8 *)temp_v0 + 0x20C))->active ? 1 : 0;
+            ret = ((Flags_001F12A0 *)((u8 *)obj + 0x20C))->active ? 1 : 0;
         }
     }
     return ret;
 }
 
-s32 SzModel_IsModelStandby(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index` has a model booked (SzModel_Preset) and ready. */
+s32 SzModel_IsModelStandby(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
 
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (*(s8 *)((u8 *)temp_v0 + 0x1F2) >= 0) {
+    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
         return 1;
     }
     return 0;
@@ -2139,13 +2185,14 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F1370;
 
-s32 SzModel_IsModelDisp(s32 arg0) {
+/* Whether model slot `index` is shown. */
+s32 SzModel_IsModelDisp(s32 index) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -2155,57 +2202,62 @@ s32 SzModel_IsModelDisp(s32 arg0) {
     return ((Flags_001F1370 *)((u8 *)obj + 0x20C))->enabled ? 1 : 0;
 }
 
-s8 SzModel_GetAnim(s32 arg0) {
-    return SzModel_GetAnimParam(arg0, 0);
+/* Model slot `index`'s current animation. */
+s8 SzModel_GetAnim(s32 index) {
+    return SzModel_GetAnimParam(index, 0);
 }
 
-s8 SzModel_GetAnimParam(s32 arg0, s32 arg1) {
+/* Animation parameter `which` (0..3) of model slot `index`. */
+s8 SzModel_GetAnimParam(s32 index, s32 which) {
     Obj_0031ABB0 *base;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    if (arg1 < 0 || arg1 >= 4) {
+    if (which < 0 || which >= 4) {
         return -1;
     }
-    base = gSzModel_ahModel[arg0];
+    base = modelSlots[index];
     if (base == NULL) {
         return -1;
     }
-    return base->lv[arg1];
+    return base->lv[which];
 }
 
-s32 SzModel_SetAnim(s32 arg0, s32 arg1) {
-    return SzModel_SetAnimParam(arg0, arg1, 3);
+/* Starts animation `anim` on model slot `index`. */
+s32 SzModel_SetAnim(s32 index, s32 anim) {
+    return SzModel_SetAnimParam(index, anim, 3);
 }
 
-s32 SzModel_SetAnimParam(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets animation parameter `which` (0..3) of model slot `index` to animation `anim`, if the model has it. */
+s32 SzModel_SetAnimParam(s32 index, s32 anim, s32 which) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (arg2 < 0 || arg2 >= 4) {
+    if (which < 0 || which >= 4) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (anim < 0 || anim >= 8) {
         return 0;
     }
 
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (obj->slots[arg1] == NULL) {
+    if (obj->slots[anim] == NULL) {
         return 0;
     }
 
-    obj->lv[arg2] = arg1;
+    obj->lv[which] = anim;
     return 1;
 }
 
-s32 SzModel_SetAnimIntr(s32 arg0, s32 arg1) {
-    return SzModel_SetAnimIntrParam(arg0, arg1, 6);
+/* Blends model slot `index` into animation `anim` (over 6 frames). */
+s32 SzModel_SetAnimIntr(s32 index, s32 anim) {
+    return SzModel_SetAnimIntrParam(index, anim, 6);
 }
 
 typedef struct {
@@ -2217,7 +2269,8 @@ typedef struct {
     s8 direction : 2;
 } Flags_001F1560;
 
-s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
+/* Blends model slot `index` into animation `anim` over `frames` frames. */
+s32 SzModel_SetAnimIntrParam(s32 index, s32 anim, s32 frames) {
     Obj_0031ABB0 *obj;
     Vec3_001F1560 *current;
     Vec3_001F1560 *previous;
@@ -2225,13 +2278,13 @@ s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
     s8 *previous_slot;
     f32 last_frame;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (anim < 0 || anim >= 8) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -2239,11 +2292,11 @@ s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
     previous = (Vec3_001F1560 *)&obj->slots[11];
     current_slot = &obj->lv[0];
     previous_slot = &obj->lv[1];
-    if (obj->slots[arg1] != NULL) {
-        last_frame = (f32)(u32)obj->vals[arg1] - 1.0f;
+    if (obj->slots[anim] != NULL) {
+        last_frame = (f32)(u32)obj->vals[anim] - 1.0f;
         *previous = *current;
         *previous_slot = *current_slot;
-        *current_slot = arg1;
+        *current_slot = anim;
         if ((s64)((Flags_001F1560 *)((u8 *)obj + 0x1F7))->direction == -1) {
             current->y = last_frame;
         } else {
@@ -2251,7 +2304,7 @@ s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
         }
         current->z = 0.0f;
         previous->z = 1.0f - current->z;
-        *(s8 *)((u8 *)obj + 0x1FB) = arg2;
+        *(s8 *)((u8 *)obj + 0x1FB) = frames;
         *(s8 *)((u8 *)obj + 0x1FD) = 0;
     } else {
         return 0;
@@ -2259,15 +2312,17 @@ s32 SzModel_SetAnimIntrParam(s32 arg0, s32 arg1, s32 arg2) {
     return 1;
 }
 
-s32 SzModel_SetAnimIntrReverse(s32 arg0) {
-    return SzModel_SetAnimIntrReverseParam(arg0, 6);
+/* Blends model slot `index` back out (over 6 frames). */
+s32 SzModel_SetAnimIntrReverse(s32 index) {
+    return SzModel_SetAnimIntrReverseParam(index, 6);
 }
 
 typedef struct {
     f32 x, y, z;
 } Vec3_001F16C0;
 
-s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1) {
+/* Blends model slot `index` back out over `frames` frames. */
+s32 SzModel_SetAnimIntrReverseParam(s32 index, s32 frames) {
     s8 oldLevel;
     s32 scaled;
     u8 * bytes;
@@ -2277,10 +2332,10 @@ s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1) {
     Vec3_001F16C0 * second;
     s8 * firstLevel;
     s8 * secondLevel;
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -2295,8 +2350,8 @@ s32 SzModel_SetAnimIntrReverseParam(s32 arg0, s32 arg1) {
         *first = temp;
         *secondLevel = *firstLevel;
         *firstLevel = oldLevel;
-        bytes[0x1FC] = (f32)(bytes[0x1FC] * arg1) / (f32)(u32)bytes[0x1FB];
-        bytes[0x1FB] = arg1;
+        bytes[0x1FC] = (f32)(bytes[0x1FC] * frames) / (f32)(u32)bytes[0x1FB];
+        bytes[0x1FB] = frames;
         bytes[0x1FC] = bytes[0x1FB] - bytes[0x1FC];
         bytes[0x1FD] = 0;
     } else {
@@ -2310,7 +2365,8 @@ typedef struct {
     s8 mode : 2;
 } Flags_001F1830;
 
-s32 SzModel_SetAnimDirect(s32 arg0, s32 arg1) {
+/* Switches model slot `index` to animation `anim` at once. */
+s32 SzModel_SetAnimDirect(s32 index, s32 anim) {
     Obj_0031ABB0 *obj;
     f32 *state;
     s8 *next;
@@ -2318,24 +2374,24 @@ s32 SzModel_SetAnimDirect(s32 arg0, s32 arg1) {
     f32 value;
     f32 start;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (anim < 0 || anim >= 8) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
     state = (f32 *)&obj->slots[8];
     next = &obj->lv[1];
     selected = &obj->lv[0];
-    if (obj->slots[arg1] != NULL) {
-        value = (f32)(u32)obj->vals[arg1];
+    if (obj->slots[anim] != NULL) {
+        value = (f32)(u32)obj->vals[anim];
         start = value - 1.0f;
         *next = -1;
-        *selected = arg1;
+        *selected = anim;
         if (((Flags_001F1830 *)((u8 *)obj + 0x1F7))->mode == -1) {
             state[1] = start;
         } else {
@@ -2349,17 +2405,18 @@ s32 SzModel_SetAnimDirect(s32 arg0, s32 arg1) {
     return 1;
 }
 
-s32 SzModel_SetMotionDelay(s32 arg0, s8 arg1) {
+/* Sets model slot `index`'s motion delay in frames. */
+s32 SzModel_SetMotionDelay(s32 index, s8 delay) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    *(s8 *)((u8 *)obj + 0x1FD) = arg1;
+    *(s8 *)((u8 *)obj + 0x1FD) = delay;
     return 1;
 }
 
@@ -2368,13 +2425,14 @@ typedef struct {
     s8 value : 2;
 } Flags_001F19A0;
 
-s64 SzModel_GetAnimDir(s32 arg0) {
+/* Model slot `index`'s animation direction. */
+s64 SzModel_GetAnimDir(s32 index) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return -1;
     }
@@ -2386,17 +2444,18 @@ typedef struct {
     s8 mode : 2;
 } Flags_001F1A00;
 
-s32 SzModel_SetAnimDir(s32 arg0, s64 arg1) {
-    Obj_0031ABB0 *temp_a2;
+/* Sets model slot `index`'s animation direction (forwards, backwards, loop...). */
+s32 SzModel_SetAnimDir(s32 index, s64 dir) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     } else {
-        temp_a2 = gSzModel_ahModel[arg0];
-        if (temp_a2 == NULL) {
+        obj = modelSlots[index];
+        if (obj == NULL) {
             return 0;
         }
-        ((Flags_001F1A00 *)((u8 *)temp_a2 + 0x1F7))->mode = (s8)arg1;
+        ((Flags_001F1A00 *)((u8 *)obj + 0x1F7))->mode = (s8)dir;
         return 1;
     }
 }

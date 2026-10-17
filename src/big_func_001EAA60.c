@@ -79,7 +79,9 @@ extern s32 nEffCur2;
 
 #define PAD_001EAA60(m, b) func_00203A40(0, m, b)
 
-s32 SzModel_Act(s32 arg0) {
+/* Debug: the model viewer for model slot `index`: moves, turns, scales and colours it, steps its motions, effects
+   and camera with the pads. */
+s32 SzModel_Act(s32 index) {
     extern s32 func_001EDCB0();
     extern s32 func_001FECB0();
     s64 mode;
@@ -103,17 +105,17 @@ s32 SzModel_Act(s32 arg0) {
     void *ap;
 
     mode = func_001AAF60(1);
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = (DbgObj_001EAA60 *)gSzModel_ahModel[arg0];
+    obj = (DbgObj_001EAA60 *)modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
     if (obj->page == func_00205160()) {
         anim = &obj->speed;
         lvp = &obj->lv[0];
-        if (arg0 == 0) lvp = &obj->lv[0]; /* second definition: keeps lvp in its own register (s5) */
+        if (index == 0) lvp = &obj->lv[0]; /* second definition: keeps lvp in its own register (s5) */
         cur = &obj->lv[2];
         page = func_00205150();
         last = (f32)obj->vals[*lvp] - 1.0f;
@@ -133,13 +135,13 @@ s32 SzModel_Act(s32 arg0) {
                 }
                 if (PAD_001EAA60(1, 0x10) != 0) {
                     if (PAD_001EAA60(0, 0x10) != 0) {
-                        func_001F1480(arg0, *cur);
+                        func_001F1480(index, *cur);
                     } else {
                         if (PAD_001EAA60(2, 2) != 0) {
-                            func_001F1A80(arg0, anim[0] + 0.1f);
+                            func_001F1A80(index, anim[0] + 0.1f);
                         }
                         if (PAD_001EAA60(2, 1) != 0) {
-                            func_001F1A80(arg0, anim[0] - 0.1f);
+                            func_001F1A80(index, anim[0] - 0.1f);
                         }
                     }
                 }
@@ -157,7 +159,7 @@ s32 SzModel_Act(s32 arg0) {
                     if (PAD_001EAA60(1, 0x10) != 0) {
                         sel += 4;
                     }
-                    func_001F1550(arg0, sel);
+                    func_001F1550(index, sel);
                 }
                 if (PAD_001EAA60(1, 0x40) != 0 || obj->loop == 0) {
                     if (PAD_001EAA60(2, 0x20) != 0) {
@@ -238,7 +240,7 @@ s32 SzModel_Act(s32 arg0) {
                     flag2 = 1;
                 }
                 if (flag2 != 0) {
-                    func_001EDCB0(arg0, wFrame, wAlphaMode, icolF, icolT, flag);
+                    func_001EDCB0(index, wFrame, wAlphaMode, icolF, icolT, flag);
                 }
                 break;
             case 1:
@@ -362,7 +364,7 @@ s32 SzModel_Act(s32 arg0) {
             Digits4_001EAA60 dig;
             char path[0x80];
 
-            sub = arg0 - 0x1E;
+            sub = index - 0x1E;
             num = obj->num;
             dig = D_00292F90;
             newnum = num;
@@ -393,9 +395,9 @@ s32 SzModel_Act(s32 arg0) {
                     func_001FA810(0, 1);
                     func_001F1830(0x1E, 0);
                     func_001F1A00(0x1E, 1);
-                    func_001F1550(arg0, 5);
+                    func_001F1550(index, 5);
                     ap = *(void *volatile *)&obj->anim; /* loaded before f202, as shipped */
-                    func_001FA8A0(0, 1, flag + 8, obj->f202, arg0, ap);
+                    func_001FA8A0(0, 1, flag + 8, obj->f202, index, ap);
                 }
             }
             if (PAD_001EAA60(0, 0x20) != 0) {
@@ -422,7 +424,7 @@ s32 SzModel_Act(s32 arg0) {
                     func_001F4CB0(snd);
                 }
                 func_0019B648(path, D_002CFB7D, func_001FFF90((s32)D_002CFA17), num, num);
-                func_001FECB0(0x400, 1, path, 0, -1, 0, -1, lSzModel_LoadCameraCB, arg0);
+                func_001FECB0(0x400, 1, path, 0, -1, 0, -1, lSzModel_LoadCameraCB, index);
             }
             if (PAD_001EAA60(2, 0x5000) != 0) {
                 if (PAD_001EAA60(2, 0x1000) != 0) {
@@ -497,7 +499,7 @@ s32 SzModel_Act(s32 arg0) {
                 func_001F4900(0, 0x3E, 0, 0, 0, 0, 0);
                 func_001F4900(0, 0x3F, 0, 0, 0, 0, 0);
                 if (obj->anim != NULL) {
-                    func_001FA8A0(0, 1, flag + 8, obj->f202, arg0, obj->anim);
+                    func_001FA8A0(0, 1, flag + 8, obj->f202, index, obj->anim);
                 }
             }
             if (PAD_001EAA60(0, 0x20) != 0) {
@@ -520,7 +522,7 @@ s32 SzModel_Act(s32 arg0) {
                 func_001F4E50(0, 0x3E);
                 func_001F4E50(0, 0x3F);
                 func_0019B648(path2, D_002CFB7D, func_001FFF90((s32)D_002CFA17), num, num);
-                func_001FECB0(0x400, 1, path2, 0, -1, 0, -1, lSzModel_LoadCameraCB, arg0);
+                func_001FECB0(0x400, 1, path2, 0, -1, 0, -1, lSzModel_LoadCameraCB, index);
             }
             if (PAD_001EAA60(2, 0x5000) != 0) {
                 if (PAD_001EAA60(2, 0x1000) != 0) {
@@ -567,7 +569,7 @@ s32 SzModel_Act(s32 arg0) {
             Digits3_001EAA60 d3;
             Digits3_001EAA60 d3b;
 
-            sub = arg0 - 0x1E;
+            sub = index - 0x1E;
             d3 = D_00292FB0;
             d3.d0 = obj->f206 / 100 % 10;
             d3.d1 = obj->f206 / 10 % 10;
@@ -703,7 +705,7 @@ s32 SzModel_Act(s32 arg0) {
         }
         if (page == 8) {
             if (PAD_001EAA60(0, 0x4000) != 0) {
-                func_001F25D0(arg0, NULL);
+                func_001F25D0(index, NULL);
             }
             if (PAD_001EAA60(2, 0x81) != 0) {
                 obj->v.x -= 0.01f;
@@ -726,7 +728,7 @@ s32 SzModel_Act(s32 arg0) {
         }
         if (page == 9) {
             if (PAD_001EAA60(0, 0x4000) != 0) {
-                func_001F1EE0(arg0, NULL);
+                func_001F1EE0(index, NULL);
             }
             if (PAD_001EAA60(2, 0x81) != 0) {
                 obj->light[0] -= 0.01f;
@@ -749,7 +751,7 @@ s32 SzModel_Act(s32 arg0) {
         }
         if (page == 10) {
             if (PAD_001EAA60(0, 0x4000) != 0) {
-                func_001F26E0(arg0, 0, NULL);
+                func_001F26E0(index, 0, NULL);
             }
             if (PAD_001EAA60(2, 0x8000) != 0) {
                 obj->fog0 = (obj->fog0 + 3) % 4;
@@ -803,7 +805,7 @@ s32 SzModel_Act(s32 arg0) {
         }
         if (page == 11) {
             if (PAD_001EAA60(0, 0x4000) != 0) {
-                func_001F2860(arg0, 1, NULL);
+                func_001F2860(index, 1, NULL);
             }
             if (PAD_001EAA60(2, 0x8000) != 0) {
                 obj->fog1 = (obj->fog1 + 3) % 4;
@@ -856,7 +858,7 @@ s32 SzModel_Act(s32 arg0) {
             }
         }
         if (mode == 5 && nBlurUse != 0 && (func_001A8720() & 1)) {
-            func_001EDCB0(arg0, wFrame, wAlphaMode, icolF, icolT, nBlurUse == 1 ? 0 : 1);
+            func_001EDCB0(index, wFrame, wAlphaMode, icolF, icolT, nBlurUse == 1 ? 0 : 1);
         }
         if (func_00205170() == 0) {
             s8 kind = obj->kind;

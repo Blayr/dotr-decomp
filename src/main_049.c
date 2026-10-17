@@ -1,7 +1,8 @@
 #include "common.h"
 
-s32 SzModel_SetAnimSpeed(s32 arg0, f32 value) {
-    return SzModel_SetAnimSpeedParam(arg0, 0, value);
+/* Sets model slot `index`'s animation speed (for its current animation parameter). */
+s32 SzModel_SetAnimSpeed(s32 index, f32 value) {
+    return SzModel_SetAnimSpeedParam(index, 0, value);
 }
 
 typedef struct View_001F1A90 {
@@ -9,35 +10,37 @@ typedef struct View_001F1A90 {
     f32 m[4][3];
 } View_001F1A90;
 
-s32 SzModel_SetAnimSpeedParam(s32 arg0, s32 arg1, f32 value) {
+/* Sets the speed of animation parameter `which` of model slot `index`. */
+s32 SzModel_SetAnimSpeedParam(s32 index, s32 which, f32 value) {
     Obj_0031ABB0 *obj;
     View_001F1A90 *view;
     s32 slot;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 4) {
+    if (which < 0 || which >= 4) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     view = (View_001F1A90 *)obj;
     if (obj == NULL) {
         return 0;
     }
-    slot = obj->lv[arg1];
+    slot = obj->lv[which];
     if (slot < 0) {
         return 0;
     }
     if (obj->slots[slot] == NULL) {
         return 0;
     }
-    view->m[arg1][0] = value;
+    view->m[which][0] = value;
     return 1;
 }
 
-f32 SzModel_GetAnimFrame(s32 arg0) {
-    return SzModel_GetAnimFrameParam(arg0, 0);
+/* Model slot `index`'s current animation frame. */
+f32 SzModel_GetAnimFrame(s32 index) {
+    return SzModel_GetAnimFrameParam(index, 0);
 }
 
 typedef struct View_001F1B60 {
@@ -45,34 +48,36 @@ typedef struct View_001F1B60 {
     f32 m[4][3];
 } View_001F1B60;
 
-f32 SzModel_GetAnimFrameParam(s32 arg0, s32 arg1) {
+/* The current frame of animation parameter `which` of model slot `index`. */
+f32 SzModel_GetAnimFrameParam(s32 index, s32 which) {
     Obj_0031ABB0 *obj;
     View_001F1B60 *view;
     s8 slot;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1.0f;
     }
-    if (arg1 < 0 || arg1 >= 4) {
+    if (which < 0 || which >= 4) {
         return -1.0f;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     view = (View_001F1B60 *)obj;
     if (obj == NULL) {
         return -1.0f;
     }
-    slot = obj->lv[arg1];
+    slot = obj->lv[which];
     if (slot < 0) {
         return -1.0f;
     }
     if (obj->slots[slot] == NULL) {
         return -1.0f;
     }
-    return view->m[arg1][0];
+    return view->m[which][0];
 }
 
-void SzModel_SetAnimFrame(s32 arg0, f32 value) {
-    SzModel_SetAnimFrameParam(arg0, 0, value);
+/* Sets model slot `index`'s current animation frame. */
+void SzModel_SetAnimFrame(s32 index, f32 value) {
+    SzModel_SetAnimFrameParam(index, 0, value);
 }
 
 typedef struct View_001F1C50 {
@@ -80,21 +85,22 @@ typedef struct View_001F1C50 {
     f32 m[4][3];
 } View_001F1C50;
 
-s32 SzModel_SetAnimFrameParam(s32 arg0, s32 arg1, f32 value) {
+/* Sets the current frame of animation parameter `which` of model slot `index`. */
+s32 SzModel_SetAnimFrameParam(s32 index, s32 which, f32 value) {
     s32 slot;
     f32 maximum;
     Obj_0031ABB0 *obj;
     View_001F1C50 *view;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     view = (View_001F1C50 *)obj;
     if (obj == NULL) {
         return 0;
     }
-    slot = obj->lv[arg1];
+    slot = obj->lv[which];
     if (slot < 0) {
         return 0;
     }
@@ -108,31 +114,32 @@ s32 SzModel_SetAnimFrameParam(s32 arg0, s32 arg1, f32 value) {
     if (!(value <= maximum)) {
         value = maximum;
     }
-    view->m[arg1][0] = value;
+    view->m[which][0] = value;
     return 1;
 }
 
-s32 SzModel_GetAnimFrameMax(s32 arg0, s32 arg1) {
+/* How many frames animation `anim` of model slot `index` has (-1: the current one). */
+s32 SzModel_GetAnimFrameMax(s32 index, s32 anim) {
     extern s32 SzModel_GetAnimParam();
-    Obj_0031ABB0 *temp_v0;
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    if (arg1 < 0) {
-        arg1 = SzModel_GetAnimParam(arg0, 0);
+    if (anim < 0) {
+        anim = SzModel_GetAnimParam(index, 0);
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (anim < 0 || anim >= 8) {
         return -1;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1;
     }
-    if (temp_v0->slots[arg1] == NULL) {
+    if (obj->slots[anim] == NULL) {
         return -1;
     }
-    return temp_v0->vals[arg1] - 1;
+    return obj->vals[anim] - 1;
 }
 
 typedef struct {
@@ -141,31 +148,33 @@ typedef struct {
     f32 z;
 } Vec3_001F1E10;
 
-s32 SzModel_GetIntensity(s32 arg0, f32 *arg1) {
+/* Model slot `index`'s light intensity (four values) into `out`. */
+s32 SzModel_GetIntensity(s32 index, f32 *out) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    *(Vec3_001F1E10 *)arg1 = *(Vec3_001F1E10 *)((u8 *)obj + 0x120);
+    *(Vec3_001F1E10 *)out = *(Vec3_001F1E10 *)((u8 *)obj + 0x120);
     return 1;
 }
 
-s32 SzModel_GetIntensityOnly(s32 arg0, f32 *arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s overall intensity into `out`. */
+s32 SzModel_GetIntensityOnly(s32 index, f32 *out) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    *arg1 = *(f32 *)((u8 *)temp_v0 + 0x128);
+    *out = *(f32 *)((u8 *)obj + 0x128);
     return 1;
 }
 
@@ -173,18 +182,19 @@ typedef struct {
     f32 x, y, z;
 } Vec3_001F1EE0;
 
-s32 SzModel_SetIntensity(s32 arg0, f32 *arg1) {
+/* Sets model slot `index`'s light intensity (four values). */
+s32 SzModel_SetIntensity(s32 index, f32 *values) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (arg1 != NULL) {
-        *(Vec3_001F1EE0 *) ((u8 *) obj + 0x120) = *(Vec3_001F1EE0 *) arg1;
+    if (values != NULL) {
+        *(Vec3_001F1EE0 *) ((u8 *) obj + 0x120) = *(Vec3_001F1EE0 *) values;
     } else {
         ((Vec3_001F1EE0 *) ((u8 *) obj + 0x120))->x = 0.8f;
         ((Vec3_001F1EE0 *) ((u8 *) obj + 0x120))->y = 0.8f;
@@ -193,32 +203,34 @@ s32 SzModel_SetIntensity(s32 arg0, f32 *arg1) {
     return 1;
 }
 
-s32 SzModel_SetIntensityOnly(s32 arg0, f32 fparg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Sets model slot `index`'s overall intensity. */
+s32 SzModel_SetIntensityOnly(s32 index, f32 fparg0) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    *(f32 *)((u8 *)temp_v0 + 0x128) = fparg0;
+    *(f32 *)((u8 *)obj + 0x128) = fparg0;
     return 1;
 }
 
-s32 SzModel_GetPos(s32 arg0, void *arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s position into `out`. */
+s32 SzModel_GetPos(s32 index, void *out) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (arg1 != NULL) {
-        *(Vec4f *)arg1 = *(Vec4f *)temp_v0;
+    if (out != NULL) {
+        *(Vec4f *)out = *(Vec4f *)obj;
     }
     return 1;
 }
@@ -229,13 +241,14 @@ typedef struct {
     s8 unused1 : 2;
 } Flags_001F2050;
 
+/* Whether model slot `index` has a model bound. */
 static inline s32 check_001F2050(s32 index) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -245,13 +258,14 @@ static inline s32 check_001F2050(s32 index) {
     return 0;
 }
 
+/* Model slot `index`'s centre in the world into `out`. */
 s32 SzModel_GetCenter(s32 index, void *out) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -270,13 +284,14 @@ s32 SzModel_GetCenter(s32 index, void *out) {
     return 1;
 }
 
+/* Whether model slot `index` has a model bound. */
 static inline s32 ready_001F2150(s32 index) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -286,53 +301,55 @@ static inline s32 ready_001F2150(s32 index) {
     return 0;
 }
 
-s32 SzModel_GetCenterOfs(s32 arg0, f32 *arg1) {
+/* Model slot `index`'s centre offset (from its centre node) into `out`. */
+s32 SzModel_GetCenterOfs(s32 index, f32 *out) {
     s32 sp3C;
-    Obj_0031ABB0 *temp_s1;
+    Obj_0031ABB0 *obj;
     f32 temp_f1;
     s32 temp_a1;
     s32 temp_a1_2;
     s32 var_v0_2;
 
-    if ((arg0 < 0) || (temp_a1 = arg0 < 0x54, (temp_a1 == 0))) {
+    if ((index < 0) || (temp_a1 = index < 0x54, (temp_a1 == 0))) {
         return 0;
     }
-    temp_s1 = gSzModel_ahModel[arg0];
-    if (temp_s1 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (ready_001F2150(arg0) == 0) {
+    if (ready_001F2150(index) == 0) {
         return 0;
     }
-    if ((s32)*(u8 *)((u8 *)temp_s1 + 0x1FE) <= 0) {
+    if ((s32)*(u8 *)((u8 *)obj + 0x1FE) <= 0) {
         return 0;
     }
     sp3C = 0;
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         var_v0_2 = 0;
-    } else if (temp_s1 == NULL) {
+    } else if (obj == NULL) {
         var_v0_2 = 0;
     } else {
-        temp_a1_2 = *(s32 *)((u8 *)temp_s1 + 0x134);
+        temp_a1_2 = *(s32 *)((u8 *)obj + 0x134);
         var_v0_2 = lSzModel_TraceGNode(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
     }
     if (var_v0_2 != 0) {
-        temp_f1 = *(f32 *)(*(u8 **)((u8 *)temp_s1 + 0x13C) + 0x54);
-        arg1[0] = *(f32 *)((u8 *)var_v0_2 + 0x20) / temp_f1;
-        arg1[1] = *(f32 *)((u8 *)var_v0_2 + 0x24) / temp_f1;
-        arg1[2] = *(f32 *)((u8 *)var_v0_2 + 0x28) / temp_f1;
-        arg1[3] = 1.0f;
+        temp_f1 = *(f32 *)(*(u8 **)((u8 *)obj + 0x13C) + 0x54);
+        out[0] = *(f32 *)((u8 *)var_v0_2 + 0x20) / temp_f1;
+        out[1] = *(f32 *)((u8 *)var_v0_2 + 0x24) / temp_f1;
+        out[2] = *(f32 *)((u8 *)var_v0_2 + 0x28) / temp_f1;
+        out[3] = 1.0f;
     }
     return 1;
 }
 
+/* Sets model slot `index`'s position. */
 s32 SzModel_SetPos(s32 index, void *src) {
     Obj_0031ABB0 *dst;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    dst = gSzModel_ahModel[index];
+    dst = modelSlots[index];
     if (dst == NULL) {
         return 0;
     }
@@ -342,19 +359,20 @@ s32 SzModel_SetPos(s32 index, void *src) {
     return 1;
 }
 
-s32 SzModel_GetRot(s32 arg0, void *arg1) {
+/* Model slot `index`'s rotation into `out`. */
+s32 SzModel_GetRot(s32 index, void *out) {
     s32 result;
-    Obj_0031ABB0 *temp_v0;
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         result = 0;
     } else {
-        temp_v0 = gSzModel_ahModel[arg0];
-        if (temp_v0 == NULL) {
+        obj = modelSlots[index];
+        if (obj == NULL) {
             result = 0;
         } else {
-            if (arg1 != NULL) {
-                *(Vec4f *)arg1 = *(Vec4f *)((u8 *)temp_v0 + 0x10);
+            if (out != NULL) {
+                *(Vec4f *)out = *(Vec4f *)((u8 *)obj + 0x10);
             }
             result = 1;
         }
@@ -362,18 +380,19 @@ s32 SzModel_GetRot(s32 arg0, void *arg1) {
     return result;
 }
 
-s32 SzModel_GetRotC(s32 arg0, void *arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s rotation centre into `out`. */
+s32 SzModel_GetRotC(s32 index, void *out) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (arg1 != NULL) {
-        *(Vec4f *)arg1 = *(Vec4f *)((u8 *)temp_v0 + 0x20);
+    if (out != NULL) {
+        *(Vec4f *)out = *(Vec4f *)((u8 *)obj + 0x20);
     }
     return 1;
 }
@@ -382,20 +401,21 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001F2430;
 
-/* needs shared field: gSzModel_ahModel +0x10 f32[4] */
+/* needs shared field: modelSlots +0x10 f32[4] */
 
-s32 SzModel_SetRot(s32 arg0, void *arg1) {
+/* Sets model slot `index`'s rotation. */
+s32 SzModel_SetRot(s32 index, void *src) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (arg1 != NULL) {
-        *(Vec4_001F2430 *)((u8 *)obj + 0x10) = *(Vec4_001F2430 *)arg1;
+    if (src != NULL) {
+        *(Vec4_001F2430 *)((u8 *)obj + 0x10) = *(Vec4_001F2430 *)src;
     } else {
         *(f32 *)((u8 *)obj + 0x10) = 0.0f;
         *(f32 *)((u8 *)obj + 0x14) = 0.0f;
@@ -405,13 +425,14 @@ s32 SzModel_SetRot(s32 arg0, void *arg1) {
     return 1;
 }
 
+/* Sets model slot `index`'s rotation centre. */
 s32 SzModel_SetRotC(s32 index, void *src) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -426,29 +447,31 @@ s32 SzModel_SetRotC(s32 index, void *src) {
     return 1;
 }
 
-s32 SzModel_GetScale(s32 arg0, void *arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s scale into `out`. */
+s32 SzModel_GetScale(s32 index, void *out) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if (arg1 != NULL) {
-        *(Vec4f *)arg1 = temp_v0->v;
+    if (out != NULL) {
+        *(Vec4f *)out = obj->v;
     }
     return 1;
 }
 
+/* Sets model slot `index`'s scale. */
 s32 SzModel_SetScale(s32 idx, void *src) {
     Obj_0031ABB0 *obj;
 
     if (idx < 0 || idx >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[idx];
+    obj = modelSlots[idx];
     if (obj == NULL) {
         return 0;
     }
@@ -470,18 +493,19 @@ typedef struct {
     u8 a;
 } Color_001F2660;
 
-s32 SzModel_GetRgba(s32 arg0, void *arg1) {
+/* Model slot `index`'s colour into `out`. */
+s32 SzModel_GetRgba(s32 index, void *out) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return -1;
     }
-    if (arg1 != NULL) {
-        *(Color_001F2660 *)arg1 = *(Color_001F2660 *)&obj->pad040[0xEC];
+    if (out != NULL) {
+        *(Color_001F2660 *)out = *(Color_001F2660 *)&obj->pad040[0xEC];
     }
     return *(u8 *)((u8 *)obj + 0x1F8) & 3;
 }
@@ -498,21 +522,22 @@ typedef struct {
     u8 a;
 } Color_001F26E0;
 
-s32 SzModel_SetRgba(s32 arg0, s32 arg1, void *arg2) {
+/* Sets model slot `index`'s colour (`mode` says how it mixes). */
+s32 SzModel_SetRgba(s32 index, s32 mixMode, void *rgba) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (arg1 >= 0 && arg1 < 4) {
-        ((Flags_001F26E0 *)((u8 *)obj + 0x1F8))->mode = arg1;
+    if (mixMode >= 0 && mixMode < 4) {
+        ((Flags_001F26E0 *)((u8 *)obj + 0x1F8))->mode = mixMode;
     }
-    if (arg2 != NULL) {
-        *(Color_001F26E0 *)&obj->pad040[0xEC] = *(Color_001F26E0 *)arg2;
+    if (rgba != NULL) {
+        *(Color_001F26E0 *)&obj->pad040[0xEC] = *(Color_001F26E0 *)rgba;
     } else {
         obj->pad040[0xEC] = obj->pad040[0xED] = obj->pad040[0xEE] = 0x80;
         obj->pad040[0xEF] = 0x80;
@@ -520,30 +545,32 @@ s32 SzModel_SetRgba(s32 arg0, s32 arg1, void *arg2) {
     return 1;
 }
 
-s32 SzModel_GetAlpha(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s alpha. */
+s32 SzModel_GetAlpha(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1;
     }
-    return temp_v0->pad040[0xEF];
+    return obj->pad040[0xEF];
 }
 
-s32 SzModel_SetAlpha(s32 arg0, u8 arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Sets model slot `index`'s alpha. */
+s32 SzModel_SetAlpha(s32 index, u8 value) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    temp_v0->pad040[0xEF] = arg1;
+    obj->pad040[0xEF] = value;
     return 1;
 }
 
@@ -557,49 +584,52 @@ typedef struct {
     u8 r, g, b, a;
 } Color_001F2860;
 
-s32 SzModel_SetFilter(s32 arg0, s32 arg1, void *arg2) {
-    Obj_0031ABB0 *temp_a3;
+/* Sets model slot `index`'s colour filter (`mode` and its colour). */
+s32 SzModel_SetFilter(s32 index, s32 filterMode, void *color) {
+    Obj_0031ABB0 *obj;
 
-    if ((arg0 < 0) || (arg0 >= 0x54)) {
+    if ((index < 0) || (index >= 0x54)) {
         return 0;
     }
-    temp_a3 = gSzModel_ahModel[arg0];
-    if (temp_a3 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    if ((arg1 >= 0) && (arg1 < 4)) {
-        ((Flags_001F2860 *)((u8 *)temp_a3 + 0x1F8))->mode = arg1;
+    if ((filterMode >= 0) && (filterMode < 4)) {
+        ((Flags_001F2860 *)((u8 *)obj + 0x1F8))->mode = filterMode;
     }
-    if (arg2 != NULL) {
-        *(Color_001F2860 *)&temp_a3->pad040[0xF0] = *(Color_001F2860 *)arg2;
+    if (color != NULL) {
+        *(Color_001F2860 *)&obj->pad040[0xF0] = *(Color_001F2860 *)color;
     } else {
-        temp_a3->pad040[0xF0] = temp_a3->pad040[0xF1] = temp_a3->pad040[0xF2] = 0;
-        temp_a3->pad040[0xF3] = 0;
+        obj->pad040[0xF0] = obj->pad040[0xF1] = obj->pad040[0xF2] = 0;
+        obj->pad040[0xF3] = 0;
     }
     return 1;
 }
 
-s16 SzModel_GetModelNo(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* The model number loaded in slot `index`. */
+s16 SzModel_GetModelNo(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1;
     }
-    return *(s16 *)((u8 *)temp_v0 + 0x1F4);
+    return *(s16 *)((u8 *)obj + 0x1F4);
 }
 
-s8 SzModel_GetModelType(s32 arg0) {
+/* The kind of model loaded in slot `index`. */
+s8 SzModel_GetModelType(s32 index) {
     Obj_0031ABB0 *obj;
     s8 ret;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         ret = -1;
     } else {
-        obj = gSzModel_ahModel[arg0];
+        obj = modelSlots[index];
         if (obj == NULL) {
             ret = -1;
         } else {
@@ -616,18 +646,19 @@ typedef struct {
     s8 unused1 : 3;
 } ObjView_001F29E0;
 
-s32 SzModel_SetDeform(s32 arg0, s32 arg1) {
+/* Sets model slot `index`'s deform effect. */
+s32 SzModel_SetDeform(s32 index, s32 value) {
     ObjView_001F29E0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = (ObjView_001F29E0 *) gSzModel_ahModel[arg0];
+    obj = (ObjView_001F29E0 *) modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (obj->enabled != arg1) {
-        obj->enabled = (s8) arg1;
+    if (obj->enabled != value) {
+        obj->enabled = (s8) value;
     }
     return 1;
 }
@@ -638,75 +669,80 @@ typedef struct {
     s8 : 3;
 } Flags_001F2A70;
 
-s32 SzModel_GetDeform(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
-
-    if (arg0 < 0 || arg0 >= 0x54) {
-        return 0;
-    }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
-        return 0;
-    }
-    return ((Flags_001F2A70 *) ((u8 *) temp_v0 + 0x20C))->active ? 1 : 0;
-}
-
-s32 SzModel_SetDeformRatio(s32 arg0, s8 arg1) {
+/* Model slot `index`'s deform effect. */
+s32 SzModel_GetDeform(s32 index) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
+        return 0;
+    }
+    obj = modelSlots[index];
+    if (obj == NULL) {
+        return 0;
+    }
+    return ((Flags_001F2A70 *) ((u8 *) obj + 0x20C))->active ? 1 : 0;
+}
+
+/* Sets how strong model slot `index`'s deform effect is. */
+s32 SzModel_SetDeformRatio(s32 index, s8 value) {
+    Obj_0031ABB0 *obj;
+
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
 
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
 
-    *(s8 *)((u8 *)obj + 0x1FF) = arg1;
+    *(s8 *)((u8 *)obj + 0x1FF) = value;
     return 1;
 }
 
+/* Whether model slot `index` has a model bound. */
 static inline s32 check_001F2B30(s32 index) {
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    if (gSzModel_ahModel[index] == NULL) {
+    if (modelSlots[index] == NULL) {
         return 0;
     }
-    if (*(s8 *)((u8 *)gSzModel_ahModel[index] + 0x1F2) >= 0) {
+    if (*(s8 *)((u8 *)modelSlots[index] + 0x1F2) >= 0) {
         return 1;
     }
     return 0;
 }
 
+/* How many references model slot `index` has. */
 s32 SzModel_GetRefNum(s32 index) {
     if (index < 0 || index >= 0x54) {
         return -1;
     }
-    if (gSzModel_ahModel[index] == NULL) {
+    if (modelSlots[index] == NULL) {
         return -1;
     }
     if (check_001F2B30(index)) {
-        return *(u8 *)((u8 *)gSzModel_ahModel[index] + 0x1FE);
+        return *(u8 *)((u8 *)modelSlots[index] + 0x1FE);
     }
     return -1;
 }
 
-s32 SzModel_InqRefID(s32 arg0, s32 arg1) {
+/* Whether model slot `index` holds reference `id`. */
+s32 SzModel_InqRefID(s32 index, s32 id) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return -1;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (id < 0 || id >= 8) {
         return -1;
     }
-    return *(u16 *)((arg1 << 1) + (s32)obj + 0x1B0);
+    return *(u16 *)((id << 1) + (s32)obj + 0x1B0);
 }
 
 typedef struct View_001F2C60 {
@@ -718,23 +754,24 @@ typedef struct View_001F2C60 {
     u8 max;
 } View_001F2C60;
 
-s32 SzModel_SetRefID(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets reference `ref` of model slot `index` to `id`. */
+s32 SzModel_SetRefID(s32 index, s32 ref, s32 id) {
     View_001F2C60 *obj;
     s32 i;
     s32 group;
     s32 newGroup;
     u16 current;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    obj = (View_001F2C60 *) gSzModel_ahModel[arg0];
+    obj = (View_001F2C60 *) modelSlots[index];
     if (obj == NULL) {
         return -1;
     }
-    if (arg2 != 0) {
-        if (arg1 >= 0) {
-            group = (arg1 & 0x7F00) >> 8;
+    if (id != 0) {
+        if (ref >= 0) {
+            group = (ref & 0x7F00) >> 8;
             for (i = 0; i < 8; i++) {
                 if (((obj->slots[i] & 0x7F00) >> 8) == group) {
                     obj->slots[i] = 0x7FFF;
@@ -750,9 +787,9 @@ s32 SzModel_SetRefID(s32 arg0, s32 arg1, s32 arg2) {
     if (obj->count >= 8) {
         return -1;
     }
-    if (arg1 >= 0) {
-        newGroup = (arg1 & 0x7F00) >> 8;
-        if ((arg1 & 0xFF) >= obj->max) {
+    if (ref >= 0) {
+        newGroup = (ref & 0x7F00) >> 8;
+        if ((ref & 0xFF) >= obj->max) {
             return -1;
         }
         current = obj->slots[obj->count];
@@ -760,36 +797,37 @@ s32 SzModel_SetRefID(s32 arg0, s32 arg1, s32 arg2) {
             return -1;
         }
     }
-    obj->slots[obj->count] = (arg1 < 0) ? 0x7FFF : arg1;
+    obj->slots[obj->count] = (ref < 0) ? 0x7FFF : ref;
     return obj->count++;
 }
 
-s32 SzModel_SetRefID_RefNo(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the reference numbered `refNo` of model slot `index` to `id`. */
+s32 SzModel_SetRefID_RefNo(s32 index, s32 refNo, s32 id) {
     Obj_0031ABB0 *obj;
     s32 group;
     u16 current;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (arg2 < 0 || arg2 >= 8) {
+    if (id < 0 || id >= 8) {
         return 0;
     }
-    if (arg1 >= 0) {
-        group = (arg1 & 0x7F00) >> 8;
-        if ((arg1 & 0xFF) >= *(u8 *)((u8 *)obj + 0x1FE)) {
+    if (refNo >= 0) {
+        group = (refNo & 0x7F00) >> 8;
+        if ((refNo & 0xFF) >= *(u8 *)((u8 *)obj + 0x1FE)) {
             return 0;
         }
-        current = *(u16 *)((arg2 << 1) + (s32)obj + 0x1B0);
+        current = *(u16 *)((id << 1) + (s32)obj + 0x1B0);
         if ((current & 0x7FFF) < 0x7FFF && ((current & 0x7F00) >> 8) != group) {
             return 0;
         }
     }
-    *(u16 *)((arg2 << 1) + (s32)obj + 0x1B0) = (arg1 < 0) ? 0x7FFF : arg1;
+    *(u16 *)((id << 1) + (s32)obj + 0x1B0) = (refNo < 0) ? 0x7FFF : refNo;
     return 1;
 }
 
@@ -803,13 +841,14 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001F2EC0;
 
+/* Whether model slot `index` has a model bound. */
 static inline s32 active_001F2EC0(s32 index) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[index];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
@@ -819,57 +858,60 @@ static inline s32 active_001F2EC0(s32 index) {
     return 0;
 }
 
-s32 SzModel_GetRef(s32 arg0, s32 arg1, s32 arg2) {
+/* Reference `ref` of model slot `index` (`which` picks the word). */
+s32 SzModel_GetRef(s32 index, s32 ref, s32 which) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    if (!active_001F2EC0(arg0)) {
+    if (!active_001F2EC0(index)) {
         return 0;
     }
     if (!((Flags_001F2EC0 *)((u8 *)obj + 0x20C))->available) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 8) {
+    if (ref < 0 || ref >= 8) {
         return 0;
     }
-    if (!(*(u16 *)((arg1 << 1) + (s32)obj + 0x1B0) & 0x8000)) {
+    if (!(*(u16 *)((ref << 1) + (s32)obj + 0x1B0) & 0x8000)) {
         return 0;
     }
-    *(Vec4_001F2EC0 *)arg2 = *(Vec4_001F2EC0 *)((arg1 << 4) + (s32)obj + 0xA0);
+    *(Vec4_001F2EC0 *)which = *(Vec4_001F2EC0 *)((ref << 4) + (s32)obj + 0xA0);
     return 1;
 }
 
-s32 SzModel_SetMaxOT(s32 arg0, s16 arg1) {
-    Obj_0031ABB0 *temp_v0;
+/* Sets model slot `index`'s deepest draw-order level. */
+s32 SzModel_SetMaxOT(s32 index, s16 value) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    *(s16 *)((u8 *)temp_v0 + 0x20A) = arg1;
+    *(s16 *)((u8 *)obj + 0x20A) = value;
     return 1;
 }
 
-s32 SzModel_GetMaxOT(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Model slot `index`'s deepest draw-order level. */
+s32 SzModel_GetMaxOT(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1;
     }
-    return *(u16 *)((u8 *)temp_v0 + 0x20A);
+    return *(u16 *)((u8 *)obj + 0x20A);
 }
 
 typedef struct {
@@ -877,19 +919,20 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F30B0;
 
-s32 SzModel_SetDrawFlag(s32 arg0, s32 arg1) {
+/* Shows or hides model slot `index`. */
+s32 SzModel_SetDrawFlag(s32 index, s32 on) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
 
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
 
-    ((Flags_001F30B0 *)((u8 *)obj + 0x20C))->enabled = (s8)arg1;
+    ((Flags_001F30B0 *)((u8 *)obj + 0x20C))->enabled = (s8)on;
     return 1;
 }
 
@@ -898,17 +941,18 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3130;
 
-s32 SzModel_GetDrawFlag(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index` is shown. */
+s32 SzModel_GetDrawFlag(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    return ((Flags_001F3130 *)((u8 *)temp_v0 + 0x20C))->enabled ? 1 : 0;
+    return ((Flags_001F3130 *)((u8 *)obj + 0x20C))->enabled ? 1 : 0;
 }
 
 typedef struct {
@@ -917,17 +961,18 @@ typedef struct {
     s8 high : 1;
 } Flags_001F3190;
 
-s32 SzModel_SetCalcFlag(s32 arg0, s32 arg1) {
+/* Turns model slot `index`'s matrix calculation on or off. */
+s32 SzModel_SetCalcFlag(s32 index, s32 on) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    ((Flags_001F3190 *)((u8 *)obj + 0x20C))->flag = arg1;
+    ((Flags_001F3190 *)((u8 *)obj + 0x20C))->flag = on;
     return 1;
 }
 
@@ -937,17 +982,18 @@ typedef struct {
     s8 : 1;
 } Flags_001F3210;
 
-s32 SzModel_GetCalcFlag(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index`'s matrices are calculated when it draws. */
+s32 SzModel_GetCalcFlag(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    return ((Flags_001F3210 *)((u8 *)temp_v0 + 0x20C))->active ? 1 : 0;
+    return ((Flags_001F3210 *)((u8 *)obj + 0x20C))->active ? 1 : 0;
 }
 
 typedef struct {
@@ -955,17 +1001,18 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3270;
 
-s32 SzModel_SetFogFlag(s32 arg0, s64 arg1) {
+/* Turns fog on or off for model slot `index`. */
+s32 SzModel_SetFogFlag(s32 index, s64 on) {
     Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    obj = gSzModel_ahModel[arg0];
+    obj = modelSlots[index];
     if (obj == NULL) {
         return 0;
     }
-    ((Flags_001F3270 *)((u8 *)obj + 0x20C))->enabled = (s8)arg1;
+    ((Flags_001F3270 *)((u8 *)obj + 0x20C))->enabled = (s8)on;
     return 1;
 }
 
@@ -973,17 +1020,18 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F32F0;
 
-s32 SzModel_SetPauseFlag(s32 arg0, s64 arg1) {
-    Obj_0031ABB0 *temp_a2;
+/* Pauses or resumes model slot `index`'s animation. */
+s32 SzModel_SetPauseFlag(s32 index, s64 on) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_a2 = gSzModel_ahModel[arg0];
-    if (temp_a2 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    ((Flags_001F32F0 *)((u8 *)temp_a2 + 0x20D))->enabled = arg1;
+    ((Flags_001F32F0 *)((u8 *)obj + 0x20D))->enabled = on;
     return 1;
 }
 
@@ -991,17 +1039,18 @@ typedef struct {
     s8 active : 1;
 } Flags_001F3360;
 
-s32 SzModel_GetPauseFlag(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index`'s animation is paused. */
+s32 SzModel_GetPauseFlag(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    return ((Flags_001F3360 *)((u8 *)temp_v0 + 0x20D))->active ? 1 : 0;
+    return ((Flags_001F3360 *)((u8 *)obj + 0x20D))->active ? 1 : 0;
 }
 
 typedef struct {
@@ -1009,17 +1058,18 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F33C0;
 
-s32 SzModel_SetStoneFlag(s32 arg0, s64 arg1) {
-    Obj_0031ABB0 *temp_a2;
+/* Turns model slot `index` to stone or back. */
+s32 SzModel_SetStoneFlag(s32 index, s64 on) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_a2 = gSzModel_ahModel[arg0];
-    if (temp_a2 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    ((Flags_001F33C0 *)((u8 *)temp_a2 + 0x20D))->enabled = (s8)arg1;
+    ((Flags_001F33C0 *)((u8 *)obj + 0x20D))->enabled = (s8)on;
     return 1;
 }
 
@@ -1028,17 +1078,18 @@ typedef struct {
     s8 enabled : 1;
 } Flags_001F3440;
 
-s32 SzModel_GetStoneFlag(s32 arg0) {
-    Obj_0031ABB0 *temp_v0;
+/* Whether model slot `index` is stone. */
+s32 SzModel_GetStoneFlag(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return 0;
     }
-    temp_v0 = gSzModel_ahModel[arg0];
-    if (temp_v0 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return 0;
     }
-    return ((Flags_001F3440 *)((u8 *)temp_v0 + 0x20D))->enabled ? 1 : 0;
+    return ((Flags_001F3440 *)((u8 *)obj + 0x20D))->enabled ? 1 : 0;
 }
 
 struct DotrObjectVector3 {
@@ -1150,6 +1201,7 @@ struct DotrObjectShadeSlot {
 };
 extern int func_00241A00_b(float scale, unsigned short color, int e);
 
+/* Sets how far model slot `index` has turned to stone. */
 int SzModel_SetStoneRatio(int index, int value)
 {
     struct DotrObject *p;
@@ -1222,18 +1274,19 @@ typedef struct {
     s8 active : 1;
 } Flags_001F3690;
 
-s32 SzModel_GetStoneRatio(s32 arg0) {
-    Obj_0031ABB0 *temp_v1;
+/* How far model slot `index` has turned to stone. */
+s32 SzModel_GetStoneRatio(s32 index) {
+    Obj_0031ABB0 *obj;
 
-    if (arg0 < 0 || arg0 >= 0x54) {
+    if (index < 0 || index >= 0x54) {
         return -1;
     }
-    temp_v1 = gSzModel_ahModel[arg0];
-    if (temp_v1 == NULL) {
+    obj = modelSlots[index];
+    if (obj == NULL) {
         return -1;
     }
-    if (((Flags_001F3690 *)((u8 *)temp_v1 + 0x20D))->active != 0) {
-        return *(u8 *)((u8 *)temp_v1 + 0x200);
+    if (((Flags_001F3690 *)((u8 *)obj + 0x20D))->active != 0) {
+        return *(u8 *)((u8 *)obj + 0x200);
     }
     return -1;
 }
@@ -1244,16 +1297,17 @@ typedef struct Table_001F3700 {
     s32 count;
 } Table_001F3700;
 
-extern Table_001F3700 gSzEffect_aEffFuncTbl[3];
-extern s8 gSzEffect_el;
+extern Table_001F3700 effectKindTable[3]; /* original: gSzEffect_aEffFuncTbl */
+extern s8 effectState; /* original: gSzEffect_el */
 
+/* Clears the effect slots and sets the default black-out, fog and light values for duels, battles and monsters. */
 void SzEffect_Init(void) {
     s32 i;
     s32 *values;
     s32 *count;
     Table_001F3700 *table;
 
-    table = gSzEffect_aEffFuncTbl;
+    table = effectKindTable;
     i = 0;
     do {
         values = table->values;
@@ -1265,7 +1319,7 @@ void SzEffect_Init(void) {
         i++;
         table++;
     } while (i < 3);
-    RhMem_FillMemory(&gSzEffect_el, 0, 0x354);
+    RhMem_FillMemory(&effectState, 0, 0x354);
     SzEffect_Clear();
     SzEffect_SetBlackOutForMonster(0x80);
     SzEffect_SetBlackOutForDuel(0x80);

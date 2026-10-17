@@ -291,7 +291,7 @@ extern u8 cardRequests[]; /* original: gSzDuel_aCardRequest */
 extern s32 g_SDBuffer;
 
 
-extern s32 gSzView_hView[];
+extern s32 views[]; /* original: gSzView_hView */
 
 
 
@@ -372,7 +372,7 @@ extern u64 g_aqwExDitherMatrix[];
 
 
 
-extern s32 gSzEvent_nSave;
+extern s32 eventLoadedScene; /* original: gSzEvent_nSave */
 
 extern u8 D_003181EC;
 
@@ -450,7 +450,7 @@ extern s8 D_00318145;
 extern s32 D_0031AB90;
 extern s8 D_00318142;
 
-extern s32 gSzModel_pfhCache;
+extern s32 modelDrawCache; /* original: gSzModel_pfhCache */
 
 
 

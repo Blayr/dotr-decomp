@@ -13,120 +13,130 @@ typedef struct {
 } Card_001F6F50;
 
 
-s32 SzEffect_GetPlayMotion(s32 arg0) {
-    s32 temp_a0;
-    s32 temp_a1;
-    s32 temp_a2;
-    s32 temp_a3;
-    s32 temp_v0;
+/* Which battle animation the monster in the 3D battle plays against its opponent (SzDuel_GetPlayMotion). */
+s32 SzEffect_GetPlayMotion(s32 flag) {
+    s32 attackerSide;
+    s32 attackerUnit;
+    s32 defenderSide;
+    s32 defenderUnit;
+    s32 entry;
     Card_001F6F50 *card;
     u8 x;
     u8 y;
 
-    temp_v0 = SzBattle_InqEntry(1);
-    card = (Card_001F6F50 *)SzDuel_GetUnit(temp_v0 >> 8, temp_v0 & 0xFF);
-    temp_a2 = (s32) D_0031BE98 >> 8;
-    temp_a3 = D_0031BE98 & 0xFF;
-    temp_a0 = (s32) D_0031BE9C >> 8;
-    temp_a1 = D_0031BE9C & 0xFF;
+    entry = SzBattle_InqEntry(1);
+    card = (Card_001F6F50 *)SzDuel_GetUnit(entry >> 8, entry & 0xFF);
+    defenderSide = (s32) D_0031BE98 >> 8;
+    defenderUnit = D_0031BE98 & 0xFF;
+    attackerSide = (s32) D_0031BE9C >> 8;
+    attackerUnit = D_0031BE9C & 0xFF;
     if (card == 0) {
         return -1;
     }
-    if ((temp_a0 < 0) || (temp_a0 >= 3) || (temp_a1 < 0) || (temp_a1 >= 0xB) || (temp_a2 < 0) || (temp_a2 >= 3) || (temp_a3 < 0) || (temp_a3 >= 0xB)) {
+    if ((attackerSide < 0) || (attackerSide >= 3) || (attackerUnit < 0) || (attackerUnit >= 0xB) || (defenderSide < 0) || (defenderSide >= 3) || (defenderUnit < 0) || (defenderUnit >= 0xB)) {
         return -1;
     }
     x = card->alternate ? card->alternateX : card->x;
     y = card->alternate ? card->alternateY : card->y;
-    return SzDuel_GetPlayMotion(temp_a0, temp_a1, temp_a2, temp_a3, x, y, arg0);
+    return SzDuel_GetPlayMotion(attackerSide, attackerUnit, defenderSide, defenderUnit, x, y, flag);
 }
 
-s32 SzEffect_ModelShotTexture2(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    return SzEffect_ModelShotTextureWithFunc2(arg0, arg1, arg2, arg3, 0, 0);
+/* Renders unit `id`'s model into a texture. */
+s32 SzEffect_ModelShotTexture2(s32 id, s32 arg1, s32 arg2, s32 arg3) {
+    return SzEffect_ModelShotTextureWithFunc2(id, arg1, arg2, arg3, 0, 0);
 }
 
+/* Renders the effect target's model into a texture with a draw callback. */
 void SzEffect_ModelShotTextureWithFunc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     SzEffect_ModelShotTextureWithFunc2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
 }
 
-s32 SzEffect_ModelShotTextureWithFunc2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Renders unit `id`'s model into a texture with a draw callback. */
+s32 SzEffect_ModelShotTextureWithFunc2(s32 id, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = id >> 8;
+    lo = id & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    id = SzDuel_GetUnitModelID(hi, lo);
+    if (id < 0) {
         return 0;
     }
-    SzModel_ShotTextureWithFunc(arg0, arg1, arg2, arg3, arg4, arg5);
+    SzModel_ShotTextureWithFunc(id, arg1, arg2, arg3, arg4, arg5);
     return 1;
 }
 
+/* Starts a motion blur on the effect target's model. */
 void SzEffect_ReqMotionBlur(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     SzEffect_ReqMotionBlur2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
 }
 
-s32 SzEffect_ReqMotionBlur2(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Starts a motion blur trail on unit `id`'s model. */
+s32 SzEffect_ReqMotionBlur2(s32 id, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     extern s32 SzModel_ReqMotionBlur();
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = id >> 8;
+    lo = id & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    id = SzDuel_GetUnitModelID(hi, lo);
+    if (id < 0) {
         return 0;
     }
-    return SzModel_ReqMotionBlur(arg0, arg1, arg2, arg3, arg4, arg5);
+    return SzModel_ReqMotionBlur(id, arg1, arg2, arg3, arg4, arg5);
 }
 
-void SzEffect_SetPauseFor3DBattle(s32 arg0) {
-    SzEffect_SetModelPauseForType(4, arg0);
-    SzEffect_SetModelPauseForType(5, arg0);
-    SzEffect_SetModelPauseForType(2, arg0);
-    SzEffect_SetModelPauseForType(3, arg0);
-    SzView_PauseRequest(-1, -1, arg0);
+/* Pauses (`on`) or resumes the duel board's models while a 3D battle plays. */
+void SzEffect_SetPauseFor3DBattle(s32 on) {
+    SzEffect_SetModelPauseForType(4, on);
+    SzEffect_SetModelPauseForType(5, on);
+    SzEffect_SetModelPauseForType(2, on);
+    SzEffect_SetModelPauseForType(3, on);
+    SzView_PauseRequest(-1, -1, on);
 }
 
-s32 SzEffect_SetModelPause2(s32 arg0, s64 arg1) {
+/* Pauses (`on`) or resumes unit `id`'s model. */
+s32 SzEffect_SetModelPause2(s32 id, s64 on) {
     extern s32 SzDuel_GetUnitModelID(s32, s32);
     s32 hi;
     s32 lo;
 
-    hi = arg0 >> 8;
-    lo = arg0 & 0xFF;
+    hi = id >> 8;
+    lo = id & 0xFF;
     if (hi < 0 || hi >= 3 || lo < 0 || lo >= 0xB) {
         return 0;
     }
-    arg0 = SzDuel_GetUnitModelID(hi, lo);
-    if (arg0 < 0) {
+    id = SzDuel_GetUnitModelID(hi, lo);
+    if (id < 0) {
         return 0;
     }
-    return SzModel_SetPauseFlag(arg0, arg1);
+    return SzModel_SetPauseFlag(id, on);
 }
 
-s32 SzEffect_SetModelPauseForType(s32 arg0, s32 arg1) {
+/* Pauses (`on`) or resumes every model of kind `type`. */
+s32 SzEffect_SetModelPauseForType(s32 type, s32 on) {
     extern s32 SzModel_GetModelType(s32);
     extern s32 SzModel_SetPauseFlag(s32, s32);
     s32 i;
 
     i = 0;
     do {
-        if (arg0 < 0 || arg0 == SzModel_GetModelType(i)) {
-            SzModel_SetPauseFlag(i, arg1);
+        if (type < 0 || type == SzModel_GetModelType(i)) {
+            SzModel_SetPauseFlag(i, on);
         }
         i += 1;
     } while (i < 0x54);
 }
 
+/* Advances the turn-to-stone effect of every model being petrified. */
 void SzEffect_StoneProc(void) {
     s32 temp_v0;
     s32 temp_v0_2;
@@ -161,23 +171,25 @@ void SzEffect_StoneProc(void) {
     } while (var_s1_2 < 2);
 }
 
+/* Starts the camera system (the one view). */
 s32 SzView_Init(void) {
     return 1;
 }
 
-s32 SzView_Create(s32 arg0) {
-    s32 temp_v0;
+/* Creates view `view` (only view 0 exists). */
+s32 SzView_Create(s32 view) {
+    s32 state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    temp_v0 = SzMem_Alloc(0x8C0);
-    if (temp_v0 == 0) {
+    state = SzMem_Alloc(0x8C0);
+    if (state == 0) {
         return 0;
     }
-    gSzView_hView[arg0] = temp_v0;
-    RhMem_FillMemory4((void *) temp_v0, 0, 0x230);
-    lSzView_InitVars(arg0);
+    views[view] = state;
+    RhMem_FillMemory4((void *) state, 0, 0x230);
+    lSzView_InitVars(view);
     return 1;
 }
 
@@ -225,6 +237,7 @@ typedef char DotrBlockMustBe8c0[(sizeof(struct DotrBlock) == 0x8c0) ? 1 : -1];
 extern struct DotrBlock *D_0031BEB0_b[];
 int func_001F9170_b(int index, int position, struct DotrBlockQuad *in);
 
+/* Resets view `index` to its defaults: camera, look point, lights, fog, screen distance. */
 int lSzView_InitVars(int index)
 {
     struct DotrBlock *p;
@@ -308,13 +321,14 @@ int lSzView_InitVars(int index)
     return 1;
 }
 
-s32 SzView_Destroy(s32 arg0) {
+/* Frees view `view`. */
+s32 SzView_Destroy(s32 view) {
     s32 *slot;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    slot = &gSzView_hView[arg0];
+    slot = &views[view];
     if (*slot == 0) {
         return 0;
     }
@@ -363,7 +377,8 @@ extern s32 nCurLight;
 
 #pragma conditional_move off
 
-s32 SzView_Act(s32 arg0) {
+/* Runs view `view` for a frame: its camera requests (moves, turns, shakes), then its matrices. */
+s32 SzView_Act(s32 view) {
     extern u32 SzPad_GetPressInfo();
     extern s32 SzModel_GetModelType();
     s32 temp_fp;
@@ -371,7 +386,7 @@ s32 SzView_Act(s32 arg0) {
 
     temp_fp = SzDebug_GetActiveMenu();
     temp_s7 = SzGame_GetMode(1);
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     } else {
         State_001F7790 *temp_s0;
@@ -391,7 +406,7 @@ s32 SzView_Act(s32 arg0) {
         s32 var_v0;
         s32 temp_s2_2;
 
-        temp_s0 = (State_001F7790 *) gSzView_hView[arg0];
+        temp_s0 = (State_001F7790 *) views[view];
         if (temp_s0 == 0) {
             return 0;
         }
@@ -439,7 +454,7 @@ s32 SzView_Act(s32 arg0) {
             }
             if (temp_fp == 0xD) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
-                    SzView_SetStraightLightColor(arg0, spC0, nCurLight, NULL);
+                    SzView_SetStraightLightColor(view, spC0, nCurLight, NULL);
                 }
                 if (SzPad_Check(0, 2, 0xA000) != 0) {
                     if (SzPad_Check(0, 2, 0x8000) != 0) {
@@ -583,7 +598,7 @@ s32 SzView_Act(s32 arg0) {
         var_f22 = 0.0f;
         if (SzView_InqRequest(-1, -1) == NULL) {
             if ((u32) (temp_v0 - 4) < 2U) {
-                SzView_SetViewCamera(arg0, spBC, NULL, temp_s0->mode, 1.0f);
+                SzView_SetViewCamera(view, spBC, NULL, temp_s0->mode, 1.0f);
             }
         }
         if (SzPad_IsPress(1) != 0) {
@@ -593,7 +608,7 @@ s32 SzView_Act(s32 arg0) {
             var_f21 -= (0.024543693f * (f32) SzPad_GetPressInfo(1, 3)) / 64.0f;
             var_f22 += (2.0f * (f32) SzPad_GetPressInfo(1, 8)) / 64.0f;
             var_f22 -= (2.0f * (f32) SzPad_GetPressInfo(1, 9)) / 64.0f;
-            SzView_RollCamera(arg0, 0, 1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(view, 0, 1, var_f20, var_f21, var_f22);
             var_f22 = 0.0f;
             var_f21 = 0.0f;
             var_f20 = 0.0f;
@@ -603,7 +618,7 @@ s32 SzView_Act(s32 arg0) {
             var_f21 += (0.024543693f * (f32) SzPad_GetPressInfo(1, 6)) / 64.0f;
             var_f22 -= (2.0f * (f32) SzPad_GetPressInfo(1, 0xA)) / 64.0f;
             var_f22 += (2.0f * (f32) SzPad_GetPressInfo(1, 0xB)) / 64.0f;
-            SzView_RollCamera(arg0, 0, -1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(view, 0, -1, var_f20, var_f21, var_f22);
         } else {
             if (SzPad_Check(1, 1, 0x8000) != 0) {
                 var_f20 += 0.024543693f;
@@ -623,7 +638,7 @@ s32 SzView_Act(s32 arg0) {
             if (SzPad_Check(1, 1, 8) != 0) {
                 var_f22 -= 2.0f;
             }
-            SzView_RollCamera(arg0, 0, 1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(view, 0, 1, var_f20, var_f21, var_f22);
             var_f22 = 0.0f;
             var_f21 = 0.0f;
             var_f20 = 0.0f;
@@ -645,7 +660,7 @@ s32 SzView_Act(s32 arg0) {
             if (SzPad_Check(1, 1, 2) != 0) {
                 var_f22 += 2.0f;
             }
-            SzView_RollCamera(arg0, 0, -1, var_f20, var_f21, var_f22);
+            SzView_RollCamera(view, 0, -1, var_f20, var_f21, var_f22);
         }
         if ((temp_s7 == 0) || (temp_s7 == 5) || (temp_s7 == 0xC)) {
             SzDebug_IsHide();
@@ -690,16 +705,17 @@ typedef struct Render_001F8A30 {
 } Render_001F8A30;
 
 
-s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
+/* Sends view `view`'s matrices and screen settings to the renderer. */
+s32 SzView_Set_Pipe(s32 packet, s32 view) {
     Render_001F8A30 render;
     Object_001F8A30 *object;
 
-    if ((arg1 < 0) || (arg1 > 0)) {
-        return arg0;
+    if ((view < 0) || (view > 0)) {
+        return packet;
     }
-    object = (Object_001F8A30 *)gSzView_hView[arg1];
+    object = (Object_001F8A30 *)views[view];
     if (object == 0) {
-        return arg0;
+        return packet;
     }
     RhView_SetScreen(object->value44, 640.0f, 448.0f, 320.0f, 224.0f);
     RhView_SetAspect(object->value48, object->value4C);
@@ -711,7 +727,7 @@ s32 SzView_Set_Pipe(s32 arg0, s32 arg1) {
     render.vector50 = object->vector10;
     render.flags80 = object->flags40;
     RhView_Set(&render);
-    return RhView_SendViewParameters(arg0);
+    return RhView_SendViewParameters(packet);
 }
 
 typedef struct {
@@ -728,7 +744,8 @@ typedef struct {
     u16 maskB;         /* 0x8AE */
 } Object_001F8B50;
 
-void *SzView_SetFog_Pipe(void *arg0, s32 arg1, s32 arg2, f32 arg3) {
+/* Sends the fog of setting set `set` of view `view` for depth `depth`. */
+void *SzView_SetFog_Pipe(void *packet, s32 view, s32 set, f32 depth) {
     Object_001F8B50 *obj;
     Color_001F8B50 color;
     f32 *posA;
@@ -737,102 +754,103 @@ void *SzView_SetFog_Pipe(void *arg0, s32 arg1, s32 arg2, f32 arg3) {
     u32 idxB;
     s32 scale;
 
-    if ((arg1 < 0) || (arg1 > 0)) {
-        return arg0;
+    if ((view < 0) || (view > 0)) {
+        return packet;
     }
-    obj = (Object_001F8B50 *) gSzView_hView[arg1];
+    obj = (Object_001F8B50 *) views[view];
     if (obj == NULL) {
-        return arg0;
+        return packet;
     }
-    if ((arg2 < 0) || (arg2 >= 10)) {
-        return arg0;
+    if ((set < 0) || (set >= 10)) {
+        return packet;
     }
-    posA = obj->posA[arg2];
-    posB = obj->posB[arg2];
-    idxB = arg2;
-    idxA = arg2;
-    if (arg2 != 9) {
+    posA = obj->posA[set];
+    posB = obj->posB[set];
+    idxB = set;
+    idxA = set;
+    if (set != 9) {
         if (!(obj->maskA & (1 << idxA))) {
             posA = obj->posA[9];
             idxA = 9;
         }
-        if (!(obj->maskB & (1 << arg2))) {
+        if (!(obj->maskB & (1 << set))) {
             posB = obj->posB[9];
             idxB = 9;
         }
         if (idxA == 9 && idxB == 9) {
-            arg2 = 9;
+            set = 9;
         }
     }
     if ((obj->maskA & (1 << idxA)) || (obj->maskB & (1 << idxB))) {
-        color = obj->color[arg2];
-        scale = (u32)(128.0f * arg3) & 0xFF;
+        color = obj->color[set];
+        scale = (u32)(128.0f * depth) & 0xFF;
         color.c[2] = (color.c[2] * scale) >> 7;
         color.c[1] = (color.c[1] * scale) >> 7;
         color.c[0] = (color.c[0] * scale) >> 7;
-        arg0 = RhBase_SetFogColor(arg0, &color);
-        arg0 = RhVu1Mac_SetFogParameterEx(arg0, posA[0], posA[1], posB[0], posB[1]);
+        packet = RhBase_SetFogColor(packet, &color);
+        packet = RhVu1Mac_SetFogParameterEx(packet, posA[0], posA[1], posB[0], posB[1]);
     }
-    return arg0;
+    return packet;
 }
 
-s32 SzView_SetLight_Pipe(s32 arg0, s32 arg1, s32 arg2) {
+/* Sends the lights of setting set `set` (0..9; 9 is the default) of view `view`: its directional and point lights. */
+s32 SzView_SetLight_Pipe(s32 packet, s32 view, s32 set) {
     u32 sp70[4];
-    u8 *var_s0;
-    u8 *var_s1;
-    s32 var_s2;
-    s32 var_s3;
-    u8 *temp_s4;
+    u8 *straight;
+    u8 *point;
+    s32 straightSet;
+    s32 pointSet;
+    u8 *state;
 
-    if ((arg1 < 0) || (arg1 > 0)) {
-        return arg0;
+    if ((view < 0) || (view > 0)) {
+        return packet;
     }
-    temp_s4 = (u8 *)gSzView_hView[arg1];
-    if (temp_s4 == NULL) {
-        return arg0;
+    state = (u8 *)views[view];
+    if (state == NULL) {
+        return packet;
     }
-    if ((arg2 < 0) || (arg2 >= 0xA)) {
-        return arg0;
+    if ((set < 0) || (set >= 0xA)) {
+        return packet;
     }
-    var_s0 = temp_s4 + (arg2 * 0x90) + 0x60;
-    var_s1 = temp_s4 + (arg2 * 0x30) + 0x600;
-    var_s3 = arg2;
-    var_s2 = arg2;
-    if (arg2 != 9) {
-        if (!(*(u16 *)(temp_s4 + 0x8A8) & (1 << arg2))) {
-            var_s0 = temp_s4 + 0x570;
-            var_s2 = 9;
+    straight = state + (set * 0x90) + 0x60;
+    point = state + (set * 0x30) + 0x600;
+    pointSet = set;
+    straightSet = set;
+    if (set != 9) {
+        if (!(*(u16 *)(state + 0x8A8) & (1 << set))) {
+            straight = state + 0x570;
+            straightSet = 9;
         }
-        if (!(*(u16 *)(temp_s4 + 0x8AA) & (1 << arg2)) ||
-            (*(u16 *)(temp_s4 + 0x8AE) & (1 << arg2))) {
-            var_s1 = temp_s4 + 0x7B0;
-            var_s3 = 9;
+        if (!(*(u16 *)(state + 0x8AA) & (1 << set)) ||
+            (*(u16 *)(state + 0x8AE) & (1 << set))) {
+            point = state + 0x7B0;
+            pointSet = 9;
         }
     }
     RhVu1Mac_SetStraightLightToVu1_Ex(0, NULL, NULL, -1);
-    if (*(u16 *)(temp_s4 + 0x8A8) & (1 << var_s2)) {
-        *(s32 *)(var_s0 + 0x2C) = 0;
-        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x20);
-        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0, sp70, 0);
-        *(s32 *)(var_s0 + 0x5C) = 0;
-        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x50);
-        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0 + 0x30, sp70, 1);
-        *(s32 *)(var_s0 + 0x8C) = 0;
-        RhGeom_MulMatrixVector(sp70, NULL, var_s0 + 0x80);
-        RhVu1Mac_SetStraightLightToVu1_Ex(0, var_s0 + 0x60, sp70, 2);
+    if (*(u16 *)(state + 0x8A8) & (1 << straightSet)) {
+        *(s32 *)(straight + 0x2C) = 0;
+        RhGeom_MulMatrixVector(sp70, NULL, straight + 0x20);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, straight, sp70, 0);
+        *(s32 *)(straight + 0x5C) = 0;
+        RhGeom_MulMatrixVector(sp70, NULL, straight + 0x50);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, straight + 0x30, sp70, 1);
+        *(s32 *)(straight + 0x8C) = 0;
+        RhGeom_MulMatrixVector(sp70, NULL, straight + 0x80);
+        RhVu1Mac_SetStraightLightToVu1_Ex(0, straight + 0x60, sp70, 2);
     }
-    arg0 = RhVu1Mac_SetStraightLightToVu1_Ex(arg0, NULL, NULL, -1);
-    if (*(u16 *)(temp_s4 + 0x8AA) & (1 << var_s3)) {
-        RhGeom_MulMatrixVector(sp70, NULL, var_s1 + 0x10);
+    packet = RhVu1Mac_SetStraightLightToVu1_Ex(packet, NULL, NULL, -1);
+    if (*(u16 *)(state + 0x8AA) & (1 << pointSet)) {
+        RhGeom_MulMatrixVector(sp70, NULL, point + 0x10);
         sp70[3] = 0x3F800000;
-        return RhVu1Mac_SetPointLightToVu1(arg0, var_s1, sp70,
-                             *(f32 *)(var_s1 + 0x20),
-                             *(f32 *)(var_s1 + 0x24),
-                             *(f32 *)(var_s1 + 0x28));
+        return RhVu1Mac_SetPointLightToVu1(packet, point, sp70,
+                             *(f32 *)(point + 0x20),
+                             *(f32 *)(point + 0x24),
+                             *(f32 *)(point + 0x28));
     }
     {
         f32 zero = 0.0f;
-        return RhVu1Mac_SetPointLightToVu1(arg0, NULL, NULL, zero, zero, zero);
+        return RhVu1Mac_SetPointLightToVu1(packet, NULL, NULL, zero, zero, zero);
     }
 }
 
@@ -848,16 +866,17 @@ typedef struct Camera_001F8F80 {
 } Camera_001F8F80;
 
 
-s32 lSzView_CalcLook(s32 arg0) {
+/* Works out view `view`'s look matrix from its camera and look point. */
+s32 lSzView_CalcLook(s32 view) {
     Vec4_001F8F80 result;
     Camera_001F8F80 *camera;
     Vec4_001F8F80 *position;
     Vec4_001F8F80 *target;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    camera = (Camera_001F8F80 *) gSzView_hView[arg0];
+    camera = (Camera_001F8F80 *) views[view];
     if (camera == 0) {
         return 0;
     }
@@ -884,13 +903,14 @@ typedef struct {
     f32 target[4];
 } Direction_001F90E0;
 
-s32 lSzView_CalcRel(s32 arg0) {
+/* Works out view `view`'s camera from its relative (orbit) position. */
+s32 lSzView_CalcRel(s32 view) {
     Direction_001F90E0 *entry;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    entry = (Direction_001F90E0 *)gSzView_hView[arg0];
+    entry = (Direction_001F90E0 *)views[view];
     if (entry == 0) {
         return 0;
     }
@@ -914,25 +934,26 @@ typedef struct Palette_001F9170 {
     Color_001F9170 colors[10];
 } Palette_001F9170;
 
-s32 SzView_SetFogColor(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the fog colour of setting set `set` (0..9) of view `view`; 0 resets it, 1 keeps the colour and turns it on. */
+s32 SzView_SetFogColor(s32 view, s32 set, s32 color) {
     Palette_001F9170 *palette;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    palette = (Palette_001F9170 *)gSzView_hView[arg0];
+    palette = (Palette_001F9170 *)views[view];
     if (palette == 0) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 != 0) {
-        palette->colors[arg1] = *(Color_001F9170 *)arg2;
+    if (color != 0) {
+        palette->colors[set] = *(Color_001F9170 *)color;
     } else {
-        palette->colors[arg1].r = 0xFF;
-        palette->colors[arg1].g = 0xFF;
-        palette->colors[arg1].b = 0xFF;
+        palette->colors[set].r = 0xFF;
+        palette->colors[set].g = 0xFF;
+        palette->colors[set].b = 0xFF;
     }
     return 1;
 }
@@ -949,28 +970,30 @@ typedef struct State_001F9230 {
     u16 flags;
 } State_001F9230;
 
-s32 SzView_SetFogParamZ(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the depth fog range of setting set `set` of view `view`; 0 resets it (2000..4000), 1 keeps it and turns it
+   on. */
+s32 SzView_SetFogParamZ(s32 view, s32 set, s32 range) {
     State_001F9230 *state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    state = (State_001F9230 *)gSzView_hView[arg0];
+    state = (State_001F9230 *)views[view];
     if (state == 0) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 != 0) {
-        if (arg2 != 1) {
-            state->bounds[arg1] = *(Bounds_001F9230 *)arg2;
+    if (range != 0) {
+        if (range != 1) {
+            state->bounds[set] = *(Bounds_001F9230 *)range;
         }
-        state->flags |= 1 << arg1;
+        state->flags |= 1 << set;
     } else {
-        state->bounds[arg1].min = 2000.0f;
-        state->bounds[arg1].max = 4000.0f;
-        state->flags &= ~(1 << arg1);
+        state->bounds[set].min = 2000.0f;
+        state->bounds[set].max = 4000.0f;
+        state->flags &= ~(1 << set);
     }
     return 1;
 }
@@ -987,28 +1010,29 @@ typedef struct Object_001F9310 {
     u16 flags;
 } Object_001F9310;
 
-s32 SzView_SetFogParamY(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the height fog range of setting set `set` of view `view`; 0 resets it, 1 keeps it and turns it on. */
+s32 SzView_SetFogParamY(s32 view, s32 set, s32 range) {
     Object_001F9310 *object;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    object = (Object_001F9310 *)gSzView_hView[arg0];
+    object = (Object_001F9310 *)views[view];
     if (object == 0) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 != 0) {
-        if (arg2 != 1) {
-            object->pairs[arg1] = *(Pair_001F9310 *)arg2;
+    if (range != 0) {
+        if (range != 1) {
+            object->pairs[set] = *(Pair_001F9310 *)range;
         }
-        object->flags |= 1 << arg1;
+        object->flags |= 1 << set;
     } else {
-        object->pairs[arg1].x = 2000.0f;
-        object->pairs[arg1].y = 4000.0f;
-        object->flags &= ~(1 << arg1);
+        object->pairs[set].x = 2000.0f;
+        object->pairs[set].y = 4000.0f;
+        object->flags &= ~(1 << set);
     }
     return 1;
 }
@@ -1017,33 +1041,34 @@ typedef struct Vec4_001F93F0 {
     f32 x, y, z, w;
 } Vec4_001F93F0;
 
-s32 SzView_SetStraightLightColor(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+/* Sets the colour of directional light `light` (0..2) of setting set `set` of view `view`. */
+s32 SzView_SetStraightLightColor(s32 view, s32 set, s32 light, void *color) {
     u8 *base;
     s32 row;
     s32 offset;
     f32 value;
     Vec4_001F93F0 *dst;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    base = (u8 *)gSzView_hView[arg0];
+    base = (u8 *)views[view];
     if (base == NULL) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 < 0 || arg2 >= 3) {
+    if (light < 0 || light >= 3) {
         return 0;
     }
-    row = (s32)base + arg1 * 0x90 + 0x60;
-    if (arg3 != NULL) {
-        dst = (Vec4_001F93F0 *)(row + arg2 * 0x30);
-        *dst = *(Vec4_001F93F0 *)arg3;
+    row = (s32)base + set * 0x90 + 0x60;
+    if (color != NULL) {
+        dst = (Vec4_001F93F0 *)(row + light * 0x30);
+        *dst = *(Vec4_001F93F0 *)color;
     } else {
-        offset = arg2 * 0x30;
-        if (arg2 > 0) {
+        offset = light * 0x30;
+        if (light > 0) {
             value = 0.0f;
         } else {
             value = 0.5f;
@@ -1065,26 +1090,27 @@ typedef struct Entry_001F9500 {
     Vec4_001F9500 value;
 } Entry_001F9500;
 
-s32 SzView_GetStraightLightVector(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+/* The direction of directional light `light` of setting set `set` of view `view` into `out`. */
+s32 SzView_GetStraightLightVector(s32 view, s32 set, s32 light, void *out) {
     u8 *base;
     Entry_001F9500 *entries;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    base = (u8 *)gSzView_hView[arg0];
+    base = (u8 *)views[view];
     if (base == NULL) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 < 0 || arg2 >= 3) {
+    if (light < 0 || light >= 3) {
         return 0;
     }
-    entries = (Entry_001F9500 *)(base + arg1 * 0x90 + 0x60);
-    if (arg3 != NULL) {
-        *(Vec4_001F9500 *)arg3 = entries[arg2].value;
+    entries = (Entry_001F9500 *)(base + set * 0x90 + 0x60);
+    if (out != NULL) {
+        *(Vec4_001F9500 *)out = entries[light].value;
     }
     return 1;
 }
@@ -1099,102 +1125,107 @@ typedef struct {
     Vec4_001F95E0 result;
 } Entry_001F95E0;
 
-extern f32 gSzView_vecUnit[4][4];
+extern f32 identityMatrix[4][4]; /* original: gSzView_vecUnit */
 
-s32 SzView_SetStraightLightDirection(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
+/* Sets the direction of directional light `light` of setting set `set` of view `view`. */
+s32 SzView_SetStraightLightDirection(s32 view, s32 set, s32 light, void *dir) {
     f32 matrix[4][4];
     Entry_001F95E0 *entry;
     u8 *base;
     Entry_001F95E0 *row;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    base = (u8 *)gSzView_hView[arg0];
+    base = (u8 *)views[view];
     if (base == NULL) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 10)) {
+    if ((set < 0) || (set >= 10)) {
         return 0;
     }
-    if ((arg2 < 0) || (arg2 >= 3)) {
+    if ((light < 0) || (light >= 3)) {
         return 0;
     }
-    row = (Entry_001F95E0 *)(base + arg1 * 0x90 + 0x60);
-    if (arg3 != NULL) {
-        row[arg2].rotation = *(Vec4_001F95E0 *)arg3;
+    row = (Entry_001F95E0 *)(base + set * 0x90 + 0x60);
+    if (dir != NULL) {
+        row[light].rotation = *(Vec4_001F95E0 *)dir;
     }
-    entry = &row[arg2];
+    entry = &row[light];
     RhGeom_GetRotXYZMatrix(matrix, &entry->rotation);
-    RhGeom_MulMatrixVector(&entry->result, matrix, gSzView_vecUnit);
+    RhGeom_MulMatrixVector(&entry->result, matrix, identityMatrix);
     return 1;
 }
 
-s32 SzView_InqStraightLight(s32 arg0, s32 arg1) {
+/* Whether setting set `set` of view `view` has its own directional lights. */
+s32 SzView_InqStraightLight(s32 view, s32 set) {
     u8 *data;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    data = (u8 *)gSzView_hView[arg0];
+    data = (u8 *)views[view];
     if (data == NULL) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    return (*(u16 *)(data + 0x8A8) & (1 << arg1)) ? 1 : 0;
+    return (*(u16 *)(data + 0x8A8) & (1 << set)) ? 1 : 0;
 }
 
 typedef struct {
     __int128 data[9];
 } Block_001F9770;
 
-s32 SzView_SetStraightLight(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the three directional lights of setting set `set` of view `view` from `values`; 0 turns them off, 1 keeps
+   them and turns them on. */
+s32 SzView_SetStraightLight(s32 view, s32 set, s32 values) {
     s32 offset;
     u8 *state;
     u8 *slot;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    state = (u8 *)gSzView_hView[arg0];
+    state = (u8 *)views[view];
     if (state == NULL) {
         return 0;
     }
-    if ((arg1 < 0) || (arg1 >= 10)) {
+    if ((set < 0) || (set >= 10)) {
         return 0;
     }
-    if (arg2 != 0) {
-        if (arg2 != 1) {
-            offset = arg1 * 0x90;
-            *(Block_001F9770 *)(offset + (s32)state + 0x60) = *(Block_001F9770 *)arg2;
+    if (values != 0) {
+        if (values != 1) {
+            offset = set * 0x90;
+            *(Block_001F9770 *)(offset + (s32)state + 0x60) = *(Block_001F9770 *)values;
             slot = state + offset;
-            SzView_SetStraightLightDirection(arg0, arg1, 0, slot + 0x70);
-            SzView_SetStraightLightDirection(arg0, arg1, 1, slot + 0xA0);
-            SzView_SetStraightLightDirection(arg0, arg1, 2, slot + 0xD0);
+            SzView_SetStraightLightDirection(view, set, 0, slot + 0x70);
+            SzView_SetStraightLightDirection(view, set, 1, slot + 0xA0);
+            SzView_SetStraightLightDirection(view, set, 2, slot + 0xD0);
         }
-        *(u16 *)(state + 0x8A8) |= 1 << arg1;
+        *(u16 *)(state + 0x8A8) |= 1 << set;
     } else {
-        *(u16 *)(state + 0x8A8) &= ~(1 << arg1);
+        *(u16 *)(state + 0x8A8) &= ~(1 << set);
     }
     return 1;
 }
 
-s32 SzView_InqPointLight(s32 arg0, s32 arg1) {
-    s32 temp_v1;
+/* Whether setting set `set` of view `view` has its own point light. */
+s32 SzView_InqPointLight(s32 view, s32 set) {
+    s32 state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    temp_v1 = gSzView_hView[arg0];
-    if (temp_v1 == 0) {
+    state = views[view];
+    if (state == 0) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 0xA) {
+    if (set < 0 || set >= 0xA) {
         return 0;
     }
-    return (*(u16 *)((u8 *)temp_v1 + 0x8AA) & (1 << arg1)) ? 1 : 0;
+    return (*(u16 *)((u8 *)state + 0x8AA) & (1 << set)) ? 1 : 0;
 }
 
 typedef struct {
@@ -1208,42 +1239,45 @@ typedef struct {
     u16 flags;
 } Object_001F9940;
 
-s32 SzView_SetPointLight(s32 arg0, s32 arg1, s32 arg2) {
+/* Sets the point light of setting set `set` of view `view` from `values`; 0 turns it off, 1 keeps it and turns it
+   on. */
+s32 SzView_SetPointLight(s32 view, s32 set, s32 values) {
     Object_001F9940 *object;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    object = (Object_001F9940 *)gSzView_hView[arg0];
+    object = (Object_001F9940 *)views[view];
     if (object == 0) {
         return 0;
     }
-    if (arg1 < 0 || arg1 >= 10) {
+    if (set < 0 || set >= 10) {
         return 0;
     }
-    if (arg2 != 0) {
-        if (arg2 != 1) {
-            object->matrices[arg1] = *(Matrix_001F9940 *)arg2;
-            *(f32 *)((u8 *)&object->matrices[arg1] + 0x1C) = 1.0f;
+    if (values != 0) {
+        if (values != 1) {
+            object->matrices[set] = *(Matrix_001F9940 *)values;
+            *(f32 *)((u8 *)&object->matrices[set] + 0x1C) = 1.0f;
         }
-        object->flags |= 1 << arg1;
+        object->flags |= 1 << set;
     } else {
-        object->flags &= ~(1 << arg1);
+        object->flags &= ~(1 << set);
     }
     return 1;
 }
 
-f32 SzView_GetScreenDistance(s32 arg0) {
-    s32 temp_v0;
+/* View `view`'s screen distance (the lens). */
+f32 SzView_GetScreenDistance(s32 view) {
+    s32 state;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0.0f;
     }
-    temp_v0 = gSzView_hView[arg0];
-    if (temp_v0 == 0) {
+    state = views[view];
+    if (state == 0) {
         return 0.0f;
     }
-    return *(f32 *)((u8 *)temp_v0 + 0x44);
+    return *(f32 *)((u8 *)state + 0x44);
 }
 
 typedef struct Object_001F9A80 {
@@ -1251,13 +1285,14 @@ typedef struct Object_001F9A80 {
     f32 value;
 } Object_001F9A80;
 
-s32 SzView_SetScreenDistance(s32 arg0, f32 fparg0) {
+/* Sets view `view`'s screen distance (the lens). */
+s32 SzView_SetScreenDistance(s32 view, f32 fparg0) {
     Object_001F9A80 *object;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    object = (Object_001F9A80 *)gSzView_hView[arg0];
+    object = (Object_001F9A80 *)views[view];
     if (object == NULL) {
         return 0;
     }
@@ -1265,17 +1300,18 @@ s32 SzView_SetScreenDistance(s32 arg0, f32 fparg0) {
     return 1;
 }
 
-s32 SzView_GetSP(s32 arg0) {
-    s32 temp_v0;
+/* View `view`'s camera position in spherical form (distance, heading, pitch). */
+s32 SzView_GetSP(s32 view) {
+    s32 state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    temp_v0 = gSzView_hView[arg0];
-    if (temp_v0 == 0) {
+    state = views[view];
+    if (state == 0) {
         return 0;
     }
-    return temp_v0 + 0x20;
+    return state + 0x20;
 }
 
 typedef struct Vec4_001F9B20 {
@@ -1289,16 +1325,17 @@ typedef struct Camera_001F9B20 {
     Vec4_001F9B20 target;
 } Camera_001F9B20;
 
-extern Vec4_001F9B20 gSzView_pntSPDef;
+extern Vec4_001F9B20 defaultCameraSpherical; /* original: gSzView_pntSPDef */
 
 
+/* Works out a view's look direction. */
 static inline s32 direction_001F9B20(s32 arg0) {
     Camera_001F9B20 *camera;
 
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
+    camera = (Camera_001F9B20 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1310,6 +1347,7 @@ static inline s32 direction_001F9B20(s32 arg0) {
     return 1;
 }
 
+/* Works out a view's spherical position. */
 static inline s32 polar_001F9B20(s32 arg0) {
     Vec4_001F9B20 result;
     Camera_001F9B20 *camera;
@@ -1319,7 +1357,7 @@ static inline s32 polar_001F9B20(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
+    camera = (Camera_001F9B20 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1339,33 +1377,35 @@ static inline s32 polar_001F9B20(s32 arg0) {
     return 1;
 }
 
-s32 SzView_SetSP(s32 arg0, void *arg1) {
-    Vec4_001F9B20 *position = arg1;
+/* Sets view `view`'s camera position in spherical form (distance, heading, pitch). */
+s32 SzView_SetSP(s32 view, void *src) {
+    Vec4_001F9B20 *position = src;
     Camera_001F9B20 *camera;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    camera = (Camera_001F9B20 *)gSzView_hView[arg0];
+    camera = (Camera_001F9B20 *)views[view];
     if (camera == 0) {
         return 0;
     }
     if (position == NULL) {
-        position = &gSzView_pntSPDef;
+        position = &defaultCameraSpherical;
     }
     camera->position = *position;
-    direction_001F9B20(arg0);
-    polar_001F9B20(arg0);
+    direction_001F9B20(view);
+    polar_001F9B20(view);
     return 1;
 }
 
-s32 SzView_GetCP(s32 arg0) {
+/* View `view`'s camera position. */
+s32 SzView_GetCP(s32 view) {
     s32 data;
 
-    if (arg0 < 0 || arg0 >= 1) {
+    if (view < 0 || view >= 1) {
         return 0;
     }
-    data = gSzView_hView[arg0];
+    data = views[view];
     if (data == 0) {
         return 0;
     }
@@ -1383,16 +1423,17 @@ typedef struct Camera_001F9D80 {
     Vec4_001F9D80 target;
 } Camera_001F9D80;
 
-extern Vec4_001F9D80 gSzView_pntCPDef;
+extern Vec4_001F9D80 defaultCameraPos; /* original: gSzView_pntCPDef */
 
 
+/* Works out a view's look direction. */
 static inline s32 direction_001F9D80(s32 arg0) {
     Camera_001F9D80 *camera;
 
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
+    camera = (Camera_001F9D80 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1404,6 +1445,7 @@ static inline s32 direction_001F9D80(s32 arg0) {
     return 1;
 }
 
+/* Works out a view's spherical position. */
 static inline s32 polar_001F9D80(s32 arg0) {
     Vec4_001F9D80 result;
     Camera_001F9D80 *camera;
@@ -1413,7 +1455,7 @@ static inline s32 polar_001F9D80(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
+    camera = (Camera_001F9D80 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1433,37 +1475,39 @@ static inline s32 polar_001F9D80(s32 arg0) {
     return 1;
 }
 
-s32 SzView_SetCP(s32 arg0, void *arg1) {
-    Vec4_001F9D80 *target = arg1;
+/* Sets view `view`'s camera position. */
+s32 SzView_SetCP(s32 view, void *src) {
+    Vec4_001F9D80 *target = src;
     Camera_001F9D80 *camera;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    camera = (Camera_001F9D80 *)gSzView_hView[arg0];
+    camera = (Camera_001F9D80 *)views[view];
     if (camera == 0) {
         return 0;
     }
     if (target == NULL) {
-        target = &gSzView_pntCPDef;
+        target = &defaultCameraPos;
     }
     camera->target = *target;
-    direction_001F9D80(arg0);
-    polar_001F9D80(arg0);
+    direction_001F9D80(view);
+    polar_001F9D80(view);
     return 1;
 }
 
-s32 SzView_SetRoll(s32 arg0, s32 arg1) {
-    void *temp_v0;
+/* Sets view `view`'s camera roll. */
+s32 SzView_SetRoll(s32 view, s32 roll) {
+    void *state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    temp_v0 = (void *)gSzView_hView[arg0];
-    if (temp_v0 == NULL) {
+    state = (void *)views[view];
+    if (state == NULL) {
         return 0;
     }
-    *(s32 *)((u8 *)temp_v0 + 0x40) = arg1;
+    *(s32 *)((u8 *)state + 0x40) = roll;
     return 1;
 }
 
@@ -1479,13 +1523,14 @@ typedef struct Camera_001F9FE0 {
 } Camera_001F9FE0;
 
 
+/* Works out a view's look direction. */
 static inline s32 direction_001F9FE0(s32 arg0) {
     Camera_001F9FE0 *camera;
 
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
+    camera = (Camera_001F9FE0 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1497,6 +1542,7 @@ static inline s32 direction_001F9FE0(s32 arg0) {
     return 1;
 }
 
+/* Works out a view's spherical position. */
 static inline s32 polar_001F9FE0(s32 arg0) {
     Vec4_001F9FE0 result;
     Camera_001F9FE0 *camera;
@@ -1506,7 +1552,7 @@ static inline s32 polar_001F9FE0(s32 arg0) {
     if ((arg0 < 0) || (arg0 > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
+    camera = (Camera_001F9FE0 *)views[arg0];
     if (camera == 0) {
         return 0;
     }
@@ -1526,30 +1572,31 @@ static inline s32 polar_001F9FE0(s32 arg0) {
     return 1;
 }
 
-s32 SzView_SetCamera(s32 arg0, void *arg1, void *arg2) {
-    extern struct Vec4_001F9B20 gSzView_pntSPDef;
-    extern struct Vec4_001F9D80 gSzView_pntCPDef;
-    Vec4_001F9FE0 *position = arg1;
-    Vec4_001F9FE0 *target = arg2;
+/* Sets view `view`'s camera position and look point. */
+s32 SzView_SetCamera(s32 view, void *cameraPos, void *lookTarget) {
+    extern struct Vec4_001F9B20 defaultCameraSpherical;
+    extern struct Vec4_001F9D80 defaultCameraPos;
+    Vec4_001F9FE0 *position = cameraPos;
+    Vec4_001F9FE0 *target = lookTarget;
     Camera_001F9FE0 *camera;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    camera = (Camera_001F9FE0 *)gSzView_hView[arg0];
+    camera = (Camera_001F9FE0 *)views[view];
     if (camera == 0) {
         return 0;
     }
     if (position == NULL) {
-        position = (Vec4_001F9FE0 *)&gSzView_pntSPDef;
+        position = (Vec4_001F9FE0 *)&defaultCameraSpherical;
     }
     if (target == NULL) {
-        target = (Vec4_001F9FE0 *)&gSzView_pntCPDef;
+        target = (Vec4_001F9FE0 *)&defaultCameraPos;
     }
     camera->position = *position;
     camera->target = *target;
-    direction_001F9FE0(arg0);
-    polar_001F9FE0(arg0);
+    direction_001F9FE0(view);
+    polar_001F9FE0(view);
     return 1;
 }
 
@@ -1582,19 +1629,21 @@ typedef struct Slot_001FA220 {
     Value_001FA220 to;
 } Slot_001FA220;
 
+/* Linear blend from `from` to `to`. */
 static inline s32 lerp_001FA220(s32 from, s32 to, f32 t) {
     s32 d = to - from;
 
     return from + (s32)(d * t);
 }
 
+/* Sets a view's field of view. */
 static inline s32 setFov_001FA220(s32 index, s32 fov) {
     Camera_001FA220 *camera;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)gSzView_hView[index];
+    camera = (Camera_001FA220 *)views[index];
     if (camera == NULL) {
         return 0;
     }
@@ -1602,13 +1651,14 @@ static inline s32 setFov_001FA220(s32 index, s32 fov) {
     return 1;
 }
 
+/* Sets a view's roll. */
 static inline s32 setRoll_001FA220(s32 index, s32 roll) {
     Camera_001FA220 *camera;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)gSzView_hView[index];
+    camera = (Camera_001FA220 *)views[index];
     if (camera == NULL) {
         return 0;
     }
@@ -1616,18 +1666,19 @@ static inline s32 setRoll_001FA220(s32 index, s32 roll) {
     return 1;
 }
 
+/* Sets a view's camera position. */
 static inline s32 setPosition_001FA220(s32 index, Vec4_001F9B20 *position) {
     Camera_001FA220 *camera;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)gSzView_hView[index];
+    camera = (Camera_001FA220 *)views[index];
     if (camera == NULL) {
         return 0;
     }
     if (position == NULL) {
-        position = &gSzView_pntSPDef;
+        position = &defaultCameraSpherical;
     }
     camera->position = *position;
     lSzView_CalcRel(index);
@@ -1635,18 +1686,19 @@ static inline s32 setPosition_001FA220(s32 index, Vec4_001F9B20 *position) {
     return 1;
 }
 
+/* Sets a view's look point. */
 static inline s32 setTarget_001FA220(s32 index, Vec4_001F9B20 *target) {
     Camera_001FA220 *camera;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    camera = (Camera_001FA220 *)gSzView_hView[index];
+    camera = (Camera_001FA220 *)views[index];
     if (camera == NULL) {
         return 0;
     }
     if (target == NULL) {
-        target = (Vec4_001F9B20 *)&gSzView_pntCPDef;
+        target = (Vec4_001F9B20 *)&defaultCameraPos;
     }
     camera->target = *target;
     lSzView_CalcRel(index);
@@ -1654,8 +1706,9 @@ static inline s32 setTarget_001FA220(s32 index, Vec4_001F9B20 *target) {
     return 1;
 }
 
+/* Runs the camera requests of `owner` on view `target`: moves, turns, zooms and shakes over their frames. */
 void SzView_DoRequest(s32 owner, s32 target) {
-    extern Slot_001FA220 gSzView_CameraReq[];
+    extern Slot_001FA220 cameraRequests[];
     extern s32 SzGame_GetFrameSpeed();
     Slot_001FA220 *slot;
     s32 delta;
@@ -1668,7 +1721,7 @@ void SzView_DoRequest(s32 owner, s32 target) {
     Vec4_001F9B20 pos;
     Vec4_001F9B20 polar;
 
-    slot = gSzView_CameraReq;
+    slot = cameraRequests;
     delta = SzGame_GetFrameSpeed();
     i = 0;
     do {
@@ -1746,17 +1799,18 @@ typedef struct Entry_001FA6F0 {
     u8 pad_04[0x2C];
 } Entry_001FA6F0;
 
-extern Entry_001FA6F0 gSzView_CameraReq[];
+extern Entry_001FA6F0 cameraRequests[]; /* original: gSzView_CameraReq */
 
-void *SzView_InqRequest(s32 arg0, s32 arg1) {
+/* The first running camera request of `owner` on `target` (-1 for any), or NULL. */
+void *SzView_InqRequest(s32 owner, s32 target) {
     Entry_001FA6F0 *entry;
     s32 i;
 
-    entry = gSzView_CameraReq;
+    entry = cameraRequests;
     i = 0;
     do {
-        if (entry->active && (arg0 < 0 || entry->field_02 == arg0) &&
-            (arg1 < 0 || entry->field_03 == arg1)) {
+        if (entry->active && (owner < 0 || entry->field_02 == owner) &&
+            (target < 0 || entry->field_03 == target)) {
             return entry;
         }
         i++;
@@ -1775,29 +1829,30 @@ typedef struct Entry_001FA770 {
     u8 padding[0x2C];
 } Entry_001FA770;
 
-extern struct Entry_001FA6F0 gSzView_CameraReq[];
+extern struct Entry_001FA6F0 cameraRequests[]; /* original: gSzView_CameraReq */
 
-s32 SzView_PauseRequest(s32 arg0, s32 arg1, s32 arg2) {
-    Entry_001FA770 *var_t1;
-    s32 var_t2;
-    s32 var_v0;
+/* Pauses (`on`) or resumes the camera requests of `owner` on `target` (-1 for any). Returns whether any matched. */
+s32 SzView_PauseRequest(s32 owner, s32 target, s32 on) {
+    Entry_001FA770 *entry;
+    s32 i;
+    s32 found;
 
-    var_t1 = (Entry_001FA770 *) gSzView_CameraReq;
-    var_v0 = 0;
-    var_t2 = 0;
+    entry = (Entry_001FA770 *) cameraRequests;
+    found = 0;
+    i = 0;
     do {
-        if (var_t1->active) {
-            if (arg0 < 0 || var_t1->field2 == arg0) {
-                if (arg1 < 0 || var_t1->field3 == arg1) {
-                    var_t1->flag = (s8) (arg2 ? 1 : 0);
-                    var_v0 = 1;
+        if (entry->active) {
+            if (owner < 0 || entry->field2 == owner) {
+                if (target < 0 || entry->field3 == target) {
+                    entry->flag = (s8) (on ? 1 : 0);
+                    found = 1;
                 }
             }
         }
-        var_t2 += 1;
-        var_t1++;
-    } while (var_t2 < 8);
-    return var_v0;
+        i += 1;
+        entry++;
+    } while (i < 8);
+    return found;
 }
 
 typedef struct Entry_001FA810 {
@@ -1809,19 +1864,20 @@ typedef struct Entry_001FA810 {
     u8 padding[0x2C];
 } Entry_001FA810;
 
-extern struct Entry_001FA6F0 gSzView_CameraReq[];
+extern struct Entry_001FA6F0 cameraRequests[]; /* original: gSzView_CameraReq */
 
-s32 SzView_FreeRequest(s32 arg0, s32 arg1) {
+/* Ends the camera requests of `owner` on `target` (-1 for any). */
+s32 SzView_FreeRequest(s32 owner, s32 target) {
     Entry_001FA810 *entry;
     s32 found;
     s32 i;
 
-    entry = (Entry_001FA810 *)gSzView_CameraReq;
+    entry = (Entry_001FA810 *)cameraRequests;
     found = 0;
     i = 0;
     do {
-        if (entry->active && (arg0 < 0 || entry->x == arg0) &&
-            (arg1 < 0 || entry->y == arg1)) {
+        if (entry->active && (owner < 0 || entry->x == owner) &&
+            (target < 0 || entry->y == target)) {
             found = 1;
             entry->active = 0;
         }
@@ -1874,8 +1930,9 @@ typedef struct Track_001FA8A0 {
 
 #define ROUND_001FA8A0(x) (((x) + (((x) > 0 ? 0x1000 : -0x1000) >> 1)) >> 12)
 
+/* A free camera request slot, or NULL. */
 static inline Slot_001FA8A0 *findFree_001FA8A0(void) {
-    Slot_001FA8A0 *slot = (Slot_001FA8A0 *)gSzView_CameraReq;
+    Slot_001FA8A0 *slot = (Slot_001FA8A0 *)cameraRequests;
     s32 i = 0;
 
     do {
@@ -1888,10 +1945,12 @@ static inline Slot_001FA8A0 *findFree_001FA8A0(void) {
     return NULL;
 }
 
+/* Radians to the game's angle units. */
 static inline f32 toAngle_001FA8A0(f32 radians) {
     return (32768.0f * radians) / 3.1415927f;
 }
 
+/* Asks view `target` for a camera move of `type` over `count` frames (to `data`), owned by `owner`. */
 s32 SzView_ReqCamera(s32 owner, s32 target, s32 type, s32 count, s32 value, void *data) {
     Camera_001FA8A0 *camera;
     Slot_001FA8A0 *slot;
@@ -1904,7 +1963,7 @@ s32 SzView_ReqCamera(s32 owner, s32 target, s32 type, s32 count, s32 value, void
     if (owner < 0 || owner > 0) {
         return 0;
     }
-    camera = (Camera_001FA8A0 *)gSzView_hView[owner];
+    camera = (Camera_001FA8A0 *)views[owner];
     if (camera == NULL) {
         return 0;
     }
@@ -1981,17 +2040,18 @@ s32 SzView_ReqCamera(s32 owner, s32 target, s32 type, s32 count, s32 value, void
     return 1;
 }
 
-s32 SzView_GetRel(s32 arg0) {
-    s32 temp_v0;
+/* View `view`'s relative (orbit) camera position. */
+s32 SzView_GetRel(s32 view) {
+    s32 state;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return 0;
     }
-    temp_v0 = gSzView_hView[arg0];
-    if (temp_v0 == 0) {
+    state = views[view];
+    if (state == 0) {
         return 0;
     }
-    return temp_v0 + 0x10;
+    return state + 0x10;
 }
 
 typedef struct Vec4_001FAD60 {
@@ -2009,7 +2069,8 @@ typedef struct Camera_001FAD60 {
 } Camera_001FAD60;
 
 
-s32 SzView_SetRelSP(s32 arg0, void *arg1) {
+/* Sets view `view`'s relative camera position in spherical form. */
+s32 SzView_SetRelSP(s32 view, void *src) {
     Camera_001FAD60 *camera;
     s32 *entry;
     Vec4_001FAD60 *position;
@@ -2017,24 +2078,24 @@ s32 SzView_SetRelSP(s32 arg0, void *arg1) {
     Camera_001FAD60 *camera2;
     Vec4_001FAD60 result;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    entry = &gSzView_hView[arg0];
+    entry = &views[view];
     camera = (Camera_001FAD60 *)*entry;
     if (camera == NULL) {
         return 0;
     }
-    if (arg1 == NULL) {
+    if (src == NULL) {
         return 0;
     }
-    camera->rotation = *(Vec4_001FAD60 *)arg1;
+    camera->rotation = *(Vec4_001FAD60 *)src;
     RhGeom_NormalizeVector(&camera->rotation);
-    camera->direction.x = camera->position.x - (((Vec4_001FAD60 *)arg1)->x * camera->polar.x);
-    camera->direction.y = camera->position.y - (((Vec4_001FAD60 *)arg1)->y * camera->polar.x);
-    camera->direction.z = camera->position.z - (((Vec4_001FAD60 *)arg1)->z * camera->polar.x);
+    camera->direction.x = camera->position.x - (((Vec4_001FAD60 *)src)->x * camera->polar.x);
+    camera->direction.y = camera->position.y - (((Vec4_001FAD60 *)src)->y * camera->polar.x);
+    camera->direction.z = camera->position.z - (((Vec4_001FAD60 *)src)->z * camera->polar.x);
     camera->direction.w = 0.0f;
-    if ((arg0 >= 0) && (arg0 <= 0)) {
+    if ((view >= 0) && (view <= 0)) {
         camera2 = (Camera_001FAD60 *)*entry;
         if (camera2 != NULL) {
             direction = &camera2->direction;
@@ -2054,32 +2115,35 @@ s32 SzView_SetRelSP(s32 arg0, void *arg1) {
     return 1;
 }
 
-f32 *SzView_GetLook(s32 arg0) {
-    f32 *var_v0;
+/* View `view`'s look point. */
+f32 *SzView_GetLook(s32 view) {
+    f32 *look;
 
-    if (arg0 < 0 || arg0 > 0) {
+    if (view < 0 || view > 0) {
         return NULL;
     }
-    var_v0 = (f32 *)gSzView_hView[arg0];
-    if (var_v0 == NULL) {
-        var_v0 = NULL;
+    look = (f32 *)views[view];
+    if (look == NULL) {
+        look = NULL;
     }
-    return var_v0;
+    return look;
 }
 
+/* An angle to the game's fixed angle units. */
 static inline f32 angleToFixed_001FAFB0(f32 angle) {
     return (32768.0f * angle) / 3.1415927f;
 }
 
-s32 SzView_GetLookVector(s32 arg0, s32 arg1) {
+/* View `view`'s look direction into `out`. */
+s32 SzView_GetLookVector(s32 view, s32 outVec) {
     extern s32 func_001A22C0(f32);
-    s32 *out = (s32 *)arg1;
+    s32 *out = (s32 *)outVec;
     f32 *angles;
 
-    if ((arg0 < 0) || (arg0 > 0)) {
+    if ((view < 0) || (view > 0)) {
         return 0;
     }
-    angles = (f32 *)gSzView_hView[arg0];
+    angles = (f32 *)views[view];
     if (angles == 0) {
         return 0;
     }
@@ -2100,18 +2164,20 @@ typedef struct {
 } Vector_001FB0B0;
 
 
+/* Radians to the game's fixed angle units. */
 static inline s32 fixed_angle_001FB0B0(f32 radians) {
     extern s32 func_001A22C0(f32);
     return func_001A22C0((32768.0f * radians) / 3.1415927f);
 }
 
+/* A view's look angles. */
 static inline s32 angles_001FB0B0(s32 index, s32 *angles) {
     Vector_001FB0B0 *source;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    source = (Vector_001FB0B0 *)gSzView_hView[index];
+    source = (Vector_001FB0B0 *)views[index];
     if (source == 0) {
         return 0;
     }
@@ -2122,16 +2188,17 @@ static inline s32 angles_001FB0B0(s32 index, s32 *angles) {
     return 1;
 }
 
-s32 SzView_GetLookMatrix(s32 arg0, s32 arg1) {
+/* View `view`'s look matrix into `out`. */
+s32 SzView_GetLookMatrix(s32 view, s32 out) {
     s32 angles[4];
 
-    if (arg1 == 0) {
+    if (out == 0) {
         return 0;
     }
-    if (angles_001FB0B0(arg0, angles) == 0) {
+    if (angles_001FB0B0(view, angles) == 0) {
         return 0;
     }
-    RhGeom_GetRotXYZMatrix((void *)arg1, angles);
+    RhGeom_GetRotXYZMatrix((void *)out, angles);
     return 1;
 }
 
@@ -2141,39 +2208,41 @@ typedef struct {
 
 extern Vec4i_001FB1D0 D_00293060;
 
+/* A view's depth range. */
 static inline s32 depth_001FB1D0(s32 index) {
     void *object;
 
     if (index < 0 || index > 0) {
         return 0;
     }
-    object = (void *)gSzView_hView[index];
+    object = (void *)views[index];
     if (object == NULL) {
         return 0;
     }
     return *(s32 *)((u8 *)object + 0x40);
 }
 
-s32 SzView_GetLookMatrixWithRoll(s32 arg0, s32 arg1) {
+/* View `view`'s look matrix, with its roll, into `out`. */
+s32 SzView_GetLookMatrixWithRoll(s32 view, s32 out) {
     Vec4i_001FB1D0 translation;
     s32 angles[4];
     f32 matrix[4][4];
 
     translation = D_00293060;
-    translation.z = -depth_001FB1D0(arg0);
-    if (arg1 == 0) {
+    translation.z = -depth_001FB1D0(view);
+    if (out == 0) {
         return 0;
     }
-    if (angles_001FB0B0(arg0, angles) == 0) {
+    if (angles_001FB0B0(view, angles) == 0) {
         return 0;
     }
-    RhGeom_GetRotXYZMatrix((void *)arg1, angles);
+    RhGeom_GetRotXYZMatrix((void *)out, angles);
     RhGeom_GetRotXYZMatrix(matrix, &translation);
-    RhGeom_MulMatrix(arg1, matrix);
+    RhGeom_MulMatrix(out, matrix);
     return 1;
 }
 
-extern f32 gSzView_vecUnit[4][4];
+extern f32 identityMatrix[4][4]; /* original: gSzView_vecUnit */
 
 typedef struct Vec4_001FB360 {
     f32 x, y, z, w;
@@ -2186,13 +2255,14 @@ typedef struct Camera_001FB360 {
     f32 target[4];
 } Camera_001FB360;
 
+/* Works out a view's aim. */
 static inline s32 aim_001FB360(s32 index) {
     Camera_001FB360 *entry;
 
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB360 *)gSzView_hView[index];
+    entry = (Camera_001FB360 *)views[index];
     if (entry == 0) {
         return 0;
     }
@@ -2204,6 +2274,7 @@ static inline s32 aim_001FB360(s32 index) {
     return 1;
 }
 
+/* Sets view `index`'s look point in spherical form around the camera. */
 s32 SzView_SetLookSP(s32 index, f32 *src) {
     Camera_001FB360 *entry;
     f32 matrix[4][4];
@@ -2212,7 +2283,7 @@ s32 SzView_SetLookSP(s32 index, f32 *src) {
     if ((index < 0) || (index > 0)) {
         return 0;
     }
-    entry = (Camera_001FB360 *)gSzView_hView[index];
+    entry = (Camera_001FB360 *)views[index];
     if (entry == 0) {
         return 0;
     }
@@ -2224,7 +2295,7 @@ s32 SzView_SetLookSP(s32 index, f32 *src) {
     if (SzView_GetLookVector(index, (s32)angles) != 0) {
         RhGeom_GetRotXYZMatrix(matrix, angles);
     }
-    RhGeom_MulMatrixVector(entry->direction, matrix, gSzView_vecUnit);
+    RhGeom_MulMatrixVector(entry->direction, matrix, identityMatrix);
     entry->origin[0] = entry->target[0] + entry->direction[0] * entry->param.x;
     entry->origin[1] = entry->target[1] + entry->direction[1] * entry->param.x;
     entry->origin[2] = entry->target[2] + entry->direction[2] * entry->param.x;
