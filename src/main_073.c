@@ -41,18 +41,18 @@ void *Ta_GetUnitEffect(s32 nSide, s32 nID, s32 nNo) {
 
 /* Whether unit (nSide, nID) is an extra (fusion or ritual) monster. */
 s32 TaUtil_IsExMonster(s32 nSide, s32 nID) {
-    s32 var_s0;
+    s32 i;
 
     if ((SzDuel_GetUnitKind(nSide, nID) >> 5) != 0) {
         return -1;
     }
-    var_s0 = 0;
+    i = 0;
     do {
-        if (Ta_GetUnitEffect(nSide, nID, var_s0) != NULL) {
+        if (Ta_GetUnitEffect(nSide, nID, i) != NULL) {
             return 1;
         }
-        var_s0++;
-    } while (var_s0 <= 4);
+        i++;
+    } while (i <= 4);
     return 0;
 }
 
@@ -120,20 +120,20 @@ s32 TaUtil_GetUnitAP(s32 nSide, s32 nID, s32 nX, s32 nZ) {
 
 /* A unit's (record `pVarInfo`) attack on square (nX, nZ), with the field bonus, kept in range. */
 s32 TaUtil_GetUnitAP2(s32 pVarInfo, s32 nX, s32 nZ) {
-    s32 temp_s0;
+    s32 unitAP;
 
-    temp_s0 = SzDuel_GetUnitAP2((void *)pVarInfo, 0);
-    return GetParCap(temp_s0 + Ta_GetParamOfs(pVarInfo, nX, nZ, 1));
+    unitAP = SzDuel_GetUnitAP2((void *)pVarInfo, 0);
+    return GetParCap(unitAP + Ta_GetParamOfs(pVarInfo, nX, nZ, 1));
 }
 
 /* Unit (nSide, nID)'s attack on square (nX, nZ), with the field bonus. */
 s32 TaUtil_GetUnitAP3(s32 nSide, s32 nID, s32 nX, s32 nZ) {
-    s32 temp_s0;
+    s32 paramOfs;
     s32 result;
 
-    temp_s0 = Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 1);
+    paramOfs = Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 1);
     result = SzDuel_GetUnitAP(nSide, nID, 0);
-    result += temp_s0;
+    result += paramOfs;
     return result;
 }
 
@@ -149,20 +149,20 @@ s32 TaUtil_GetUnitDP(s32 nSide, s32 nID, s32 nX, s32 nZ) {
 
 /* A unit's (record `pVarInfo`) defence on square (nX, nZ), with the field bonus, kept in range. */
 void TaUtil_GetUnitDP2(s32 pVarInfo, s32 nX, s32 nZ) {
-    s32 temp_s0;
+    s32 unitDP;
 
-    temp_s0 = SzDuel_GetUnitDP2((void *)pVarInfo, 0);
-    GetParCap(temp_s0 + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
+    unitDP = SzDuel_GetUnitDP2((void *)pVarInfo, 0);
+    GetParCap(unitDP + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
 }
 
 /* Unit (nSide, nID)'s defence on square (nX, nZ), with the field bonus. */
 s32 TaUtil_GetUnitDP3(s32 nSide, s32 nID, s32 nX, s32 nZ) {
-    s32 temp_s0;
+    s32 paramOfs;
     s32 result;
 
-    temp_s0 = Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 0);
+    paramOfs = Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 0);
     result = SzDuel_GetUnitDP(nSide, nID, 0);
-    return result + temp_s0;
+    return result + paramOfs;
 }
 
 /* Changes unit (nSide, nID)'s attack by `Arg` in mode `nMode`, kept in range. */
@@ -501,33 +501,33 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     s32 spA8;
     s32 spAC;
     s32 temp_fp;
-    s32 temp_s0;
-    s32 temp_s1;
+    s32 unitFlags;
+    s32 side;
     s32 temp_s1_5;
-    s32 temp_s1_6;
-    s32 temp_s1_7;
-    s32 temp_s1_8;
+    s32 side2;
+    s32 side3;
+    s32 side3In;
     s32 temp_s1_9;
-    s32 temp_s3;
+    s32 lp;
     s32 temp_s3_2;
-    s32 temp_s3_4;
+    s32 lp2;
     s32 temp_s3_5;
     s32 temp_s4;
     s32 var_s4;
     s32 temp_s5;
     s32 temp_s7;
-    s32 temp_v0_10;
-    s32 temp_v0_11;
-    s32 temp_v0_12;
-    s32 temp_v0_13;
-    s32 temp_v0_14;
-    s32 temp_v0_15;
-    s32 temp_v0_2;
+    s32 off;
+    s32 summonablePiece;
+    s32 summonablePiece2;
+    s32 summonablePiece3;
+    s32 summonablePiece3In;
+    s32 convUnitIDtoFlagList;
+    s32 convUnitIDtoFlagList2;
     s32 temp_v0_3;
     s32 temp_v0_4;
-    s32 temp_v0_5;
+    s32 convUnitIDtoFlagList3;
     s32 temp_v0_6;
-    s32 temp_v0_7;
+    s32 convUnitIDtoFlagList3In;
     s32 temp_v0_8;
     s32 temp_v0_9;
     s32 temp_v1;
@@ -536,20 +536,20 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     s32 var_s3;
     s32 var_s5;
     s32 var_s5_2;
-    s32 var_s6;
-    s32 var_s6_2;
+    s32 i;
+    s32 j;
     s32 var_v0;
     s32 var_v0_2;
-    s32 var_v0_3;
+    s32 off2;
     s32 var_v0_4;
     s32 var_v0_5;
-    s32 var_v0_6;
+    s32 off3;
     s32 var_v0_7;
-    u32 temp_a1;
-    u32 temp_a2;
-    u32 temp_s1_2;
-    u32 temp_s1_3;
-    u32 temp_s1_4;
+    u32 flagsHi;
+    u32 value;
+    u32 flags;
+    u32 flags2;
+    u32 flags3;
     u32 temp_v1_2;
 
     extern s32 SzDuel_GetUnitCardNo();
@@ -563,13 +563,13 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     if ((temp_v0 = Ta_GetUnitEffect(nSide_1, nID_1, 4)) == NULL) {
         return 0;
     }
-    temp_s1 = Ta_GetCurrentSide(nSide_1, nID_1);
-    if (temp_s1 == Ta_GetCurrentSide(nSide_2, nID_2)) {
+    side = Ta_GetCurrentSide(nSide_1, nID_1);
+    if (side == Ta_GetCurrentSide(nSide_2, nID_2)) {
         return 0;
     }
-    temp_s1_2 = temp_v0->flags;
-    temp_a1 = temp_s1_2 >> 8;
-    switch (temp_a1) {                              /* switch 1; irregular */
+    flags = temp_v0->flags;
+    flagsHi = flags >> 8;
+    switch (flagsHi) {                              /* switch 1; irregular */
     case 0x2:                                       /* switch 1 */
         switch (*(u16 *)&temp_v0->value) {
         case 8:
@@ -587,7 +587,7 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         }
         return 1;
     case 0x13:                                      /* switch 1 */
-        if ((temp_s1_2 & 0x3F) == 0x1A) {
+        if ((flags & 0x3F) == 0x1A) {
             if (nSide_2 >= 0 && nID_2 > 0 && temp_s7 == 0) {
                 var_v0_2 = ConvUnitIDtoFlagList(0U, nSide_2, nID_2);
             } else {
@@ -597,27 +597,27 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         spA8 = SzDuel_GetUnitLoc(nSide_1, nID_1);
         temp_fp = temp_v0->value >> 0x10;
         if (temp_fp == 0) {
-            temp_s1_3 = temp_v0->flags;
-            var_v0_2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide_1, nID_1), (temp_s1_3 >> 6) & 3, temp_s1_3 & 0x3F, 0xE);
+            flags2 = temp_v0->flags;
+            var_v0_2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide_1, nID_1), (flags2 >> 6) & 3, flags2 & 0x3F, 0xE);
         } else {
-            temp_s1_4 = temp_v0->flags;
-            var_v0_2 = SearchUnitByRange(spA8 & 0xFF, spA8 >> 8, Ta_GetCurrentSide(nSide_1, nID_1), (temp_s1_4 >> 6) & 3, temp_s1_4 & 0x3F, temp_fp);
+            flags3 = temp_v0->flags;
+            var_v0_2 = SearchUnitByRange(spA8 & 0xFF, spA8 >> 8, Ta_GetCurrentSide(nSide_1, nID_1), (flags3 >> 6) & 3, flags3 & 0x3F, temp_fp);
         }
         }
-        var_v0_3 = ConvUnitIDtoFlagList_OFF((u32) var_v0_2, nSide_1, nID_1);
+        off2 = ConvUnitIDtoFlagList_OFF((u32) var_v0_2, nSide_1, nID_1);
         if (temp_s7 != 0) {
-            var_v0_3 = ConvUnitIDtoFlagList_OFF((u32) var_v0_3, nSide_2, nID_2);
+            off2 = ConvUnitIDtoFlagList_OFF((u32) off2, nSide_2, nID_2);
         }
-        if (var_v0_3 == 0) {
+        if (off2 == 0) {
             return 0;
         }
         out[0] = 0x39;
         out[1] = 0;
-        out[2] = var_v0_3;
+        out[2] = off2;
         out[3] = (s32) *(u16 *)&temp_v0->value;
         return 1;
     case 0x17:                                      /* switch 1 */
-        temp_fp = temp_s1_2 & 0x3F;
+        temp_fp = flags & 0x3F;
         if (temp_fp == 0x1A) {
             if (nSide_2 >= 0 && nID_2 > 0 && temp_s7 == 0) {
                 var_v0 = ConvUnitIDtoFlagList(0U, nSide_2, nID_2);
@@ -625,8 +625,8 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
                 return 0;
             }
         } else {
-        temp_fp = temp_s1_2 & 0x3F;
-        var_v0 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide_1, nID_1), (temp_s1_2 >> 6) & 3, temp_fp, 0xE);
+        temp_fp = flags & 0x3F;
+        var_v0 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide_1, nID_1), (flags >> 6) & 3, temp_fp, 0xE);
         }
         if (temp_s7 != 0) {
             var_v0 = ConvUnitIDtoFlagList_OFF((u32) var_v0, nSide_2, nID_2);
@@ -640,16 +640,16 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         }
         return 0x401;
     case 0x24:                                      /* switch 1 */
-        temp_v0_2 = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
+        convUnitIDtoFlagList2 = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
         out[0] = 0x1E;
         out[1] = 0;
-        out[2] = temp_v0_2;
+        out[2] = convUnitIDtoFlagList2;
         out[3] = Ta_GetCurrentSide(nSide_1, nID_1);
         return 1;
     case 0xD:                                       /* switch 1 */
-        temp_a2 = temp_v0->value;
-        temp_v1 = (temp_s1_2 >> 6) & 3;
-        temp_s1_5 = ((temp_a2 >> 0x10) << 0x10) | (temp_a2 & 0xFFFF);
+        value = temp_v0->value;
+        temp_v1 = (flags >> 6) & 3;
+        temp_s1_5 = ((value >> 0x10) << 0x10) | (value & 0xFFFF);
         switch (temp_v1) {                          /* switch 2; irregular */
         case 1:                                     /* switch 2 */
             out[0] = 8;
@@ -677,20 +677,20 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
                 return 1;
             }
             if ((temp_v0_4 = Ta_GetSummonablePiece(nSide_1, 1)) >= 0) {
-                temp_v0_5 = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
+                convUnitIDtoFlagList3 = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
                 out[0] = 0x1F;
                 out[1] = (s32) ((nSide_1 << 8) | nID_1 | 0x10000);
-                out[2] = temp_v0_5;
+                out[2] = convUnitIDtoFlagList3;
                 out[3] = temp_v0_4;
                 return 0x103;
             }
             return 0;
         }
         if ((temp_v0_6 = Ta_GetSummonablePiece(nSide_1, 1)) >= 0) {
-            temp_v0_7 = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
+            convUnitIDtoFlagList3In = ConvUnitIDtoFlagList(0U, nSide_1, nID_1);
             out[0] = 0x1F;
             out[1] = (s32) ((nSide_1 << 8) | nID_1 | 0x10000);
-            out[2] = temp_v0_7;
+            out[2] = convUnitIDtoFlagList3In;
             out[3] = temp_v0_6;
             return 0x101;
         }
@@ -698,19 +698,19 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     case 0x3E:                                      /* switch 1 */
         if ((temp_v0_8 = Ta_IsActiveTrapB((nSide_1 == 0) ? 1 : 0, 0x4C)) >= 0) {
             if (Ta_IsActiveTrapB(0, 0x2E) >= 0) {
-                temp_s1_6 = Ta_GetCurrentSide(nSide_1, nID_1);
-                temp_s3 = SzDuel_GetLP(nSide_1);
-                if (Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value) < temp_s3 && Ta_GetSummonablePiece(temp_s1_6, 1) >= 0) {
-                    temp_s5 = 5 - Ta_GetUnitNum(temp_s1_6, 4U);
-                    temp_s3_2 = TaUtil_GetGraveCardNum(temp_s1_6, 0) + TaUtil_GetGraveCardNum((temp_s1_6 == 0) ? 1 : 0, 0);
-                    var_s6 = 0;
+                side2 = Ta_GetCurrentSide(nSide_1, nID_1);
+                lp = SzDuel_GetLP(nSide_1);
+                if (Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value) < lp && Ta_GetSummonablePiece(side2, 1) >= 0) {
+                    temp_s5 = 5 - Ta_GetUnitNum(side2, 4U);
+                    temp_s3_2 = TaUtil_GetGraveCardNum(side2, 0) + TaUtil_GetGraveCardNum((side2 == 0) ? 1 : 0, 0);
+                    i = 0;
                     var_s4 = 0;
                     do {
-                        if (Ta_GetSummonablePieceWithOrder(temp_s1_6, var_s6, 1) >= 0) {
+                        if (Ta_GetSummonablePieceWithOrder(side2, i, 1) >= 0) {
                             var_s4 += 1;
                         }
-                        var_s6 += 1;
-                    } while (var_s6 < 8);
+                        i += 1;
+                    } while (i < 8);
                     if (temp_s5 <= 0 || temp_s3_2 == 0 || var_s4 == 0) {
                         return 0;
                     }
@@ -721,7 +721,7 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
                         var_v0_4 = -Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value);
                     }
                     out[1] = var_v0_4;
-                    out[2] = temp_s1_6;
+                    out[2] = side2;
                     temp_s5 = ((temp_s5 < temp_s3_2 ? temp_s5 : temp_s3_2) < var_s4)
                         ? (temp_s5 < temp_s3_2 ? temp_s5 : temp_s3_2) : var_s4;
                     out[3] = temp_s5;
@@ -735,25 +735,25 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
             out[3] = 0;
             return 1;
         }
-        temp_s1_7 = Ta_GetCurrentSide(nSide_1, nID_1);
-        temp_s3_4 = SzDuel_GetLP(nSide_1);
-        if (Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value) < temp_s3_4 && Ta_GetSummonablePiece(temp_s1_7, 1) >= 0) {
-            temp_s3_5 = 5 - Ta_GetUnitNum(temp_s1_7, 4U);
-            temp_s4 = TaUtil_GetGraveCardNum(temp_s1_7, 0) + TaUtil_GetGraveCardNum((temp_s1_7 == 0) ? 1 : 0, 0);
-            var_s6_2 = 0;
+        side3 = Ta_GetCurrentSide(nSide_1, nID_1);
+        lp2 = SzDuel_GetLP(nSide_1);
+        if (Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value) < lp2 && Ta_GetSummonablePiece(side3, 1) >= 0) {
+            temp_s3_5 = 5 - Ta_GetUnitNum(side3, 4U);
+            temp_s4 = TaUtil_GetGraveCardNum(side3, 0) + TaUtil_GetGraveCardNum((side3 == 0) ? 1 : 0, 0);
+            j = 0;
             var_s5_2 = 0;
             do {
-                if (Ta_GetSummonablePieceWithOrder(temp_s1_7, var_s6_2, 1) >= 0) {
+                if (Ta_GetSummonablePieceWithOrder(side3, j, 1) >= 0) {
                     var_s5_2 += 1;
                 }
-                var_s6_2 += 1;
-            } while (var_s6_2 < 8);
+                j += 1;
+            } while (j < 8);
             if (temp_s3_5 <= 0 || temp_s4 == 0 || var_s5_2 == 0) {
                 return 0;
             }
             out[0] = 0x3A;
             out[1] = Ta_GetLPRevByNaturalEffect(0x2C, (s32) *(u16 *)&temp_v0->value);
-            out[2] = temp_s1_7;
+            out[2] = side3;
             temp_s3_5 = ((temp_s3_5 < temp_s4 ? temp_s3_5 : temp_s4) < var_s5_2)
                 ? (temp_s3_5 < temp_s4 ? temp_s3_5 : temp_s4) : var_s5_2;
             out[3] = temp_s3_5;
@@ -769,37 +769,37 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
     case 0x41:                                      /* switch 1 */
         if ((u32) SzDuel_GetLP(nSide_1) > (temp_v0->value >> 0x10)) {
             temp_v0_9 = Ta_GetCurrentSide(nSide_1, nID_1);
-            temp_v0_10 = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(0, 0, temp_v0_9, ((u32) temp_v0->flags >> 6) & 3, temp_v0->flags & 0x3F, 0xE), nSide_1, nID_1);
-            if (temp_v0_10 == 0) {
+            off = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(0, 0, temp_v0_9, ((u32) temp_v0->flags >> 6) & 3, temp_v0->flags & 0x3F, 0xE), nSide_1, nID_1);
+            if (off == 0) {
                 return 0;
             }
             out[0] = 0x3B;
             out[1] = temp_v0_9;
-            out[2] = temp_v0_10;
+            out[2] = off;
             out[3] = (s32) temp_v0->value;
             return 1;
         }
         return 0;
     case 0x38:                                      /* switch 1 */
-        temp_s1_8 = Ta_GetCurrentSide(nSide_1, nID_1);
+        side3In = Ta_GetCurrentSide(nSide_1, nID_1);
         temp_v1_2 = temp_v0->value >> 0x10;
         switch (temp_v1_2) {                        /* switch 3; irregular */
         case 31:                                    /* switch 3 */
-            temp_v0_11 = Ta_GetSummonablePiece(temp_s1_8, 1);
-            if (temp_v0_11 >= 0) {
+            summonablePiece = Ta_GetSummonablePiece(side3In, 1);
+            if (summonablePiece >= 0) {
                 out[0] = 1;
-                out[1] = temp_s1_8;
-                out[2] = temp_v0_11;
+                out[1] = side3In;
+                out[2] = summonablePiece;
                 out[3] = (s32) temp_v0->value;
                 return 1;
             }
             return 0;
         case 30:                                    /* switch 3 */
-            temp_v0_12 = Ta_GetSummonablePiece((temp_s1_8 == 0) ? 1 : 0, 1);
-            if (temp_v0_12 >= 0) {
+            summonablePiece2 = Ta_GetSummonablePiece((side3In == 0) ? 1 : 0, 1);
+            if (summonablePiece2 >= 0) {
                 out[0] = 1;
-                out[1] = temp_s1_8;
-                out[2] = temp_v0_12;
+                out[1] = side3In;
+                out[2] = summonablePiece2;
                 out[3] = (s32) temp_v0->value;
                 return 1;
             }
@@ -813,11 +813,11 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         temp_v1_3 = (temp_v0->value >> 0x10) & 0xFF;
         switch (temp_v1_3) {                        /* switch 4; irregular */
         case 31:                                    /* switch 4 */
-            temp_v0_13 = Ta_GetSummonablePiece(temp_s1_9, 1);
-            if (temp_v0_13 >= 0) {
+            summonablePiece3 = Ta_GetSummonablePiece(temp_s1_9, 1);
+            if (summonablePiece3 >= 0) {
                 out[0] = 1;
                 out[1] = (s32) (temp_s1_9 | 0x10000);
-                out[2] = temp_v0_13;
+                out[2] = summonablePiece3;
                 out[3] = (s32) temp_v0->value;
                 temp_v0->flags = -1U;
                 temp_v0->value = -1U;
@@ -825,11 +825,11 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
             }
             return 0;
         case 30:                                    /* switch 4 */
-            temp_v0_14 = Ta_GetSummonablePiece((temp_s1_9 == 0) ? 1 : 0, 1);
-            if (temp_v0_14 >= 0) {
+            summonablePiece3In = Ta_GetSummonablePiece((temp_s1_9 == 0) ? 1 : 0, 1);
+            if (summonablePiece3In >= 0) {
                 out[0] = 1;
                 out[1] = (s32) (temp_s1_9 | 0x10000);
-                out[2] = temp_v0_14;
+                out[2] = summonablePiece3In;
                 out[3] = (s32) temp_v0->value;
                 temp_v0->flags = -1U;
                 temp_v0->value = -1U;
@@ -853,39 +853,39 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         out[3] = (s32) *(u16 *)&temp_v0->value;
         return 1;
     case 0x4:                                       /* switch 1 */
-        temp_v1_4 = temp_s1_2 & 0x3F;
+        temp_v1_4 = flags & 0x3F;
         switch (temp_v1_4) {                        /* switch 5; irregular */
         case 26:                                    /* switch 5 */
             if (nSide_2 >= 0 && nID_2 > 0 && temp_s7 == 0) {
-                temp_v0_15 = ConvUnitIDtoFlagList(0U, nSide_2, nID_2);
+                convUnitIDtoFlagList = ConvUnitIDtoFlagList(0U, nSide_2, nID_2);
                 out[0] = 0x15;
                 out[1] = 0;
-                out[2] = temp_v0_15;
+                out[2] = convUnitIDtoFlagList;
                 out[3] = 0;
                 return 0x201;
             }
             return 0;
         case 30:                                    /* switch 5 */
-            temp_s0 = SearchUnitByRange(temp_fp, spAC, Ta_GetCurrentSide(nSide_1, nID_1), (temp_s1_2 >> 6) & 3, 30, temp_v0->value >> 16);
+            unitFlags = SearchUnitByRange(temp_fp, spAC, Ta_GetCurrentSide(nSide_1, nID_1), (flags >> 6) & 3, 30, temp_v0->value >> 16);
             out[0] = 0x15;
             out[1] = 0;
-            out[2] = temp_s0;
+            out[2] = unitFlags;
             out[3] = 0;
             if (SzDuel_GetUnitCardNo(nSide_1, nID_1) == 0x269) {
                 out[0] = 0x17;
             }
             out[1] = 0;
-            out[2] = temp_s0;
+            out[2] = unitFlags;
             out[3] = 0;
-            return (temp_s0 != 0) ? 1 : 0;
+            return (unitFlags != 0) ? 1 : 0;
         case 31:                                    /* switch 5 */
-            var_v0_6 = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(temp_fp, spAC, Ta_GetCurrentSide(nSide_1, nID_1), (temp_s1_2 >> 6) & 3, 31, temp_v0->value >> 16), nSide_1, nID_1);
+            off3 = ConvUnitIDtoFlagList_OFF(SearchUnitByRange(temp_fp, spAC, Ta_GetCurrentSide(nSide_1, nID_1), (flags >> 6) & 3, 31, temp_v0->value >> 16), nSide_1, nID_1);
             if (temp_s7 != 0) {
-                var_v0_6 = ConvUnitIDtoFlagList_OFF((u32) var_v0_6, nSide_2, nID_2);
+                off3 = ConvUnitIDtoFlagList_OFF((u32) off3, nSide_2, nID_2);
             }
             out[0] = 0x15;
             out[1] = 0;
-            out[2] = var_v0_6;
+            out[2] = off3;
             out[3] = 0;
             if (SzDuel_GetUnitCardNo(nSide_1, nID_1) == 0x1FD || SzDuel_GetUnitCardNo(nSide_1, nID_1) == 0x1FA) {
                 out[0] = 0x2E;

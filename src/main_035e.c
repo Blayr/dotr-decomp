@@ -56,6 +56,7 @@ extern const char D_002BD6E8[]; /* "e%ld" */
 #define atof(s) ((double (*)(const char *))atof)(s)
 #define fp ((FILE *)fp_0019F6E8)
 
+/* newlib __svfscanf: the scanf engine (stream `fp_0019F6E8`, format `fmt0`). */
 s32 func_0019F6E8(void *fp_0019F6E8, const char *fmt0, void *ap0)
 {
   __builtin_va_list ap = ap0;
@@ -653,6 +654,7 @@ match_failure:
 #undef atof
 #undef fp
 
+/* newlib __sccl: builds the character table `tab` of a %[...] scan set from `fmt`. */
 char *func_001A0378(char *tab, char *fmt) {
     s32 c, n, v;
 
@@ -699,6 +701,7 @@ char *func_001A0378(char *tab, char *fmt) {
     }
 }
 
+/* newlib _write_r: write() for re-entrancy record `ptr` (errno into it). */
 s64 func_001A0478(s32 *ptr, s32 fd, s32 buf, s32 cnt) {
     s64 ret;
     D_003512F8 = 0;
@@ -733,6 +736,7 @@ typedef struct sw_FILE {
     sw_reent *_data;
 } sw_FILE;
 
+/* newlib fclose: closes stream `arg0` (flushes and frees its buffer). */
 s32 func_001A04D8(void *arg0) {
     sw_FILE *fp = arg0;
 
@@ -774,6 +778,7 @@ s32 func_001A04D8(void *arg0) {
 /* __muldi3 */
 typedef union { struct { s32 low, high; } s; s64 ll; } DIunion;
 
+/* libgcc 64-bit multiply of `u` and `v`. */
 s64 func_001A05E8(s64 u, s64 v) {
     DIunion w;
     DIunion uu, vv;

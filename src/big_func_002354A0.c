@@ -50,10 +50,10 @@ struct DotrTekiWindowPair {
 };
 extern struct DotrTekiWindowNames D_0029AEF0;
 extern struct DotrTekiWindowPair D_0029AF50;
-extern struct DotrTekiWindowWindow camp_window_Teki_data[];
+extern struct DotrTekiWindowWindow campaignEnemyWindow[]; /* original: camp_window_Teki_data */
 extern struct DotrTekiWindowWindow D_00297BCA;
-extern struct DotrTekiWindowItem tex_bara_data2[];
-extern struct DotrTekiWindowItem camp_window_teki3[];
+extern struct DotrTekiWindowItem roseSprites2[]; /* original: tex_bara_data2 */
+extern struct DotrTekiWindowItem campaignEnemyWindowItems[]; /* original: camp_window_teki3 */
 extern struct DotrTekiWindowItem D_00298320[];
 extern struct DotrTekiWindowItemU D_002980A0;
 extern struct DotrTekiWindowItem D_00297D00[];
@@ -260,11 +260,11 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             short no;
             short cost;
 
-            cursor = func_00217BD0_b(cursor, &tex_bara_data2[side], 0, y);
-            cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[0], side, 0, 0, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[2], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = func_00217BD0_b(cursor, &roseSprites2[side], 0, y);
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[0], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[2], side, 0, 0, y, 0, 128, WH(0x224));
             yy = y - yoff;
-            cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[3], side, 0, 0, yy, 1, 128, 0);
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[3], side, 0, 0, yy, 1, 128, 0);
             no = b->h196 + 1;
             if (name == 217) {
                 no = b->h196;
@@ -277,8 +277,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                 FACE->no = no;
                 FACE->kind = D_002999CC[no][WB(0x5468)];
                 FACE->mode = 1;
-                FACE->x = camp_window_Teki_data[3].x;
-                FACE->y = camp_window_Teki_data[3].y + y - yoff;
+                FACE->x = campaignEnemyWindow[3].x;
+                FACE->y = campaignEnemyWindow[3].y + y - yoff;
                 ShFace_Request(FACE);
                 WB(0x540a) = 2;
                 break;
@@ -286,8 +286,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                 FACE->no = no;
                 FACE->kind = D_002999CC[no][WB(0x5468)];
                 FACE->mode = 3;
-                FACE->x = camp_window_Teki_data[3].x;
-                FACE->y = camp_window_Teki_data[3].y + y - yoff;
+                FACE->x = campaignEnemyWindow[3].x;
+                FACE->y = campaignEnemyWindow[3].y + y - yoff;
                 ShFace_Request(FACE);
                 WB(0x540a) = 2;
                 break;
@@ -296,9 +296,9 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                 WB(0x540a) = 0;
                 break;
             }
-            cursor = func_00218020_b(cursor, &camp_window_teki3[2], 0, yy, 0);
-            cursor = func_00218020_b(cursor, &camp_window_teki3[3], 0, yy, 0);
-            cursor = func_00218020_b(cursor, &camp_window_teki3[side], 0, yy, 0);
+            cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[2], 0, yy, 0);
+            cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[3], 0, yy, 0);
+            cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[side], 0, yy, 0);
             if (WB(0x5406) == 0) {
                 SzData_SetupFromConstDeck(1, b->h196 + 26);
             }
@@ -339,8 +339,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
 
             WB(0x5488) = 1;
             id = SzData_GetLeader(1, 0);
-            cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[1], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[4], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[1], side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[4], side, 0, x, y, 0, 128, WH(0x224));
             cursor = Taku_Window_Set_window(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
             xs = x;
             cursor = func_001B6F70_b(cursor, xs + 152, y + 63, 1, 1, 4, D_0030F102, 0);
@@ -395,8 +395,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             cursor = func_001B6EA0_b(cursor, xs + 421, y + 73, 1, 0, 4, b->h130[b->h196]);
             cursor = SzMsg_LoadFont_Pipe(cursor, 1, SzDuel_GetMsgName(id), 0, 22);
             cursor = RhText_SetTextureFlush(cursor);
-            tx = (short)camp_window_Teki_data[4].x + 4 + x;
-            ty = (short)camp_window_Teki_data[4].y + 2 + y;
+            tx = (short)campaignEnemyWindow[4].x + 4 + x;
+            ty = (short)campaignEnemyWindow[4].y + 2 + y;
             RATIO(cursor, tx, ty, 246, 246.0f)
         }
     }
@@ -416,9 +416,9 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         } else {
             wd = *(short *)&info->w + 16;
         }
-        camp_window_Teki_data[7].w = wd;
+        campaignEnemyWindow[7].w = wd;
         tx = 320 - ((short)wd >> 1);
-        cursor = Taku_Window_Set_window(cursor, &camp_window_Teki_data[7], 2, 0, tx, 224, 0, 128, 64);
+        cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[7], 2, 0, tx, 224, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, 228, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
     } else if (WB(0x5374) == 0 && WU(4) == 2 && WB(0x72) == 0 && WB(0x547a) == 0 && WB(0x6e) != 0
@@ -444,7 +444,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         c = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         wd = *(short *)&info->w + 16;
-        camp_window_Teki_data[5].w = wd;
+        campaignEnemyWindow[5].w = wd;
         cx = WH(0);
         half = wd >> 1;
         d = cx - half;
@@ -465,7 +465,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         if (ty >= 290) {
             ty = 290;
         }
-        cursor = Taku_Window_Set_window(c, &camp_window_Teki_data[5], 2, 0, px, ty, 0, 128, 64);
+        cursor = Taku_Window_Set_window(c, &campaignEnemyWindow[5], 2, 0, px, ty, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, ty + 4, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
     }

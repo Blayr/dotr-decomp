@@ -281,12 +281,12 @@ s32 Ta_ConvBitLengthToNumericLength(s32 bit) {
     extern s32 func_001A2F68(s32);
     s32 temp_s0;
     s32 var_s0;
-    s32 var_s1;
+    s32 i;
 
-    var_s1 = 0;
+    i = 0;
     var_s0 = 0;
-    for (; var_s1 < bit; var_s1++) {
-        temp_s0 = func_001A6BE8(0x4000000000000000LL, func_001A2EB0(var_s1));
+    for (; i < bit; i++) {
+        temp_s0 = func_001A6BE8(0x4000000000000000LL, func_001A2EB0(i));
         var_s0 = func_001A2F68(func_001A2858(func_001A2EB0(var_s0), temp_s0));
     }
     return var_s0;
@@ -297,37 +297,37 @@ void TaUtil_GetUnitLst(s32 rSide, s32 sSide, s16 *wUnitLst) {
     s16 *var_s0;
     s32 criteria;
     s32 player;
-    s32 var_s3;
+    s32 i;
     u16 player_bits;
     s32 var_v1;
 
-    var_s3 = 1;
+    i = 1;
     var_s0 = wUnitLst;
     criteria = sSide;
     player = rSide;
     player_bits = (u16)(player << 8);
     do {
-        if ((SzDuel_GetUnit(player, var_s3) != 0) && (Ta_SideMatch(player, Ta_GetCurrentSide(player, var_s3), criteria) == 1)) {
-            *var_s0 = player_bits | var_s3;
+        if ((SzDuel_GetUnit(player, i) != 0) && (Ta_SideMatch(player, Ta_GetCurrentSide(player, i), criteria) == 1)) {
+            *var_s0 = player_bits | i;
             var_s0++;
         }
-        var_s3 += 1;
-    } while (var_s3 < 0xB);
-    var_s3 = 1;
+        i += 1;
+    } while (i < 0xB);
+    i = 1;
     do {
-        if (SzDuel_GetUnit((player == 0) ? 1 : 0, var_s3) != 0) {
-            if (Ta_SideMatch(player, Ta_GetCurrentSide((player == 0) ? 1 : 0, var_s3), criteria) == 1) {
+        if (SzDuel_GetUnit((player == 0) ? 1 : 0, i) != 0) {
+            if (Ta_SideMatch(player, Ta_GetCurrentSide((player == 0) ? 1 : 0, i), criteria) == 1) {
                 if (player == 0) {
                     var_v1 = 1;
                 } else {
                     var_v1 = 0;
                 }
-                *var_s0 = var_s3 | (var_v1 << 8);
+                *var_s0 = i | (var_v1 << 8);
                 var_s0++;
             }
         }
-        var_s3 += 1;
-    } while (var_s3 < 0xB);
+        i += 1;
+    } while (i < 0xB);
 }
 
 /* The units of side `sSide` (relative to `rSide`) in range `sRange` of square (nX, nZ) matching `sKey`, as a unit
@@ -1484,7 +1484,7 @@ typedef struct {
 s32 Ta_GetUnitAgreeWithVarInfo(void *vInfo, s32 eOwner, s32 cSide, s32 cKey) {
     extern s32 Ta_SideMatch();
     s32 temp_s0;
-    s32 temp_s1;
+    s32 sideMatch;
     s32 var_v1;
     s32 var_a0;
 
@@ -1497,7 +1497,7 @@ s32 Ta_GetUnitAgreeWithVarInfo(void *vInfo, s32 eOwner, s32 cSide, s32 cKey) {
     } else {
         var_a0 = (*(u8 *)((u8 *)vInfo + 0x44) == 0) ? 1 : 0;
     }
-    temp_s1 = Ta_SideMatch(var_a0);
+    sideMatch = Ta_SideMatch(var_a0);
     switch (cKey) {
     case 21:
         if (*(u8 *)((u8 *)vInfo + 0x3F) == 1) {
@@ -1586,7 +1586,7 @@ s32 Ta_GetUnitAgreeWithVarInfo(void *vInfo, s32 eOwner, s32 cSide, s32 cKey) {
         var_v1 = 0;
         break;
     }
-    if (temp_s1 != 0 && var_v1 != 0) {
+    if (sideMatch != 0 && var_v1 != 0) {
         return 1;
     }
     return 0;
@@ -1697,14 +1697,14 @@ u32 Ta_GetMinimumParamUnitFromFlagList(s32 eObj) {
 
 /* Unit (nSide, nID)'s attack plus defence. */
 s32 Ta_GetAPPlusDP(s32 nSide, s32 nID) {
-    s32 temp_v0;
-    s32 temp_s1;
-    s32 temp_s0;
+    s32 loc;
+    s32 locLo;
+    s32 unitAP;
 
-    temp_v0 = SzDuel_GetUnitLoc(nSide, nID);
-    temp_s1 = temp_v0 & 0xFF;
-    temp_s0 = TaUtil_GetUnitAP(nSide, nID, temp_s1, temp_s1);
-    return temp_s0 + TaUtil_GetUnitDP(nSide, nID, temp_s1, temp_v0 >> 8);
+    loc = SzDuel_GetUnitLoc(nSide, nID);
+    locLo = loc & 0xFF;
+    unitAP = TaUtil_GetUnitAP(nSide, nID, locLo, locLo);
+    return unitAP + TaUtil_GetUnitDP(nSide, nID, locLo, loc >> 8);
 }
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
@@ -1756,15 +1756,15 @@ int Ta_DelUnit2(int a, int b)
 /* The effects a unit (nSide, nID) gets when it lands on square (nX, nZ), into `eInfo`. */
 s32 TaUnit_AddUnitEfc(s32 nSide, s32 nID, s32 nX, s32 nZ, void *eInfo) {
     extern s32 Ta_IsVirus();
-    s32 temp_s0;
-    s32 temp_s1;
-    s32 var_s1;
+    s32 controller;
+    s32 kind;
+    s32 convUnitIDtoFlagList;
     s32 var_s2;
-    s32 var_s3;
+    s32 convUnitIDtoFlagList2;
 
-    temp_s0 = Ta_IsUnitControl(nSide, nID);
-    temp_s1 = SzDuel_GetUnitKind(nSide, nID);
-    var_s2 = var_s3 = 0;
+    controller = Ta_IsUnitControl(nSide, nID);
+    kind = SzDuel_GetUnitKind(nSide, nID);
+    var_s2 = convUnitIDtoFlagList2 = 0;
     if (SzDuel_GetUnit(nSide, nID) == 0 || nID == 0) {
         return 0;
     }
@@ -1773,31 +1773,31 @@ s32 TaUnit_AddUnitEfc(s32 nSide, s32 nID, s32 nX, s32 nZ, void *eInfo) {
             return 1;
         }
     }
-    if (Ta_IsLDRange((temp_s0 == 0) ? 1 : 0, nX, nZ) != 0) {
-        if (Ta_IsLDAbl(0x10, (temp_s0 == 0) ? 1 : 0) != 0) {
-            if ((Ta_IsLD_DestObj((temp_s0 == 0) ? 1 : 0, temp_s1 & 0x1F) != 0) && ((temp_s1 >> 5) == 0)) {
+    if (Ta_IsLDRange((controller == 0) ? 1 : 0, nX, nZ) != 0) {
+        if (Ta_IsLDAbl(0x10, (controller == 0) ? 1 : 0) != 0) {
+            if ((Ta_IsLD_DestObj((controller == 0) ? 1 : 0, kind & 0x1F) != 0) && ((kind >> 5) == 0)) {
                 var_s2 = ConvUnitIDtoFlagList(var_s2, nSide, nID);
             }
         }
-        if ((Ta_IsLDAbl(0xF, (temp_s0 == 0) ? 1 : 0) != 0) && (Ta_IsLD_CurseObj((temp_s0 == 0) ? 1 : 0, temp_s1 & 0x1F) != 0) && ((temp_s1 >> 5) == 0)) {
-            var_s3 = ConvUnitIDtoFlagList(0U, nSide, nID);
+        if ((Ta_IsLDAbl(0xF, (controller == 0) ? 1 : 0) != 0) && (Ta_IsLD_CurseObj((controller == 0) ? 1 : 0, kind & 0x1F) != 0) && ((kind >> 5) == 0)) {
+            convUnitIDtoFlagList2 = ConvUnitIDtoFlagList(0U, nSide, nID);
         }
-        if (var_s2 > 0 || var_s3 > 0) {
+        if (var_s2 > 0 || convUnitIDtoFlagList2 > 0) {
             ((s32 *)eInfo)[0] = 0x71;
             ((s32 *)eInfo)[1] = var_s2;
-            ((s32 *)eInfo)[2] = var_s3;
+            ((s32 *)eInfo)[2] = convUnitIDtoFlagList2;
             ((s32 *)eInfo)[3] = 0x80000000;
             return 1;
         }
-        var_s1 = 0;
-        if ((Ta_IsLDAbl(0xD, (temp_s0 == 0) ? 1 : 0) != 0) && (SzDuel_GetUnitStatus(nSide, nID, 4) == 0)) {
-            var_s1 = ConvUnitIDtoFlagList(0U, nSide, nID);
+        convUnitIDtoFlagList = 0;
+        if ((Ta_IsLDAbl(0xD, (controller == 0) ? 1 : 0) != 0) && (SzDuel_GetUnitStatus(nSide, nID, 4) == 0)) {
+            convUnitIDtoFlagList = ConvUnitIDtoFlagList(0U, nSide, nID);
         }
-        if (var_s1 > 0) {
+        if (convUnitIDtoFlagList > 0) {
             ((s32 *)eInfo)[0] = 0x71;
             ((s32 *)eInfo)[1] = 0;
             ((s32 *)eInfo)[2] = 0;
-            ((s32 *)eInfo)[3] = (s32) (var_s1 | 0x80000000);
+            ((s32 *)eInfo)[3] = (s32) (convUnitIDtoFlagList | 0x80000000);
             return 1;
         }
     }
@@ -2077,18 +2077,18 @@ void Ta_UnitFade(s32 nSide, s32 nID, s32 Flip, s32 Mode, s32 fCM) {
     extern s32 SzDuel_SetUnitCtlGoalM();
     extern s32 SzDuel_GetUnitCtlRateC();
     extern s32 SzDuel_GetUnitCtlRateM();
-    s32 temp_s0;
-    s32 temp_s1;
+    s32 unitCtlRateC;
+    s32 unitCtlRateM;
 
     SzEffect_SetBusyFlag2((nSide << 8) | nID, 0);
-    temp_s0 = SzDuel_GetUnitCtlRateC(nSide, nID);
-    temp_s1 = SzDuel_GetUnitCtlRateM(nSide, nID);
+    unitCtlRateC = SzDuel_GetUnitCtlRateC(nSide, nID);
+    unitCtlRateM = SzDuel_GetUnitCtlRateM(nSide, nID);
     if ((nID != 0) && ((SzDuel_GetUnitKind(nSide, nID) >> 5) != 0)) {
         fCM = ((fCM >> 1) & 1) * 2;
     }
     if (Flip > 0) {
         if (fCM & 1) {
-            if (temp_s1 < 0x80) {
+            if (unitCtlRateM < 0x80) {
                 SzDuel_SetUnitCtlModeM(nSide, nID, Mode);
                 SzDuel_SetUnitCtlGoalM(nSide, nID, 0x80);
                 if ((SzDuel_GetUnitStatus(nSide, nID, 4) != 0) || (nID == 0)) {
@@ -2098,18 +2098,18 @@ void Ta_UnitFade(s32 nSide, s32 nID, s32 Flip, s32 Mode, s32 fCM) {
                 }
             }
         }
-        if (((fCM >> 1) & 1) && (temp_s0 < 0x80)) {
+        if (((fCM >> 1) & 1) && (unitCtlRateC < 0x80)) {
             SzDuel_SetUnitCtlModeC(nSide, nID, Mode);
             SzDuel_SetUnitCtlGoalC(nSide, nID, 0x80);
             SzDuel_SetUnitCtlRateC(nSide, nID, 1, -1);
         }
     } else {
-        if ((fCM & 1) && (temp_s1 > 0)) {
+        if ((fCM & 1) && (unitCtlRateM > 0)) {
             SzDuel_SetUnitCtlModeM(nSide, nID, Mode);
             SzDuel_SetUnitCtlGoalM(nSide, nID, 0);
             SzDuel_SetUnitCtlRateM(nSide, nID, -1, -1);
         }
-        if (((fCM >> 1) & 1) && (temp_s0 > 0)) {
+        if (((fCM >> 1) & 1) && (unitCtlRateC > 0)) {
             SzDuel_SetUnitCtlModeC(nSide, nID, Mode);
             SzDuel_SetUnitCtlGoalC(nSide, nID, 0);
             SzDuel_SetUnitCtlRateC(nSide, nID, -1, -1);

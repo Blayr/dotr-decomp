@@ -777,7 +777,7 @@ extern Sprite_00224E40 D_0029AAA0;
 extern Pair_00224E40 D_0029AAD0;
 extern Sprite_00224E40 D_0029AB20;
 extern Sprite_00224E40 D_0029AB50;
-extern Sprite_00224E40 tex_bara_data[];
+extern Sprite_00224E40 roseSprites[]; /* original: tex_bara_data */
 extern Tex_00224E40 campaignSprites[]; /* original: tex_uv_data */
 extern Code_00224E40 campaignDeckChoices[]; /* original: DeckDat */
 extern char D_0030F0BB[];
@@ -901,7 +901,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2738:
             case 0x276A:
                 if (*(s8 *)0x01ED53A6 == 2) {
-                    tmpl = tex_bara_data;
+                    tmpl = roseSprites;
                     for (i = 0; i < 2; i++) {
                         s100 = *tmpl;
                         if (i == 0) {

@@ -3228,9 +3228,9 @@ void lSzDuel_SetupTrade(s32 side) {
     s16 *var_s0;
     u8 *var_a0;
     u8 *var_a1;
-    s32 var_a0_2;
-    s32 var_a1_2;
-    s32 var_s1;
+    s32 i;
+    s32 j;
+    s32 k;
     s32 var_v0;
     u16 temp_a0;
     u16 *var_s2;
@@ -3274,46 +3274,46 @@ void lSzDuel_SetupTrade(s32 side) {
     if (temp_v1 != 2) {
         switch (temp_v1) {
             case 0:
-                var_s1 = 0;
+                k = 0;
                 do {
-                    if (SzData_GetBagCount(side, var_s1, 3) > 0) {
-                        *var_s0 = var_s1;
+                    if (SzData_GetBagCount(side, k, 3) > 0) {
+                        *var_s0 = k;
                         *var_s3 = (u16)(*var_s3 + 1);
                     } else {
                         *var_s0 = 0x3E7;
                     }
-                    var_s1 += 1;
+                    k += 1;
                     var_s0 += 1;
-                } while (var_s1 < 0x356);
+                } while (k < 0x356);
                 break;
             case 1:
-                var_a1_2 = 0;
+                j = 0;
                 do {
                     if ((s32)*var_a0 > 0) {
-                        *var_s0 = var_a1_2;
+                        *var_s0 = j;
                         *var_s3 = (u16)(*var_s3 + 1);
                     } else {
                         *var_s0 = 0x3E7;
                     }
-                    var_a1_2 += 1;
+                    j += 1;
                     var_s0 += 1;
                     var_a0 += 1;
-                } while (var_a1_2 < 0x356);
+                } while (j < 0x356);
                 break;
         }
     } else {
-        var_a0_2 = 0;
+        i = 0;
         do {
             if ((s32)*var_a1 > 0) {
-                *var_s0 = var_a0_2;
+                *var_s0 = i;
                 *var_s3 = (u16)(*var_s3 + 1);
             } else {
                 *var_s0 = 0x3E7;
             }
-            var_a0_2 += 1;
+            i += 1;
             var_s0 += 1;
             var_a1 += 1;
-        } while (var_a0_2 < 0x356);
+        } while (i < 0x356);
     }
     temp_a0 = *var_s3;
     if ((s32)temp_a0 < (*var_s2 + *var_s4)) {

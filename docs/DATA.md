@@ -1,0 +1,42 @@
+# Where the game's data lives
+
+## Cards
+
+- **Card ids** run 0..0x355 (854 cards, `CARD_COUNT`). Cards from 0x2AB on earn no leader rank (`SzData_GetRank`).
+- **Constant card data:** 20 bytes per card at `D_002BF080` (`SzDuel_GetCardConstInfo(card)`): kind in the
+  top bits of byte 0, deck cost at byte 3, attack at +8 and defence at +0xA (13 bits each), level in a nibble
+  of byte 2. To be named as a struct in the card-rules batch.
+- **Card numbers vs ids:** the old card-list order maps to ids through `D_002CD8A0`
+  (`SzDuel_Xax2New` / `SzDuel_New2Xax`).
+- **Names:** card `card`'s name is message `card + 0x140` (`SzDuel_GetMsgName`).
+- **3D view distance** per monster: `D_002CE4A4` (`SzDuel_GetCamDist`).
+- **Leader abilities:** `D_002C3338[card][5]` (`SzDuel_GetUnitLeaderAbility3`, `..._Detail_Ability_Pipe`).
+- **Card passwords:** looked up by `lSzDuel_HitPassword` (the 8-digit table at `D_002BEF79`).
+- **Card rules tables:** fusions `fusionTable` (`Fusion`, `WallFusion`), equips `equipMatchTable`
+  (`Do_ChkEncMatch`, `Enchant`), the destiny draw's card triples `destinyDrawTable` (`Ta_GetDestinyDraw`).
+
+## Decks
+
+- **Built-in decks:** 51 decks of 41 cards (`D_002D0970[deck][slot]`, the leader first, card id in the low 12
+  bits and the leader's rank in the top 4): `SzData_GetConstDeck`, `SzData_SetupFromConstDeck`.
+- **A side's decks:** three per save profile (see SAVE.md).
+
+## Duelists
+
+- `DuelPlayer.duelistId` says who plays a side: 0..0x1F a computer duelist, 0x20..0x63 a tutorial script (both
+  play through `duelistControllers[id]`, JP `g_aLogFunc`), 100 + n the human on pad n.
+- Duelist portraits are texture items of category 2 (`lSzDuel_DrawWindow_PicMini_Pipe`).
+
+## Maps
+
+- Built-in maps: `D_002CEE5C[map][7][7]` field types (maps 0..0x2D); maps 0x2E..0x32 are duel side 0's
+  five edited maps, 0x33..0x37 side 1's, each read from that side's save profile (`SzDuel_SetupMap`, `SzData_GetData(side)`).
+- Field type 7 is the plain field (edited maps start all 7); 8 behaves as a labyrinth wall for walking
+  (`lSzDuel_CalcMapMovableRecursive`).
+
+## Models and textures
+
+- Models load by group and set from merged files (`SzModel_LoadMerge`, `modelFileOffsets`,
+  `modelGroupInfo`) or one by one (`SzModel_Load`), into the 84 `modelSlots`.
+- Textures are TIM2 files kept as texture items (`textureItems`, 1024 records, categories 0..9) and sent to
+  GS memory per frame (`SzText_DoRequest_Pipe`).

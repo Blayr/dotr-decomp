@@ -1,9 +1,10 @@
 #include "common.h"
 
-/* Starts the sound driver: clears the transfer queue and sets up the IOP side (`mode`). */
-s32 SD_Init(s32 mode) {
-    g_SDValue = (s32 *)mode;
-    g_SDBuffer = mode + 0x2A80;
+/* Starts the sound driver in the work area at `work` (0x2A80 bytes of status, then its buffer): clears the
+   transfer queue and sets up the IOP side. */
+s32 SD_Init(s32 work) {
+    g_SDValue = (s32 *)work;
+    g_SDBuffer = work + 0x2A80;
     func_00198948(g_SDValue, 0, 0x2A80);
     *(s32 *)((u8 *)g_SDValue + 0x1DC) = -1;
     *(s32 *)((u8 *)g_SDValue + 0x1F4) = -1;
@@ -154,18 +155,18 @@ void SD_BGMSetSourceLevel(s32 channel, s32 level) {
     }
 }
 
-/* Plays sound effect `se` of group `group` (`param`). */
-void SD_SEPlay2(s32 group, s32 se, s32 param) {
+/* Plays sound effect `se` of the group loaded in slot `slot` (0..3; `param`). */
+void SD_SEPlay2(s32 slot, s32 se, s32 param) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
-        SDRPC_SendCommand(0x5210, group, se, param, 0);
+        SDRPC_SendCommand(0x5210, slot, se, param, 0);
     }
 }
 
-/* Plays sound effect `se` of group `group` with volume, pan, pitch and flags. */
-void SD_SEPlayWithParam6(s32 group, s32 se, s32 volume, s32 pan, s32 pitch, s32 flags) {
+/* Plays sound effect `se` of the group loaded in slot `slot` (0..3) with volume, pan, pitch and flags. */
+void SD_SEPlayWithParam6(s32 slot, s32 se, s32 volume, s32 pan, s32 pitch, s32 flags) {
     s32 sp78;
     s32 sp7C;
     u8 *bytes;
@@ -175,7 +176,7 @@ void SD_SEPlayWithParam6(s32 group, s32 se, s32 volume, s32 pan, s32 pitch, s32 
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
         bytes = (u8 *)&sp78;
-        bytes[0] = group;
+        bytes[0] = slot;
         bytes[1] = se;
         bytes[2] = se;
         bytes[3] = pitch;
@@ -188,18 +189,18 @@ void SD_SEPlayWithParam6(s32 group, s32 se, s32 volume, s32 pan, s32 pitch, s32 
     }
 }
 
-/* Plays sound effect `se` of group `group` unless it is already playing. */
-void SD_SEPlayOnlyOnce(s32 group, s32 se, s32 param) {
-    SD_SEPlayWithParam6(group, se, 0, 0, 0, param);
+/* Plays sound effect `se` of slot `slot` at default volume, pan and pitch; `flags` is the flags byte (1 = loop). */
+void SD_SEPlayOnlyOnce(s32 slot, s32 se, s32 flags) {
+    SD_SEPlayWithParam6(slot, se, 0, 0, 0, flags);
 }
 
-/* Stops sound effect `se` of group `group`. */
-void SD_SEStop(s32 group, s32 se) {
+/* Stops sound effect `se` of the group loaded in slot `slot`. */
+void SD_SEStop(s32 slot, s32 se) {
     if (g_SDValue == NULL || g_SDBuffer == 0) {
         return;
     }
     if ((g_SDValue[1] & 4) && (g_SDValue[0] & 1) && ((s64)SD_iGetSDStatus() & 0x80)) {
-        SDRPC_SendCommand(0x5201, group, se);
+        SDRPC_SendCommand(0x5201, slot, se);
     }
 }
 

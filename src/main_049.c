@@ -308,7 +308,7 @@ s32 SzModel_GetCenterOfs(s32 index, f32 *out) {
     f32 temp_f1;
     s32 temp_a1;
     s32 temp_a1_2;
-    s32 var_v0_2;
+    s32 traceGNode;
 
     if ((index < 0) || (temp_a1 = index < 0x54, (temp_a1 == 0))) {
         return 0;
@@ -325,18 +325,18 @@ s32 SzModel_GetCenterOfs(s32 index, f32 *out) {
     }
     sp3C = 0;
     if ((index < 0) || (index >= 0x54)) {
-        var_v0_2 = 0;
+        traceGNode = 0;
     } else if (obj == NULL) {
-        var_v0_2 = 0;
+        traceGNode = 0;
     } else {
         temp_a1_2 = *(s32 *)((u8 *)obj + 0x134);
-        var_v0_2 = lSzModel_TraceGNode(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
+        traceGNode = lSzModel_TraceGNode(1, temp_a1_2, temp_a1_2, &sp3C, 0, NULL, 0);
     }
-    if (var_v0_2 != 0) {
+    if (traceGNode != 0) {
         temp_f1 = *(f32 *)(*(u8 **)((u8 *)obj + 0x13C) + 0x54);
-        out[0] = *(f32 *)((u8 *)var_v0_2 + 0x20) / temp_f1;
-        out[1] = *(f32 *)((u8 *)var_v0_2 + 0x24) / temp_f1;
-        out[2] = *(f32 *)((u8 *)var_v0_2 + 0x28) / temp_f1;
+        out[0] = *(f32 *)((u8 *)traceGNode + 0x20) / temp_f1;
+        out[1] = *(f32 *)((u8 *)traceGNode + 0x24) / temp_f1;
+        out[2] = *(f32 *)((u8 *)traceGNode + 0x28) / temp_f1;
         out[3] = 1.0f;
     }
     return 1;

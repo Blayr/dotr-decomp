@@ -1596,7 +1596,7 @@ s32 lSzModel_BindModelByAddr(s32 index, void *address) {
     s32 motion;
     Obj_0031ABB0 *objMotion;
     Obj_0031ABB0 *cur;
-    s32 var_s3_2;
+    s32 i;
     u8 *temp_v1;
 
     obj = modelSlots[index];
@@ -1643,19 +1643,19 @@ s32 lSzModel_BindModelByAddr(s32 index, void *address) {
     } else {
         *(u8 **)((u8 *)obj + 0x168) = NULL;
     }
-    var_s3_2 = 0;
+    i = 0;
     cur = obj;
     do {
-        if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & (1 << (var_s3_2 + 0xB))) {
+        if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & (1 << (i + 0xB))) {
             RhText_BindAddress((s32) motionData);
             *(u8 **)((u8 *)cur + 0x144) = motionData;
             motionData += *(s32 *)(motionData + 8);
         } else {
             *(u8 **)((u8 *)cur + 0x144) = NULL;
         }
-        var_s3_2 += 1;
+        i += 1;
         cur = (Obj_0031ABB0 *)((u8 *)cur + 4);
-    } while (var_s3_2 < 8);
+    } while (i < 8);
     if (*(s32 *)(*(u8 **)&obj->pad040[0xF8] + 4) & 0x80000) {
         s32 size = (*(s32 *)(motionData + 8) + 0xF) & ~0xF;
         *(u8 **)((u8 *)obj + 0x16C) = motionData;

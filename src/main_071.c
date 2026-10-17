@@ -60,11 +60,11 @@ u32 Fusion(s32 No1, s32 No2) {
 
 /* The fusion result of unit (nSide, nID) with a wall card, or none. */
 s32 WallFusion(s32 nSide, s32 nID) {
-    void *temp_v0;
+    void *unitEffect;
 
-    temp_v0 = Ta_GetUnitEffect(nSide, nID, 1);
-    if ((temp_v0 != NULL) && ((*(u32 *)temp_v0 >> 8) == 9)) {
-        return *(u16 *)((u8 *)temp_v0 + 4);
+    unitEffect = Ta_GetUnitEffect(nSide, nID, 1);
+    if ((unitEffect != NULL) && ((*(u32 *)unitEffect >> 8) == 9)) {
+        return *(u16 *)((u8 *)unitEffect + 4);
     }
     return -1;
 }

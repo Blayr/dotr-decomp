@@ -49,6 +49,7 @@ extern s32 D_0028FAA0; /* __mb_cur_max */
 
 #define fp ((Fil *)fp_0019DDE8)
 
+/* newlib _vfprintf_r: the printf engine (stream `fp_0019DDE8`, format `fmt0`). */
 s32 func_0019DDE8(vf_reent *data, vf_FILE *fp_0019DDE8, const char *fmt0, void *ap_0019DDE8) {
     __builtin_va_list ap = ap_0019DDE8;
     register char *fmt;           /* format string */
@@ -558,6 +559,7 @@ error:
 #undef UARG
 #undef fp
 
+/* newlib vfprintf's cvt: double `value` to digits for %e/%f/%g. */
 char *func_0019F448(void *data, double value, s32 ndigits, s32 flags, char *sign, s32 *decpt, s32 ch,
                     s32 *length) {
     extern char *func_00195480(void *, double, s32, s32, s32 *, s32 *, char **);
@@ -597,6 +599,7 @@ char *func_0019F448(void *data, double value, s32 ndigits, s32 flags, char *sign
     return (digits);
 }
 
+/* newlib vfprintf's exponent: writes exponent `exp` (letter `fmtch`) at `p0`. */
 s32 func_0019F608(char *p0, s32 exp, s32 fmtch) {
     char *p, *t;
     char expbuf[308];

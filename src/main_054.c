@@ -103,12 +103,12 @@ s32 SzFile_DoRequestS(void) {
     extern State_001FF420 fileQueue;
     extern Flags_001FF420 D_00322980;
     State_001FF420 *state = &fileQueue;
-    s32 temp_v0;
+    s32 nextRequest;
 
     if (D_00322980.active == 0) {
-        temp_v0 = lSzFile_NextRequest();
-        state->current = temp_v0;
-        if (temp_v0 < 0) {
+        nextRequest = lSzFile_NextRequest();
+        state->current = nextRequest;
+        if (nextRequest < 0) {
             return 0;
         }
     }

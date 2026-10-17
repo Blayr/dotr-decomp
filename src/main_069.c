@@ -392,8 +392,8 @@ extern u8 _0_buf[];
 /* Sets up the movie's audio decoder with buffer `buff` of `buffSize` and an IOP buffer of `iopBuffSize`. */
 s32 audioDecCreate(void *ad, s32 buff, s32 buffSize, s32 iopBuffSize) {
     State_00243060 *state = ad;
-    s32 temp_a1;
-    s32 temp_a1_2;
+    s32 unk44;
+    s32 unk58;
 
     state->unk0 = 0;
     state->unk2C = 0;
@@ -407,19 +407,19 @@ s32 audioDecCreate(void *ad, s32 buff, s32 buffSize, s32 iopBuffSize) {
     state->unk4C = 0;
     state->unk50 = 0;
     state->unk44 = sceSifAllocIopHeap(iopBuffSize);
-    temp_a1 = state->unk44;
-    if (temp_a1 < 0) {
-        func_00199B50(D_0030F600, temp_a1);
+    unk44 = state->unk44;
+    if (unk44 < 0) {
+        func_00199B50(D_0030F600, unk44);
         return 0;
     }
-    func_00199B50(D_0030F61C, temp_a1, iopBuffSize);
+    func_00199B50(D_0030F61C, unk44, iopBuffSize);
     state->unk58 = sceSifAllocIopHeap(0x800);
-    temp_a1_2 = state->unk58;
-    if (temp_a1_2 < 0) {
-        func_00199B50(D_0030F600, temp_a1_2);
+    unk58 = state->unk58;
+    if (unk58 < 0) {
+        func_00199B50(D_0030F600, unk58);
         return 0;
     }
-    func_00199B50(D_0030F61C, temp_a1_2, 0x800);
+    func_00199B50(D_0030F61C, unk58, 0x800);
     func_00198948(_0_buf, 0, 0x800U);
     sendToIOP(state->unk58, (s32) _0_buf, 0x800);
     changeMasterVolume(0x3FFF);
@@ -725,14 +725,14 @@ s32 sendToIOP(s32 dst, s32 src, s32 size) {
 
 /* Sets the movie's master volume. */
 void changeMasterVolume(s32 val) {
-    s32 var_s0;
+    s32 i;
 
-    var_s0 = 0;
+    i = 0;
     do {
-        func_00190810(1, 0x8010, var_s0 | 0x980, val);
-        func_00190810(1, 0x8010, var_s0 | 0xA80, val);
-        var_s0 += 1;
-    } while (var_s0 < 2);
+        func_00190810(1, 0x8010, i | 0x980, val);
+        func_00190810(1, 0x8010, i | 0xA80, val);
+        i += 1;
+    } while (i < 2);
 }
 
 /* Sets the movie's audio input volume. */

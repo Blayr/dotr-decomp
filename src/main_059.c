@@ -1341,7 +1341,7 @@ void lRhModel_SetupTexture(void *model, void *textures0, void *textures1, s32 ba
         s32 *var_s0;
         s32 *var_s1;
         s32 temp_s2;
-        s32 var_s3;
+        s32 i;
         s32 *var_s4;
         s32 temp_a1_3;
         s32 temp_a0_2;
@@ -1367,7 +1367,7 @@ void lRhModel_SetupTexture(void *model, void *textures0, void *textures1, s32 ba
             }
             temp_s2 = var_s1[0];
             var_s4 = (s32 *)(temp_fp + var_s1[1]);
-            for (var_s3 = 0; var_s3 < temp_s2; var_s3++) {
+            for (i = 0; i < temp_s2; i++) {
                 temp_a1_3 = *var_s4;
                 temp_a0_2 = temp_a1_3 & 0xF0000000;
                 switch (temp_a0_2) {
@@ -1728,17 +1728,17 @@ void lRhModel_SetMaterialIntensity(u8 *arg0, u8 *arg1, u8 *arg2, u8 *arg3, u8 *a
 
 /* Turns `count` local-to-view matrices into local-to-screen ones. */
 void lRhModel_ChangeL2VtoL2S(s32 matrices, s32 viewScreen, s32 count) {
-    s32 var_s0;
+    s32 i;
     s32 var_s1;
 
-    var_s0 = 0;
-    if (var_s0 < count) {
+    i = 0;
+    if (i < count) {
         var_s1 = matrices;
         do {
             RhGeom_MulMatrixRev(var_s1, viewScreen);
-            var_s0 += 1;
+            i += 1;
             var_s1 += 0x70;
-        } while (var_s0 < count);
+        } while (i < count);
     }
 }
 
@@ -1802,7 +1802,7 @@ s32 GetAnyCoordinate(s32 id, void *out) {
 /* Draws a model part's translucent polygons on the CPU (sorted back to front) into the packet. */
 u8 *RhModelCpu_DrawAlpha(u8 *packet, s32 data, s32 size, s32 global) {
     u8 *temp_s1;
-    u8 *temp_v0;
+    u8 *traceDynamicBlock;
 
     lRhModelCpu_SetupGlobal(global);
     *(s32 *)(packet + 0) = 0x10000002;
@@ -1814,13 +1814,13 @@ u8 *RhModelCpu_DrawAlpha(u8 *packet, s32 data, s32 size, s32 global) {
     *(s64 *)(packet + 0x20) = 0x73;
     temp_s1 = packet + 0x30;
     *(s64 *)(packet + 0x28) = 0;
-    temp_v0 = lRhModelCpu_TraceDynamicBlock(temp_s1, data, size);
-    if (temp_v0 == NULL) {
+    traceDynamicBlock = lRhModelCpu_TraceDynamicBlock(temp_s1, data, size);
+    if (traceDynamicBlock == NULL) {
         return packet;
     }
-    lRhModelCpu_SortPolygon(temp_s1, temp_v0);
-    lRhModelCpu_CleanupPacket(temp_s1, temp_v0);
-    return temp_v0;
+    lRhModelCpu_SortPolygon(temp_s1, traceDynamicBlock);
+    lRhModelCpu_CleanupPacket(temp_s1, traceDynamicBlock);
+    return traceDynamicBlock;
 }
 
 typedef struct Spr_002130A0 {
@@ -2011,7 +2011,7 @@ typedef struct {
 s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
     u8 *scratch;
     u8 *var_s1;
-    s32 var_s2;
+    s32 i;
     s32 temp_s3;
     s32 var_s4;
 
@@ -2019,7 +2019,7 @@ s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
     scratch = (u8 *)0x70000000;
     var_s4 = 0;
     temp_s3 = arg1[1] & 0x7FFF;
-    for (var_s2 = 0; var_s2 < temp_s3; var_s2++) {
+    for (i = 0; i < temp_s3; i++) {
         register s32 base = arg1[4];
         asm {
             ctc2.ni base, vi1
@@ -2029,7 +2029,7 @@ s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
             vlqi.xyzw vf19, (vi1++)
         }
         scratch[0xF0 + var_s4] = lRhModelCpu_CalcIndepPoint((s32)(scratch + var_s4 * 0x18 + 0x90), (s32 *)var_s1);
-        if (var_s2 >= 2) {
+        if (i >= 2) {
             if (scratch[0xF0] && scratch[0xF1] && scratch[0xF2]) {
                 RhMem_CopyMemory16(prim, scratch + 0x60, 8);
                 prim->f78 = 0;
@@ -2159,7 +2159,7 @@ s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
     extern s8 lRhModelCpu_CalcSharedPoint(s32, s32 *);
     u8 *scratch;
     u8 *var_s1;
-    s32 var_s2;
+    s32 i;
     s32 temp_s3;
     s32 var_s4;
     Prim_002138D0 *prim;
@@ -2171,9 +2171,9 @@ s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
     scratch = (u8 *)0x70000000;
     var_s4 = 0;
     temp_s3 = arg1[1] & 0x7FFF;
-    for (var_s2 = 0; var_s2 < temp_s3; var_s2++) {
+    for (i = 0; i < temp_s3; i++) {
         scratch[0xF0 + var_s4] = lRhModelCpu_CalcSharedPoint((s32)(scratch + var_s4 * 0x18 + 0x90), (s32 *)var_s1);
-        if (var_s2 >= 2) {
+        if (i >= 2) {
             if (scratch[0xF0] && scratch[0xF1] && scratch[0xF2]) {
                 RhMem_CopyMemory16(prim, scratch + 0x60, 8);
                 prim->f78 = 0;

@@ -138,37 +138,37 @@ s32 SzEffect_SetModelPauseForType(s32 type, s32 on) {
 
 /* Advances the turn-to-stone effect of every model being petrified. */
 void SzEffect_StoneProc(void) {
-    s32 temp_v0;
-    s32 temp_v0_2;
-    s32 var_s0;
+    s32 stoneRatio;
+    s32 stoneRatio2;
+    s32 i;
     s32 var_s0_2;
     s32 var_s1;
-    s32 var_s1_2;
+    s32 j;
     s32 var_v0;
     s32 var_v0_2;
 
-    var_s0 = 0;
+    i = 0;
     do {
-        var_s1 = var_s0 + 0x14;
-        temp_v0 = SzModel_GetStoneRatio(var_s1);
-        if ((temp_v0 >= 0) && (temp_v0 < 0xFF)) {
-            var_v0 = temp_v0 + 1;
+        var_s1 = i + 0x14;
+        stoneRatio = SzModel_GetStoneRatio(var_s1);
+        if ((stoneRatio >= 0) && (stoneRatio < 0xFF)) {
+            var_v0 = stoneRatio + 1;
             var_v0 = var_v0 < 0xFF ? var_v0 : 0xFF;
             SzModel_SetStoneRatio(var_s1, var_v0 & 0xFF);
         }
-        var_s0 += 1;
-    } while (var_s0 < 0xA);
-    var_s1_2 = 0;
+        i += 1;
+    } while (i < 0xA);
+    j = 0;
     do {
-        var_s0_2 = var_s1_2 + 0x1E;
-        temp_v0_2 = SzModel_GetStoneRatio(var_s0_2);
-        if ((temp_v0_2 >= 0) && (temp_v0_2 < 0xFF)) {
-            var_v0_2 = temp_v0_2 + 1;
+        var_s0_2 = j + 0x1E;
+        stoneRatio2 = SzModel_GetStoneRatio(var_s0_2);
+        if ((stoneRatio2 >= 0) && (stoneRatio2 < 0xFF)) {
+            var_v0_2 = stoneRatio2 + 1;
             var_v0_2 = var_v0_2 < 0xFF ? var_v0_2 : 0xFF;
             SzModel_SetStoneRatio(var_s0_2, var_v0_2 & 0xFF);
         }
-        var_s1_2 += 1;
-    } while (var_s1_2 < 2);
+        j += 1;
+    } while (j < 2);
 }
 
 /* Starts the camera system (the one view). */
@@ -381,16 +381,16 @@ extern s32 nCurLight;
 s32 SzView_Act(s32 view) {
     extern u32 SzPad_GetPressInfo();
     extern s32 SzModel_GetModelType();
-    s32 temp_fp;
-    s64 temp_s7;
+    s32 activeMenu;
+    s64 mode2;
 
-    temp_fp = SzDebug_GetActiveMenu();
-    temp_s7 = SzGame_GetMode(1);
+    activeMenu = SzDebug_GetActiveMenu();
+    mode2 = SzGame_GetMode(1);
     if (view < 0 || view > 0) {
         return 0;
     } else {
         State_001F7790 *temp_s0;
-        s32 temp_v0;
+        s32 modelType;
         Light_001F7790 *temp_s2;
         Range_001F7790 *temp_s3;
         Range_001F7790 *temp_s4;
@@ -404,27 +404,27 @@ s32 SzView_Act(s32 view) {
         f32 var_f21;
         f32 var_f22;
         s32 var_v0;
-        s32 temp_s2_2;
+        s32 mode;
 
         temp_s0 = (State_001F7790 *) views[view];
         if (temp_s0 == 0) {
             return 0;
         }
         spBC = SzDebug_GetActiveModel();
-        temp_v0 = SzModel_GetModelType(spBC);
-        spC0 = (temp_s0->lightFlags & (1 << temp_v0)) ? temp_v0 : 9;
-        spD0 = (temp_s0->fogFlags & (1 << temp_v0)) ? temp_v0 : 9;
-        spE0 = (temp_s0->secondFlags & (1 << temp_v0)) ? temp_v0 : 9;
+        modelType = SzModel_GetModelType(spBC);
+        spC0 = (temp_s0->lightFlags & (1 << modelType)) ? modelType : 9;
+        spD0 = (temp_s0->fogFlags & (1 << modelType)) ? modelType : 9;
+        spE0 = (temp_s0->secondFlags & (1 << modelType)) ? modelType : 9;
         var_v0 = 9;
         if (spD0 != 9 || spE0 != 9) {
-            var_v0 = temp_v0;
+            var_v0 = modelType;
         }
         temp_s5 = (Color_001F7790 *) ((u8 *) temp_s0 + var_v0 * 4 + 0x880);
         temp_s2 = (Light_001F7790 *) ((u8 *) temp_s0 + spC0 * 0x90 + 0x60);
         temp_s3 = (Range_001F7790 *) ((u8 *) temp_s0 + spD0 * 8 + 0x7E0);
         temp_s4 = (Range_001F7790 *) ((u8 *) temp_s0 + spE0 * 8 + 0x830);
-        if (temp_s7 == 0 || temp_s7 == 5 || temp_s7 == 12) {
-            if (temp_fp == 0xC) {
+        if (mode2 == 0 || mode2 == 5 || mode2 == 12) {
+            if (activeMenu == 0xC) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     spF0 = D_00293050;
                     SzView_SetStraightLightDirection(0, spC0, nCurLight, &spF0);
@@ -452,7 +452,7 @@ s32 SzView_Act(s32 view) {
                     SzView_SetStraightLightDirection(0, spC0, nCurLight, NULL);
                 }
             }
-            if (temp_fp == 0xD) {
+            if (activeMenu == 0xD) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     SzView_SetStraightLightColor(view, spC0, nCurLight, NULL);
                 }
@@ -482,7 +482,7 @@ s32 SzView_Act(s32 view) {
                     temp_s2[nCurLight].rotation[2] += 0.01f;
                 }
             }
-            if (temp_fp == 0xE) {
+            if (activeMenu == 0xE) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s5->r = 0xFFU;
                     temp_s5->g = 0xFFU;
@@ -519,7 +519,7 @@ s32 SzView_Act(s32 view) {
                     }
                 }
             }
-            if (temp_fp == 0xF) {
+            if (activeMenu == 0xF) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s3->near = 2000.0f;
                     temp_s3->far = 4000.0f;
@@ -543,7 +543,7 @@ s32 SzView_Act(s32 view) {
                     temp_s3->far += 10.0f;
                 }
             }
-            if (temp_fp == 0x10) {
+            if (activeMenu == 0x10) {
                 if (SzPad_Check(0, 0, 0x4000) != 0) {
                     temp_s4->near = 2000.0f;
                     temp_s4->far = 4000.0f;
@@ -567,13 +567,13 @@ s32 SzView_Act(s32 view) {
                     temp_s4->far += 10.0f;
                 }
             }
-            if (temp_fp == 0x11) {
+            if (activeMenu == 0x11) {
                 if (SzPad_Check(0, 2, 0xC) != 0) {
-                    temp_s2_2 = SzView_GetMode(0);
+                    mode = SzView_GetMode(0);
                     if (SzPad_Check(0, 2, 4) != 0) {
-                        SzView_SetMode(0, (s32) (temp_s2_2 + 2) % 3);
+                        SzView_SetMode(0, (s32) (mode + 2) % 3);
                     } else {
-                        SzView_SetMode(0, (s32) (temp_s2_2 + 4) % 3);
+                        SzView_SetMode(0, (s32) (mode + 4) % 3);
                     }
                 }
                 if (SzPad_Check(0, 2, 0x4000) != 0) {
@@ -597,7 +597,7 @@ s32 SzView_Act(s32 view) {
         var_f21 = 0.0f;
         var_f22 = 0.0f;
         if (SzView_InqRequest(-1, -1) == NULL) {
-            if ((u32) (temp_v0 - 4) < 2U) {
+            if ((u32) (modelType - 4) < 2U) {
                 SzView_SetViewCamera(view, spBC, NULL, temp_s0->mode, 1.0f);
             }
         }
@@ -662,7 +662,7 @@ s32 SzView_Act(s32 view) {
             }
             SzView_RollCamera(view, 0, -1, var_f20, var_f21, var_f22);
         }
-        if ((temp_s7 == 0) || (temp_s7 == 5) || (temp_s7 == 0xC)) {
+        if ((mode2 == 0) || (mode2 == 5) || (mode2 == 0xC)) {
             SzDebug_IsHide();
         }
         SzDebug_IsHide();

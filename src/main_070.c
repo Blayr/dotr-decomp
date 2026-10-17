@@ -826,20 +826,20 @@ typedef struct Card_002464F0 {
 /* How far a unit (record `vInfo`) on square (nX, nZ) may move: its base moves, the field, leader abilities and
    effects. */
 s32 GetMoveRev(s32 vInfo, s32 nX, s32 nZ) {
-    s32 var_s0;
+    s32 i;
     s32 temp_s1;
     s32 var_s2;
-    s32 temp_v0;
+    s32 checkLandAgreement;
     s32 var_v0;
     u32 temp_a0;
-    u32 temp_a1;
-    u32 temp_a1_2;
+    u32 kind;
+    u32 kind2;
     u32 temp_v1;
     u8 temp_a0_3;
     u8 temp_a0_4;
     Effect_002464F0 *temp_a0_2;
-    Effect_002464F0 *temp_v0_2;
-    Effect_002464F0 *temp_v0_3;
+    Effect_002464F0 *unitEffect;
+    Effect_002464F0 *unitEffect2;
 
     if (vInfo == 0) {
         return 0;
@@ -870,8 +870,8 @@ s32 GetMoveRev(s32 vInfo, s32 nX, s32 nZ) {
         return var_v0;
     }
     temp_s1 = (nZ << 8) | nX;
-    temp_v0 = CheckLandAgreement(SzDuel_GetField(temp_s1 & 0xFF, temp_s1 >> 8), (void *)vInfo);
-    switch (temp_v0) {
+    checkLandAgreement = CheckLandAgreement(SzDuel_GetField(temp_s1 & 0xFF, temp_s1 >> 8), (void *)vInfo);
+    switch (checkLandAgreement) {
     case 0:
     case 2:
         var_s2 = 1;
@@ -891,50 +891,50 @@ s32 GetMoveRev(s32 vInfo, s32 nX, s32 nZ) {
             return 0;
         }
     }
-    var_s0 = 0;
+    i = 0;
     do {
-        if (SzDuel_GetUnitStatus(0, var_s0, 4) == 1) {
-            if (SzDuel_GetUnitStatus(0, var_s0, 5) == 1) {
-                temp_v0_2 = Ta_GetUnitEffect(0, var_s0, 2);
-                if (temp_v0_2 != NULL) {
-                    temp_a1 = temp_v0_2->kind;
-                    if ((temp_a1 >> 8) == 6) {
-                        switch (temp_a1 & 0x3F) {
+        if (SzDuel_GetUnitStatus(0, i, 4) == 1) {
+            if (SzDuel_GetUnitStatus(0, i, 5) == 1) {
+                unitEffect = Ta_GetUnitEffect(0, i, 2);
+                if (unitEffect != NULL) {
+                    kind = unitEffect->kind;
+                    if ((kind >> 8) == 6) {
+                        switch (kind & 0x3F) {
                         case 0xF:
                             temp_a0_3 = ((Card_002464F0 *)vInfo)->affiliation;
                             if (((temp_a0_3 & 0x1F) == 0xF) && (((s32) temp_a0_3 >> 5) == 0)) {
-                                var_s2 = ((var_s2 >> 4) << 4) | temp_v0_2->value;
+                                var_s2 = ((var_s2 >> 4) << 4) | unitEffect->value;
                             }
                             break;
                         default:
-                            var_s2 = ((var_s2 >> 4) << 4) | temp_v0_2->value;
+                            var_s2 = ((var_s2 >> 4) << 4) | unitEffect->value;
                             break;
                         }
                     }
                 }
             }
         }
-        if ((SzDuel_GetUnitStatus(1, var_s0, 4) == 1) && (SzDuel_GetUnitStatus(1, var_s0, 5) == 1)) {
-            temp_v0_3 = Ta_GetUnitEffect(1, var_s0, 2);
-            if (temp_v0_3 != NULL) {
-                temp_a1_2 = temp_v0_3->kind;
-                if ((temp_a1_2 >> 8) == 6) {
-                    switch (temp_a1_2 & 0x3F) {
+        if ((SzDuel_GetUnitStatus(1, i, 4) == 1) && (SzDuel_GetUnitStatus(1, i, 5) == 1)) {
+            unitEffect2 = Ta_GetUnitEffect(1, i, 2);
+            if (unitEffect2 != NULL) {
+                kind2 = unitEffect2->kind;
+                if ((kind2 >> 8) == 6) {
+                    switch (kind2 & 0x3F) {
                     case 0xF:
                         temp_a0_4 = ((Card_002464F0 *)vInfo)->affiliation;
                         if (((temp_a0_4 & 0x1F) == 0xF) && (((s32) temp_a0_4 >> 5) == 0)) {
-                            var_s2 = ((var_s2 >> 4) << 4) | temp_v0_3->value;
+                            var_s2 = ((var_s2 >> 4) << 4) | unitEffect2->value;
                         }
                         break;
                     default:
-                        var_s2 = ((var_s2 >> 4) << 4) | temp_v0_3->value;
+                        var_s2 = ((var_s2 >> 4) << 4) | unitEffect2->value;
                         break;
                     }
                 }
             }
         }
-        var_s0 += 1;
-    } while (var_s0 < 0xB);
+        i += 1;
+    } while (i < 0xB);
     if (Ta_SearchUncTypeNaturalEffectUser(0x43, 0) >= 0) {
         var_s2 = ((var_s2 >> 4) << 4) | 1;
     }
@@ -987,10 +987,10 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
     s32 sp144;
     s32 temp_a0;
     s32 temp_a0_2;
-    s32 temp_s0;
-    s32 temp_s0_10;
-    s32 temp_s0_11;
-    s32 temp_s0_2;
+    s32 cardNo;
+    s32 cardNo2;
+    s32 cardNo3;
+    s32 cardNo3In;
     s32 temp_s0_3;
     s32 temp_s0_4;
     s32 temp_s0_5;
@@ -999,15 +999,15 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
     s32 temp_s0_8;
     s32 temp_s0_9;
     s32 temp_s1;
-    s32 temp_s1_2;
-    s32 temp_s1_3;
-    s32 temp_s5;
+    s32 atkEfc;
+    s32 unitAttr;
+    s32 paramOfs;
     s32 temp_s5_2;
-    s32 temp_v0_20;
-    s32 temp_v0_21;
-    s32 temp_v0_4;
-    s32 temp_v0_5;
-    s32 temp_v0_7;
+    s32 enc;
+    s32 enc2;
+    s32 chkAttrAdv;
+    s32 atkEfc2;
+    s32 unitStatus;
     s32 var_fp;
     s32 var_s7;
 
@@ -1031,10 +1031,10 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
     var_s7 = 0;
     if ((temp_s1 == 0) && (temp_a0 == 0)) {
         if (ID_1 == 0) {
-            temp_s1_2 = Manage_AtkEfc(nSide_1, ID_1, nSide_2, ID_2, p);
-            temp_s5 = Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1);
+            atkEfc = Manage_AtkEfc(nSide_1, ID_1, nSide_2, ID_2, p);
+            paramOfs = Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1);
             temp_s5_2 = p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0);
-            temp_s5_2 = GetParCap(temp_s5_2 + temp_s5);
+            temp_s5_2 = GetParCap(temp_s5_2 + paramOfs);
             SzDuel_CalcUnitAP(nSide_2, ID_2, 0, p->value2);
             SzDuel_CalcUnitDP(nSide_2, ID_2, 0, p->value2);
             p->value2 = encode_00246810(p->value2);
@@ -1042,18 +1042,18 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                 out[0] = 0x5D;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = nSide_1;
-                out[3] = (((p->flags.bit6 << 1) | ((temp_s1_2 >> 0x18) & 1)) << 0x16) | ((temp_s5_2 >> 1) | (((p->flags.bit5 << 1) | ((temp_s1_2 >> 0x10) & 1)) << 0x14));
+                out[3] = (((p->flags.bit6 << 1) | ((atkEfc >> 0x18) & 1)) << 0x16) | ((temp_s5_2 >> 1) | (((p->flags.bit5 << 1) | ((atkEfc >> 0x10) & 1)) << 0x14));
             } else {
                 out[0] = 0x5D;
                 out[1] = (s32) ((nSide_2 << 8) | ID_2);
                 out[2] = nSide_1;
-                out[3] = (((p->flags.bit6 << 1) | ((temp_s1_2 >> 0x18) & 1)) << 0x16) | (temp_s5_2 | (((p->flags.bit5 << 1) | ((temp_s1_2 >> 0x10) & 1)) << 0x14));
+                out[3] = (((p->flags.bit6 << 1) | ((atkEfc >> 0x18) & 1)) << 0x16) | (temp_s5_2 | (((p->flags.bit5 << 1) | ((atkEfc >> 0x10) & 1)) << 0x14));
             }
             return 1;
         }
-        temp_s1_3 = SzDuel_GetUnitAttr(nSide_2, ID_2);
-        temp_v0_4 = ChkAttrAdv(temp_s1_3, SzDuel_GetUnitAttr(nSide_1, ID_1));
-        switch (temp_v0_4) {                        /* switch 1; irregular */
+        unitAttr = SzDuel_GetUnitAttr(nSide_2, ID_2);
+        chkAttrAdv = ChkAttrAdv(unitAttr, SzDuel_GetUnitAttr(nSide_1, ID_1));
+        switch (chkAttrAdv) {                        /* switch 1; irregular */
         case 1:                                     /* switch 1 */
             if (SzDuel_GetUnitCurseRest(nSide_1, ID_1) == 0) {
                 var_fp = 1;
@@ -1065,18 +1065,18 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             }
             break;
         }
-        temp_v0_5 = Manage_AtkEfc(nSide_1, ID_1, nSide_2, ID_2, p);
-        if ((temp_v0_5 & 0xFF) == 1) {
-            temp_a0_2 = (temp_v0_5 >> 0x18) & 1;
-            if ((temp_a0_2 == 1) && (((temp_v0_5 >> 0x10) & 1) == 1)) {
+        atkEfc2 = Manage_AtkEfc(nSide_1, ID_1, nSide_2, ID_2, p);
+        if ((atkEfc2 & 0xFF) == 1) {
+            temp_a0_2 = (atkEfc2 >> 0x18) & 1;
+            if ((temp_a0_2 == 1) && (((atkEfc2 >> 0x10) & 1) == 1)) {
                 out[0] = 0x5E;
                 out[1] = (s32) ((nSide_2 << 8) | ID_2);
                 out[2] = (s32) ((nSide_1 << 8) | ID_1);
                 out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | 1) << 0x16) | ((((p->flags.bit5 << 1) | 1) << 0x14) | 0xCFFFF)))) | 0x10000000);
-                temp_s0 = SzDuel_GetUnitCardNo(nSide_1, ID_1);
-                                SzData_CalcExp(nSide_1, temp_s0, 0, (SzDuel_GetUnitLevel(nSide_2, ID_2, 0) + 2) * 2);
-                temp_s0_2 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
-                                SzData_CalcExp(nSide_2, temp_s0_2, 0, (SzDuel_GetUnitLevel(nSide_1, ID_1, 0) + 2) * 2);
+                cardNo = SzDuel_GetUnitCardNo(nSide_1, ID_1);
+                                SzData_CalcExp(nSide_1, cardNo, 0, (SzDuel_GetUnitLevel(nSide_2, ID_2, 0) + 2) * 2);
+                cardNo3In = SzDuel_GetUnitCardNo(nSide_2, ID_2);
+                                SzData_CalcExp(nSide_2, cardNo3In, 0, (SzDuel_GetUnitLevel(nSide_1, ID_1, 0) + 2) * 2);
                 return 1;
             }
             if (temp_a0_2 == 1) {
@@ -1088,7 +1088,7 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                                 SzData_CalcExp(nSide_1, temp_s0_3, 0, (SzDuel_GetUnitLevel(nSide_2, ID_2, 0) + 2) * 2);
                 return 1;
             }
-            if (((temp_v0_5 >> 0x10) & 1) == 1) {
+            if (((atkEfc2 >> 0x10) & 1) == 1) {
                 out[0] = 0x5E;
                 out[1] = (s32) ((nSide_2 << 8) | ID_2);
                 out[2] = (s32) ((nSide_1 << 8) | ID_1);
@@ -1099,8 +1099,8 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             }
 
         }
-        temp_v0_7 = SzDuel_GetUnitStatus(nSide_1, ID_1, 3);
-        switch (temp_v0_7) {                        /* switch 2; irregular */
+        unitStatus = SzDuel_GetUnitStatus(nSide_1, ID_1, 3);
+        switch (unitStatus) {                        /* switch 2; irregular */
         case 1:                                     /* switch 2 */
             if (p->flags.bit3 == 1) {
                 SzDuel_CalcUnitAP(nSide_1, ID_1, 4, 0);
@@ -1131,21 +1131,21 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0x20000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14)) | 0x01000000))) | 0x10000000);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | (sp120 | 0x20000 | (((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14)) | 0x01000000))) | 0x10000000);
                 return 1;
             }
             if (sp13C == sp138) {
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0x01000000))));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | (((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14) | 0x01000000))));
                 return 1;
             }
             if (sp13C < sp138) {
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0x40000)))));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14) | 0x40000)))));
                 temp_s0_5 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
                                 SzData_CalcExp(nSide_2, temp_s0_5, 0, (SzDuel_GetUnitLevel(nSide_1, ID_1, 0) + 2) * 2);
                 return 1;
@@ -1179,7 +1179,7 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0xA0000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))) | 0x10000000);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | (sp120 | 0xA0000 | (((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14))))) | 0x10000000);
                 if (sp120 <= 0) {
                     temp_s0_6 = SzDuel_GetUnitCardNo(nSide_1, ID_1);
                                         SzData_CalcExp(nSide_1, temp_s0_6, 0, (SzDuel_GetUnitLevel(nSide_2, ID_2, 0) + 2) * 2);
@@ -1193,7 +1193,7 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14) | 0xC0000)))) | 0x10000000);
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | ((((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14) | 0xC0000)))) | 0x10000000);
                 temp_s0_8 = SzDuel_GetUnitCardNo(nSide_1, ID_1);
                                 SzData_CalcExp(nSide_1, temp_s0_8, 0, (SzDuel_GetUnitLevel(nSide_2, ID_2, 0) + 2) * 2);
                 temp_s0_9 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
@@ -1207,13 +1207,13 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                 out[0] = 0x5E;
                 out[1] = (s32) ((p->value2 << 0x10) | ((nSide_2 << 8) | ID_2));
                 out[2] = (s32) ((p->value1 << 0x10) | ((nSide_1 << 8) | ID_1));
-                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((temp_v0_5 >> 0x18) & 1)) << 0x16) | (sp120 | 0x50000 | (((p->flags.bit5 << 1) | ((temp_v0_5 >> 0x10) & 1)) << 0x14))))));
+                out[3] = (s32) ((p->flags.bit2 << 0x1B) | ((var_s7 << 0x1A) | ((var_fp << 0x19) | ((((p->flags.bit6 << 1) | ((atkEfc2 >> 0x18) & 1)) << 0x16) | (sp120 | 0x50000 | (((p->flags.bit5 << 1) | ((atkEfc2 >> 0x10) & 1)) << 0x14))))));
                 if (sp120 <= 0) {
-                    temp_s0_10 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
-                                        SzData_CalcExp(nSide_2, temp_s0_10, 0, (SzDuel_GetUnitLevel(nSide_1, ID_1, 0) + 2) * 2);
+                    cardNo2 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
+                                        SzData_CalcExp(nSide_2, cardNo2, 0, (SzDuel_GetUnitLevel(nSide_1, ID_1, 0) + 2) * 2);
                 } else {
-                    temp_s0_11 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
-                                        SzData_CalcExp(nSide_2, temp_s0_11, 0, SzDuel_GetUnitLevel(nSide_1, ID_1, 0) * 4);
+                    cardNo3 = SzDuel_GetUnitCardNo(nSide_2, ID_2);
+                                        SzData_CalcExp(nSide_2, cardNo3, 0, SzDuel_GetUnitLevel(nSide_1, ID_1, 0) * 4);
                 }
                 return 1;
             }
@@ -1243,34 +1243,34 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                     out[3] = 1;
                     return 0x10001;
                 }
-                temp_v0_20 = Chk_Enc(nSide_1, ID_1, SzDuel_GetUnitCardNo(nSide_2, ID_2));
-                if (temp_v0_20 == 0x3E7) {
+                enc = Chk_Enc(nSide_1, ID_1, SzDuel_GetUnitCardNo(nSide_2, ID_2));
+                if (enc == 0x3E7) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
                     out[3] = 1;
                     return 0x10001;
                 }
-                if (((temp_v0_20 >> 0x1E) & 1) == 1) {
+                if (((enc >> 0x1E) & 1) == 1) {
                     SzDuel_SetUnitStatus(nSide_2, ID_2, 2, 1);
                     out[0] = 0x2B;
                     out[1] = (s32) ((nSide_2 << 8) | ID_2);
                     out[2] = (s32) ((nSide_1 << 8) | ID_1);
-                    out[3] = (s32) ((temp_v0_20 >> 0xE) & 0x3FFF);
+                    out[3] = (s32) ((enc >> 0xE) & 0x3FFF);
                     return 0x10001;
                 }
-                if ((temp_v0_20 >> 0xE) == 0x219) {
+                if ((enc >> 0xE) == 0x219) {
                     SzDuel_SetUnitStatus(nSide_2, ID_2, 2, 1);
                     out[0] = 0x25;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
-                    out[3] = (s32) ((temp_v0_20 & 0x3FFF) | (Ta_GetCurrentSide(nSide_2, ID_2) << 0x10));
+                    out[3] = (s32) ((enc & 0x3FFF) | (Ta_GetCurrentSide(nSide_2, ID_2) << 0x10));
                 } else {
                     SzDuel_SetUnitStatus(nSide_2, ID_2, 2, 1);
                     out[0] = 0x24;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
-                    out[3] = temp_v0_20;
+                    out[3] = enc;
                 }
                 return 0x10001;
             }
@@ -1293,34 +1293,34 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
                     out[3] = 0;
                     return 1;
                 }
-                temp_v0_21 = Chk_Enc(nSide_2, ID_2, SzDuel_GetUnitCardNo(nSide_1, ID_1));
-                if (temp_v0_21 == 0x3E7) {
+                enc2 = Chk_Enc(nSide_2, ID_2, SzDuel_GetUnitCardNo(nSide_1, ID_1));
+                if (enc2 == 0x3E7) {
                     out[0] = 0x5F;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
                     out[3] = 0;
                     return 1;
                 }
-                if (((temp_v0_21 >> 0x1E) & 1) == 1) {
+                if (((enc2 >> 0x1E) & 1) == 1) {
                     SzDuel_SetUnitStatus(nSide_1, ID_1, 2, 1);
                     out[0] = 0x2B;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
-                    out[3] = (s32) ((temp_v0_21 >> 0xE) & 0x3FFF);
+                    out[3] = (s32) ((enc2 >> 0xE) & 0x3FFF);
                     return 1;
                 }
-                if ((temp_v0_21 >> 0xE) == 0x219) {
+                if ((enc2 >> 0xE) == 0x219) {
                     SzDuel_SetUnitStatus(nSide_1, ID_1, 2, 1);
                     out[0] = 0x25;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
-                    out[3] = (s32) ((temp_v0_21 & 0x3FFF) | (Ta_GetCurrentSide(nSide_1, ID_1) << 0x10));
+                    out[3] = (s32) ((enc2 & 0x3FFF) | (Ta_GetCurrentSide(nSide_1, ID_1) << 0x10));
                 } else {
                     SzDuel_SetUnitStatus(nSide_1, ID_1, 2, 1);
                     out[0] = 0x24;
                     out[1] = (s32) ((nSide_1 << 8) | ID_1);
                     out[2] = (s32) ((nSide_2 << 8) | ID_2);
-                    out[3] = temp_v0_21;
+                    out[3] = enc2;
                 }
                 return 1;
             }

@@ -66,14 +66,14 @@ void TkCamp_Act(void) {
     s32 temp_hi_2;
     s32 temp_hi_3;
     s32 temp_hi_4;
-    s32 temp_s1_2;
-    s32 temp_v0_19;
-    s32 temp_v0_2;
+    s32 leader;
+    s32 currentDeck;
+    s32 actMsgPopup;
     s32 var_a0_4;
-    s32 var_a2;
+    s32 i;
     s32 var_s1;
     s32 var_s1_2;
-    s32 var_v1;
+    s32 j;
     s32 temp_a1_4;
     s8 temp_a1_7;
     s8 temp_a1_8;
@@ -167,15 +167,15 @@ void TkCamp_Act(void) {
             }
         }
     }
-    for (var_v1 = 0; var_v1 <= 0x15; var_v1++) {
-        if (((s16 *)base)[var_v1 + 0x2976] != 0) {
+    for (j = 0; j <= 0x15; j++) {
+        if (((s16 *)base)[j + 0x2976] != 0) {
             *(s8 *)(base + 0x5482) = (s8) (*(s8 *)(base + 0x5482) + 1);
         }
     }
     if (*(s8 *)0x01ED5376 != 0) {
         if ((*(s8 *)0x01ED5482 == 0) && (SzEffect_IsUse2(-1, -1) == 0) && (*(s8 *)0x01ED5374 == 0) && (*(s8 *)0x01ED5375 == 0) && ((*(s16 *)(ctx + 0xC2)) < 0xC8)) {
-            for (var_a2 = 0; var_a2 < 4; var_a2++) {
-                var_a3 = &camp_sys_icon[var_a2 * 0x13];
+            for (i = 0; i < 4; i++) {
+                var_a3 = &campaignSystemIcons[i * 0x13];
                 temp_a1 = *(s16 *)(base + 0);
                 if (((M2C_FIELD(var_a3, s16 *, 0) - 2) <= temp_a1) && (temp_a1 <= (M2C_FIELD(var_a3, s16 *, 4) + 2))) {
                     temp_a1_2 = *(s16 *)(base + 2);
@@ -326,8 +326,8 @@ void TkCamp_Act(void) {
                         SzDuel_OpenMsgPopup(7, 0, 0x200 - ((s32) (*(s8 *)0x01ED543F << 9) >> 3), -1);
                         goto end_TkCamp_Act;
                     case 2:
-                        temp_v0_2 = SzDuel_ActMsgPopup(0);
-                        switch (temp_v0_2) {
+                        actMsgPopup = SzDuel_ActMsgPopup(0);
+                        switch (actMsgPopup) {
                         case 1:
                             *(s8 *)0x01ED543E = 3;
                             break;
@@ -910,12 +910,12 @@ block_314:
                 if (SzModel_IsModelLoading(0x1E) == 0) {
                     spE0 = D_0029B000;
                     spF0 = D_0029B010;
-                    temp_v0_19 = SzData_GetCurrentDeck(0);
-                    temp_s1_2 = SzData_GetLeader(0, temp_v0_19);
-                    *(s16 *)0x01ED5404 = SzData_GetLeader(0, temp_v0_19);
+                    currentDeck = SzData_GetCurrentDeck(0);
+                    leader = SzData_GetLeader(0, currentDeck);
+                    *(s16 *)0x01ED5404 = SzData_GetLeader(0, currentDeck);
                     SzModel_SetPos(0x1E, &spE0);
                     SzModel_SetRot(0x1E, &spF0);
-                    SzModel_Load(0x1E, -1, SzDuel_New2Xax(temp_s1_2), 1);
+                    SzModel_Load(0x1E, -1, SzDuel_New2Xax(leader), 1);
                 }
                 *(s8 *)0x01ED5494 = 5;
             }
@@ -943,8 +943,8 @@ block_314:
             if (*(s16 *)0x01ED0074 >= 0x100) {
                 *(s16 *)0x01ED0074 = 0x100;
             }
-            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
-            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
+            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((campaignSystemIcons[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
+            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((campaignSystemIcons[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
         } else if (temp_v1_7 == 2) {
             *(s16 *)0x01ED0074 = (s16) (*(s16 *)0x01ED0074 - 0x20);
             if (*(s16 *)0x01ED0074 <= 0) {
@@ -953,8 +953,8 @@ block_314:
                 *(s16 *)0x01ED007A = 0;
                 *(s16 *)0x01ED007C = 0;
             }
-            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
-            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((camp_sys_icon[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
+            *(s16 *)0x01ED0000 = *(s16 *)0x01ED0076 + ((*(s16 *)0x01ED0074 * ((campaignSystemIcons[spot * 0x13] + 0x10) - *(s16 *)0x01ED0076)) >> 8);
+            *(s16 *)0x01ED0002 = *(s16 *)0x01ED0078 + ((*(s16 *)0x01ED0074 * ((campaignSystemIcons[spot * 0x13 + 1] + 0x10) - *(s16 *)0x01ED0078)) >> 8);
         }
         Taku_Camp_System();
         if (*(s8 *)0x01ED537B == 1) {

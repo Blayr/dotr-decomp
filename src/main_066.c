@@ -37,9 +37,9 @@ struct DotrDareFace {
     unsigned char id, no, kind, mode;
     unsigned short x, y;
 };
-extern struct DotrDareWindow camp_window_Teki_data[];
-extern struct DotrDareItem tex_bara_data2[];
-extern struct DotrDareItem camp_window_teki3[];
+extern struct DotrDareWindow campaignEnemyWindow[]; /* original: camp_window_Teki_data */
+extern struct DotrDareItem roseSprites2[]; /* original: tex_bara_data2 */
+extern struct DotrDareItem campaignEnemyWindowItems[]; /* original: camp_window_teki3 */
 extern unsigned char D_002999CC[][4];
 #define DOTR_DARE_SLIDE0 (*(short *)0x1ed53b6)
 #define DOTR_DARE_SLIDE1 (*(short *)0x1ed53b8)
@@ -88,8 +88,8 @@ int Taku_Camp_BUN_DARE(int cursor)
         x = (w * 640 >> 10) - 640;
         y = (w * 256 >> 10) - 256;
         n = DOTR_DARE_SIDE0;
-        cursor = func_00217BD0_b(cursor, &tex_bara_data2[n], x + xx, 0);
-        cursor = Taku_Window_Set_b(cursor, &camp_window_Teki_data[0], n, 0, x + xx, 0, 0, 128, 128);
+        cursor = func_00217BD0_b(cursor, &roseSprites2[n], x + xx, 0);
+        cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[0], n, 0, x + xx, 0, 0, 128, 128);
         no = DOTR_DARE_NAME0 - 195;
         switch (DOTR_DARE_STATE0) {
         case 1:
@@ -99,8 +99,8 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_FACE0->no = no;
             DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
             DOTR_DARE_FACE0->mode = 1;
-            DOTR_DARE_FACE0->x = camp_window_Teki_data[3].x + xx;
-            DOTR_DARE_FACE0->y = y + (camp_window_Teki_data[3].y + yy);
+            DOTR_DARE_FACE0->x = campaignEnemyWindow[3].x + xx;
+            DOTR_DARE_FACE0->y = y + (campaignEnemyWindow[3].y + yy);
             ShFace_Request(DOTR_DARE_FACE0);
             DOTR_DARE_STATE0 = 2;
             break;
@@ -108,8 +108,8 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_FACE0->no = no;
             DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
             DOTR_DARE_FACE0->mode = 3;
-            DOTR_DARE_FACE0->x = camp_window_Teki_data[3].x + xx;
-            DOTR_DARE_FACE0->y = y + (camp_window_Teki_data[3].y + yy);
+            DOTR_DARE_FACE0->x = campaignEnemyWindow[3].x + xx;
+            DOTR_DARE_FACE0->y = y + (campaignEnemyWindow[3].y + yy);
             ShFace_Request(DOTR_DARE_FACE0);
             DOTR_DARE_STATE0 = 2;
             break;
@@ -118,10 +118,10 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_STATE0 = 0;
             break;
         }
-        cursor = Taku_Window_Set_b(cursor, &camp_window_Teki_data[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[2], xx, y + yy, 0);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[3], xx, y + yy, 0);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[n], xx, y + yy, 0);
+        cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[2], xx, y + yy, 0);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[3], xx, y + yy, 0);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[n], xx, y + yy, 0);
         cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME0, 0, 22);
         cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
@@ -144,8 +144,8 @@ int Taku_Camp_BUN_DARE(int cursor)
         x = 640 - (w * 640 >> 10);
         y = 256 - (w * 256 >> 10);
         n = DOTR_DARE_SIDE1;
-        cursor = func_00217BD0_b(cursor, &tex_bara_data2[n], x + 144, 304);
-        cursor = Taku_Window_Set_b(cursor, &camp_window_Teki_data[0], n, 0, x + 144, 304, 0, 128, 128);
+        cursor = func_00217BD0_b(cursor, &roseSprites2[n], x + 144, 304);
+        cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[0], n, 0, x + 144, 304, 0, 128, 128);
         xx = -480;
         yy = 320;
         no = DOTR_DARE_NAME1 - 195;
@@ -157,8 +157,8 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_FACE1->no = no;
             DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
             DOTR_DARE_FACE1->mode = 1;
-            DOTR_DARE_FACE1->x = camp_window_Teki_data[3].x + xx;
-            DOTR_DARE_FACE1->y = y + (camp_window_Teki_data[3].y + yy);
+            DOTR_DARE_FACE1->x = campaignEnemyWindow[3].x + xx;
+            DOTR_DARE_FACE1->y = y + (campaignEnemyWindow[3].y + yy);
             ShFace_Request(DOTR_DARE_FACE1);
             DOTR_DARE_STATE1 = 2;
             break;
@@ -166,8 +166,8 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_FACE1->no = no;
             DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
             DOTR_DARE_FACE1->mode = 3;
-            DOTR_DARE_FACE1->x = camp_window_Teki_data[3].x + xx;
-            DOTR_DARE_FACE1->y = y + (camp_window_Teki_data[3].y + yy);
+            DOTR_DARE_FACE1->x = campaignEnemyWindow[3].x + xx;
+            DOTR_DARE_FACE1->y = y + (campaignEnemyWindow[3].y + yy);
             ShFace_Request(DOTR_DARE_FACE1);
             DOTR_DARE_STATE1 = 2;
             break;
@@ -176,10 +176,10 @@ int Taku_Camp_BUN_DARE(int cursor)
             DOTR_DARE_STATE1 = 0;
             break;
         }
-        cursor = Taku_Window_Set_b(cursor, &camp_window_Teki_data[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[4], xx, y + 184, 2);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[5], xx, y + 184, 2);
-        cursor = func_00218020_b(cursor, &camp_window_teki3[n], xx, y + 176, 0);
+        cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[4], xx, y + 184, 2);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[5], xx, y + 184, 2);
+        cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[n], xx, y + 176, 0);
         cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME1, 0, 22);
         cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
@@ -270,7 +270,7 @@ struct DotrSinemaQuad {
     short code;
 };
 extern struct DotrSinemaQuad D_0029AEC0;
-extern struct DotrSinemaQuad tex_sinema_brack[2];
+extern struct DotrSinemaQuad cinemaBlackBars[2]; /* original: tex_sinema_brack */
 #define DOTR_SINEMA_C0 (b->cut0 * 64 / 64)
 #define DOTR_SINEMA_C1 (b->cut1 * 64 / 64)
 #define DOTR_SINEMA_C2 (b->cut2 * 116 / 116)
@@ -387,14 +387,14 @@ int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
             }
         }
         for (i = 0; i < 2; i++) {
-            q = tex_sinema_brack[i];
+            q = cinemaBlackBars[i];
             
             if (i == 0) {
-                q.w[5] = DOTR_SINEMA_C2 + (tex_sinema_brack[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
-                q.w[7] = DOTR_SINEMA_C2 + (tex_sinema_brack[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
+                q.w[5] = DOTR_SINEMA_C2 + (cinemaBlackBars[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
+                q.w[7] = DOTR_SINEMA_C2 + (cinemaBlackBars[i].w[1] + DOTR_SINEMA_C0 + DOTR_SINEMA_C1);
             } else {
-                q.w[1] = tex_sinema_brack[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
-                q.w[3] = tex_sinema_brack[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
+                q.w[1] = cinemaBlackBars[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
+                q.w[3] = cinemaBlackBars[i].w[1] - DOTR_SINEMA_C0 - DOTR_SINEMA_C1 - DOTR_SINEMA_C2;
             }
             for (j = 0; j < 16; j++) {
                 if (j % 4 == 3) {
@@ -438,7 +438,7 @@ int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
         }
         for (i = 0; i < 2; i++) {
             for (j = 0; j < 8; j++) {
-                q.w[j] = tex_sinema_brack[i].w[j];
+                q.w[j] = cinemaBlackBars[i].w[j];
             }
             q.col[3] = q.col[7] = q.col[11] = q.col[15] = b->cut0;
             cursor = func_00218970_b(cursor, (struct DotrTikeiItem *)&q, 0, 0);
@@ -487,13 +487,13 @@ struct DotrStWindowBoard {
 };
 extern struct DotrStWindowBoard D_00299E10_b;
 extern struct DotrStWindowRec campaignPlaces[]; /* original: model_data */
-extern struct DotrStWindowWindow camp_window_My_data[];
-extern struct DotrStWindowItem tex_bara_data[];
-extern struct DotrStWindowItem tex_deck_data[];
+extern struct DotrStWindowWindow campaignPlayerWindow[]; /* original: camp_window_My_data */
+extern struct DotrStWindowItem roseSprites[]; /* original: tex_bara_data */
+extern struct DotrStWindowItem campaignDeckSprites[]; /* original: tex_deck_data */
 extern struct DotrStWindowItem tex_batti_data[];
-extern struct DotrStWindowItem tex_hosi_data[];
-extern struct DotrStWindowItem camp_card[];
-extern struct DotrStWindowItem camp_window_data[];
+extern struct DotrStWindowItem starSprites[]; /* original: tex_hosi_data */
+extern struct DotrStWindowItem campaignCardItems[]; /* original: camp_card */
+extern struct DotrStWindowItem campaignWindowItems[]; /* original: camp_window_data */
 extern char D_0030F0F7[];
 extern char D_0030F0FC[];
 #define DOTR_ST_WINDOW_BASE 0x1ed0000
@@ -558,28 +558,28 @@ int Taku_Camp_ST_WINDOW(int cursor)
             t = 1;
         }
         if (w->mode == (signed char)t) {
-            cursor = Taku_Obj_Set_b(cursor, &tex_bara_data[w->mode], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
             for (i = 0; i < 3; i++) {
-                cursor = Taku_Window_Set_window(cursor, &camp_window_My_data[i], w->mode + 10, 0, 0, y, 0, 128, g->depth);
+                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode + 10, 0, 0, y, 0, 128, g->depth);
             }
             if (ST_OPEN == 256) {
                 w->mode ^= 1;
             }
         } else {
-            cursor = Taku_Obj_Set_b(cursor, &tex_bara_data[w->mode], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
             for (i = 0; i < 3; i++) {
-                cursor = Taku_Window_Set_window(cursor, &camp_window_My_data[i], w->mode, 0, 0, y, 0, 128, g->depth);
+                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->depth);
             }
         }
     } else {
-        cursor = Taku_Obj_Set_b(cursor, &tex_bara_data[w->mode], 0, y);
+        cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
         for (i = 0; i < 3; i++) {
-            cursor = Taku_Window_Set_window(cursor, &camp_window_My_data[i], w->mode, 0, 0, y, 0, 128, g->depth);
+            cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->depth);
         }
     }
-    cursor = Taku_Window_Set_window(cursor, &camp_window_My_data[16], w->mode, 0, 0, y, 0, 128, ST_DEPTH);
+    cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[16], w->mode, 0, 0, y, 0, 128, ST_DEPTH);
     deck = SzData_GetCurrentDeck(0);
-    cursor = Taku_Obj_Set_b(cursor, &tex_deck_data[deck], 0, y);
+    cursor = Taku_Obj_Set_b(cursor, &campaignDeckSprites[deck], 0, y);
     cost = SzData_GetDeckCost(0, deck);
     ST_COST = cost;
     leader = SzData_GetLeader(0, deck);
@@ -589,16 +589,16 @@ int Taku_Camp_ST_WINDOW(int cursor)
         cursor = Taku_Obj_Set_b(cursor, &tex_batti_data[(short)(r / 3)], 0, y);
         switch ((short)(r % 3 + 1)) {
         case 1:
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[2], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[2], 0, y);
             break;
         case 2:
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[0], 0, y);
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[1], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[0], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[1], 0, y);
             break;
         case 3:
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[0], 0, y);
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[1], 0, y);
-            cursor = Taku_Obj_Set_b(cursor, &tex_hosi_data[2], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[0], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[1], 0, y);
+            cursor = Taku_Obj_Set_b(cursor, &starSprites[2], 0, y);
             break;
         }
     }
@@ -607,7 +607,7 @@ int Taku_Camp_ST_WINDOW(int cursor)
             if (j == 1) {
                 for (n = 0; n < 8; n++) {
                     x = n * 16;
-                    cursor = Taku_Obj_Set_b(cursor, &camp_card[j], x, y);
+                    cursor = Taku_Obj_Set_b(cursor, &campaignCardItems[j], x, y);
                 }
             } else {
                 for (k = 0, cnt = 0; k <= 21; k++) {
@@ -628,14 +628,14 @@ int Taku_Camp_ST_WINDOW(int cursor)
                 }
                 for (n = 0; n < cnt; n++) {
                     x = n * 16;
-                    cursor = Taku_Obj_Set_b(cursor, &camp_card[j], x, y);
+                    cursor = Taku_Obj_Set_b(cursor, &campaignCardItems[j], x, y);
                 }
             }
         } else {
             if (j == 0) {
                 for (n = 0; n < 8; n++) {
                     x = n * 16;
-                    cursor = Taku_Obj_Set_b(cursor, &camp_card[j], x, y);
+                    cursor = Taku_Obj_Set_b(cursor, &campaignCardItems[j], x, y);
                 }
             } else {
                 for (k = 0, cnt = 0; k <= 21; k++) {
@@ -656,13 +656,13 @@ int Taku_Camp_ST_WINDOW(int cursor)
                 }
                 for (n = 0; n < cnt; n++) {
                     x = n * 16;
-                    cursor = Taku_Obj_Set_b(cursor, &camp_card[j], x, y);
+                    cursor = Taku_Obj_Set_b(cursor, &campaignCardItems[j], x, y);
                 }
             }
         }
     }
     for (i = 0; i < 4; i++) {
-        cursor = Taku_Obj_Set_b(cursor, &camp_window_data[i], 0, y);
+        cursor = Taku_Obj_Set_b(cursor, &campaignWindowItems[i], 0, y);
     }
     cursor = SzDuel_DrawWindow_FontDigit_Pipe_b(cursor, 157, y + 384, 1, 0, 4, cost);
     cursor = SzDuel_DrawWindow_FontDigit_Pipe_b(cursor, 253, y + 384, 1, 0, 4, w->wins[0]);
@@ -676,8 +676,8 @@ int Taku_Camp_ST_WINDOW(int cursor)
     SzMsg_Free(1);
     cursor = SzMsg_LoadFont_Pipe(cursor, 1, SzDuel_GetMsgName(leader), 0, 22);
     cursor = RhText_SetTextureFlush(cursor);
-    xx = camp_window_My_data[2].x + 4;
-    yy = camp_window_My_data[2].y + 2 + y;
+    xx = campaignPlayerWindow[2].x + 4;
+    yy = campaignPlayerWindow[2].y + 2 + y;
     info = SzMsg_GetInfo_b(1);
     if (info->w < 248) {
         sy = sx = 1.0f;
@@ -718,7 +718,7 @@ void *Taku_Camp_SYS_ICON(void *packet) {
     alpha = (s16)(0x80 - ((*(s16 *)0x01ED0070 << 7) >> 8));
     state = (u8 *)0x01ED0000;
     packet = Taku_G4_Set(packet, D_002982F8, 0, alpha);
-    row = camp_sys_icon;
+    row = campaignSystemIcons;
     y = (s16)alpha + 0x14F;
     i = 0;
     fade = state;
@@ -772,7 +772,7 @@ void *Taku_Camp_SYS_ICON(void *packet) {
         fade += 2;
     } while (i < 4);
     if (*(s8 *)0x01ED007E == 0) {
-        packet = Taku_Obj_Set(packet, camp_sys_icon_botan, 0, alpha);
+        packet = Taku_Obj_Set(packet, campaignButtonIcons, 0, alpha);
     } else {
         packet = Taku_Obj_Set(packet, D_00298B76, 0, alpha);
     }

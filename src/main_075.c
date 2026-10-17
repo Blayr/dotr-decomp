@@ -234,21 +234,21 @@ s32 Ta_GetStackMapPiece(void) {
 
 /* Puts the labyrinth back on the board's labyrinth squares. */
 void Ta_InitMazePiece(void) {
-    s32 var_s0;
-    s32 var_s1;
+    s32 i;
+    s32 j;
 
-    var_s0 = 0;
-    var_s1 = 0;
+    i = 0;
+    j = 0;
     do {
         do {
-            if (SzDuel_GetField(var_s0, var_s1) == 8) {
-                SzDuel_SetField(var_s0, var_s1, 7);
+            if (SzDuel_GetField(i, j) == 8) {
+                SzDuel_SetField(i, j, 7);
             }
-            var_s1 += 1;
-        } while (var_s1 < 7);
-        var_s0 += 1;
-        var_s1 = 0;
-    } while (var_s0 < 7);
+            j += 1;
+        } while (j < 7);
+        i += 1;
+        j = 0;
+    } while (i < 7);
 }
 
 /* Whether an effect script's animation has finished. */
@@ -367,20 +367,20 @@ typedef struct {
 
 /* Whether the destroy animation has finished (then the units are removed). */
 s32 Ta_IsFinishDestEfc(void *eInfo, void *Temp) {
-    s32 var_s1;
+    s32 i;
 
     if (Ta_IsFinishEffect(Temp) == 1) {
-        var_s1 = 0;
+        i = 0;
         do {
-            if (((((Flags_0025F670 *)eInfo)->flags >> (0x15 - var_s1)) & 1) == 1) {
-                if (var_s1 < 0xB) {
-                    Ta_DelUnit(0, var_s1);
+            if (((((Flags_0025F670 *)eInfo)->flags >> (0x15 - i)) & 1) == 1) {
+                if (i < 0xB) {
+                    Ta_DelUnit(0, i);
                 } else {
-                    Ta_DelUnit(1, var_s1 - 0xB);
+                    Ta_DelUnit(1, i - 0xB);
                 }
             }
-            var_s1 += 1;
-        } while (var_s1 < 0x16);
+            i += 1;
+        } while (i < 0x16);
         return 1;
     }
     return 0;
@@ -1165,13 +1165,13 @@ void TaView_ReqBackFocusCamera(s32 nSpeed, s32 nOwnerID, s32 nFocus, s32 cFocus)
 /* The camera in front of unit `nOwnerID`'s model into `pVec`. */
 void TaView_SetModelFrontView(void *pVec, s32 nOwnerID, s32 nFocus) {
     s32 temp_a0;
-    s32 temp_s1;
+    s32 unit;
     s32 var_a1;
 
-    temp_s1 = SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
+    unit = SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
     SzEffect_GetModelRot2(nOwnerID, pVec);
     ((s32 *)pVec)[0] += nFocus;
-    temp_a0 = *(s32 *)((u8 *)temp_s1 + 0x30);
+    temp_a0 = *(s32 *)((u8 *)unit + 0x30);
     var_a1 = 0x47FF - temp_a0;
     if (var_a1 < 0) {
         var_a1 = 0x147FE - temp_a0;
@@ -1183,13 +1183,13 @@ void TaView_SetModelFrontView(void *pVec, s32 nOwnerID, s32 nFocus) {
 /* The close camera in front of unit `nOwnerID`'s model into `pVec`. */
 void TaView_SetExzModelFrontView(void *pVec, s32 nOwnerID, s32 nFocus) {
     s32 temp_a0;
-    s32 temp_s1;
+    s32 unit;
     s32 var_a1;
 
-    temp_s1 = SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
+    unit = SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
     SzEffect_GetModelRot2(nOwnerID, pVec);
     ((s32 *)pVec)[0] += nFocus;
-    temp_a0 = *(s32 *)((u8 *)temp_s1 + 0x30);
+    temp_a0 = *(s32 *)((u8 *)unit + 0x30);
     var_a1 = 0x3FFF - temp_a0;
     if (var_a1 < 0) {
         var_a1 = 0x13FFE - temp_a0;
@@ -1201,13 +1201,13 @@ void TaView_SetExzModelFrontView(void *pVec, s32 nOwnerID, s32 nFocus) {
 /* The camera behind unit `nOwnerID`'s model into `pVec`. */
 void TaView_SetModelBackView(void *pVec, s32 nOwnerID, s32 nFocus) {
     s32 temp_a0;
-    s32 *temp_s1;
+    s32 *unit;
     s32 var_a1;
 
-    temp_s1 = (s32 *)SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
+    unit = (s32 *)SzDuel_GetUnit(nOwnerID >> 8, nOwnerID & 0xFF);
     SzEffect_GetModelRot2(nOwnerID, pVec);
     ((s32 *)pVec)[0] += nFocus;
-    temp_a0 = temp_s1[12];
+    temp_a0 = unit[12];
     var_a1 = 0xC7FF - temp_a0;
     if (var_a1 < 0) {
         var_a1 = 0x1C7FE - temp_a0;
@@ -1266,19 +1266,19 @@ void TaView_ReqSkyView(void) {
 
 /* Plays unit `nOwnerID`'s hurt motion. */
 void TaEffect_SetOuchMotion(s32 nOwnerID) {
-    f32 temp_f0;
+    f32 animFrame;
 
     if (SzEffect_GetAnim2(nOwnerID) != 4) {
         SzEffect_SetAnimIntr2(nOwnerID, 4);
         return;
     }
-    temp_f0 = SzEffect_GetAnimFrame2(nOwnerID, 4);
-    if (!(temp_f0 < 16.0f)) {
+    animFrame = SzEffect_GetAnimFrame2(nOwnerID, 4);
+    if (!(animFrame < 16.0f)) {
         SzEffect_SetAnimFrame2(nOwnerID, 11.0f);
         return;
     }
-    if (!(temp_f0 <= 11.0f) && ((func_0019A5C8() % 3) == 0)) {
-        SzEffect_SetAnimFrame2(nOwnerID, temp_f0 - 2.0f);
+    if (!(animFrame <= 11.0f) && ((func_0019A5C8() % 3) == 0)) {
+        SzEffect_SetAnimFrame2(nOwnerID, animFrame - 2.0f);
     }
 }
 
@@ -1574,15 +1574,15 @@ typedef struct Result_00261F20 {
 s32 Manage_AtkEfc(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, void *pDat) {
     s32 temp_a0;
     s32 temp_a0_2;
-    s32 temp_v0_2;
-    s32 temp_v0_4;
+    s32 atkEfc;
+    s32 atkEfc2;
     s32 var_fp;
     s32 var_s0;
     s32 var_s1;
     s32 var_s7;
     Result_00261F20 *temp_s2;
-    void *temp_v0;
-    void *temp_v0_3;
+    void *unitEffect;
+    void *unitEffect2;
 
     temp_s2 = (Result_00261F20 *)pDat;
     var_s7 = 0;
@@ -1590,19 +1590,19 @@ s32 Manage_AtkEfc(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, void *pDat) {
     var_s1 = 0;
     var_s0 = 0;
     temp_s2->value = ChkAttrAdv(SzDuel_GetUnitAttr(nSide_1, ID_1), SzDuel_GetUnitAttr(nSide_2, ID_2));
-    temp_v0 = Ta_GetUnitEffect(nSide_1, ID_1, 0);
-    if (temp_v0 != NULL) {
-        temp_v0_2 = Do_AtkEfc(*(s32 *)temp_v0, *(s32 *)((u8 *)temp_v0 + 4), temp_s2, nSide_1, ID_1, nSide_2, ID_2, 0);
-        var_s0 = temp_v0_2;
+    unitEffect = Ta_GetUnitEffect(nSide_1, ID_1, 0);
+    if (unitEffect != NULL) {
+        atkEfc = Do_AtkEfc(*(s32 *)unitEffect, *(s32 *)((u8 *)unitEffect + 4), temp_s2, nSide_1, ID_1, nSide_2, ID_2, 0);
+        var_s0 = atkEfc;
         var_fp = 1;
-        temp_s2->flags.field5 = ((temp_v0_2 >> 0x18) & 1);
+        temp_s2->flags.field5 = ((atkEfc >> 0x18) & 1);
     }
-    temp_v0_3 = Ta_GetUnitEffect(nSide_2, ID_2, 0);
-    if (temp_v0_3 != NULL) {
-        temp_v0_4 = Do_AtkEfc(*(s32 *)temp_v0_3, *(s32 *)((u8 *)temp_v0_3 + 4), temp_s2, nSide_2, ID_2, nSide_1, ID_1, 1);
-        var_s1 = temp_v0_4;
+    unitEffect2 = Ta_GetUnitEffect(nSide_2, ID_2, 0);
+    if (unitEffect2 != NULL) {
+        atkEfc2 = Do_AtkEfc(*(s32 *)unitEffect2, *(s32 *)((u8 *)unitEffect2 + 4), temp_s2, nSide_2, ID_2, nSide_1, ID_1, 1);
+        var_s1 = atkEfc2;
         var_s7 = 1;
-        temp_s2->flags.field6 = ((temp_v0_4 >> 0x18) & 1);
+        temp_s2->flags.field6 = ((atkEfc2 >> 0x18) & 1);
     }
     if ((var_fp == 0) && (var_s7 == 0) && (temp_s2->value == 0)) {
         return 0;

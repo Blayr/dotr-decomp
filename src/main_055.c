@@ -490,12 +490,12 @@ extern Entry_00202D60 textureItems[]; /* original: gSzText_aItem */
 /* Drops the request for texture item `id` of category `category`. */
 s32 SzText_FreeRequest(s32 category, s32 id) {
     Entry_00202D60 *var_t0;
-    s32 var_t1;
+    s32 i;
     s32 var_v0;
 
     var_t0 = textureItems;
     var_v0 = 0;
-    var_t1 = 0;
+    i = 0;
     do {
         if (var_t0->data != 0 && var_t0->active != 0) {
             if ((category < 0 || var_t0->category == category) &&
@@ -504,9 +504,9 @@ s32 SzText_FreeRequest(s32 category, s32 id) {
                 var_t0->active = 0;
             }
         }
-        var_t1 += 1;
+        i += 1;
         var_t0++;
-    } while (var_t1 < 0x400);
+    } while (i < 0x400);
     return var_v0;
 }
 
@@ -869,8 +869,8 @@ typedef struct Flags_00203840 {
 
 /* Works out this frame's newly pressed, held and repeating buttons of both pads. */
 void SzPad_Act(void) {
-    s32 var_a2;
-    s32 var_a3;
+    s32 i;
+    s32 j;
     u8 *temp_t0;
     s32 temp_t1;
     u8 *var_t2;
@@ -878,30 +878,30 @@ void SzPad_Act(void) {
     s32 temp_t4;
 
     var_t3 = padStates;
-    var_a2 = 0;
+    i = 0;
     do {
         temp_t0 = var_t3 + 0x200;
         if (((Flags_00203840 *)(var_t3 + 0x25B))->status == 5) {
-            var_a3 = 0;
+            j = 0;
             var_t2 = temp_t0;
             do {
-                temp_t1 = 1 << var_a3;
+                temp_t1 = 1 << j;
                 temp_t4 = *(u16 *)temp_t0 & temp_t1;
                 if ((temp_t4 != 0) && (temp_t4 == (*(u16 *)(temp_t0 + 2) & temp_t1))) {
                     *(s32 *)(var_t2 + 0x18) += 1;
                 } else {
                     *(s32 *)(var_t2 + 0x18) = -*(s8 *)(temp_t0 + 0x59);
                 }
-                var_a3 += 1;
+                j += 1;
                 var_t2 += 4;
-            } while (var_a3 < 0x10);
+            } while (j < 0x10);
             *(u16 *)(temp_t0 + 2) = *(u16 *)temp_t0;
             *(u16 *)temp_t0 = *(u16 *)(temp_t0 + 4);
             *(u16 *)(temp_t0 + 4) = 0;
         }
-        var_a2 += 1;
+        i += 1;
         var_t3 += 0x5C;
-    } while (var_a2 < 2);
+    } while (i < 2);
 }
 
 typedef struct Flags_002038F0 {
@@ -1974,11 +1974,11 @@ s32 Ex3d_RotTransPersAutoCalcQ(void *src MW_ALIGN(16), f32 *vertices, s32 matrix
 
 /* The camera's look direction (view `view`). */
 f32 Ex3d_GetLookVector(s32 view) {
-    f32 *temp_s0;
+    f32 *look;
 
-    temp_s0 = SzView_GetLook(0);
+    look = SzView_GetLook(0);
     SzView_GetLookVector(0, view);
-    return *temp_s0;
+    return *look;
 }
 
 /* The camera's look matrix (view `view`). */

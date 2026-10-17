@@ -1,17 +1,18 @@
 #include "common.h"
 #include "sce/libc.h"
 
+/* newlib vfprintf's __sprint: writes the gathered pieces `arg1` to stream `arg0`. */
 s32 func_0019DC70(s32 arg0, void *arg1) {
-    s32 temp_v0;
+    s32 sfvwrite;
 
     if ((*(s32 *)((u8 *)arg1 + 8)) == 0) {
         (*(s32 *)((u8 *)arg1 + 4)) = 0;
         return 0;
     }
-    temp_v0 = __sfvwrite(arg0, arg1);
+    sfvwrite = __sfvwrite(arg0, arg1);
     (*(s32 *)((u8 *)arg1 + 8)) = 0;
     (*(s32 *)((u8 *)arg1 + 4)) = 0;
-    return temp_v0;
+    return sfvwrite;
 }
 
 #define fp_0019DCB8 ((Fil *)arg0)
@@ -43,6 +44,7 @@ s32 func_0019DCB8(void *arg0, const char *fmt, void *ap) {
 
 #undef fp_0019DCB8
 
+/* newlib vfprintf: prints `fmt0` with argument list `ap` to stream `fp`. */
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
     do {
         if ((fp)->_data == 0)

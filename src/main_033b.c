@@ -1,26 +1,32 @@
 #include "common.h"
 #include "sce/libc.h"
 
+/* newlib abs: the absolute value of `arg0`. */
 s32 abs(s32 arg0) {
     return arg0 < 0 ? -arg0 : arg0;
 }
 
+/* newlib atof: string `arg0` as a double (strtod). */
 void atof(s32 arg0) {
     func_0019D3E0(arg0, 0);
 }
 
+/* newlib atoi: string `s` as an int (strtol, base 10). */
 s32 atoi(const char *s) {
     return func_0019D750(s, NULL, 10);
 }
 
+/* newlib atol: string `arg0` as a long (strtol, base 10). */
 void func_001950C8(s8 *arg0) {
     func_0019D750(arg0, NULL, 0xA);
 }
 
+/* newlib calloc: `arg0` items of `arg1` bytes, cleared. */
 void func_001950E8(s32 arg0, s32 arg1) {
     func_00198840(arg1, arg0);
 }
 
+/* A newlib helper of two arguments (`arg0`, `arg1`). */
 void func_00195108(s32 arg0, s32 arg1) {
     s32 var_a0;
     s32 var_v0;
@@ -36,6 +42,7 @@ void func_00195108(s32 arg0, s32 arg1) {
     }
 }
 
+/* newlib _calloc_r: `n` items of `size` bytes from the heap, cleared (re-entrant). */
 void *func_00195140(void *ptr, u32 n, u32 size) {
     cal_chunk *p;
     u32 csz;
@@ -73,6 +80,7 @@ void *func_00195140(void *ptr, u32 n, u32 size) {
     }
 }
 
+/* newlib _close_r: close() for re-entrancy record `ptr` (errno into it). */
 s32 func_001951F8(s32 *ptr, s32 fd) {
     s32 ret;
     D_003512F8 = 0;
@@ -83,6 +91,7 @@ s32 func_001951F8(s32 *ptr, s32 fd) {
 
 #define QR_Storeinc(a, b, c) (((u16 *)a)[1] = (u16)b, ((u16 *)a)[0] = (u16)c, a++)
 
+/* newlib dtoa quorem: divides big number `b` by `S` (one decimal digit). */
 s32 func_00195250(i2b_Bigint *b, i2b_Bigint *S) {
     s32 n;
     s32 borrow, y;
@@ -192,6 +201,7 @@ extern double D_002BD350[]; /* bigtens */
 #define _d2b(p, d, e, bits) func_00199828((p), (d), (e), (bits))
 #define quorem(b, S) func_00195250((i2b_Bigint *)(b), (i2b_Bigint *)(S))
 
+/* newlib _dtoa_r: double `_d` to decimal digits (mode, digit count; the decimal point and sign out). */
 char *func_00195480(void *ptr, double _d , int mode , int ndigits , int *decpt , int *sign , char **rve)
 {
   int bbits, b2, b5, be, dig, i, ieps, ilim, ilim0, ilim1, j, j1, k, k0,
@@ -714,12 +724,15 @@ ret1:
 #undef __mprec_tens
 #undef __mprec_bigtens
 
+/* newlib __env_lock: locks the environment (nothing to do here). */
 void __env_lock(void) {
 }
 
+/* newlib __env_unlock: unlocks the environment (nothing to do here). */
 void __env_unlock(void) {
 }
 
+/* newlib __errno: the address of errno. */
 s32 __errno(void) {
     return D_0028FA98;
 }
@@ -741,6 +754,7 @@ typedef struct ff_FILE {
     ff_reent *_data;
 } ff_FILE;
 
+/* newlib fflush: writes out stream `arg0`'s buffer (all streams for NULL). */
 s32 fflush(nl_FILE *arg0) {
     ff_FILE *fp = (ff_FILE *)arg0;
     u8 *p;
@@ -776,6 +790,7 @@ s32 fflush(nl_FILE *arg0) {
     return 0;
 }
 
+/* newlib stdio: sets up standard stream `arg0` (flags `arg1`, file `arg2`). */
 void std(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)((u8 *)arg0 + 0x54)) = arg3;
     (*(s16 *)((u8 *)arg0 + 0xC)) = arg1;
@@ -793,6 +808,7 @@ void std(void *arg0, s16 arg1, s16 arg2, s32 arg3) {
     (*(s32 *)arg0) = 0;
 }
 
+/* newlib stdio: allocates `n` more FILE records (re-entrancy record `d`). */
 nl_mglue *__sfmoreglue(s32 d, s32 n) {
     nl_mglue *g;
     nl_mFILE *p;
@@ -827,6 +843,7 @@ typedef struct sf_FILE {
 typedef struct sf_glue { struct sf_glue *_next; s32 _niobs; sf_FILE *_iobs; } sf_glue;
 typedef struct sf_reent { s32 _errno; u8 pad04[0x34]; s32 __sdidinit; u8 pad3C[0x19C]; sf_glue __sglue; } sf_reent;
 
+/* newlib stdio: a free FILE record (allocating more if needed). */
 void *__sfp(void *arg0) {
     sf_reent *d = arg0;
     sf_FILE *fp;
@@ -862,14 +879,17 @@ found:
     return fp;
 }
 
+/* newlib _cleanup_r: flushes every stream of re-entrancy record `ptr`. */
 s32 func_001969F0(s32 ptr) {
     return _fwalk(ptr, fflush);
 }
 
+/* newlib _cleanup: flushes every stream (not the file library's _cleanup at 0x0017F738). */
 void func_00196A10(void) {
     func_001969F0(D_0028FA98);
 }
 
+/* newlib stdio: sets up stdin, stdout and stderr once. */
 void __sinit(void *arg0) {
     void *temp_s1;
 
@@ -884,6 +904,7 @@ void __sinit(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x1DC)) = 3;
 }
 
+/* newlib fread: reads `count` items of `size` bytes into `buf` from stream `arg3`. */
 u32 fread(void *buf, u32 size, u32 count, void *arg3) {
     fr_FILE *fp = arg3;
     u32 resid;
@@ -1149,6 +1170,7 @@ s32 _malloc_trim_r(s32 reent_ptr, u32 pad) {
 #undef bin_at
 #undef top
 
+/* newlib _fstat_r: fstat() for re-entrancy record `ptr` (errno into it). */
 s32 _fstat_r(s32 *ptr, s32 fd, void *st) {
     s32 ret;
     D_003512F8 = 0;
@@ -1281,6 +1303,7 @@ err:
 #undef COPY_001970A8
 #undef GETIOV_001970A8
 
+/* newlib stdio: calls `function` for every open stream. */
 s32 _fwalk(u8 *ptr, s32 (*function)(nl_FILE *)) {
     nl_FILE *fp;
     s32 n, ret = 0;
@@ -1293,10 +1316,12 @@ s32 _fwalk(u8 *ptr, s32 (*function)(nl_FILE *)) {
     return ret;
 }
 
+/* newlib _findenv: finds environment setting `arg0` (its index into `arg1`). */
 void _findenv(s32 arg0, s32 arg1) {
     _findenv_r(D_0028FA98, arg0, arg1);
 }
 
+/* newlib getenv: the value of environment setting `arg0`, or NULL. */
 u8 *getenv(s32 arg0) {
     s32 sp0[4];
     return _findenv_r(D_0028FA98, arg0, (s32) sp0);

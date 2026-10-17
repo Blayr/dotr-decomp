@@ -26,17 +26,17 @@ u8 TaLogic_GetNextPiece(void *pTree, u8 depth) {
 
 /* Fills path-tree node `pTree` for square (nX, nZ) after node `pPrev`. */
 void TaLogic_SetRootTreeDat(void *pTree, s32 pPrev, s32 nX, s32 nZ) {
-    s32 var_a2;
+    s32 i;
     s32 *var_a3;
 
     *(s8 *)pTree = (s8) ((nZ << 4) | nX);
-    var_a2 = 0;
+    i = 0;
     var_a3 = pTree;
     do {
-        var_a2 += 1;
+        i += 1;
         var_a3[1] = 0;
         var_a3++;
-    } while (var_a2 < 0xC);
+    } while (i < 0xC);
     *(s32 *)((u8 *)pTree + 0x34) = pPrev;
 }
 

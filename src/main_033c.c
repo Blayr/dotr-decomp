@@ -3,6 +3,7 @@
 
 extern char ***D_0028F7A0;
 
+/* newlib _findenv_r: finds environment setting `arg1` (re-entrant; its index into `arg2`). */
 s32 _findenv_r(s32 reent_ptr, s32 arg1, s32 arg2) {
     const char *name = (const char *)arg1;
     s32 *offset = (s32 *)arg2;

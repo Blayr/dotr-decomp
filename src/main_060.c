@@ -148,7 +148,7 @@ s32 SzData_PushDeckLeader(s32 side, s32 deck, s32 card) {
     extern u8 saveProfiles[];
     s32 var_v1;
     u8 *temp_s2;
-    Card_00215280 *temp_v0;
+    Card_00215280 *checkBag;
 
     if (profileZeroSide == side) {
         var_v1 = 0;
@@ -168,13 +168,13 @@ s32 SzData_PushDeckLeader(s32 side, s32 deck, s32 card) {
     if (*(u16 *)(temp_s2 + 0x50) != 0x3E7) {
         return 0;
     }
-    temp_v0 = SzData_CheckBag(side, card, 3, 0);
-    if (temp_v0 == NULL) {
+    checkBag = SzData_CheckBag(side, card, 3, 0);
+    if (checkBag == NULL) {
         return 0;
     }
     *(u16 *)(temp_s2 + 0x50) = (u16)card;
-    temp_v0->slot = deck;
-    temp_v0->active = 1;
+    checkBag->slot = deck;
+    checkBag->active = 1;
     return 1;
 }
 

@@ -579,9 +579,9 @@ extern f32 D_00325DB0;
 extern f32 D_00325DB4;
 extern f32 D_00325DB8;
 
-extern s16 camp_sys_icon[];
+extern s16 campaignSystemIcons[]; /* original: camp_sys_icon */
 extern s16 D_002982F8[];
-extern s16 camp_sys_icon_botan[];
+extern s16 campaignButtonIcons[]; /* original: camp_sys_icon_botan */
 extern s16 D_00298B76[];
 extern s8 D_0030F102[];
 extern s8 D_0030F107[];

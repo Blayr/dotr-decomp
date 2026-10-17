@@ -552,45 +552,45 @@ s32 Ta_ManageNaturalEffectInStandbyPhase(s32 nSide, s32 nID, void *output) {
 /* The standing effect a spell-bound unit (nSide, nID) runs at the start of its turn, into `eInfo`. */
 s32 Ta_ManageNaturalEffectInStandbyPhase2(s32 nSide, s32 nID, void *eInfo) {
     extern s32 SzDuel_GetUnitSpellRest();
-    s32 var_s3;
+    s32 i;
     u32 temp_s3;
-    u32 var_s0;
-    void *temp_v0;
-    s32 temp_v0_2;
-    s32 temp_v0_3;
-    s32 temp_v0_4;
-    s32 temp_s6;
-    s32 temp_s7;
+    u32 convUnitIDtoFlagList;
+    void *unitEffect;
+    s32 unitFlags;
+    s32 unitNumFrom22bitFlagList;
+    s32 unitId;
+    s32 unitIdLo;
+    s32 unitIdHi;
 
-    temp_v0 = Ta_GetUnitEffect(nSide, nID, 2);
-    temp_s3 = *(u32 *)temp_v0;
-    var_s0 = 0;
+    unitEffect = Ta_GetUnitEffect(nSide, nID, 2);
+    temp_s3 = *(u32 *)unitEffect;
+    convUnitIDtoFlagList = 0;
     switch (temp_s3 >> 8) {
     case 0x17:
-        temp_v0_2 = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), (temp_s3 >> 6) & 3, temp_s3 & 0x3F, 0xE);
-        if (temp_v0_2 == 0) {
+        unitFlags = SearchUnitByRange(0, 0, Ta_GetCurrentSide(nSide, nID), (temp_s3 >> 6) & 3, temp_s3 & 0x3F, 0xE);
+        if (unitFlags == 0) {
             return 0;
         }
-        temp_v0_3 = Ta_GetUnitNumFrom22bitFlagList(temp_v0_2);
-        var_s3 = 0;
-        if (0 < temp_v0_3) {
+        unitNumFrom22bitFlagList = Ta_GetUnitNumFrom22bitFlagList(unitFlags);
+        i = 0;
+        if (0 < unitNumFrom22bitFlagList) {
             do {
-                temp_v0_4 = Ta_GetUnitOwnerIDFromLstCount(temp_v0_2, var_s3);
-                temp_s7 = temp_v0_4 >> 8;
-                temp_s6 = temp_v0_4 & 0xFF;
-                if (SzDuel_GetUnitSpellRest(temp_s7, temp_s6) == 0) {
-                    var_s0 = ConvUnitIDtoFlagList(var_s0, temp_s7, temp_s6);
+                unitId = Ta_GetUnitOwnerIDFromLstCount(unitFlags, i);
+                unitIdHi = unitId >> 8;
+                unitIdLo = unitId & 0xFF;
+                if (SzDuel_GetUnitSpellRest(unitIdHi, unitIdLo) == 0) {
+                    convUnitIDtoFlagList = ConvUnitIDtoFlagList(convUnitIDtoFlagList, unitIdHi, unitIdLo);
                 }
-                var_s3 += 1;
-            } while (var_s3 < temp_v0_3);
+                i += 1;
+            } while (i < unitNumFrom22bitFlagList);
         }
-        if (Ta_GetUnitNumFrom22bitFlagList((s32) var_s0) == 0) {
+        if (Ta_GetUnitNumFrom22bitFlagList((s32) convUnitIDtoFlagList) == 0) {
             return 0;
         }
         ((s32 *)eInfo)[0] = 0;
         ((s32 *)eInfo)[1] = 1;
-        ((u32 *)eInfo)[2] = var_s0;
-        ((s32 *)eInfo)[3] = *(u16 *)((u8 *)temp_v0 + 4);
+        ((u32 *)eInfo)[2] = convUnitIDtoFlagList;
+        ((s32 *)eInfo)[3] = *(u16 *)((u8 *)unitEffect + 4);
         return 1;
     }
     return 0;
@@ -666,57 +666,57 @@ s32 Ta_SearchUncTypeNaturalEffectUser(s32 sKey, s32 No) {
 
 /* How many face-up units have standing effect `sKey`. */
 s32 Ta_SearchUncTypeNaturalEffectUserNum(s32 sKey) {
-    s32 var_s2;
+    s32 i;
     s32 var_s0;
     u32 *temp_v0;
     u32 *temp_v0_2;
 
-    var_s2 = 1;
+    i = 1;
     var_s0 = 0;
     do {
-        if ((SzDuel_GetUnit(0, var_s2) != 0) && ((temp_v0 = Ta_GetUnitEffect(0, var_s2, 2)) != NULL) && (SzDuel_GetUnitStatus(0, var_s2, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s2, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s2, 5) != 0) && (((u32) *temp_v0 >> 8) == sKey)) {
+        if ((SzDuel_GetUnit(0, i) != 0) && ((temp_v0 = Ta_GetUnitEffect(0, i, 2)) != NULL) && (SzDuel_GetUnitStatus(0, i, 4) != 0) && (SzDuel_GetUnitStatus(0, i, 3) != 0) && (SzDuel_GetUnitStatus(0, i, 5) != 0) && (((u32) *temp_v0 >> 8) == sKey)) {
             var_s0 += 1;
         }
-        var_s2 += 1;
-    } while (var_s2 < 0xB);
-    var_s2 = 1;
+        i += 1;
+    } while (i < 0xB);
+    i = 1;
     do {
-        if ((SzDuel_GetUnit(1, var_s2) != 0) && ((temp_v0_2 = Ta_GetUnitEffect(1, var_s2, 2)) != NULL) && (SzDuel_GetUnitStatus(1, var_s2, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s2, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s2, 5) != 0) && (((u32) *temp_v0_2 >> 8) == sKey)) {
+        if ((SzDuel_GetUnit(1, i) != 0) && ((temp_v0_2 = Ta_GetUnitEffect(1, i, 2)) != NULL) && (SzDuel_GetUnitStatus(1, i, 4) != 0) && (SzDuel_GetUnitStatus(1, i, 3) != 0) && (SzDuel_GetUnitStatus(1, i, 5) != 0) && (((u32) *temp_v0_2 >> 8) == sKey)) {
             var_s0 += 1;
         }
-        var_s2 += 1;
-    } while (var_s2 < 0xB);
+        i += 1;
+    } while (i < 0xB);
     return var_s0;
 }
 
 /* How many face-up units of side `nSide` have standing effect `sKey`. */
 s32 Ta_SearchUncTypeNaturalEffectUserNumWithSide(s32 sKey, s32 nSide) {
     s32 var_s0;
-    s32 var_s3;
-    u32 *temp_v0;
-    u32 *temp_v0_2;
+    s32 i;
+    u32 *unitEffect;
+    u32 *unitEffect2;
 
-    var_s3 = 1;
+    i = 1;
     var_s0 = 0;
     do {
-        if ((SzDuel_GetUnitStatus(0, var_s3, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s3, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s3, 5) != 0) && (nSide == Ta_GetCurrentSide(0, var_s3))) {
-            temp_v0 = Ta_GetUnitEffect(0, var_s3, 2);
-            if ((temp_v0 != NULL) && (((u32) *temp_v0 >> 8) == sKey)) {
+        if ((SzDuel_GetUnitStatus(0, i, 4) != 0) && (SzDuel_GetUnitStatus(0, i, 3) != 0) && (SzDuel_GetUnitStatus(0, i, 5) != 0) && (nSide == Ta_GetCurrentSide(0, i))) {
+            unitEffect = Ta_GetUnitEffect(0, i, 2);
+            if ((unitEffect != NULL) && (((u32) *unitEffect >> 8) == sKey)) {
                 var_s0 += 1;
             }
         }
-        var_s3 += 1;
-    } while (var_s3 < 0xB);
-    var_s3 = 1;
+        i += 1;
+    } while (i < 0xB);
+    i = 1;
     do {
-        if ((SzDuel_GetUnitStatus(1, var_s3, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s3, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s3, 5) != 0) && (nSide == Ta_GetCurrentSide(1, var_s3))) {
-            temp_v0_2 = Ta_GetUnitEffect(1, var_s3, 2);
-            if ((temp_v0_2 != NULL) && (((u32) *temp_v0_2 >> 8) == sKey)) {
+        if ((SzDuel_GetUnitStatus(1, i, 4) != 0) && (SzDuel_GetUnitStatus(1, i, 3) != 0) && (SzDuel_GetUnitStatus(1, i, 5) != 0) && (nSide == Ta_GetCurrentSide(1, i))) {
+            unitEffect2 = Ta_GetUnitEffect(1, i, 2);
+            if ((unitEffect2 != NULL) && (((u32) *unitEffect2 >> 8) == sKey)) {
                 var_s0 += 1;
             }
         }
-        var_s3 += 1;
-    } while (var_s3 < 0xB);
+        i += 1;
+    } while (i < 0xB);
     return var_s0;
 }
 
@@ -733,42 +733,42 @@ typedef struct Effect_002670F0 {
 
 /* The life-point change standing effects give in mode `sMode` (effect `bEfc`), kept in range. */
 s32 Ta_GetLPRevByNaturalEffect(s32 sMode, s32 bEfc) {
-    s32 var_s0;
-    s32 var_s0_2;
+    s32 i;
+    s32 j;
     s32 var_s1;
     u32 temp_a0;
     u32 temp_a0_2;
-    u32 temp_a1;
+    u32 flags;
     u32 temp_a1_2;
-    u32 temp_a1_3;
+    u32 flags2;
     u32 temp_a1_4;
     u32 temp_v0_2;
     u32 temp_v0_4;
-    Effect_002670F0 *temp_v0;
-    Effect_002670F0 *temp_v0_3;
+    Effect_002670F0 *unitEffect;
+    Effect_002670F0 *unitEffect2;
 
     var_s1 = bEfc;
     if (bEfc == 0) {
         return 0;
     }
-    var_s0 = 0;
+    i = 0;
     do {
-        if ((SzDuel_GetUnitStatus(0, var_s0, 4) != 0) && (SzDuel_GetUnitStatus(0, var_s0, 3) != 0) && (SzDuel_GetUnitStatus(0, var_s0, 5) != 0)) {
-            temp_v0 = Ta_GetUnitEffect(0, var_s0, 2);
-            if (temp_v0 != NULL) {
-                temp_a1 = temp_v0->flags;
-                if (((temp_a1 >> 8) == 0x3B) && ((temp_a1 & 0x3F) == sMode)) {
-                    temp_a1_2 = temp_v0->data.word;
+        if ((SzDuel_GetUnitStatus(0, i, 4) != 0) && (SzDuel_GetUnitStatus(0, i, 3) != 0) && (SzDuel_GetUnitStatus(0, i, 5) != 0)) {
+            unitEffect = Ta_GetUnitEffect(0, i, 2);
+            if (unitEffect != NULL) {
+                flags = unitEffect->flags;
+                if (((flags >> 8) == 0x3B) && ((flags & 0x3F) == sMode)) {
+                    temp_a1_2 = unitEffect->data.word;
                     temp_a0 = temp_a1_2 >> 0x10;
                     switch (temp_a0) {
                     case 0:
-                        var_s1 += temp_v0->data.parts.amount;
+                        var_s1 += unitEffect->data.parts.amount;
                         break;
                     case 1:
-                        var_s1 -= temp_v0->data.parts.amount;
+                        var_s1 -= unitEffect->data.parts.amount;
                         break;
                     case 2:
-                        var_s1 += var_s1 * (temp_v0->data.parts.amount - 1);
+                        var_s1 += var_s1 * (unitEffect->data.parts.amount - 1);
                         break;
                     case 3:
                         temp_v0_2 = temp_a1_2 & 0xFFFF;
@@ -780,26 +780,26 @@ s32 Ta_GetLPRevByNaturalEffect(s32 sMode, s32 bEfc) {
                 }
             }
         }
-        var_s0 += 1;
-    } while (var_s0 < 0xB);
-    var_s0_2 = 1;
+        i += 1;
+    } while (i < 0xB);
+    j = 1;
     do {
-        if ((SzDuel_GetUnitStatus(1, var_s0_2, 4) != 0) && (SzDuel_GetUnitStatus(1, var_s0_2, 3) != 0) && (SzDuel_GetUnitStatus(1, var_s0_2, 5) != 0)) {
-            temp_v0_3 = Ta_GetUnitEffect(1, var_s0_2, 2);
-            if (temp_v0_3 != NULL) {
-                temp_a1_3 = temp_v0_3->flags;
-                if (((temp_a1_3 >> 8) == 0x3B) && ((temp_a1_3 & 0x3F) == sMode)) {
-                    temp_a1_4 = temp_v0_3->data.word;
+        if ((SzDuel_GetUnitStatus(1, j, 4) != 0) && (SzDuel_GetUnitStatus(1, j, 3) != 0) && (SzDuel_GetUnitStatus(1, j, 5) != 0)) {
+            unitEffect2 = Ta_GetUnitEffect(1, j, 2);
+            if (unitEffect2 != NULL) {
+                flags2 = unitEffect2->flags;
+                if (((flags2 >> 8) == 0x3B) && ((flags2 & 0x3F) == sMode)) {
+                    temp_a1_4 = unitEffect2->data.word;
                     temp_a0_2 = temp_a1_4 >> 0x10;
                     switch (temp_a0_2) {
                     case 0:
-                        var_s1 += temp_v0_3->data.parts.amount;
+                        var_s1 += unitEffect2->data.parts.amount;
                         break;
                     case 1:
-                        var_s1 -= temp_v0_3->data.parts.amount;
+                        var_s1 -= unitEffect2->data.parts.amount;
                         break;
                     case 2:
-                        var_s1 += var_s1 * (temp_v0_3->data.parts.amount - 1);
+                        var_s1 += var_s1 * (unitEffect2->data.parts.amount - 1);
                         break;
                     case 3:
                         temp_v0_4 = temp_a1_4 & 0xFFFF;
@@ -811,8 +811,8 @@ s32 Ta_GetLPRevByNaturalEffect(s32 sMode, s32 bEfc) {
                 }
             }
         }
-        var_s0_2 += 1;
-    } while (var_s0_2 < 0xB);
+        j += 1;
+    } while (j < 0xB);
     return GetParCap(var_s1);
 }
 
@@ -1024,29 +1024,29 @@ s32 Ta_IsVisualAttrAdv(s32 nSide, s32 nID, s32 cSide, s32 cID) {
 
 /* The summon-power change side `nSide` gets from standing effects. */
 s32 Ta_GetSummonCalcRevision(s32 nSide) {
-    s32 var_s0;
-    s32 temp_v0;
+    s32 i;
+    s32 searchUncTypeNaturalEffectUserNum;
     s32 var_s2;
-    s32 temp_s3;
-    s32 temp_s4;
-    s32 temp_v0_2;
+    s32 searchUncTypeNaturalEffectUserLo;
+    s32 searchUncTypeNaturalEffectUserHi;
+    s32 searchUncTypeNaturalEffectUser;
     s32 temp_v1;
-    u32 *temp_v0_3;
+    u32 *unitEffect;
     u32 temp_a0;
 
-    temp_v0 = Ta_SearchUncTypeNaturalEffectUserNum(0x56);
+    searchUncTypeNaturalEffectUserNum = Ta_SearchUncTypeNaturalEffectUserNum(0x56);
     var_s2 = 0;
-    for (var_s0 = 0; var_s0 < temp_v0; var_s0++) {
-            temp_v0_2 = Ta_SearchUncTypeNaturalEffectUser(0x56, var_s0);
-            temp_s4 = temp_v0_2 >> 8;
-            temp_s3 = temp_v0_2 & 0xFF;
-            temp_v0_3 = Ta_GetUnitEffect(temp_s4, temp_s3, 2);
-            if (temp_v0_3 != NULL) {
-                temp_a0 = *temp_v0_3;
+    for (i = 0; i < searchUncTypeNaturalEffectUserNum; i++) {
+            searchUncTypeNaturalEffectUser = Ta_SearchUncTypeNaturalEffectUser(0x56, i);
+            searchUncTypeNaturalEffectUserHi = searchUncTypeNaturalEffectUser >> 8;
+            searchUncTypeNaturalEffectUserLo = searchUncTypeNaturalEffectUser & 0xFF;
+            unitEffect = Ta_GetUnitEffect(searchUncTypeNaturalEffectUserHi, searchUncTypeNaturalEffectUserLo, 2);
+            if (unitEffect != NULL) {
+                temp_a0 = *unitEffect;
                 if ((temp_a0 >> 8) == 0x56) {
                     temp_v1 = (temp_a0 >> 6) & 3;
                     if (temp_v1 == 2) {
-                        if (nSide != Ta_GetCurrentSide(temp_s4, temp_s3)) {
+                        if (nSide != Ta_GetCurrentSide(searchUncTypeNaturalEffectUserHi, searchUncTypeNaturalEffectUserLo)) {
                             var_s2 -= 1;
                         }
                     } else if (temp_v1 == 3) {
@@ -2237,35 +2237,35 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
     Packet_0026A0A0 *packet = &packet_data;
     Packet_0026A0A0 *request = eInfo;
     State_0026A0A0 *state = Temp;
-    s32 temp_a0_2;
-    s32 temp_s3;
+    s32 frame;
+    s32 locLo;
     s32 temp_s4;
     s32 temp_s5;
     s32 temp_v0_10;
     s32 temp_v0_11;
     s32 temp_v0_12;
-    s32 temp_v0_26;
-    s32 temp_v0_27;
+    s32 card;
+    s32 card2;
     s32 temp_v0_9;
     s32 var_a2;
-    s32 var_s0;
+    s32 forceEffection;
     s32 var_v0_2;
-    u16 temp_a0;
-    u16 temp_v1;
-    u16 temp_v1_2;
-    u32 temp_a1;
-    u32 temp_a1_2;
-    u32 temp_v0;
-    u32 temp_v0_13;
-    u32 temp_v0_14;
-    u32 temp_v0_15;
-    u32 temp_v0_16;
+    u16 ticks;
+    u16 phase;
+    u16 ticks2;
+    u32 source;
+    u32 target;
+    u32 target2;
+    u32 source2;
+    u32 target3;
+    u32 source3;
+    u32 source3In;
     u32 temp_v0_17;
-    u32 temp_v0_18;
-    u32 temp_v0_19;
+    u32 data;
+    u32 target3In;
     u32 temp_v0_20;
     u32 temp_v0_21;
-    u32 temp_v0_22;
+    u32 data2;
     u32 temp_v0_23;
     u32 temp_v0_24;
     u32 temp_v0_25;
@@ -2286,8 +2286,8 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
     packet_data.data = 0;
     if (ID >= 0) {
         InitEffectTemp(Temp);
-        temp_v0 = request->target;
-        if (SzDuel_GetUnitStatus((s32) (temp_v0 >> 8), temp_v0 & 0xFF, 2) != 0) {
+        target2 = request->target;
+        if (SzDuel_GetUnitStatus((s32) (target2 >> 8), target2 & 0xFF, 2) != 0) {
             temp_v0_2 = request->target;
             SzDuel_SetUnitStatus(temp_v0_2 >> 8, temp_v0_2 & 0xFF, 4, 1);
         }
@@ -2306,7 +2306,7 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
             temp_v0_7 = request->target;
             SzDuel_SetUnitStatus(temp_v0_7 >> 8, temp_v0_7 & 0xFF, 2, 1);
         }
-        var_s0 = Ta_GetForceEffection((s32) ((u32) request->source >> 8), Ta_GetEnchantOfs());
+        forceEffection = Ta_GetForceEffection((s32) ((u32) request->source >> 8), Ta_GetEnchantOfs());
         temp_v0_8 = request->source;
         if ((((SzDuel_GetUnitKind((s32) (temp_v0_8 >> 8), temp_v0_8 & 0xFF) >> 5) == 0) ? 1 : 2) == 1) {
             var_v0 = request->source;
@@ -2315,8 +2315,8 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         }
         temp_s4 = var_v0 & 0xFF;
         temp_s5 = (s32) var_v0 >> 8;
-        temp_s3 = SzDuel_GetUnitLoc(temp_s5, temp_s4) & 0xFF;
-        if (Ta_IsLDRangeAvilityWithLocation(temp_s5, temp_s4, temp_s3, SzDuel_GetUnitLoc(temp_s5, temp_s4) >> 8, 0xB) == 0) {
+        locLo = SzDuel_GetUnitLoc(temp_s5, temp_s4) & 0xFF;
+        if (Ta_IsLDRangeAvilityWithLocation(temp_s5, temp_s4, locLo, SzDuel_GetUnitLoc(temp_s5, temp_s4) >> 8, 0xB) == 0) {
             if ((temp_v0_9 = Ta_IsActiveTrapB((s32) ((u32) request->data >> 0x10), 0x29)) >= 0) {
                 TaEffect_LoadModule(Temp, 0x25A);
                 if ((temp_v0_10 = Ta_IsActiveTrapB((s32) request->target, 0x2E)) >= 0) {
@@ -2327,7 +2327,7 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
                     state->card = temp_v0_10;
                     state->phase = 0x10U;
                     state->mode = 0U;
-                    state->id = (u16) var_s0;
+                    state->id = (u16) forceEffection;
                     return 1;
                 }
                 TaEffect_LoadModule(Temp, 0x223);
@@ -2338,7 +2338,7 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
                 TaUtil_DoOpen(temp_v0_9 >> 8, temp_v0_9 & 0xFF, 1);
                 state->card = temp_v0_9;
                 state->mode = 0U;
-                state->id = (u16) var_s0;
+                state->id = (u16) forceEffection;
                 return 1;
             }
             if ((temp_v0_11 = Ta_IsActiveTrapB((s32) ((u32) request->target >> 8), 0x2B)) >= 0) {
@@ -2351,7 +2351,7 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
                     state->card = temp_v0_12;
                     state->phase = 0x10U;
                     state->mode = 0U;
-                    state->id = (u16) var_s0;
+                    state->id = (u16) forceEffection;
                     return 1;
                 }
                 TaView_ReqFocusCamera(0, temp_v0_11, 0xB4, 0xB4);
@@ -2360,24 +2360,24 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
                 state->card = temp_v0_11;
                 state->phase = 0x10U;
                 state->mode = 1U;
-                state->id = (u16) var_s0;
+                state->id = (u16) forceEffection;
                 return 1;
             }
         }
         TaEffect_LoadModule(Temp, 0x219);
-        if (var_s0 < 0) {
-            var_s0 = 0;
+        if (forceEffection < 0) {
+            forceEffection = 0;
         }
         state->phase = 2U;
-        state->id = (u16) var_s0;
+        state->id = (u16) forceEffection;
         state->mode = 0U;
         return 1;
     }
     if (TaEffect_IsLoadModule(Temp) != 1) {
         return 1;
     }
-    temp_v1 = state->phase;
-    switch (temp_v1) {
+    phase = state->phase;
+    switch (phase) {
     case 0:
         SzDuel_SetWindowDraw(0);
         SzDuel_OpenMsgPopup(0, -0x78, 0x50, 0x10B);
@@ -2397,20 +2397,20 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
     case 1:
         SzDuel_SetWindowDraw(0);
         if (SzEffect_IsUse((s32) state->handle) != 0) {
-            temp_a0 = state->ticks;
-            state->ticks = (u16) (temp_a0 + 1);
-            if (temp_a0 == 6) {
+            ticks = state->ticks;
+            state->ticks = (u16) (ticks + 1);
+            if (ticks == 6) {
                 TaView_ReqFireView(0x1E, ((request->target == 0) ? 1 : 0) << 8, 0x64U, 0xB4U);
             }
         } else {
             SzDuel_CloseMsgPopup();
-            temp_v0_13 = request->source;
-            if ((SzDuel_GetUnitKind((s32) (temp_v0_13 >> 8), temp_v0_13 & 0xFF) >> 5) == 0) {
-                temp_v0_14 = request->target;
-                Ta_DelUnit(temp_v0_14 >> 8, temp_v0_14 & 0xFF);
+            source2 = request->source;
+            if ((SzDuel_GetUnitKind((s32) (source2 >> 8), source2 & 0xFF) >> 5) == 0) {
+                target3 = request->target;
+                Ta_DelUnit(target3 >> 8, target3 & 0xFF);
             } else {
-                temp_v0_15 = request->source;
-                Ta_DelUnit(temp_v0_15 >> 8, temp_v0_15 & 0xFF);
+                source3 = request->source;
+                Ta_DelUnit(source3 >> 8, source3 & 0xFF);
             }
             SzDuel_CalcLP((s32) ((u32) request->source >> 8), 1, (s32) state->id);
             TaView_RestoreOriginalView(Temp, 0x10);
@@ -2430,8 +2430,8 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         packet->command = 0x219;
         packet->source = (u32) request->source;
         packet->target = (u32) request->target;
-        temp_v0_16 = request->source;
-        if ((SzDuel_GetUnitKind((s32) (temp_v0_16 >> 8), temp_v0_16 & 0xFF) >> 5) == 0) {
+        source3In = request->source;
+        if ((SzDuel_GetUnitKind((s32) (source3In >> 8), source3In & 0xFF) >> 5) == 0) {
             var_a2 = 1;
         } else {
             var_a2 = 2;
@@ -2442,9 +2442,9 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         break;
     case 3:
         if (SzEffect_IsUse((s32) state->handle) != 0) {
-            temp_a0_2 = state->frame;
-            state->frame = (s32) (temp_a0_2 + 1);
-            switch (temp_a0_2) {
+            frame = state->frame;
+            state->frame = (s32) (frame + 1);
+            switch (frame) {
             case 0x0:
                 SzSound_PlaySE(1, 0x38);
                 break;
@@ -2468,20 +2468,20 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
                 if (*(u8 *)&state->done != 0xFFFF) {
                     temp_v0_17 = request->source;
                     if ((SzDuel_GetUnitKind((s32) (temp_v0_17 >> 8), temp_v0_17 & 0xFF) >> 5) == 0) {
-                        temp_v0_18 = request->data;
-                        temp_a1 = request->source;
-                        Enchant(temp_a1 >> 8, temp_a1 & 0xFF, (state->mode << 0x10) | (temp_v0_18 & 0x3FFF), (temp_v0_18 >> 0x10) & 0xFF);
-                        temp_v0_19 = request->target;
-                        Ta_DelUnit(temp_v0_19 >> 8, temp_v0_19 & 0xFF);
+                        data = request->data;
+                        source = request->source;
+                        Enchant(source >> 8, source & 0xFF, (state->mode << 0x10) | (data & 0x3FFF), (data >> 0x10) & 0xFF);
+                        target3In = request->target;
+                        Ta_DelUnit(target3In >> 8, target3In & 0xFF);
                         temp_v0_20 = request->source;
                         if (SzDuel_GetUnitStatus((s32) (temp_v0_20 >> 8), temp_v0_20 & 0xFF, 4) == 0) {
                             temp_v0_21 = request->source;
                             SzDuel_SetUnitStatus(temp_v0_21 >> 8, temp_v0_21 & 0xFF, 2, 0);
                         }
                     } else {
-                        temp_v0_22 = request->data;
-                        temp_a1_2 = request->target;
-                        Enchant(temp_a1_2 >> 8, temp_a1_2 & 0xFF, (state->mode << 0x10) | (temp_v0_22 & 0x3FFF), (temp_v0_22 >> 0x10) & 0xFF);
+                        data2 = request->data;
+                        target = request->target;
+                        Enchant(target >> 8, target & 0xFF, (state->mode << 0x10) | (data2 & 0x3FFF), (data2 >> 0x10) & 0xFF);
                         temp_v0_23 = request->source;
                         Ta_DelUnit(temp_v0_23 >> 8, temp_v0_23 & 0xFF);
                         temp_v0_24 = request->target;
@@ -2521,8 +2521,8 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         if (SzEffect_IsUse((s32) state->handle) == 1) {
             return 1;
         }
-        temp_v0_26 = state->card;
-        SzDuel_SetUnitStatus((u32) temp_v0_26 >> 8, temp_v0_26 & 0xFF, 0, 1);
+        card = state->card;
+        SzDuel_SetUnitStatus((u32) card >> 8, card & 0xFF, 0, 1);
         SzDuel_CloseMsgPopup();
         TaView_RestoreOriginalView(Temp, 0);
         state->phase = 2U;
@@ -2547,15 +2547,15 @@ s32 Ta_Eff_037(void *eInfo, void *Temp, s32 ID) {
         if (SzEffect_IsUse((s32) state->handle) != 0) {
             return 1;
         }
-        temp_v0_27 = state->card;
-        SzDuel_SetUnitStatus((u32) temp_v0_27 >> 8, temp_v0_27 & 0xFF, 0, 1);
+        card2 = state->card;
+        SzDuel_SetUnitStatus((u32) card2 >> 8, card2 & 0xFF, 0, 1);
         TaView_ReqBackFocusCamera(0, ((u32) state->card >> 8) << 8, 0x64, 0xB4);
         state->phase = 0U;
         break;
     default:
-        temp_v1_2 = state->ticks;
-        state->ticks = (u16) (temp_v1_2 + 1);
-        if ((s32) temp_v1_2 > 0x10) {
+        ticks2 = state->ticks;
+        state->ticks = (u16) (ticks2 + 1);
+        if ((s32) ticks2 > 0x10) {
             SzSound_PlaySE(0, 2);
             SzDuel_CloseMsgPopup();
             return 0;
@@ -3947,44 +3947,44 @@ s32 Ta_RequestGravityReserve(s32 nX, s32 nZ, s32 Unit, s32 *Reserve) {
 
 /* The square unit `Unit` on (nX, nZ) is pulled to, for pull order `Order`. */
 s32 Ta_GetUnitGravityLoc(s32 nX, s32 nZ, s32 Unit, s32 Order) {
-    s32 temp_s0;
+    s32 locLo;
     s32 temp_s1;
     s32 temp_s1_2;
-    s32 temp_s2;
-    s32 temp_s2_2;
-    s32 temp_v0;
+    s32 locHi;
+    s32 locHi2;
+    s32 loc;
     s32 var_v0;
     s32 var_v0_2;
 
-    temp_v0 = SzDuel_GetUnitLoc(Unit >> 8, Unit & 0xFF);
-    temp_s0 = temp_v0 & 0xFF;
-    if (nX < temp_s0) {
-        temp_s1 = temp_s0 - 1;
-        temp_s2_2 = temp_v0 >> 8;
-        if (SzDuel_GetMapUnitID(temp_s1, temp_s2_2) < 0) {
+    loc = SzDuel_GetUnitLoc(Unit >> 8, Unit & 0xFF);
+    locLo = loc & 0xFF;
+    if (nX < locLo) {
+        temp_s1 = locLo - 1;
+        locHi2 = loc >> 8;
+        if (SzDuel_GetMapUnitID(temp_s1, locHi2) < 0) {
             if (Order == 0) {
-                var_v0_2 = (temp_s2_2 << 8) | temp_s1;
+                var_v0_2 = (locHi2 << 8) | temp_s1;
             } else {
-                var_v0_2 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, temp_s0, temp_s2_2);
+                var_v0_2 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi2);
             }
             return var_v0_2;
         }
-        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, temp_s0, temp_s2_2);
+        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi2);
     }
-    if (temp_s0 < nX) {
-        temp_s1_2 = temp_s0 + 1;
-        temp_s2 = temp_v0 >> 8;
-        if (SzDuel_GetMapUnitID(temp_s1_2, temp_s2) < 0) {
+    if (locLo < nX) {
+        temp_s1_2 = locLo + 1;
+        locHi = loc >> 8;
+        if (SzDuel_GetMapUnitID(temp_s1_2, locHi) < 0) {
             if (Order == 0) {
-                var_v0 = (temp_s2 << 8) | temp_s1_2;
+                var_v0 = (locHi << 8) | temp_s1_2;
             } else {
-                var_v0 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, temp_s0, temp_s2);
+                var_v0 = Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi);
             }
             return var_v0;
         }
-        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, temp_s0, temp_s2);
+        return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, locHi);
     }
-    return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, temp_s0, temp_v0 >> 8);
+    return Ta_GetUnitGravityLocSearchOnZ(nX, nZ, locLo, loc >> 8);
 }
 
 /* The free square a pulled unit stops on along its column (the names stay: no JP names known). */
@@ -4502,22 +4502,22 @@ s32 Ta_IsHandHeap(s32 nSide0, s32 nID0, s32 nSide1, s32 nID1, s32 *eInfo) {
 
 /* The summon cost of the turn owner's hand cards. */
 s32 Ta_GetSummonCost(void) {
-    s32 var_s0;
-    s32 temp_v0;
-    s32 temp_v0_2;
+    s32 i;
+    s32 turnOwner;
+    s32 handCount;
     s32 var_s3;
-    s32 temp_v0_3;
-    s32 temp_v0_4;
+    s32 cardNo;
+    s32 cardSummonCost;
 
-    temp_v0 = SzDuel_GetTurnOwner();
-    temp_v0_2 = SzDuel_GetHandCount(temp_v0);
+    turnOwner = SzDuel_GetTurnOwner();
+    handCount = SzDuel_GetHandCount(turnOwner);
     var_s3 = 0;
-    for (var_s0 = 0; var_s0 < temp_v0_2; var_s0++) {
-            temp_v0_3 = SzDuel_InqHand(temp_v0, var_s0);
-            if (((s32) (temp_v0_3 & 0xF000) >> 0xC) > 0) {
-                temp_v0_4 = TaHand_GetCardSummonCost(temp_v0_3, temp_v0);
-                if (var_s3 < temp_v0_4) {
-                    var_s3 = temp_v0_4;
+    for (i = 0; i < handCount; i++) {
+            cardNo = SzDuel_InqHand(turnOwner, i);
+            if (((s32) (cardNo & 0xF000) >> 0xC) > 0) {
+                cardSummonCost = TaHand_GetCardSummonCost(cardNo, turnOwner);
+                if (var_s3 < cardSummonCost) {
+                    var_s3 = cardSummonCost;
                 }
             }
     }

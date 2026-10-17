@@ -1,10 +1,12 @@
 #include "common.h"
 #include "sce/libc.h"
 
+/* newlib strtok: the next token of `s` split by `delim`. */
 char *func_0019D430(char *s, const char *delim) {
     return func_0019D450(s, delim, (char **)(D_0028FA98 + 0x5C));
 }
 
+/* newlib strtok_r: the next token of `s` split by `delim` (position kept in `lasts`). */
 char *func_0019D450(char *s, const char *delim, char **lasts) {
     char *spanp;
     s32 c, sc;
@@ -42,6 +44,7 @@ cont:
     }
 }
 
+/* newlib _strtol_r: string `nptr` as a long in base `base` (the end into `endptr`). */
 long func_0019D518(s32 rptr, const char *nptr, char **endptr, s32 base) {
     register const char *s = nptr;
     register u64 acc;
@@ -94,10 +97,12 @@ long func_0019D518(s32 rptr, const char *nptr, char **endptr, s32 base) {
     return acc;
 }
 
+/* newlib strtol: string `arg0` as a long in base `arg2` (the end into `arg1`). */
 long func_0019D750(const char *arg0, char **arg1, s32 arg2) {
     return func_0019D518(D_0028FA98, arg0, arg1, arg2);
 }
 
+/* newlib _strtoul_r: string `nptr` as an unsigned long in base `base` (the end into `endptr`). */
 u64 func_0019D780(s32 rptr, const char *nptr, char **endptr, s32 base) {
     register const char *s = nptr;
     register u64 acc;
@@ -149,10 +154,12 @@ u64 func_0019D780(s32 rptr, const char *nptr, char **endptr, s32 base) {
     return acc;
 }
 
+/* newlib strtoul: string `arg0` as an unsigned long in base `arg2` (the end into `arg1`). */
 void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2) {
     func_0019D780(D_0028FA98, arg0, arg1, arg2);
 }
 
+/* A newlib character helper (`c`). */
 s32 func_0019D9E0(s32 c) {
     return (D_002BD0C1[(u32)c] & 2) ? c - 'a' + 'A' : c;
 }
@@ -168,6 +175,7 @@ typedef struct sm_FILE {
     void *_data;
 } sm_FILE;
 
+/* newlib stdio: makes stream `arg0` ready for writing (gives it a buffer). */
 s32 func_0019DA00(void *arg0) {
     sm_FILE *fp = arg0;
     s32 i;
@@ -221,6 +229,7 @@ typedef struct ug_FILE {
     ug_reent *_data;
 } ug_FILE;
 
+/* newlib __swbuf: writes character `c` to stream `arg1`, flushing its buffer when full. */
 s32 func_0019DAE8(s32 c, void *arg1) {
     ug_FILE *fp = arg1;
 

@@ -65,7 +65,9 @@ The same symbol table names 1,020 data objects; 255 of the main program's global
 with their old `D_` names kept as aliases (`config/old_data_names.txt`). Globals are being given English names
 that say what they are (the duel state `gSzDuel_dl` is now `duelState`, described by `DuelState` and
 `DuelPlayer` in `include/game.h`); the JP name stays as a note and an alias. How names are chosen:
-`docs/NAMING.md`.
+`docs/NAMING.md`. Every function of the main program carries a one-line comment; guides for modders (the code
+map, how a duel runs, where the data and the save live) are in `docs/README.md`, and how to propose a change is
+in `CONTRIBUTING.md`.
 
 ## License
 

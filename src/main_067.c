@@ -6,13 +6,13 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
     extern s32 Taku_Camp_TIKEI_Map_Hyouji(s32, u16, u16, s32);
     extern s32 Taku_Obj_Set();
     extern s32 Taku_FT4_Set();
-    extern u8 camp_window_Map_data[];
+    extern u8 campaignMapWindow[];
     extern u8 D_00297B9A[];
     extern u8 D_00297BA4[];
-    extern u8 camp_window_tikei_iro_ue[];
-    extern u8 camp_window_tikei_iro_sita[];
-    extern u8 camp_window_tikei_partu[];
-    extern u8 camp_window_tikei_partu_gejiwaku[];
+    extern u8 campaignTerrainColourTop[];
+    extern u8 campaignTerrainColourBottom[];
+    extern u8 campaignTerrainParts[];
+    extern u8 campaignTerrainGaugeFrame[];
     extern u8 D_00298BB0[];
     s8 *state;
     s16 baseX;
@@ -53,14 +53,14 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
         }
     }
     if (fade != 0) {
-        packet = Taku_Window_Set(packet, camp_window_Map_data, (u16)(s8)side & 0xFFFF, 0,
+        packet = Taku_Window_Set(packet, campaignMapWindow, (u16)(s8)side & 0xFFFF, 0,
                               alpha, 0, 0, 128, *(s16 *)0x01ED0228);
         packet = Taku_Camp_TIKEI_Map_Hyouji(packet, baseX, alpha, 0);
         packet = Taku_Window_Set(packet, D_00297B9A, (u16)(s8)side, 0,
                               alpha, 0, 0, 128, 128);
         packet = Taku_Window_Set(packet, D_00297BA4, (u16)(state[0] ^ 1), 0,
                               alpha, 0, 0, 128, 128);
-        p = camp_window_tikei_partu;
+        p = campaignTerrainParts;
         i = 0;
         do {
             packet = Taku_Obj_Set(packet, p, alpha, 0);
@@ -70,7 +70,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
         row = 0;
         y = 0;
         do {
-            q = camp_window_tikei_partu_gejiwaku;
+            q = campaignTerrainGaugeFrame;
             j = 0;
             do {
                 packet = Taku_Obj_Set(packet, q, alpha, y);
@@ -80,8 +80,8 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
             y = (s16)(y + 16);
             row++;
         } while (row < 10);
-        packet = Taku_FT4_Set(packet, camp_window_tikei_iro_ue + (s8)side * 0x26, alpha, 0, 0);
-        packet = Taku_FT4_Set(packet, camp_window_tikei_iro_sita + state[0] * 0x26, alpha, 0, 2);
+        packet = Taku_FT4_Set(packet, campaignTerrainColourTop + (s8)side * 0x26, alpha, 0, 0);
+        packet = Taku_FT4_Set(packet, campaignTerrainColourBottom + state[0] * 0x26, alpha, 0, 2);
     }
     return packet;
 }
@@ -106,7 +106,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     extern Sprite_00236F90 D_0029AFA0;
     extern Sprite_00236F90 D_0029AFD0;
     extern u8 D_002CEE5C[];
-    extern Sprite_00236F90 camp_window_tikei_partu_geji[][2];
+    extern Sprite_00236F90 campaignTerrainGauge[][2];
     extern s16 D_00297BAE;
     extern s16 D_00297BB0;
     extern s16 D_00297BB2;
@@ -218,12 +218,12 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
         }
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 8; j++) {
-                camp_window_tikei_partu_geji[i][k].xy[j] = camp_window_tikei_partu_geji[0][k].xy[j];
+                campaignTerrainGauge[i][k].xy[j] = campaignTerrainGauge[0][k].xy[j];
             }
-            gp = Taku_G4_Set2(gp, &camp_window_tikei_partu_geji[i][k], x, y + dy, scale, 0);
+            gp = Taku_G4_Set2(gp, &campaignTerrainGauge[i][k], x, y + dy, scale, 0);
         }
         gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((D_00297BAE + D_00297BB2) >> 1),
-                                              y + (dy + camp_window_tikei_partu_geji[i][0].xy[1]), 1, 2,
+                                              y + (dy + campaignTerrainGauge[i][0].xy[1]), 1, 2,
                                               (u16)((work->counts[i] < 10) ? 1 : 2), work->counts[i]);
     }
     return gp;
@@ -241,7 +241,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     s16 spB0;
     u8 *spC0;
     s32 spD0;
-    s16 var_s0;
+    s16 i;
     s32 var_s1;
     u8 *var_s2;
     s32 var_s3;
@@ -252,7 +252,7 @@ void Taku_Camp_3D_Poly_Init(void) {
     s32 var_fp;
     s32 var_s7;
     u8 *var_s6;
-    s16 var_s0_2;
+    s16 j;
 
     spC0 = campaignCoord;
     var_s6 = D_0029A44C;
@@ -265,18 +265,18 @@ void Taku_Camp_3D_Poly_Init(void) {
     spD0 = 0;
     for (; spB0 < 16; spB0++) {
         var_s2 = spC0;
-        var_s0 = 0;
+        i = 0;
         var_s3 = spD0 >> 5;
         var_s4 = (var_fp << 16) >> 5;
         var_s5 = (var_s7 << 16) >> 5;
-        for (; var_s0 < 4; var_s0++) {
-            if (var_s0 == 2) {
+        for (; i < 4; i++) {
+            if (i == 2) {
                 *(s32 *)(var_s2 + 0xEC) = 0;
                 *(s32 *)(var_s2 + 0xF0) = 0x410A6666;
                 *(s32 *)(var_s2 + 0xF4) = 0;
                 *(s32 *)(var_s2 + 0xF8) = 0;
             } else {
-                switch (var_s0) {
+                switch (i) {
                 case 0:
                     var_s1 = var_s3;
                     break;
@@ -301,8 +301,8 @@ void Taku_Camp_3D_Poly_Init(void) {
         spC0 += 0x40;
         spD0 += 0x20000;
     }
-    var_s0_2 = 0;
-    for (; var_s0_2 < 16; var_s0_2++) {
+    j = 0;
+    for (; j < 16; j++) {
         Taku_Vector_Set(var_s6, campaignPlaces);
         *(s32 *)(var_s6 + 0x20) = 0;
         var_s6[0x26] = 0;

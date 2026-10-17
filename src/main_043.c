@@ -2122,13 +2122,13 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     f32 temp_f20;
     f32 height = 35.0f;
     f32 half_width = 24.0f;
-    s32 temp_s1;
-    s32 temp_s1_2;
-    s32 temp_v0;
-    s32 temp_v0_2;
-    s32 temp_v0_3;
-    s32 temp_v0_4;
-    s32 temp_s2;
+    s32 pipe;
+    s32 pipe2;
+    s32 nodeL2V;
+    s32 nodeL2V2;
+    s32 nodeL2V3;
+    s32 nodeL2V3In;
+    s32 pipe3;
 
     *(u8 *)0x70002018 = 0;
     *(u8 *)0x70002019 = 0;
@@ -2162,9 +2162,9 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     *(f32 *)0x70002090 = position[0] + half_width;
     *(f32 *)0x70002094 = position[1] - height;
     *(f32 *)0x70002098 = position[2] - half_width;
-    temp_v0 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, temp_v0, (void *)0x70002000);
-    temp_s1 = ExSortNode_Pipe(packet, &prim, temp_v0, 0x70002000, 0, 0);
+    nodeL2V = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V, (void *)0x70002000);
+    pipe = ExSortNode_Pipe(packet, &prim, nodeL2V, 0x70002000, 0, 0);
     *(f32 *)0x70002000 = (position[0] - half_width);
     *(f32 *)0x70002004 = (position[1] - height);
     *(f32 *)0x70002008 = (position[2] + half_width);
@@ -2177,9 +2177,9 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     *(f32 *)0x70002090 = (position[0] + half_width);
     *(f32 *)0x70002094 = (position[1] - height);
     *(f32 *)0x70002098 = (position[2] + half_width);
-    temp_v0_2 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, temp_v0_2, (void *)0x70002000);
-    temp_s2 = ExSortNode_Pipe(temp_s1, &prim, temp_v0_2, 0x70002000, 0, 0);
+    nodeL2V2 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V2, (void *)0x70002000);
+    pipe3 = ExSortNode_Pipe(pipe, &prim, nodeL2V2, 0x70002000, 0, 0);
     *(f32 *)0x70002000 = (position[0] - half_width);
     *(f32 *)0x70002004 = (position[1] - height);
     *(f32 *)0x70002008 = (position[2] - half_width);
@@ -2192,9 +2192,9 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     *(f32 *)0x70002090 = (position[0] - half_width);
     *(f32 *)0x70002094 = (position[1] - height);
     *(f32 *)0x70002098 = (position[2] + half_width);
-    temp_v0_3 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, temp_v0_3, (void *)0x70002000);
-    temp_s1_2 = ExSortNode_Pipe(temp_s2, &prim, temp_v0_3, 0x70002000, 0, 0);
+    nodeL2V3 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V3, (void *)0x70002000);
+    pipe2 = ExSortNode_Pipe(pipe3, &prim, nodeL2V3, 0x70002000, 0, 0);
     *(f32 *)0x70002000 = (position[0] + half_width);
     *(f32 *)0x70002004 = (position[1] - height);
     *(f32 *)0x70002008 = (position[2] - half_width);
@@ -2207,9 +2207,9 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     *(f32 *)0x70002090 = (position[0] + half_width);
     *(f32 *)0x70002094 = (position[1] - height);
     *(f32 *)0x70002098 = (position[2] + half_width);
-    temp_v0_4 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, temp_v0_4, (void *)0x70002000);
-    ExSortNode_Pipe(temp_s1_2, &prim, temp_v0_4, 0x70002000, 0, 0);
+    nodeL2V3In = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V3In, (void *)0x70002000);
+    ExSortNode_Pipe(pipe2, &prim, nodeL2V3In, 0x70002000, 0, 0);
 }
 
 struct DotrStateCellQuad {

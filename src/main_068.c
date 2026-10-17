@@ -102,7 +102,7 @@ void TkCamp_Act2(s32 param) {
         item++;
         spot++;
     }
-    rect = camp_sys_icon;
+    rect = campaignSystemIcons;
     for (j = 0; j < 4; j++) {
         if (rect[0] - 2 <= *(s16 *)(work + 0x0) && *(s16 *)(work + 0x0) <= rect[2] + 2 &&
             rect[1] - 2 <= *(s16 *)(work + 0x2) && *(s16 *)(work + 0x2) <= rect[3] + 2) {
@@ -4111,12 +4111,12 @@ void setImageTag(u64 tags, u8 *image, s32 width, s32 height, s32 dbp) {
     Tag_00241E80 spD0;
     s32 temp_s0;
     s32 temp_s7;
-    s32 var_s1;
-    s32 var_s2;
+    s32 i;
+    s32 j;
     s32 var_s3;
     u64 rowBits;
     s32 var_s5;
-    u64 *temp_v0;
+    u64 *sceGifPkReserve2;
 
     spC0 = D_0029B2D0;
     temp_s7 = height >> 4;
@@ -4130,12 +4130,12 @@ void setImageTag(u64 tags, u8 *image, s32 width, s32 height, s32 dbp) {
         sceGifPkAddGsAD(&spB0, 0x50, 0xC1B00ULL << 0x20);
         sceGifPkAddGsAD(&spB0, 0x52, 0x10 | (0x10ULL << 0x20));
         sceGifPkCloseGifTag(&spB0);
-        var_s1 = 0;
-        if (var_s1 < temp_s7) {
+        i = 0;
+        if (i < temp_s7) {
             var_s5 = 0;
             do {
-                var_s2 = 0;
-                if (var_s2 < temp_s0) {
+                j = 0;
+                if (j < temp_s0) {
                     var_s3 = 0;
                     rowBits = (u64) (u32) var_s5 << 0x20;
                     do {
@@ -4144,18 +4144,18 @@ void setImageTag(u64 tags, u8 *image, s32 width, s32 height, s32 dbp) {
                         sceGifPkAddGsAD(&spB0, 0x51, rowBits | ((u64) (u32) var_s3 << 0x30));
                         sceGifPkAddGsAD(&spB0, 0x53, 0);
                         sceGifPkCloseGifTag(&spB0);
-                        temp_v0 = sceGifPkReserve(&spB0, 4);
-                        temp_v0[0] = 0x40 | (0x08000000ULL << 0x20);
-                        temp_v0[1] = 0;
+                        sceGifPkReserve2 = sceGifPkReserve(&spB0, 4);
+                        sceGifPkReserve2[0] = 0x40 | (0x08000000ULL << 0x20);
+                        sceGifPkReserve2[1] = 0;
                         sceGifPkRef(&spB0, (u64) (u32) image & 0x0FFFFFFF, 0x40, 0, 0, 0);
-                        var_s2 += 1;
+                        j += 1;
                         image += 0x400;
                         var_s3 += 0x10;
-                    } while (var_s2 < temp_s0);
+                    } while (j < temp_s0);
                 }
-                var_s1 += 1;
+                i += 1;
                 var_s5 += 0x10;
-            } while (var_s1 < temp_s7);
+            } while (i < temp_s7);
         }
     }
     sceGifPkEnd(&spB0, 0, 0, 0);

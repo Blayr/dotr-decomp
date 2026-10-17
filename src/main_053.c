@@ -319,8 +319,8 @@ void lSzView_CalcInterpCameraMotion(void *out, void *motion, s32 frame, f32 t) {
     s32 temp_v1;
     Key_001FBE50 *temp_a2;
     Key_001FBE50 *next;
-    u32 temp_a3;
-    u32 temp_a1;
+    u32 time2;
+    u32 time;
     u32 temp_v0;
     u32 temp_v0_2;
     u32 temp_v0_3;
@@ -362,12 +362,12 @@ block_15:
         return;
     }
     next = (Key_001FBE50 *)((u8 *)motion + temp_v1 * 16);
-    temp_a1 = temp_a2->time;
-    temp_a3 = next->time;
-    temp_v0_3 = temp_a3 - temp_a1;
+    time = temp_a2->time;
+    time2 = next->time;
+    temp_v0_3 = time2 - time;
     var_f3 = (f32)temp_v0_3;
-    var_f0 = (f32)temp_a3;
-    var_f0_2 = (f32)temp_a1;
+    var_f0 = (f32)time2;
+    var_f0_2 = (f32)time;
     weight = (var_f0 - t) / var_f3;
     weight2 = (t - var_f0_2) / var_f3;
     ((f32 *)out)[0] = weight * temp_a2->value[0] + weight2 * next->value[0];
@@ -390,7 +390,7 @@ f32 lSzView_CalcInterpCameraMotion1(u8 *channel, s32 frame, f32 t) {
     f32 weight;
     f32 result;
     Key_001FC050 *temp_a2;
-    u32 temp_a1;
+    u32 time;
     u32 temp_a3;
     u32 temp_v0;
     u32 temp_v0_2;
@@ -434,12 +434,12 @@ block_15:
         return temp_a2->value;
     }
     channel += temp_v1 * 8;
-    temp_a1 = temp_a2->time;
+    time = temp_a2->time;
     temp_a3 = *(u32 *)channel;
-    temp_v0_3 = temp_a3 - temp_a1;
+    temp_v0_3 = temp_a3 - time;
     var_f3 = (f32)temp_v0_3;
     var_f0 = (f32)temp_a3;
-    var_f0_2 = (f32)temp_a1;
+    var_f0_2 = (f32)time;
     weight = (var_f0 - t) / var_f3;
     result = weight * temp_a2->value;
     weight = (t - var_f0_2) / var_f3;

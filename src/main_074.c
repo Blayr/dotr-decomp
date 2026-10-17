@@ -283,7 +283,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
     extern s32 Ta_Eff_BTL_000();
     extern s32 Ta_Eff_BTL_001();
     s32 temp_v0;
-    s32 var_s0;
+    s32 i;
     s32 var_s1;
 
     if ((eInfo == NULL) || (pTemp == NULL)) {
@@ -504,29 +504,29 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         break;
     }
     if (var_s1 == 0) {
-        var_s0 = 1;
+        i = 1;
         do {
-            if (SzDuel_Kind2Type(SzDuel_GetUnitKind(0, var_s0) >> 5) == 2) {
-                if (SzDuel_GetUnitStatus(0, var_s0, 4) != 0) {
-                    SzEffect_SetBusyFlag2(var_s0, 0);
-                    SzDuel_SetUnitStatus(0, var_s0, 0, 1);
+            if (SzDuel_Kind2Type(SzDuel_GetUnitKind(0, i) >> 5) == 2) {
+                if (SzDuel_GetUnitStatus(0, i, 4) != 0) {
+                    SzEffect_SetBusyFlag2(i, 0);
+                    SzDuel_SetUnitStatus(0, i, 0, 1);
                 }
             }
-            if ((SzDuel_Kind2Type(SzDuel_GetUnitKind(1, var_s0) >> 5) == 2) && (SzDuel_GetUnitStatus(1, var_s0, 4) != 0)) {
-                SzDuel_SetUnitStatus(1, var_s0, 0, 1);
-                SzEffect_SetBusyFlag2(var_s0 | 0x100, 0);
+            if ((SzDuel_Kind2Type(SzDuel_GetUnitKind(1, i) >> 5) == 2) && (SzDuel_GetUnitStatus(1, i, 4) != 0)) {
+                SzDuel_SetUnitStatus(1, i, 0, 1);
+                SzEffect_SetBusyFlag2(i | 0x100, 0);
             }
-            var_s0 += 1;
-        } while (var_s0 < 0xB);
+            i += 1;
+        } while (i < 0xB);
     }
     return var_s1;
 }
 
 /* Clears an effect script's work area and saves the camera to restore. */
 void InitEffectTemp(void *pTemp) {
-    f32 *temp_v0_2;
-    f32 *temp_s0;
-    s32 var_a0;
+    f32 *look;
+    f32 *cp;
+    s32 i;
     u8 *var_a1;
 
     *(s16 *)((u8 *)pTemp + 0) = 0;
@@ -534,28 +534,28 @@ void InitEffectTemp(void *pTemp) {
     *(s16 *)((u8 *)pTemp + 4) = 0;
     *(s8 *)((u8 *)pTemp + 0xD4) = 0;
     TaEffect_ClearEffectTemp(pTemp);
-    var_a0 = 0;
+    i = 0;
     var_a1 = pTemp;
     do {
-        *(u8 *)((u32)pTemp + var_a0 + 6) = 0xFF;
+        *(u8 *)((u32)pTemp + i + 6) = 0xFF;
         *(s32 *)(var_a1 + 0x20) = 0;
-        var_a0 += 1;
+        i += 1;
         var_a1 += 4;
-    } while (var_a0 < 0x18);
-    temp_s0 = (f32 *)SzView_GetCP(0);
-    temp_v0_2 = SzView_GetLook(0);
+    } while (i < 0x18);
+    cp = (f32 *)SzView_GetCP(0);
+    look = SzView_GetLook(0);
     *(s32 *)((u8 *)pTemp + 0xD0) = 0;
     *(s32 *)((u8 *)pTemp + 0xCC) = 0;
     *(s8 *)((u8 *)pTemp + 0x100) = 0;
     *(s16 *)((u8 *)pTemp + 0x102) = 0;
-    *(f32 *)((u8 *)pTemp + 0xE0) = temp_s0[0];
-    *(f32 *)((u8 *)pTemp + 0xE4) = temp_s0[1];
-    *(f32 *)((u8 *)pTemp + 0xE8) = temp_s0[2];
-    *(f32 *)((u8 *)pTemp + 0xEC) = temp_s0[3];
-    *(f32 *)((u8 *)pTemp + 0xF0) = temp_v0_2[0];
-    *(f32 *)((u8 *)pTemp + 0xF4) = temp_v0_2[1];
-    *(f32 *)((u8 *)pTemp + 0xF8) = temp_v0_2[2];
-    *(f32 *)((u8 *)pTemp + 0xFC) = temp_v0_2[3];
+    *(f32 *)((u8 *)pTemp + 0xE0) = cp[0];
+    *(f32 *)((u8 *)pTemp + 0xE4) = cp[1];
+    *(f32 *)((u8 *)pTemp + 0xE8) = cp[2];
+    *(f32 *)((u8 *)pTemp + 0xEC) = cp[3];
+    *(f32 *)((u8 *)pTemp + 0xF0) = look[0];
+    *(f32 *)((u8 *)pTemp + 0xF4) = look[1];
+    *(f32 *)((u8 *)pTemp + 0xF8) = look[2];
+    *(f32 *)((u8 *)pTemp + 0xFC) = look[3];
 }
 
 typedef struct Request_00255A30 {
@@ -2441,25 +2441,25 @@ s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
     Command_00258E20 *action = &command;
     s32 temp_v0;
     s32 temp_v0_2;
-    u16 temp_v0_3;
-    u16 temp_v0_4;
-    u16 temp_v0_5;
-    u16 temp_v0_6;
+    u16 position;
+    u16 position2;
+    u16 position3;
+    u16 position3In;
     u16 temp_v0_7;
     u16 temp_v0_8;
-    u16 temp_v1;
-    u32 temp_a0;
+    u16 phase;
+    u32 value;
 
     action->type = 0x3E7;
     action->flags = 0;
     action->position = 0;
     action->amount = 0;
-    temp_a0 = input->value;
-    if ((temp_a0 >> 0x10) == 4) {
+    value = input->value;
+    if ((value >> 0x10) == 4) {
         s32 currentValue = SzDuel_GetLP(input->index);
         var_s0 = (u16) input->value - currentValue;
     } else {
-        var_s0 = Ta_GetLPRevByNaturalEffect(0x2B, temp_a0 & 0xFFFF);
+        var_s0 = Ta_GetLPRevByNaturalEffect(0x2B, value & 0xFFFF);
     }
     if (var_s0 < 0) {
         var_s0 = 0;
@@ -2488,8 +2488,8 @@ s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
         return 1;
     }
     if (TaEffect_IsLoadModule(Temp) == 1) {
-        temp_v1 = state->phase;
-        switch (temp_v1) {                          
+        phase = state->phase;
+        switch (phase) {                          
         case 0x0:
             if (SzEffect_IsUse((s32) *(u8 *)(state->count + (u32)state + 5)) == 1) {
                 return 1;
@@ -2503,10 +2503,10 @@ s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
             return 0;
         case 0x1:
             if (SzDuel_GetUnitOpenRate((s32) state->position >> 8, state->position & 0xFF) != 0xFF) {
-                temp_v0_3 = state->position;
-                if (SzDuel_GetUnitStatus((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 4) == 0) {
-                    temp_v0_4 = state->position;
-                    TaUtil_DoOpen((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 1);
+                position = state->position;
+                if (SzDuel_GetUnitStatus((s32) position >> 8, position & 0xFF, 4) == 0) {
+                    position2 = state->position;
+                    TaUtil_DoOpen((s32) position2 >> 8, position2 & 0xFF, 1);
                 }
                 return 1;
             }
@@ -2525,8 +2525,8 @@ s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
         case 0x11:
             if (SzEffect_IsUse((s32) *(u8 *)(state->count + (u32)state + 5)) == 0) {
                 if (state->phase != 4) {
-                    temp_v0_5 = state->position;
-                    SzDuel_SetUnitStatus((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, 0, 1);
+                    position3 = state->position;
+                    SzDuel_SetUnitStatus((s32) position3 >> 8, position3 & 0xFF, 0, 1);
                 }
                 state->phase = (u16) (state->phase + 1);
             }
@@ -2543,8 +2543,8 @@ s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
             return 1;
         case 0x5:
             SzDuel_CloseMsgPopup();
-            temp_v0_6 = state->position;
-            SzDuel_SetUnitStatus((s32) temp_v0_6 >> 8, temp_v0_6 & 0xFF, 0, 1);
+            position3In = state->position;
+            SzDuel_SetUnitStatus((s32) position3In >> 8, position3In & 0xFF, 0, 1);
             SzDuel_CalcLP(input->index, 1, var_s0);
             state->phase = (u16) (state->phase + 1);
             TaView_RestoreOriginalView(Temp, 0x10);
@@ -3250,7 +3250,7 @@ s32 Ta_Eff_014(void *eInfo, u16 *Temp, s32 ID) {
 
 /* Pops a hand card up for an effect. */
 s32 TaEff_PopHand(s32 eInfo, u16 *Temp, s32 bEnemy, s32 nSide, s32 PopUp) {
-    s32 temp_a1;
+    s32 bEnemyLo;
     s32 temp_v1;
     s32 var_s0;
     s32 var_v0_2;
@@ -3276,10 +3276,10 @@ s32 TaEff_PopHand(s32 eInfo, u16 *Temp, s32 bEnemy, s32 nSide, s32 PopUp) {
             var_s0 = 1;
         }
     } else {
-        temp_a1 = bEnemy & 0xFF;
-        var_v0_2 = temp_a1 == 1 ? 0 : 0x3C0;
+        bEnemyLo = bEnemy & 0xFF;
+        var_v0_2 = bEnemyLo == 1 ? 0 : 0x3C0;
         if (Temp[1] != var_v0_2) {
-            var_v1_2 = temp_a1 == 1 ? 0x1E : -0x1E;
+            var_v1_2 = bEnemyLo == 1 ? 0x1E : -0x1E;
             Temp[1] -= var_v1_2;
         } else {
             var_s0 = 1;
@@ -5462,35 +5462,35 @@ int Ta_Eff_032(void *eInfo_v, void *Temp_v, int ID)
 
 /* Swaps the squares of units (nSide1, nID1) and (nSide2, nID2). */
 void Ta_SwapUnit(s32 nSide1, s32 nID1, s32 nSide2, s32 nID2) {
-    s32 temp_s0;
-    s32 temp_s1;
-    s32 temp_v0;
+    s32 loc;
+    s32 loc2;
+    s32 searchMoveTemp;
 
-    temp_v0 = Ta_SearchMoveTemp();
-    if (temp_v0 >= 0) {
-        temp_s0 = SzDuel_GetUnitLoc(nSide1, nID1);
-        temp_s1 = SzDuel_GetUnitLoc(nSide2, nID2);
-        SzDuel_MoveUnit(nSide1, nID1, temp_v0 & 0xFF, temp_v0 >> 8);
-        SzDuel_MoveUnit(nSide2, nID2, temp_s0 & 0xFF, temp_s0 >> 8);
-        SzDuel_MoveUnit(nSide1, nID1, temp_s1 & 0xFF, temp_s1 >> 8);
+    searchMoveTemp = Ta_SearchMoveTemp();
+    if (searchMoveTemp >= 0) {
+        loc = SzDuel_GetUnitLoc(nSide1, nID1);
+        loc2 = SzDuel_GetUnitLoc(nSide2, nID2);
+        SzDuel_MoveUnit(nSide1, nID1, searchMoveTemp & 0xFF, searchMoveTemp >> 8);
+        SzDuel_MoveUnit(nSide2, nID2, loc & 0xFF, loc >> 8);
+        SzDuel_MoveUnit(nSide1, nID1, loc2 & 0xFF, loc2 >> 8);
     }
 }
 
 /* A free square to park a unit on during a swap. */
 s32 Ta_SearchMoveTemp(void) {
-    s32 var_s0;
-    s32 var_s1;
+    s32 i;
+    s32 j;
 
-    var_s0 = 0;
+    i = 0;
     do {
-        var_s1 = 0;
+        j = 0;
         do {
-            if (SzDuel_GetMapUnitID(var_s0, var_s1) < 0) {
-                return (var_s1 << 8) | var_s0;
+            if (SzDuel_GetMapUnitID(i, j) < 0) {
+                return (j << 8) | i;
             }
-            var_s1 += 1;
-        } while (var_s1 < 7);
-        var_s0 += 1;
-    } while (var_s0 < 7);
+            j += 1;
+        } while (j < 7);
+        i += 1;
+    } while (i < 7);
     return -1;
 }

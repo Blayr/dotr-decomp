@@ -466,8 +466,8 @@ int TaLogic_GetNearUnitL3(void *pVarInfo_v, int nX, int nZ, void *nUnitLst_v, un
 /* The nearest unit of list `nUnitLst` to (nX, nZ) to follow (key `sKey`, face filters `fOpen`, `fDef`). */
 s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sKey, u8 fOpen, u8 fDef, u16 wUnitNum) {
     extern s32 SzDuel_GetUnitCardNo();
-    s32 var_s0;
-    s32 temp_s1;
+    s32 i;
+    s32 loc;
     s32 temp_s2;
     u16 var_s3;
     u8 *var_s4;
@@ -498,11 +498,11 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
     var_s4 = nUnitLst;
     var_fp = 7;
     var_s3 = 0xFFFF & 0xFFFF;
-    for (var_s0 = 0; var_s0 < wUnitNum; var_s0++) {
+    for (i = 0; i < wUnitNum; i++) {
         temp_v0 = *(u16 *)var_s4;
         if (SzDuel_GetUnit((s32) temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
             temp_v0_2 = *(u16 *)var_s4;
-            temp_s1 = SzDuel_GetUnitLoc((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF);
+            loc = SzDuel_GetUnitLoc((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF);
             temp_v0_3 = *(u16 *)var_s4;
             if (TaLogic_IsStatusMatch(SzDuel_GetUnitStatus((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF, 2), fOpen) == 1) {
                 temp_v0_4 = *(u16 *)var_s4;
@@ -514,7 +514,7 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
                           if ((s32) temp_s2 > 0) {
                             temp_v0_6 = var_fp & 0xFF;
                             if ((s32) temp_s2 < temp_v0_6) {
-                                y = temp_s1 >> 8;
+                                y = loc >> 8;
                                 if (nZ < y) {
                                     var_v0_2 = nZ;
                                 } else {
@@ -525,7 +525,7 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
                                 } else {
                                     var_a0 = y;
                                 }
-                                x = temp_s1 & 0xFF;
+                                x = loc & 0xFF;
                                 if (nX < x) {
                                     var_v1 = nX;
                                 } else {
@@ -543,7 +543,7 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
                                 temp_v0_7 = SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(*(u16 *)var_s4 >> 8, *(u16 *)var_s4 & 0xFF))[3];
                                 spA0 = (s32) temp_v0_7;
                                 if ((s32) SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(var_s3 >> 8, var_s3 & 0xFF))[3] < spA0) {
-                                    y2 = temp_s1 >> 8;
+                                    y2 = loc >> 8;
                                     var_s3 = *(u16 *)var_s4;
                                     if (nZ < y2) {
                                         var_v0_3 = nZ;
@@ -555,7 +555,7 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
                                     } else {
                                         var_a0_2 = y2;
                                     }
-                                    x2 = temp_s1 & 0xFF;
+                                    x2 = loc & 0xFF;
                                     if (nX < x2) {
                                         var_v1_2 = nX;
                                     } else {
@@ -1102,7 +1102,7 @@ void TaLogic_InitTree(void *p_fTree, s32 nRoot, s32 pCombo, s32 nOrder) {
 
 /* The result of combining card `nRoot` with card `nHeap` (fusion or equip), or none. */
 s32 TaLogic_GetHandFusion(s32 nRoot, s32 nHeap) {
-    s32 temp_v0;
+    s32 handEnchant;
     s32 temp_s1;
     s32 temp_s2;
 
@@ -1110,10 +1110,10 @@ s32 TaLogic_GetHandFusion(s32 nRoot, s32 nHeap) {
     if ((temp_s2 == 0x3E7) || (temp_s1 = nHeap & 0xFFFF, (temp_s1 == 0x3E7))) {
         return 0x3E7;
     }
-    temp_v0 = Ta_GetHandEnchant(temp_s2, temp_s1);
-    if ((temp_v0 >> 0x10) == 0) {
+    handEnchant = Ta_GetHandEnchant(temp_s2, temp_s1);
+    if ((handEnchant >> 0x10) == 0) {
         if (TaEnc_IsEncDo(temp_s1) == 1) {
-            return temp_v0 & 0xFFFF;
+            return handEnchant & 0xFFFF;
         }
     }
     return Fusion(temp_s2, temp_s1) & 0xFFFF;
@@ -1251,8 +1251,8 @@ s32 TaLogic_IsUseHandInCombo(u8 value, u8 *values) {
 
 /* The best result (attack plus defence) of a combination tree. */
 u16 *TaLogic_GetFusionRes(u16 *p_fTree) {
-    s32 var_s3;
-    u16 *temp_v0;
+    s32 i;
+    u16 *fusionRes;
     s32 var_s5;
     u8 *var_s0;
     u16 *var_s1;
@@ -1260,17 +1260,17 @@ u16 *TaLogic_GetFusionRes(u16 *p_fTree) {
     var_s1 = p_fTree;
     if (var_s1 != NULL) {
         var_s5 = (TaHand_GetCardAPDP(*var_s1) >> 0x10) & 0xFFFF;
-        var_s3 = 0;
+        i = 0;
         var_s0 = (u8 *) var_s1;
         do {
-            temp_v0 = TaLogic_GetFusionRes(*(u16 **)(var_s0 + 8));
-            if ((temp_v0 != NULL) && ((u32) (var_s5 & 0xFFFF) < (u32) (TaHand_GetCardAPDP(*temp_v0) >> 0x10))) {
-                var_s5 = (TaHand_GetCardAPDP(*temp_v0) >> 0x10) & 0xFFFF;
-                var_s1 = temp_v0;
+            fusionRes = TaLogic_GetFusionRes(*(u16 **)(var_s0 + 8));
+            if ((fusionRes != NULL) && ((u32) (var_s5 & 0xFFFF) < (u32) (TaHand_GetCardAPDP(*fusionRes) >> 0x10))) {
+                var_s5 = (TaHand_GetCardAPDP(*fusionRes) >> 0x10) & 0xFFFF;
+                var_s1 = fusionRes;
             }
-            var_s3 += 1;
+            i += 1;
             var_s0 += 4;
-        } while (var_s3 < 4);
+        } while (i < 4);
     } else {
         return NULL;
     }
@@ -1750,9 +1750,9 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
     s32 sp168;
     s32 sp16C;
     s32 temp_s0;
-    s32 temp_s1;
+    s32 moveRev;
     s32 var_s0;
-    s32 var_s1;
+    s32 cap;
     u8 *var_s2;
     u8 *var_s6;
 
@@ -1760,7 +1760,7 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
     sp16C = gX;
     sp168 = gZ;
     sp167 = bDist;
-    temp_s1 = GetMoveRev(pVarInfo, nX, nZ);
+    moveRev = GetMoveRev(pVarInfo, nX, nZ);
     if (pVarInfo == NULL) {
         return NULL;
     }
@@ -1777,9 +1777,9 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
             return var_s6;
         }
     }
-    temp_s0 = temp_s1 & 0xF;
+    temp_s0 = moveRev & 0xF;
     spE0 = 0;
-    var_s1 = GetCap(0, nX - temp_s0);
+    cap = GetCap(0, nX - temp_s0);
     if ((u32)(nX + temp_s0) >= 7U) {
         sp110 = 6;
     } else {
@@ -1791,7 +1791,7 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
         sp120 = 6;
     }
     sp100 = (arg_sp20 != 0) ? 0U : 1U;
-    if (var_s1 <= (s32) sp110) {
+    if (cap <= (s32) sp110) {
         sp140 = temp_s0 + 1;
         sp150 = arg_sp20 + 1;
         sp130 = var_s6;
@@ -1800,9 +1800,9 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
             if (var_s0 <= (s32) sp120) {
                 var_s2 = sp130;
                 do {
-                    if ((var_s1 >= 0) && (var_s0 >= 0) && (var_s1 < 7) && (var_s0 < 7) && ((u32) ((((var_s1 < nX) ? nX : var_s1) - ((nX < var_s1) ? nX : var_s1)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) < sp140) && (((((var_s1 < nX) ? nX : var_s1) - ((nX < var_s1) ? nX : var_s1)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) != 0)) {
-                        if ((TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, var_s1, var_s0, arg_sp8, arg_sp10, sp100, arg_sp18) == 1) && (TaLogic_IsRootPast2(var_s6, var_s1, var_s0, nX, nZ, arg_sp20) == 0)) {
-                            *(u8 **)(var_s2 + 4) = TaLogic_GetInvadeRootTree2(*(u8 **)(var_s2 + 4), (s32)var_s6, pVarInfo, var_s1, var_s0, sp16C, sp168, sp167, arg_sp0, arg_sp8, arg_sp10, arg_sp18, (u8)sp150, arg_sp28, arg_sp30, arg_sp38);
+                    if ((cap >= 0) && (var_s0 >= 0) && (cap < 7) && (var_s0 < 7) && ((u32) ((((cap < nX) ? nX : cap) - ((nX < cap) ? nX : cap)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) < sp140) && (((((cap < nX) ? nX : cap) - ((nX < cap) ? nX : cap)) + (((var_s0 < nZ) ? nZ : var_s0) - ((nZ < var_s0) ? nZ : var_s0))) != 0)) {
+                        if ((TaLogic_IsPassInvadeRoot2(pVarInfo, nX, nZ, cap, var_s0, arg_sp8, arg_sp10, sp100, arg_sp18) == 1) && (TaLogic_IsRootPast2(var_s6, cap, var_s0, nX, nZ, arg_sp20) == 0)) {
+                            *(u8 **)(var_s2 + 4) = TaLogic_GetInvadeRootTree2(*(u8 **)(var_s2 + 4), (s32)var_s6, pVarInfo, cap, var_s0, sp16C, sp168, sp167, arg_sp0, arg_sp8, arg_sp10, arg_sp18, (u8)sp150, arg_sp28, arg_sp30, arg_sp38);
                         }
                         var_s2 += 4;
                         sp130 += 4;
@@ -1811,8 +1811,8 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
                     var_s0 += 1;
                 } while (var_s0 <= (s32) sp120);
             }
-            var_s1 += 1;
-        } while (var_s1 <= (s32) sp110);
+            cap += 1;
+        } while (cap <= (s32) sp110);
     }
     return var_s6;
 }

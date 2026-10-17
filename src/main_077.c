@@ -3,14 +3,14 @@
 /* The summon-cost change for card `cNo` of side `nSide` (the leader's level bonus). */
 s32 Ta_GetSummonRev(s32 nSide, s32 cNo) {
     s32 temp_s0;
-    u8 *temp_v0;
+    u8 *cardConstInfo;
     u8 temp_s1;
 
-    temp_v0 = SzDuel_GetCardConstInfo(cNo);
-    if (temp_v0 == NULL) {
+    cardConstInfo = SzDuel_GetCardConstInfo(cNo);
+    if (cardConstInfo == NULL) {
         return 0;
     }
-    temp_s1 = *temp_v0;
+    temp_s1 = *cardConstInfo;
     temp_s0 = temp_s1 & 0x1F;
     if (temp_s0 == (SzDuel_GetUnitKind(nSide, 0) & 0x1F)) {
         if (((s32) temp_s1 >> 5) == 0) {
@@ -583,18 +583,18 @@ s32 TaHand_GetCardSummonCost2(s32 nCardNo, s32 nSide) {
 
 /* Whether side `nSide` has the summon power for card `nCardNo`. */
 s32 TaHand_IsCardSummon2(s32 nSide, s32 nCardNo) {
-    s32 temp_s0;
+    s32 cardSummonCost;
 
-    temp_s0 = TaHand_GetCardSummonCost2(nCardNo, nSide);
-    return (SzDuel_GetSummonPower(nSide) < temp_s0) ? 0 : 1;
+    cardSummonCost = TaHand_GetCardSummonCost2(nCardNo, nSide);
+    return (SzDuel_GetSummonPower(nSide) < cardSummonCost) ? 0 : 1;
 }
 
 /* Whether side `nSide` has the summon power for hand card `nHand`. */
 s32 TaHand_IsCardSummon(s32 nSide, s32 nHand) {
-    s32 temp_s0;
+    s32 cardSummonCost;
 
-    temp_s0 = TaHand_GetCardSummonCost2(nHand & 0xFFF, nSide);
-    return (SzDuel_GetSummonPower(nSide) < temp_s0) ? 0 : 1;
+    cardSummonCost = TaHand_GetCardSummonCost2(nHand & 0xFFF, nSide);
+    return (SzDuel_GetSummonPower(nSide) < cardSummonCost) ? 0 : 1;
 }
 
 typedef struct CardStats_0026FBB0 {
@@ -650,16 +650,16 @@ void *TaHand_GetCardEffect(s32 nCardNo, s32 EffIdxID) {
 
 /* Card `nCardNo`'s kind. */
 s32 TaHand_GetCardKind(s32 nCardNo) {
-    u8 *temp_v0;
+    u8 *cardConstInfo;
 
     if (nCardNo == 0x3E7) {
         return 0U;
     }
-    temp_v0 = SzDuel_GetCardConstInfo(nCardNo);
-    if (temp_v0 == NULL) {
+    cardConstInfo = SzDuel_GetCardConstInfo(nCardNo);
+    if (cardConstInfo == NULL) {
         return 0U;
     }
-    return *temp_v0;
+    return *cardConstInfo;
 }
 
 /* Side `nSide`'s hand after the next draw, into `arNextHand`. */
@@ -689,11 +689,11 @@ void TaHand_GetNextHand(s32 nSide, s32 *arNextHand) {
 
 /* How many cards side `nSide` will hold after the next draw. */
 s32 TaHand_GetNextHandNum(s32 nSide) {
-    s32 temp_s0;
+    s32 handCount;
     s32 var_v0;
 
-    temp_s0 = SzDuel_GetHandCount(nSide);
-    var_v0 = temp_s0 + SzDuel_GetDeckCount(nSide);
+    handCount = SzDuel_GetHandCount(nSide);
+    var_v0 = handCount + SzDuel_GetDeckCount(nSide);
     if (var_v0 >= 5) {
         var_v0 = 5;
     }
@@ -946,24 +946,24 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
     State_00270260 *temp_s1;
     Source_00270260 *temp_s2;
     s32 temp_s3;
-    s32 temp_a1;
-    s32 temp_s0;
-    s32 temp_s0_2;
+    s32 timer;
+    s32 unitCtlRateC;
+    s32 unitCtlRateC2;
     s32 temp_s3_2;
     s32 temp_v0;
     s32 temp_v0_3;
-    s32 temp_v0_4;
+    s32 isActiveTrapB;
     s32 temp_v1_2;
     s32 temp_v1_3;
     s32 temp_v1_4;
     s32 var_v0;
     u16 temp_v0_5;
     u16 temp_v0_6;
-    u16 temp_v1;
-    u32 temp_a1_2;
-    u32 temp_a1_3;
-    u32 temp_v0_10;
-    u32 temp_v0_2;
+    u16 stage;
+    u32 position;
+    u32 position2;
+    u32 position3;
+    u32 position3In;
     u32 temp_v0_7;
     u32 side;
     u32 temp_v0_8;
@@ -1001,8 +1001,8 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
             TaEffect_LoadModule(temp_s1, 0x218);
             break;
         }
-        temp_v0_2 = temp_s2->position;
-        if ((((SzDuel_GetUnitKind((s32) (temp_v0_2 >> 0x18), (temp_v0_2 >> 0x10) & 0xFF) >> 5) == 0) ? 0 : 3) == 0) {
+        position3In = temp_s2->position;
+        if ((((SzDuel_GetUnitKind((s32) (position3In >> 0x18), (position3In >> 0x10) & 0xFF) >> 5) == 0) ? 0 : 3) == 0) {
             var_s3 = (u32) temp_s2->position >> 0x10;
         } else {
             var_s3 = (u32) (u16) temp_s2->position;
@@ -1017,11 +1017,11 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
         } else {
             SzDuel_SetWindowDraw(0);
             TaEffect_LoadModule(temp_s1, 0x25A);
-            temp_v0_4 = Ta_IsActiveTrapB(temp_s2->entries, 0x2E);
-            if (temp_v0_4 >= 0) {
+            isActiveTrapB = Ta_IsActiveTrapB(temp_s2->entries, 0x2E);
+            if (isActiveTrapB >= 0) {
                 temp_s1->stage = 0U;
                 temp_s1->flag = 0U;
-                temp_s1->position = (u16) temp_v0_4;
+                temp_s1->position = (u16) isActiveTrapB;
             } else {
                 temp_s1->stage = 0U;
                 temp_s1->flag = 1U;
@@ -1048,8 +1048,8 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
         TaLib_c615(temp_s1->queue, message, -1);
         return 1;
     }
-    temp_v1 = temp_s1->stage;
-    switch (temp_v1) {
+    stage = temp_s1->stage;
+    switch (stage) {
     case 0:
         SzDuel_SetWindowDraw(0);
         message->id = 0x25A;
@@ -1152,9 +1152,9 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
         break;
     case 3:
         if (SzEffect_IsUse((s32) ((u8 *)(temp_s1->count + (u32)temp_s1))[5]) != 0) {
-            temp_a1 = temp_s1->timer;
-            temp_s1->timer = (s32) (temp_a1 + 1);
-            switch (temp_a1) {
+            timer = temp_s1->timer;
+            temp_s1->timer = (s32) (timer + 1);
+            switch (timer) {
             case 1:
                 SzSound_PlaySE(1, 0x4C);
                 break;
@@ -1189,11 +1189,11 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
                 if (((u8 *)(((u32)temp_s1->count << 2) + (u32)temp_s1))[0x1C] == 0) {
                     temp_v0_8 = temp_s2->position;
                     if ((SzDuel_GetUnitKind((s32) (temp_v0_8 >> 0x18), (temp_v0_8 >> 0x10) & 0xFF) >> 5) == 0) {
-                        temp_a1_2 = temp_s2->position;
-                        Enchant(temp_a1_2 >> 0x18, (temp_a1_2 >> 0x10) & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
+                        position = temp_s2->position;
+                        Enchant(position >> 0x18, (position >> 0x10) & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
                     } else {
-                        temp_a1_3 = temp_s2->position;
-                        Enchant((u32) (temp_a1_3 & 0xFFFF) >> 8, temp_a1_3 & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
+                        position2 = temp_s2->position;
+                        Enchant((u32) (position2 & 0xFFFF) >> 8, position2 & 0xFF, (temp_s1->flag << 0x10) | temp_s2->card, 0);
                     }
                     temp_s1->results[temp_s1->count] = 0xFFFF;
                 }
@@ -1204,20 +1204,20 @@ s32 Ta_Eff_Hand_Enc(void *src, void *state, s32 mode) {
         temp_v0_9 = temp_s2->position;
         if ((SzDuel_GetUnitKind((s32) (temp_v0_9 >> 0x18), (temp_v0_9 >> 0x10) & 0xFF) >> 5) == 0) {
             temp_v1_5 = temp_s2->position;
-            temp_s0 = SzDuel_GetUnitCtlRateC((temp_v1_5 & 0xFFFF) >> 8, temp_v1_5 & 0xFF);
-            if (temp_s0 != SzDuel_GetUnitCtlGoalC((temp_s2->position & 0xFFFF) >> 8, temp_s2->position & 0xFF)) {
+            unitCtlRateC = SzDuel_GetUnitCtlRateC((temp_v1_5 & 0xFFFF) >> 8, temp_v1_5 & 0xFF);
+            if (unitCtlRateC != SzDuel_GetUnitCtlGoalC((temp_s2->position & 0xFFFF) >> 8, temp_s2->position & 0xFF)) {
                 return 1;
             }
             temp_v1_5 = temp_s2->position;
             Ta_DelUnit2((u32) (temp_v1_5 & 0xFFFF) >> 8, temp_v1_5 & 0xFF);
         } else {
-            temp_v0_10 = temp_s2->position;
-            temp_s0_2 = SzDuel_GetUnitCtlRateC(temp_v0_10 >> 0x18, (temp_v0_10 >> 0x10) & 0xFF);
-            if (temp_s0_2 != SzDuel_GetUnitCtlGoalC(temp_s2->position >> 0x18, (temp_s2->position >> 0x10) & 0xFF)) {
+            position3 = temp_s2->position;
+            unitCtlRateC2 = SzDuel_GetUnitCtlRateC(position3 >> 0x18, (position3 >> 0x10) & 0xFF);
+            if (unitCtlRateC2 != SzDuel_GetUnitCtlGoalC(temp_s2->position >> 0x18, (temp_s2->position >> 0x10) & 0xFF)) {
                 return 1;
             }
-            temp_v0_10 = temp_s2->position;
-            Ta_DelUnit2(temp_v0_10 >> 0x18, (temp_v0_10 >> 0x10) & 0xFF);
+            position3 = temp_s2->position;
+            Ta_DelUnit2(position3 >> 0x18, (position3 >> 0x10) & 0xFF);
         }
         if (SzDuel_GetWindowDisp() != 0) {
             SzDuel_SetWindowDraw(1);
@@ -1657,13 +1657,13 @@ s32 Ta_IsSquareRange(s32 nX, s32 nZ, s32 mX, s32 mZ, s32 R) {
 
 /* Whether square (nX, nZ) is within side `LDSide`'s leader's range. */
 s32 Ta_IsLDRange(s32 LDSide, s32 nX, s32 nZ) {
-    s32 temp_s0;
+    s32 loc;
 
-    temp_s0 = SzDuel_GetUnitLoc(LDSide, 0);
+    loc = SzDuel_GetUnitLoc(LDSide, 0);
     if (Ta_IsLDAbl(9, LDSide) != 0) {
-        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, nX, nZ, 5) != 0) ? 1 : 0;
+        return (Ta_IsSquareRange(loc & 0xFF, loc >> 8, nX, nZ, 5) != 0) ? 1 : 0;
     } else {
-        return (Ta_IsSquareRange(temp_s0 & 0xFF, temp_s0 >> 8, nX, nZ, 3) != 0) ? 1 : 0;
+        return (Ta_IsSquareRange(loc & 0xFF, loc >> 8, nX, nZ, 3) != 0) ? 1 : 0;
     }
 }
 
@@ -1774,15 +1774,15 @@ s32 Ta_IsLD_PDownObj(s32 nSide, s32 bRace) {
 
 /* Whether unit (nSide, nID) is in a leader's range with ability `sKey` for it. */
 s32 Ta_IsLDRangeAvility(s32 nSide, s32 nID, s32 sKey) {
-    s32 temp_s0;
+    s32 loc;
     s32 temp_s1;
-    s32 temp_s2;
+    s32 side;
 
-    temp_s0 = SzDuel_GetUnitLoc(nSide, nID);
-    temp_s2 = Ta_GetCurrentSide(nSide, nID);
+    loc = SzDuel_GetUnitLoc(nSide, nID);
+    side = Ta_GetCurrentSide(nSide, nID);
     temp_s1 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
-    if (Ta_IsLDRange(temp_s2, temp_s0 & 0xFF, temp_s0 >> 8) != 0 && Ta_IsLDAbl(sKey, temp_s2) != 0 &&
-        temp_s1 == (SzDuel_GetUnitConstKind(temp_s2, 0) & 0x1F)) {
+    if (Ta_IsLDRange(side, loc & 0xFF, loc >> 8) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
+        temp_s1 == (SzDuel_GetUnitConstKind(side, 0) & 0x1F)) {
         return 1;
     }
     return 0;
@@ -1801,12 +1801,12 @@ s32 Ta_IsLDRangeAvilityFromLoc(s32 LOC, s32 Self, s32 bRace, s32 sKey) {
 /* Whether unit (nSide, nID) on square (nX, nZ) is in a leader's range with ability `sKey`. */
 s32 Ta_IsLDRangeAvilityWithLocation(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 sKey) {
     s32 temp_s0;
-    s32 temp_s1;
+    s32 side;
 
-    temp_s1 = Ta_GetCurrentSide(nSide, nID);
+    side = Ta_GetCurrentSide(nSide, nID);
     temp_s0 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
-    if (Ta_IsLDRange(temp_s1, nX, nZ) != 0 && Ta_IsLDAbl(sKey, temp_s1) != 0 &&
-        temp_s0 == (SzDuel_GetUnitConstKind(temp_s1, 0) & 0x1F)) {
+    if (Ta_IsLDRange(side, nX, nZ) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
+        temp_s0 == (SzDuel_GetUnitConstKind(side, 0) & 0x1F)) {
         return 1;
     }
     return 0;
