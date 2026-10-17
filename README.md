@@ -61,6 +61,10 @@ them by their position between code matches). The old address names (`func_001F5
 (`config/old_names.txt`); the code modules still use them. The module functions keep their address names for
 now.
 
+The same symbol table names 1,020 data objects; 255 of the main program's globals carry those names so far
+(for example `gSzDuel_dl`, the duel state), with their old `D_` names kept as aliases
+(`config/old_data_names.txt`). How new names are chosen: `docs/NAMING.md`.
+
 ## License
 
 Our own work in this repository is released under **CC0 1.0** (see `LICENSE`). Code taken from other projects
