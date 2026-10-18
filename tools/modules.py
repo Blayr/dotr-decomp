@@ -8,7 +8,7 @@ module land on function starts only with that base: 11,959 of 11,991). A module 
   data size | bss size | load callback (start, end: both text+data end + 0x40) | name[32] ("b000.bin") | 64 x 0
 
 Commands (run in the game folder, the toolchain loaded):
-  extract          read the disc (dk.json `disc`) -> assets/modules/<name>.mwo (untracked, like the exe) and
+  extract          read the disc (dk.local.json) -> assets/modules/<name>.mwo (untracked, like the exe) and
                    config/modules.tsv (tracked: one row per module with its sha1); checks the sha1s if the table
                    exists
   split [N ...]    split the modules (make split-modules runs it)
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import struct
@@ -49,13 +50,24 @@ def read_table() -> dict[str, dict[str, Any]]:
     return rows
 
 
+def disc_path() -> str:
+    """Your own disc image: $DK_DISC, else "disc" in dk.local.json (not in git), else dk.json."""
+    if os.environ.get("DK_DISC"):
+        return os.environ["DK_DISC"]
+    for name in ("dk.local.json", "dk.json"):
+        f = ROOT / name
+        if f.exists() and Path(disc := json.loads(f.read_text()).get("disc", "")).is_file():
+            return disc
+    sys.exit("modules: no disc image: put its path in dk.local.json ({\"disc\": \"/path/to/your.iso\"}) or DK_DISC")
+
+
 def disc_reader():
     dk = shutil.which("dk")  # the kit's disc reader, next to dk
     if not dk:
         sys.exit("dk is not on PATH: load the toolchain first (. ~/decomp/toolchain/env.sh)")
     sys.path.insert(0, str(Path(dk).resolve().parent))
     from dklib.disc import Disc  # noqa: E402
-    return Disc(json.loads((ROOT / "dk.json").read_text())["disc"])
+    return Disc(disc_path())
 
 
 def extract() -> None:

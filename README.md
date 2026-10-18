@@ -38,8 +38,9 @@ None of the compilers are included.
 
 ## Building
 
-1. Put your `SLUS_205.15` (sha1 `bee9fc13d12ab2818822d905d820320fc6427f23`) in `assets/`, and point `disc` in
-   `dk.json` at your disc image (the modules are read from it).
+1. Put your `SLUS_205.15` (sha1 `bee9fc13d12ab2818822d905d820320fc6427f23`) in `assets/`, and give the path
+   of your own disc image (the modules are read from it) in `dk.local.json` (ignored by git):
+   `{"disc": "/path/to/your.iso"}`, or in the `DK_DISC` environment variable.
 2. `make split`, `make split-modules`, then `make check`.
 
 The scripts currently assume our local toolchain layout (`~/decomp/toolchain`, see `config.mk` and `tools/cc.sh`)

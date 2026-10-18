@@ -1,7 +1,7 @@
 {
   "name": "dotr",
   "platform": "ps2",
-  "disc": "/mnt/c/Users/mdoss/Games Ports/ISOs/Yu-Gi-Oh! The Duelists of the Roses (USA).iso",
+  "disc": "your own disc image: its path goes in dk.local.json (not in git)",
   "exe": "SLUS_205.15",
   "sha1": "bee9fc13d12ab2818822d905d820320fc6427f23",
   "file_size": 2223064,
