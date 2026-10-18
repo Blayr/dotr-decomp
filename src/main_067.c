@@ -1,10 +1,10 @@
 #include "common.h"
 #include "campaign.h"
 
-/* Draws the terrain (tikei) window of the campaign place under the cursor. */
-s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
+/* Draws the terrain (tikei) window of the campaign place under the cursor. (original: Taku_Camp_TIKEI_WINDOW) */
+s32 Taku_Camp_TERRAIN_WINDOW(s32 packet) {
     extern s32 Taku_Window_Set(s32, void *, s32, s32, u16, s32, s32, s32, s32);
-    extern s32 Taku_Camp_TIKEI_Map_Hyouji(s32, u16, u16, s32);
+    extern s32 Taku_Camp_TERRAIN_Map_Show(s32, u16, u16, s32);
     extern s32 Taku_Obj_Set();
     extern s32 Taku_FT4_Set();
     extern u8 campaignMapWindow[];
@@ -56,7 +56,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
     if (fade != 0) {
         packet = Taku_Window_Set(packet, campaignMapWindow, (u16)(s8)side & 0xFFFF, 0,
                               alpha, 0, 0, 128, campaignWork.windowAlpha[2]);
-        packet = Taku_Camp_TIKEI_Map_Hyouji(packet, baseX, alpha, 0);
+        packet = Taku_Camp_TERRAIN_Map_Show(packet, baseX, alpha, 0);
         packet = Taku_Window_Set(packet, D_00297B9A, (u16)(s8)side, 0,
                               alpha, 0, 0, 128, 128);
         packet = Taku_Window_Set(packet, D_00297BA4, (u16)(state[0] ^ 1), 0,
@@ -94,8 +94,8 @@ typedef struct Sprite_00236F90 {
 } Sprite_00236F90;
 
 
-/* Draws (hyouji) the small terrain map of deck `deck`'s place at (x, y). */
-s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
+/* Draws (hyouji) the small terrain map of deck `deck`'s place at (x, y). (original: Taku_Camp_TIKEI_Map_Hyouji) */
+s32 Taku_Camp_TERRAIN_Map_Show(s32 gp, u16 deck, u16 x, u16 y) {
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
     extern s32 Taku_G4_Set(s32, void *, s16, s16);
     extern s32 Taku_G4_Set2(s32, void *, s16, s16, s16, s16);

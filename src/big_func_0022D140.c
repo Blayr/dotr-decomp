@@ -1,8 +1,8 @@
 #include "common.h"
 #include "campaign.h"
 
-/* Works out which campaign text (bun) to show next and when it ends (hantei: judgement). */
-s32 Taku_Camp_BUN_HANTEI(void) {
+/* Works out which campaign text (bun) to show next and when it ends (hantei: judgement). (original: Taku_Camp_BUN_HANTEI) */
+s32 Taku_Camp_TEXT_PICK(void) {
     extern s16 D_00299ED2;
     s32 player;
     s32 ret;

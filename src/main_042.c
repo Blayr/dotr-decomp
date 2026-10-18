@@ -1923,7 +1923,7 @@ s32 lSzDuel_GetControl(s32 side, s32 mode) {
                 if (result < 0) {
                     if (practiceDuelFlag != 0) {
                         if (result == -1) {
-                            Taku_Camp_Go_Rensyu_Duel(1);
+                            Taku_Camp_Go_Practice_Duel(1);
                         } else {
                             practiceDuelFlag = 0;
                             practiceDuelEnd = 1;

@@ -767,7 +767,7 @@ block_314:
                     if ((campaignWork.nameTyping == 0) && (campaignWork.nameLength != 0) && (SzPad_Check(0, 0, 0x800) != 0)) {
                         SzSound_PlaySE(0, 1);
                         campaignWork.eventWindowState = 3;
-                        Taku_Camp_Ivent_Name_Set();
+                        Taku_Camp_Event_Name_Set();
                     }
                 }
             }
@@ -852,7 +852,7 @@ block_314:
                     campaignWork.eventWindowState = 3;
                     SzSound_PlaySE(0, 1);
                     if (((*(s16 *)(ctx + 0xC2)) == 0x2742) && (campaignWork.eventWindowChoice == 0)) {
-                        Taku_Camp_Go_Rensyu_Duel(0);
+                        Taku_Camp_Go_Practice_Duel(0);
                     }
                 }
             }
@@ -959,7 +959,7 @@ block_314:
         }
         Taku_Camp_System();
         if (campaignWork.talkStep == 1) {
-            Taku_Camp_BUN_HANTEI();
+            Taku_Camp_TEXT_PICK();
         }
         if ((*(s8 *)(ctx + 0)) == 1) {
             if (((*(s16 *)(ctx + 0xC2)) == 0x68) || ((*(s16 *)(ctx + 0xC2)) == 0x69)) {
@@ -968,7 +968,7 @@ block_314:
         }
         if (((*(s8 *)(ctx + 0)) == 1) && ((*(s16 *)(ctx + 0xC2)) == 0x6F)) {
             if (campaignWork.talkStep == 1) {
-                Taku_Camp_BUN_HANTEI();
+                Taku_Camp_TEXT_PICK();
             }
             if (campaignWork.talkStep == 0xC) {
                 campaignWork.talkStep = 0xD;
@@ -977,7 +977,7 @@ block_314:
                 if (SzPad_Check(0, 0, 0x40) != 0) {
                     SzSound_PlaySE(0, 2);
                     campaignWork.talkStep = (s8) (campaignWork.talkStep + 1);
-                    Taku_Camp_BUN_HANTEI();
+                    Taku_Camp_TEXT_PICK();
                 }
             }
         } else if (((*(s16 *)(ctx + 0xC2)) >= 0x2711) || (var_s3 != 0)) {
@@ -992,7 +992,7 @@ block_314:
                     campaignWork.unk53B2 = 0;
                     SzSound_PlaySE(0, 2);
                 }
-                Taku_Camp_BUN_HANTEI();
+                Taku_Camp_TEXT_PICK();
             }
         } else if (campaignWork.unk0004 == 2) {
             var_a0_4 = 0;
@@ -1054,7 +1054,7 @@ block_314:
                                             campaignWork.talkStep = (s8) (temp_v1_8 + 1);
                                             SzSound_PlaySE(0, 2);
                                         }
-                                        Taku_Camp_BUN_HANTEI();
+                                        Taku_Camp_TEXT_PICK();
                                     } else if ((*(s8 *)(ctx + 0xC6)) == 0xB) {
                                         if (((*(s8 *)(ctx + 0xE)) == 3) && (campaignWork.duelMenuChoice == 1)) {
                                             if (campaignWork.talkStep == 0) {
@@ -1073,7 +1073,7 @@ block_314:
                                                 campaignWork.talkStep = (s8) (temp_v1_9 + 1);
                                                 SzSound_PlaySE(0, 2);
                                             }
-                                            Taku_Camp_BUN_HANTEI();
+                                            Taku_Camp_TEXT_PICK();
                                         } else {
                                             goto block_544;
                                         }
@@ -1140,7 +1140,7 @@ block_544:
                                             campaignWork.talkStep = (s8) (temp_v1_11 + 1);
                                             SzSound_PlaySE(0, 2);
                                         }
-                                        Taku_Camp_BUN_HANTEI();
+                                        Taku_Camp_TEXT_PICK();
                                     } else {
                                         campaignWork.unk5375 = 1;
                                         if (campaignWork.leaderShow == 0) {

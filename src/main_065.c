@@ -8,8 +8,8 @@ typedef struct State_0022F1C0 {
 
 extern State_0022F1C0 D_0029ABC0;
 
-/* Draws the "press a button" (botan mati) prompt. */
-s32 Taku_Camp_BOTAN_MATI(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
+/* Draws the "press a button" (botan mati) prompt. (original: Taku_Camp_BOTAN_MATI) */
+s32 Taku_Camp_BUTTON_WAIT(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
     s8 *slide = &campaignState;
     State_0022F1C0 local;

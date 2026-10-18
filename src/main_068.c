@@ -259,8 +259,8 @@ void TkCamp_Term(void) {
     SzDuel_CloseMsgPopup();
 }
 
-/* Starts practice duel `param` from the campaign: picks the opponent, deck and map for the current practice level. */
-void Taku_Camp_Go_Rensyu_Duel(s32 param) {
+/* Starts practice duel `param` from the campaign: picks the opponent, deck and map for the current practice level. (original: Taku_Camp_Go_Rensyu_Duel) */
+void Taku_Camp_Go_Practice_Duel(s32 param) {
     s32 opponent;
     s32 deck0;
     s32 deck1;
@@ -541,8 +541,8 @@ typedef struct State_0023C170 {
 } State_0023C170;
 
 
-/* Resets the memory-card job state (`mode` picks the job). */
-s32 TakuCard_inti(s32 mode) {
+/* Resets the memory-card job state (`mode` picks the job). (original: TakuCard_inti) */
+s32 TakuCard_init(s32 mode) {
     extern void *memCardTrunkData;
     extern void *D_0034FAEC;
     extern s8 saveFileHeader;
@@ -650,20 +650,20 @@ s32 TkMc_Check_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        TakuCard_inti(0);
+        TakuCard_init(0);
         state->result = 0;
     }
     switch (state->mode) {
     case 0:
     case 14:
     case 11:
-        result = TakuSave_card_kansi(1);
+        result = TakuSave_card_watch(1);
         break;
     case 1:
         result = TakuSave_card_filename_check(1);
         break;
     case 3:
-        result = TakuSave_card_kansi(1);
+        result = TakuSave_card_watch(1);
         break;
     }
     if (start == 1) {
@@ -700,12 +700,12 @@ s16 TkMc_Save_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        TakuCard_inti(0);
+        TakuCard_init(0);
         state->field2BE = 0;
     }
     switch (state->field30) {
     case 0:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         if (result == 2) {
             state->field30 = 0;
         }
@@ -717,13 +717,13 @@ s16 TkMc_Save_Main(s32 start) {
         result = TakuSave_card_file_open();
         break;
     case 3:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         break;
     case 4:
         result = TakuSave_make_file();
         break;
     case 5:
-        result = TakuSave_card_file_kakikomi();
+        result = TakuSave_card_file_write();
         break;
     case 10:
         result = TakuSave_card_format();
@@ -732,7 +732,7 @@ s16 TkMc_Save_Main(s32 start) {
         result = TakuSave_card_unformat();
         break;
     case 11:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         if (state->field2BE == 0xE && start == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
@@ -741,7 +741,7 @@ s16 TkMc_Save_Main(s32 start) {
         }
         break;
     case 13:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         if (state->field2BE == 1 && start == 2) {
             state->field30 = 5;
             state->field34 = 0;
@@ -750,7 +750,7 @@ s16 TkMc_Save_Main(s32 start) {
         }
         break;
     case 14:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         if (result == 2) {
             result = 0xA;
         }
@@ -797,12 +797,12 @@ s32 TkMc_Load_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        TakuCard_inti(0);
+        TakuCard_init(0);
         data->result = 0;
     }
     switch (data->state) {
     case 0:
-        result = TakuLoad_card_kansi(start);
+        result = TakuLoad_card_watch(start);
         if (result == 2) {
             data->state = 0;
         }
@@ -814,7 +814,7 @@ s32 TkMc_Load_Main(s32 start) {
         result = TakuLoad_card_file_open();
         break;
     case 3:
-        result = TakuLoad_card_kansi(start);
+        result = TakuLoad_card_watch(start);
         if (result == 2) {
             result = 0xA;
         }
@@ -861,12 +861,12 @@ s32 TkMc_Trade_Load_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        TakuCard_inti(0);
+        TakuCard_init(0);
         state->field2BE = 0;
     }
     switch (state->field30) {
     case 0:
-        result = TakuLoad_card_kansi(start);
+        result = TakuLoad_card_watch(start);
         if (result == 2) {
             state->field30 = 0;
         }
@@ -878,7 +878,7 @@ s32 TkMc_Trade_Load_Main(s32 start) {
         result = TakuCustom_card_file_open();
         break;
     case 3:
-        result = TakuLoad_card_kansi(start);
+        result = TakuLoad_card_watch(start);
         if (result == 2) {
             result = 0xA;
         }
@@ -928,7 +928,7 @@ s16 TkMc_Trade_Save_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        if (TakuCard_inti(1) != 0) {
+        if (TakuCard_init(1) != 0) {
             state->field58 = 1;
             return 0x600;
         }
@@ -939,7 +939,7 @@ s16 TkMc_Trade_Save_Main(s32 start) {
     }
     switch (state->field30) {
     case 0:
-        result = TakuTrade_Save_card_kansi(start);
+        result = TakuTrade_Save_card_watch(start);
         if (result == 2) {
             state->field30 = 0;
         }
@@ -951,19 +951,19 @@ s16 TkMc_Trade_Save_Main(s32 start) {
         result = TakuSave_card_file_open();
         break;
     case 3:
-        result = TakuSave_card_kansi(0);
+        result = TakuSave_card_watch(0);
         break;
     case 4:
         result = TakuSave_make_file();
         break;
     case 5:
-        result = TakuTrade_Save_card_file_kakikomi_Ver2();
+        result = TakuTrade_Save_card_file_write_Ver2();
         break;
     case 10:
         result = TakuSave_card_format();
         break;
     case 11:
-        result = TakuTrade_Save_card_kansi(start);
+        result = TakuTrade_Save_card_watch(start);
         if (state->field2BE == 0xE && start == 2) {
             state->field30 = 0xA;
             state->field34 = 0;
@@ -972,7 +972,7 @@ s16 TkMc_Trade_Save_Main(s32 start) {
         }
         break;
     case 13:
-        result = TakuTrade_Save_card_kansi(start);
+        result = TakuTrade_Save_card_watch(start);
         if (state->field2BE == 1 && start == 2) {
             state->field30 = 5;
             state->field34 = 0;
@@ -981,7 +981,7 @@ s16 TkMc_Trade_Save_Main(s32 start) {
         }
         break;
     case 14:
-        result = TakuTrade_Save_card_kansi(start);
+        result = TakuTrade_Save_card_watch(start);
         if (result == 2) {
             result = 0xA;
         }
@@ -1018,13 +1018,13 @@ s16 TkMc_Custom_Main(s32 start) {
 
     result = 0;
     if (start == 1) {
-        TakuCard_inti(0);
+        TakuCard_init(0);
         *(s16 *)(state + 0x2BE) = 0;
     }
 
     switch (*(s16 *)(state + 0x30)) {
     case 0:
-        result = TakuCustom_card_kansi(start);
+        result = TakuCustom_card_watch(start);
         if (result == 2) {
             *(s16 *)(state + 0x30) = 0;
         }
@@ -1036,7 +1036,7 @@ s16 TkMc_Custom_Main(s32 start) {
         result = TakuCustom_card_file_open();
         break;
     case 3:
-        result = TakuCustom_card_kansi(start);
+        result = TakuCustom_card_watch(start);
         if (result == 2) {
             result = 0xA;
         }
@@ -1102,8 +1102,8 @@ typedef struct State_0023CE40 {
 
 
 /* Watches the memory card in slot 1 for the save job: is it there, formatted, with room (`checkOnly` for the boot
-   check). */
-s32 TakuSave_card_kansi(s32 checkOnly) {
+   check). (original: TakuSave_card_kansi) */
+s32 TakuSave_card_watch(s32 checkOnly) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 D_0034FB04;
     extern s32 D_0034FB08;
@@ -1636,7 +1636,7 @@ s32 TakuSave_make_file(void) {
         }
         return 0;
     case 2:
-        result = card_icon_tukuru();
+        result = card_icon_make();
         if (result == 1) {
             state->retries = 0;
             state->phase = 3;
@@ -1779,8 +1779,8 @@ typedef struct Tail_0023DE90 {
     s32 words[0x53];
 } Tail_0023DE90;
 
-/* Writes the save file to the memory card. */
-s32 TakuSave_card_file_kakikomi(void) {
+/* Writes the save file to the memory card. (original: TakuSave_card_file_kakikomi) */
+s32 TakuSave_card_file_write(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s32 *memCardTrunkData;
     extern Header_0023DE90 saveFileHeader;
@@ -2099,8 +2099,8 @@ typedef struct IconSys_0023E7A0 {
     char del[0x40];
 } IconSys_0023E7A0;
 
-/* Builds the memory card icon files (icon.sys and the 3D icon). */
-s32 card_icon_tukuru(void) {
+/* Builds the memory card icon files (icon.sys and the 3D icon). (original: card_icon_tukuru) */
+s32 card_icon_make(void) {
     extern struct State_0023E610 D_0034FB00;
     extern s16 D_0034FB36;
     extern u8 D_0034F720[];
@@ -2439,8 +2439,8 @@ s32 card_icon_tukuru(void) {
     return 0;
 }
 
-/* Watches the memory card in slot 1 for the load job. */
-s32 TakuLoad_card_kansi(s32 mode) {
+/* Watches the memory card in slot 1 for the load job. (original: TakuLoad_card_kansi) */
+s32 TakuLoad_card_watch(s32 mode) {
     extern s32 D_0034FB10;
     extern s32 D_0034FB14;
     extern s32 D_0034FB18;
@@ -2964,8 +2964,8 @@ static inline void reset_0023FCE0(State_0023FCE0 *state, s32 value) {
     state->field_40 = 0;
 }
 
-/* Watches the memory card for the custom-duel load. */
-s32 TakuCustom_card_kansi(s32 mode) {
+/* Watches the memory card for the custom-duel load. (original: TakuCustom_card_kansi) */
+s32 TakuCustom_card_watch(s32 mode) {
     extern struct State_0023E610 D_0034FB00;
     State_0023FCE0 *state = (State_0023FCE0 *)&D_0034FB00;
     s32 status;
@@ -3325,8 +3325,8 @@ extern s32 D_0034FB18;
 extern s32 D_0034FB20;
 extern s32 D_0034FB24;
 
-/* Watches the memory card for the after-trade save. */
-s32 TakuTrade_Save_card_kansi(s32 mode) {
+/* Watches the memory card for the after-trade save. (original: TakuTrade_Save_card_kansi) */
+s32 TakuTrade_Save_card_watch(s32 mode) {
     State_002406C0 *state = (State_002406C0 *)&D_0034FB00;
     s32 ret;
 
@@ -3482,8 +3482,8 @@ typedef struct IOState_002409E0 {
 extern u8 D_0029B1BE[];
 extern s16 D_0034FB34;
 
-/* Writes the save file after a trade. */
-s32 TakuTrade_Save_card_file_kakikomi_Ver2(void) {
+/* Writes the save file after a trade. (original: TakuTrade_Save_card_file_kakikomi_Ver2) */
+s32 TakuTrade_Save_card_file_write_Ver2(void) {
     extern s32 func_00193DD0();
     extern s32 *memCardTrunkData;
     extern struct State_0023E610 D_0034FB00;

@@ -87,8 +87,8 @@ extern struct DotrTekiWindowCard *func_001DD0E0_b(int id);
     } \
     SzMsg_Free(1);
 
-/* Draws the opponent (teki) window: name, face, leader, deck cost; sets up the opponent's deck. */
-int Taku_Camp_TEKI_WINDOW(int cursor)
+/* Draws the opponent (teki) window: name, face, leader, deck cost; sets up the opponent's deck. (original: Taku_Camp_TEKI_WINDOW) */
+int Taku_Camp_ENEMY_WINDOW(int cursor)
 {
     struct DotrTekiWindowBoard *b = &D_00299E10_b;
     struct DotrTekiWindowNames names;

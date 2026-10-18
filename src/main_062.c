@@ -202,8 +202,8 @@ void tri_diag(f32 *a, f32 *b, f32 *c, f32 *r, f32 *u, s32 n) {
     }
 }
 
-/* Draws message `msg` in text slot `slot` at (x, y) in colour `color` (loads, draws and frees it). */
-s32 Taku_Bunsyou_Set(s32 packet, s32 slot, s32 msg, s64 x, s64 y, s32 arg5, s32 color) {
+/* Draws message `msg` in text slot `slot` at (x, y) in colour `color` (loads, draws and frees it). (original: Taku_Bunsyou_Set) */
+s32 Taku_Text_Set(s32 packet, s32 slot, s32 msg, s64 x, s64 y, s32 arg5, s32 color) {
     s32 result;
     s32 object;
 
@@ -546,10 +546,10 @@ void TkCamp_Init(int mode)
     case 60:
         
 
-        campaignWork.deckHash = 0;
+        campaignWork.startingDeckSet = 0;
         p = &campaignWork;
         for (k = 0; k < 3; k++) {
-            p->deckChoices[k] = (D_00299CE0_21c510[w->deckHash] >> (k * 5)) & 0x1f;
+            p->deckChoices[k] = (D_00299CE0_21c510[w->startingDeckSet] >> (k * 5)) & 0x1f;
             p->deckChoiceCards[k] = D_00299D00_21c510[p->deckChoices[k]].id & 0x3ff;
         }
         SzModel_LoadMerge(3, 4, 0);
@@ -565,10 +565,10 @@ void TkCamp_Init(int mode)
         func_00217980_b(25, 1);
         break;
     case 10:
-        campaignWork.deckHash = 0;
+        campaignWork.startingDeckSet = 0;
         p = &campaignWork;
         for (k = 0; k < 3; k++) {
-            p->deckChoices[k] = (D_00299CE0_21c510[w->deckHash] >> (k * 5)) & 0x1f;
+            p->deckChoices[k] = (D_00299CE0_21c510[w->startingDeckSet] >> (k * 5)) & 0x1f;
             p->deckChoiceCards[k] = D_00299D00_21c510[p->deckChoices[k]].id & 0x3ff;
         }
         SzModel_LoadMerge(3, 4, 0);
@@ -713,7 +713,7 @@ void Taku_Camp_Data_Init(void) {
     {
         u16 *clear;
         s32 clear_count = 0;
-        clear = (u16 *)&campaignWork; /* clears placeReached[i] and unk532C[i] */
+        clear = (u16 *)&campaignWork; /* clears placeReached[i] and placeBlink[i] */
         do {
             clear_count++;
             clear[0x52EC / 2] = 0;
@@ -732,12 +732,12 @@ void Taku_Camp_Data_Init(void) {
         total += (s32)*(u16 *)(record + 0x24) % 16;
         record += 2;
     }
-    campaignWork.deckHash = total & 0xF;
+    campaignWork.startingDeckSet = total & 0xF;
     j = 0;
     shift = 0;
-    halves = (u16 *)&campaignWork; /* halves[0x53F8 / 2] is deckChoices[j], halves[0x53FE / 2] unk53FE[j] */
+    halves = (u16 *)&campaignWork; /* halves[0x53F8 / 2] is deckChoices[j], halves[0x53FE / 2] deckChoiceCards[j] */
     for (; j < 3; j++) {
-        halves[0x53F8 / 2] = ((s32)campaignDeckChoiceSets[base->deckHash] >> shift) & 0x1F;
+        halves[0x53F8 / 2] = ((s32)campaignDeckChoiceSets[base->startingDeckSet] >> shift) & 0x1F;
         shift += 5;
         halves[0x53FE / 2] = campaignDeckChoices[halves[0x53F8 / 2]].value & 0x3FF;
         halves++;
@@ -865,7 +865,7 @@ void TkCamp_Draw_After(void) {
                 }
                 temp_s4 = D_00298AD2;
                 temp_s5 = teki_a_seru;
-                var_s6 = Taku_Camp_Teki_Model_Disp(var_s6, 0x1F, temp_s5 + x_offset,
+                var_s6 = Taku_Camp_EnemyModel_Disp(var_s6, 0x1F, temp_s5 + x_offset,
                     temp_s4 + y_offset, (f32)SzDuel_GetCamDist(campaignWork.leaderCard),
                     D_00298AD4 - temp_s5, D_00298ADA - temp_s4, campaignWork.unk543A);
             }
@@ -882,7 +882,7 @@ void TkCamp_Draw_After(void) {
 s32 TkCamp_Draw_Pipe(s32 packet) {
     extern s16 D_00299ED2;
     extern s32 Taku_Camp_3D();
-    extern s32 Taku_Camp_Kumo();
+    extern s32 Taku_Camp_Clouds();
     u8 *rec;
     s32 v;
 
@@ -894,33 +894,33 @@ s32 TkCamp_Draw_Pipe(s32 packet) {
             if (campaignWork.eventStep < 2) {
                 packet = Taku_Camp_3D(packet);
             } else {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             }
             break;
         case 0x2B9A:
             if (campaignWork.eventStep >= 9) {
                 packet = Taku_Camp_3D(packet);
             } else {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             }
             break;
         case 0x2BAC:
             if (campaignWork.eventStep >= 2) {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F64:
             if (campaignWork.eventStep < 0xA) {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F76:
             if (campaignWork.eventStep > 1) {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
@@ -933,11 +933,11 @@ s32 TkCamp_Draw_Pipe(s32 packet) {
         case 0x2F78:
         case 0x2F7A:
         case 0x2F7C:
-            packet = Taku_Camp_STON(packet);
+            packet = Taku_Camp_STONE(packet);
             break;
         default:
             if (v < 0x2AF8) {
-                packet = Taku_Camp_STON(packet);
+                packet = Taku_Camp_STONE(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
@@ -947,7 +947,7 @@ s32 TkCamp_Draw_Pipe(s32 packet) {
         packet = Taku_Camp_3D(packet);
     }
     if (*(s16 *)(rec + 0xC2) >= 0x2710) {
-        packet = Taku_Camp_Kumo(packet);
+        packet = Taku_Camp_Clouds(packet);
     }
     return packet;
 }
@@ -1018,8 +1018,8 @@ typedef struct {
     f32 w;
 } Vec4_0021DFF0;
 
-/* Draws the opponent's (teki) model `id` rendered into a texture at (x, y), w x h, with `alpha`. */
-void *Taku_Camp_Teki_Model_Disp(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
+/* Draws the opponent's (teki) model `id` rendered into a texture at (x, y), w x h, with `alpha`. (original: Taku_Camp_Teki_Model_Disp) */
+void *Taku_Camp_EnemyModel_Disp(void *packet, s32 id, s32 x, s32 y, f32 depth, s32 width, s32 height, s32 alpha) {
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     View_0021DFF0 view;
     Vec4_0021DFF0 position;

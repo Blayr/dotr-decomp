@@ -1401,8 +1401,8 @@ void RH2_DATA_IN2(void *dst, s16 kind, s16 index) {
     *(Rect_00106080 *)dst = rect;
 }
 
-/* Takes a free object slot (of `count`) from an effect's work area and clears it; returns it, or 0. */
-s32 SHOKI_OBJ(s32 work, s32 arg1, s32 count, s32 noReuse) {
+/* Takes a free object slot (of `count`) from an effect's work area and clears it; returns it, or 0. (original: SHOKI_OBJ) */
+s32 INIT_OBJ(s32 work, s32 arg1, s32 count, s32 noReuse) {
     s32 i;
     s32 offset;
     u8 *slot;

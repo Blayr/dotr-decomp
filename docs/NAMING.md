@@ -36,6 +36,9 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
   `SzDuel_AddGrave`, `Ta_Manage_ActEfc`). Their prefix is the module: `Sz*` the duel/game layer, `Ta*` the
   AI and card logic, `Taku_*` the campaign map, `Rh*` the renderer, `G*` geometry helpers. A leading `l`
   marks a file-local function.
+- A JP name written in romanized Japanese (`Taku_Camp_Kumo`, "clouds") is translated into English with the
+  module prefix kept (`Taku_Camp_Clouds`); the JP name stays a linker alias in `config/old_names.txt` and a
+  note in the comment above the function (`(original: Taku_Camp_Kumo)`), so JP tools still line up.
 - A function the JP table does not name keeps `func_XXXXXXXX` until the code says what it does; then it gets a
   name in the style of its neighbours (`SzDuel_` + verb + object for a duel function).
 - Renames go through `config/symbol_addrs.txt`, with the old name kept as an alias in `config/old_names.txt`
@@ -96,5 +99,5 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
 
 MWCC carries memory from one function to the next inside a file. In four files a function only matches behind
 its real predecessors: `src/main_042.c` (SzDuel_Act), `src/main_043.c` (SzDuel_SetupCard_Pipe),
-`src/main_047.c` (lSzBattle_DrawFakeShadow / FakeMirror) and `src/main_063.c` (Taku_Camp_Ivent_Name /
-Ivent_Window). Edit them in small steps and run `make check` after each one.
+`src/main_047.c` (lSzBattle_DrawFakeShadow / FakeMirror) and `src/main_063.c` (Taku_Camp_Event_Name /
+Event_Window).Edit them in small steps and run `make check` after each one.

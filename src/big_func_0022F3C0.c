@@ -53,8 +53,8 @@ static inline s32 obj_0022F3C0(s32 cursor, void *src, s32 x, s32 y) {
 #define U16(a) (*(u16 *)(a))
 #define F32(a) (*(f32 *)(a))
 
-/* Draws the campaign event pictures (ga). */
-s32 Taku_Camp_Ivent_Ga(s32 cursor) {
+/* Draws the campaign event pictures (ga). (original: Taku_Camp_Ivent_Ga) */
+s32 Taku_Camp_Event_Picture(s32 cursor) {
     f32 fv;
     u8 *ctx = (u8 *)&campaignState;
     s32 x13;

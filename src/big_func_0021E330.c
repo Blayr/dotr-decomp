@@ -13,8 +13,8 @@ extern f32 D_00298DE4;
 extern s16 D_00299ED2;
 extern s8 D_0033F72C;
 
-/* Runs the campaign's events (ivent): the script of each place's story, the duels it starts and what they unlock. */
-void Taku_Camp_Ivent(void) {
+/* Runs the campaign's events (ivent): the script of each place's story, the duels it starts and what they unlock. (original: Taku_Camp_Ivent) */
+void Taku_Camp_Event(void) {
     u8 *ctx = (u8 *)&campaignState;
     s16 temp_a0;
     s16 temp_a0_2;

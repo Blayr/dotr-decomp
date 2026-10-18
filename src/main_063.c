@@ -20,8 +20,8 @@ typedef struct {
     u8 r, g, b, a;
 } Color_002232F0;
 
-/* Draws a number in the campaign windows' digits. */
-s32 Taku_Camp_Kazu_Disp(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Draws a number in the campaign windows' digits. (original: Taku_Camp_Kazu_Disp) */
+s32 Taku_Camp_Number_Disp(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     extern s32 SzMsg_GetInfo();
     extern s32 SzMsg_DrawRect_Pipe();
     Rect_002232F0 rect;
@@ -116,14 +116,14 @@ extern s8 D_0030F0B0[];
 #pragma conditional_move off
 #pragma opt_dead_assignments off
 
-/* Draws the campaign event window's title: the place's name, the opponent's name and portrait. */
-s32 Taku_Camp_Ivent_Name(s32 packet) {
+/* Draws the campaign event window's title: the place's name, the opponent's name and portrait. (original: Taku_Camp_Ivent_Name) */
+s32 Taku_Camp_Event_Name(s32 packet) {
     extern s32 SzDuel_DrawWindow_Font_Pipe();
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
     extern s32 Taku_G4_Set(s32, void *, s16, s16);
     extern s32 SzMsg_DrawRect_Pipe();
     extern s32 SzMsg_GetInfo();
-    extern s32 Taku_Bunsyou_Set(s32, s32, s32, s16, s16, f32, f32, s32, void *);
+    extern s32 Taku_Text_Set(s32, s32, s32, s16, s16, f32, f32, s32, void *);
     s16 fromX;
     s32 font;
     s16 row;
@@ -293,7 +293,7 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
         entry = D_002999A0;
         for (i = 0; i < 3; i++) {
             font = (*entry)[2];
-            packet = Taku_Bunsyou_Set(packet, 1, font, (s16)dx + (*entry)[0], (*entry)[1], 1.0f, 1.0f, 0, rgba);
+            packet = Taku_Text_Set(packet, 1, font, (s16)dx + (*entry)[0], (*entry)[1], 1.0f, 1.0f, 0, rgba);
             entry++;
         }
         if (state->nameTableTurn != 0) {
@@ -516,8 +516,8 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
         lx = 190;
         ly = 188;
         for (; n < 12; n++) {
-            /* 41 copies of header prototypes: the compiler-state lever (PLAYBOOK, Taku_Camp_Ivent_Name section)
-               that keeps Taku_Camp_Ivent_Window, later in this file, matching; code-neutral here. */
+            /* 41 copies of header prototypes: the compiler-state lever (PLAYBOOK, Taku_Camp_Event_Name section)
+               that keeps Taku_Camp_Event_Window, later in this file, matching; code-neutral here. */
             s32 RhText_SetTextureFlush(s32 arg0);
             void SzMsg_Free(s32 arg0);
             s32 SzMsg_LoadFont_Pipe(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
@@ -611,8 +611,8 @@ typedef struct Tables_00224A40 {
 } Tables_00224A40;
 
 
-/* Picks the texts of the campaign event window for the current place and opponent. */
-void Taku_Camp_Ivent_Name_Set(void) {
+/* Picks the texts of the campaign event window for the current place and opponent. (original: Taku_Camp_Ivent_Name_Set) */
+void Taku_Camp_Event_Name_Set(void) {
     extern u16 campaignDeckChoiceSets[];
     extern u16 campaignDeckChoices[][6];
     extern Tables_00224A40 D_002D19D0;
@@ -681,12 +681,12 @@ void Taku_Camp_Ivent_Name_Set(void) {
         sum_index++;
         sum_ptr += 2;
     }
-    state->deckHash = sum & 0xF;
+    state->startingDeckSet = sum & 0xF;
     code_index = 0;
     shift = 0;
     code_ptr = (u8 *)state;
     while (code_index < 3) {
-        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckChoiceSets[state->deckHash] >> shift) & 0x1F;
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckChoiceSets[state->startingDeckSet] >> shift) & 0x1F;
         shift += 5;
         *(u16 *)(code_ptr + 0x53FE) = campaignDeckChoices[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
         code_index++;
@@ -747,13 +747,13 @@ extern char D_0030F0E8[];
 
 #pragma opt_dead_assignments off
 
-/* Draws the campaign event window: the event's text, the opponent, the rewards and the duel choice. */
-s32 Taku_Camp_Ivent_Window(s32 arg0) {
+/* Draws the campaign event window: the event's text, the opponent, the rewards and the duel choice. (original: Taku_Camp_Ivent_Window) */
+s32 Taku_Camp_Event_Window(s32 arg0) {
     s16 ny;
-    extern s32 Taku_Camp_Ivent_Name();
+    extern s32 Taku_Camp_Event_Name();
     extern s32 Taku_Window_Set(s32, void *, s32, s32, u16, u16, s32, s32, s32);
     extern s32 Taku_Obj_Set(s32, void *, s16, s16);
-    extern s32 Taku_Bunsyou_Set(s32, s32, s32, s16, s16, f32, f32, s32, void *);
+    extern s32 Taku_Text_Set(s32, s32, s32, s16, s16, f32, f32, s32, void *);
     extern s32 SzMsg_LoadFont_Pipe(s32, s32, s32, s32, s32);
     extern s32 Taku_FT4_Set(s32, void *, s16, s16, u16);
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, void *, void (*)(void));
@@ -818,7 +818,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     color.r = color.g = color.b = 0x80;
     color.a = 0x80;
     if (D_00299ED2 == 0x2738 && campaignWork.eventWindowState != 0) {
-        arg0 = Taku_Camp_Ivent_Name(arg0);
+        arg0 = Taku_Camp_Event_Name(arg0);
     } else if (campaignWork.eventWindowState != 0) {
         switch (*(s16 *)(0xC2 + ctx)) {
         case 0x2738:
@@ -856,7 +856,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             left = t - 0x280;
             arg0 = Taku_Window_Set(arg0, &frame, 3, 0, nx + right, ny, 0, 0x80, 0x40);
             arg0 = Taku_Obj_Set(arg0, &pair1B0, nx + 0x1B + right, ny + 9);
-            arg0 = Taku_Bunsyou_Set(arg0, 1, 0xA7, nx + 0x3C + right, 6 + ny, 1.0f, 1.0f, 0, &color);
+            arg0 = Taku_Text_Set(arg0, 1, 0xA7, nx + 0x3C + right, 6 + ny, 1.0f, 1.0f, 0, &color);
             switch (*(s16 *)(0xC2 + ctx)) {
             case 0x2738:
             case 0x276A:
@@ -917,7 +917,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                             } else {
                                 id = 0xFD;
                             }
-                            arg0 = Taku_Bunsyou_Set(arg0, 1, id, x + 8 + left, 0xB4, sx, sy, 0, &color);
+                            arg0 = Taku_Text_Set(arg0, 1, id, x + 8 + left, 0xB4, sx, sy, 0, &color);
                         } else {
                             if (*(s16 *)(ctx + 0xC2) == 0x276A) {
                                 id = 0x101;
@@ -925,7 +925,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                                 id = 0xFE;
                             }
                             sy = sx = 1.0f;
-                            arg0 = Taku_Bunsyou_Set(arg0, 1, id, x + 8 + right, 0xE4, sx, sy, 0, &color);
+                            arg0 = Taku_Text_Set(arg0, 1, id, x + 8 + right, 0xE4, sx, sy, 0, &color);
                         }
                     }
                 }
@@ -960,7 +960,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                 frame.y1 = 0x20;
                 arg0 = Taku_Window_Set(arg0, &frame, 2, 0, left + 0xA, 0x8B, 0, 0x80, 0x40);
                 sx = 1.0f;
-                arg0 = Taku_Bunsyou_Set(arg0, 1, 0xFF, left + 0x10, 0x91, sx, sx, 0, &color);
+                arg0 = Taku_Text_Set(arg0, 1, 0xFF, left + 0x10, 0x91, sx, sx, 0, &color);
                 arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, left + 0x2E, 0xE6, 1, 0, 0xB, D_0030F0BB, NULL);
                 arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, left + 0x52, 0xF5, 1, 0, 0xC, D_0030F0C7, NULL);
                 arg0 = SzDuel_DrawWindow_Font_Pipe(arg0, right + 0x1A2, 0xB5, 1, 0, 0x13, D_0030F0D4, NULL);
@@ -975,7 +975,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                         arg0 = Taku_Obj_Set(arg0, &pair130.s[1], xx3, 0);
                     }
                 }
-                arg0 = Taku_Camp_Kazu_Disp(arg0, hundreds[cur], ones[cur], left);
+                arg0 = Taku_Camp_Number_Disp(arg0, hundreds[cur], ones[cur], left);
                 for (n = 0; n < 4; n++) {
                     flag = 1;
                     switch (digits[cur][n]) {
@@ -1177,8 +1177,8 @@ extern s16 D_00299ED2;
 extern u8 campaignCoord; /* original: prim_data */
 extern Packet_00226120 D_0029AB80;
 
-/* Draws the clouds drifting over the campaign map. */
-void *Taku_Camp_Kumo(void *packetIn) {
+/* Draws the clouds drifting over the campaign map. (original: Taku_Camp_Kumo) */
+void *Taku_Camp_Clouds(void *packetIn) {
     extern void *Taku_G4_Set();
     s8 *context = &campaignState;
     u8 *slot = &campaignCoord;

@@ -41,8 +41,8 @@ extern void func_00228660_b(int side, int row, int value, short *list, int count
 extern int func_00228F50_b(int side, int row);
 #define COPY(K) n = spot[K].n; for (i = 0; i < n; i++) { buf[i] = spot[K].list[sd][i]; }
 #define FLOATS campaignWork.cameraTarget[0] = campaignWork.shipPos[0]; campaignWork.cameraTarget[2] = campaignWork.shipPos[2];
-#define NAG(C, K, F) case C: COPY(K) Taku_Nagare2_set(side, K, buf, n, F); break;
-#define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; Taku_Nagare2_set(side, K, buf, 1, 0); break;
+#define NAG(C, K, F) case C: COPY(K) Taku_Flow2_set(side, K, buf, n, F); break;
+#define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; Taku_Flow2_set(side, K, buf, 1, 0); break;
 #define KM(C, K) case C: func_002294B0_b(side, K); break;
 #define spot campaignPlaces
 
@@ -50,7 +50,7 @@ extern int func_00228F50_b(int side, int row);
    events. */
 void Taku_Camp_System(void)
 {
-    extern void Taku_Nagare2_set(int side, int row, short *list, int count, int flag);
+    extern void Taku_Flow2_set(int side, int row, short *list, int count, int flag);
     struct DotrCampSystemBoard *b = &D_00299E10_b;
     int side = b->b0;
     short sd;
@@ -95,7 +95,7 @@ void Taku_Camp_System(void)
             break;
         }
     }
-    Taku_Camp_Ivent();
+    Taku_Camp_Event();
     sd = side;
     if (sd == 0) {
         switch (b->h194) {
@@ -117,7 +117,7 @@ void Taku_Camp_System(void)
                 campaignWork.eventStep++;
                 break;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
+                if (My_LeaderModel_a_set(0) && Taku_Focus_move() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 0);
                     campaignWork.eventStep++;
                 }
@@ -134,7 +134,7 @@ void Taku_Camp_System(void)
             case 3:
                 FLOATS
                 if (b->lv[0] != 0) {
-                    if (My_LedarModel_a_set(1)) {
+                    if (My_LeaderModel_a_set(1)) {
                         campaignWork.cinemaState = 1;
                         campaignWork.cinemaMode = 3;
                         campaignWork.eventStep++;
@@ -174,7 +174,7 @@ void Taku_Camp_System(void)
                 campaignWork.eventStep++;
                 return;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
+                if (My_LeaderModel_a_set(0) && Taku_Focus_move() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 1);
                     campaignWork.eventStep++;
                 }
@@ -188,7 +188,7 @@ void Taku_Camp_System(void)
             case 3:
                 FLOATS
                 if (b->lv[1] != 0) {
-                    if (My_LedarModel_a_set(1)) {
+                    if (My_LeaderModel_a_set(1)) {
                         campaignWork.cinemaState = 1;
                         campaignWork.cinemaMode = 0;
                         b->h194++;
@@ -226,7 +226,7 @@ void Taku_Camp_System(void)
             break;
         case 100:
             buf[0] = spot[11].list[sd][0];
-            Taku_Nagare2_set(side, 11, buf, 1, 0);
+            Taku_Flow2_set(side, 11, buf, 1, 0);
             b->lv[11] = 0;
             break;
         NAG1(101, 12)
@@ -250,7 +250,7 @@ void Taku_Camp_System(void)
                 campaignWork.eventStep++;
                 return;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
+                if (My_LeaderModel_a_set(0) && Taku_Focus_move() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 2);
                     campaignWork.eventStep++;
                 }
@@ -266,7 +266,7 @@ void Taku_Camp_System(void)
             case 3:
                 FLOATS
                 if (b->lv[spot[15].list[sd][buf[0]]] != 0) {
-                    if (My_LedarModel_a_set(1)) {
+                    if (My_LeaderModel_a_set(1)) {
                         campaignWork.cinemaState = 1;
                         campaignWork.cinemaMode = 0;
                         campaignWork.routes[sd][buf[0]].state = 1;
@@ -304,7 +304,7 @@ void Taku_Camp_System(void)
                 }
                 return;
             case 2:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
+                if (My_LeaderModel_a_set(0) && Taku_Focus_move() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 3);
                     campaignWork.eventStep++;
                 }
@@ -321,7 +321,7 @@ void Taku_Camp_System(void)
             case 4:
                 FLOATS
                 if (b->lv[campaignRoutes[sd][buf[0]].cell] != 0) {
-                    if (My_LedarModel_a_set(1)) {
+                    if (My_LeaderModel_a_set(1)) {
                         campaignWork.cinemaState = 1;
                         campaignWork.cinemaMode = 0;
                         campaignWork.routes[sd][buf[0]].state = 1;
@@ -334,7 +334,7 @@ void Taku_Camp_System(void)
             break;
         case 106:
             buf[0] = spot[17].list[sd][0];
-            Taku_Nagare2_set(side, 17, buf, 1, 0);
+            Taku_Flow2_set(side, 17, buf, 1, 0);
             if (campaignWork.unk546C == 0) {
                 func_00217980_b(4, 1);
                 campaignWork.unk546C = 1;
@@ -383,7 +383,7 @@ void Taku_Camp_System(void)
                 }
                 return;
             case 4:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido()) {
+                if (My_LeaderModel_a_set(0) && Taku_Focus_move()) {
                     func_00228940_b(1, 4);
                     campaignWork.eventStep++;
                 }
@@ -398,7 +398,7 @@ void Taku_Camp_System(void)
             case 6:
                 FLOATS
                 if (b->lv[11] != 0) {
-                    if (My_LedarModel_a_set(1)) {
+                    if (My_LeaderModel_a_set(1)) {
                         campaignWork.cinemaState = 1;
                         campaignWork.cinemaMode = 0;
                         campaignWork.eventStep++;

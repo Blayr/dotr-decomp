@@ -33,8 +33,8 @@ extern BunWin D_00297B72 __attribute__((aligned(2)));
 
 
 
-/* Draws (hyouji) the campaign text window: the speaker's face and the text line by line. */
-s32 Taku_Camp_BUN_HYOUJI(s32 p) {
+/* Draws (hyouji) the campaign text window: the speaker's face and the text line by line. (original: Taku_Camp_BUN_HYOUJI) */
+s32 Taku_Camp_TEXT_SHOW(s32 p) {
     s16 flagB;
     s16 i;
     CampaignWork *w;
@@ -164,7 +164,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                         }
                         w->talkStep = 2;
                         w->talkPage++;
-                        Taku_Camp_BUN_HANTEI();
+                        Taku_Camp_TEXT_PICK();
                     }
                 } else {
                     w->talkStep = 11;
@@ -451,12 +451,12 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                                 if (j == 3 && flagA) {
                                     w->talkStep = 3;
                                     w->talkPage++;
-                                    Taku_Camp_BUN_HANTEI();
+                                    Taku_Camp_TEXT_PICK();
                                 }
                             } else if (j == 3) {
                                 w->talkStep = 3;
                                 w->talkPage++;
-                                Taku_Camp_BUN_HANTEI();
+                                Taku_Camp_TEXT_PICK();
                             }
                         }
                     }
@@ -686,7 +686,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                         }
                         w->talkStep = 2;
                         w->talkPage++;
-                        Taku_Camp_BUN_HANTEI();
+                        Taku_Camp_TEXT_PICK();
                     }
                 } else {
                     w->talkStep = 11;

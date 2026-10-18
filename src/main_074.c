@@ -273,7 +273,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
     extern s32 Ta_Eff_009();
     extern s32 Ta_Eff_032();
     extern s32 Ta_Eff_035();
-    extern s32 Ta_Eff_017_MEGUMI();
+    extern s32 Ta_Eff_017_BLESSING();
     extern s32 Ta_Eff_064();
     extern s32 Ta_Eff_044();
     extern s32 Ta_Eff_046();
@@ -389,7 +389,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_035(eInfo, pTemp, ID);
         break;
     case 0x5A:
-        var_s1 = Ta_Eff_017_MEGUMI(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_017_BLESSING(eInfo, pTemp, ID);
         break;
     case 0x5C:
         var_s1 = Ta_Eff_006_WIND(eInfo, pTemp, ID);

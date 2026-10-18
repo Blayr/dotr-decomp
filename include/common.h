@@ -37,7 +37,7 @@ typedef int dk_int128 __attribute__((mode(TI)));
 #define CAMPAIGN_WORK_ADDR 0x01ED0000
 
 /* The custom-duel settings, fixed memory past the program (main_041, main_042). Per side (+ 0 or 1): +0x2 the
- * side's menu state (high nibble) and duelist (low nibble), +0x6 a number shown in digits, +0x8, +0xA, +0xC,
+ * side's menu state (high nibble) and an index (low nibble; + 0x81 it picks the side's message and colour), +0x6 a number shown in digits, +0x8, +0xA, +0xC,
  * +0xE on/off options; +0x10 the two sides' life points (s16 each); +0x18 a list of u16 entries. +0x88: 0 when
  * side 1 has a menu of its own (two players); +0x89/+0x8A and +0x8C/+0x8D the top and length of two lists;
  * +0x8F/+0x90 the map editor's cursor (column, row), +0x91 its key-repeat timer, +0x92 flags. */

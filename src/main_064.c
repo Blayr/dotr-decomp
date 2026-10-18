@@ -47,8 +47,8 @@ static inline short may_score(struct DotrGlideBoard *board)
     return 0;
 }
 
-/* Records a campaign duel's result (win if `side` is set): the win counts, the streak, and the place's new state. */
-void Taku_Camp_What_KATIMAKE(int side)
+/* Records a campaign duel's result (win if `side` is set): the win counts, the streak, and the place's new state. (original: Taku_Camp_What_KATIMAKE) */
+void Taku_Camp_What_WINLOSE(int side)
 {
     struct DotrGlideBoard *board = &D_00299E10_228150;
 
@@ -115,7 +115,7 @@ void Taku_Camp_What_KATIMAKE(int side)
     campaignAct2Lock = 1;
 }
 
-/* Taku_Nagare2_set at optimisation level 3: the shape from the dotr_decomp project's near-miss drop
+/* Taku_Flow2_set at optimisation level 3: the shape from the dotr_decomp project's near-miss drop
  * (dotr-big/dev/near-misses-2026-10-16, CC0), in this project's names. */
 
 typedef struct {
@@ -126,8 +126,8 @@ typedef struct {
 
 #pragma optimization_level 3
 
-/* Sets up the next flow (nagare) of the campaign for `player` on `side`: the places it opens. */
-void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
+/* Sets up the next flow (nagare) of the campaign for `player` on `side`: the places it opens. (original: Taku_Nagare2_set) */
+void Taku_Flow2_set(s16 player, s16 side, s16 *items, s16 count) {
     extern Side_00228460 campaignPlaces[];
     CampaignWork *work;
     s16 i;
@@ -136,7 +136,7 @@ void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
     case 0:
         campaignWork.cinemaState = 1;
         campaignWork.cinemaMode = 0;
-        Taku_Dodai_Root_init(player, side, 3, items, count);
+        Taku_Base_Route_init(player, side, 3, items, count);
         (campaignWork.eventStep)++;
     case 1:
         if (campaignWork.cinemaState == 2) {
@@ -161,8 +161,8 @@ void Taku_Nagare2_set(s16 player, s16 side, s16 *items, s16 count) {
         }
         break;
     }
-    Taku_Tyumoku_ido0(player, side, items, count);
-    Taku_Tyumoku_ido_kettei(player, side, 2);
+    Taku_Focus_move0(player, side, items, count);
+    Taku_Focus_move_decide(player, side, 2);
 }
 #pragma optimization_level reset
 
@@ -183,8 +183,8 @@ extern Card_00228660 campaignRoutes[][16]; /* original: root_no */
 extern s8 D_00299E13[];
 extern s8 D_00299ED7;
 
-/* Sets up the route marks (dodai) between campaign places for `player` on `side`. */
-void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
+/* Sets up the route marks (dodai) between campaign places for `player` on `side`. (original: Taku_Dodai_Root_init) */
+void Taku_Base_Route_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
     extern Side_00228660 campaignPlaces[];
     CampaignWork *work = &campaignWork;
     s8 *status = &campaignState;
@@ -242,8 +242,8 @@ void Taku_Dodai_Root_init(s16 player, s16 side, s8 state, s16 *items, s16 count)
     }
 }
 
-/* Starts the ship (fune) moving from place `from` to place `to` on the campaign map. */
-void Taku_Fune_init(s16 from, s16 to) {
+/* Starts the ship (fune) moving from place `from` to place `to` on the campaign map. (original: Taku_Fune_init) */
+void Taku_Ship_init(s16 from, s16 to) {
     campaignWork.shipState = from;
     campaignWork.shipTo = to;
     campaignWork.shipPoint = 0;
@@ -251,8 +251,8 @@ void Taku_Fune_init(s16 from, s16 to) {
     campaignWork.shipOn = 1;
 }
 
-/* Moves the campaign camera's focus (tyumoku) towards its target by one step; 1 when it got there. */
-s32 Taku_Tyumoku_ido(void) {
+/* Moves the campaign camera's focus (tyumoku) towards its target by one step; 1 when it got there. (original: Taku_Tyumoku_ido) */
+s32 Taku_Focus_move(void) {
     s16 step;
     s16 step2;
 
@@ -279,8 +279,8 @@ s32 Taku_Tyumoku_ido(void) {
     return 0;
 }
 
-/* Moves the campaign camera's focus along the route from place `from` (first move). */
-s32 Taku_Tyumoku_ido0(s16 player, s16 from, s16 *route, s16 count) {
+/* Moves the campaign camera's focus along the route from place `from` (first move). (original: Taku_Tyumoku_ido0) */
+s32 Taku_Focus_move0(s16 player, s16 from, s16 *route, s16 count) {
     extern f32 campaignPlaces[];
     extern f32 D_00298BA8[];
     s16 *state;
@@ -381,8 +381,8 @@ s32 Taku_Tyumoku_ido0(s16 player, s16 from, s16 *route, s16 count) {
     return 0;
 }
 
-/* Moves the campaign camera's focus to place `place` of `player`; 1 when it got there. */
-s32 Taku_Tyumoku_ido1(s16 player, s16 place) {
+/* Moves the campaign camera's focus to place `place` of `player`; 1 when it got there. (original: Taku_Tyumoku_ido1) */
+s32 Taku_Focus_move1(s16 player, s16 place) {
     extern f32 campaignPlaces[];
     extern f32 D_00298BA8[];
     s16 routeCount;
@@ -393,7 +393,7 @@ s32 Taku_Tyumoku_ido1(s16 player, s16 place) {
     switch (mode) {
     case 0:
         if (campaignWork.eventStep == 0) {
-            Taku_Dodai_Root_init(player, place, 3, &routeCount, 0);
+            Taku_Base_Route_init(player, place, 3, &routeCount, 0);
             campaignWork.eventStep += 1;
         }
         break;
@@ -438,8 +438,8 @@ typedef struct State_00229140 {
 extern f32 campaignPlaces[]; /* original: model_data */
 extern f32 D_00298BA8[];
 
-/* The player chose a place (kettei): moves the focus there, then starts its duel; 1 when the move ended. */
-s32 Taku_Tyumoku_ido_kettei(s16 player, s16 place, s16 wait) {
+/* The player chose a place (kettei): moves the focus there, then starts its duel; 1 when the move ended. (original: Taku_Tyumoku_ido_kettei) */
+s32 Taku_Focus_move_decide(s16 player, s16 place, s16 wait) {
     State_00229140 *state = (State_00229140 *)&campaignState;
     f32 startX;
     f32 startZ;
@@ -539,8 +539,8 @@ static inline s16 isSpecial_002294B0(State_00229140 *state) {
     return result;
 }
 
-/* Moves the campaign camera's focus after a duel's result (katimake: win or lose). */
-s32 Taku_Tyumoku_ido_katimake(s32 won, s16 place) {
+/* Moves the campaign camera's focus after a duel's result (katimake: win or lose). (original: Taku_Tyumoku_ido_katimake) */
+s32 Taku_Focus_move_winlose(s32 won, s16 place) {
     State_00229140 *state = (State_00229140 *)&campaignState;
 
     campaignWork.unk53C0 = place;
@@ -782,12 +782,12 @@ void *Taku_Camp_2D(s32 packet) {
     if (campaignWork.iconUnderCursor == 3) {
         result = Taku_Camp_Help_Window(result);
     }
-    result = Taku_Camp_SINEMA_CUT(result, 0);
+    result = Taku_Camp_CINEMA_CUT(result, 0);
     result = func_002311D0(result);
     if (campaignWork.unk53B4 != 0 || campaignWork.unk53B5 != 0) {
-        result = Taku_Camp_BUN_DARE_b(result, campaignWork.talkSpeaker);
+        result = Taku_Camp_TEXT_WHO_b(result, campaignWork.talkSpeaker);
     }
-    return (void *)func_0022A140(func_001AF110(Taku_Camp_BOTAN_MATI_b(result)));
+    return (void *)func_0022A140(func_001AF110(Taku_Camp_BUTTON_WAIT_b(result)));
 }
 
 typedef union {
@@ -797,8 +797,8 @@ typedef union {
 
 extern Rotation_0022A020 D_0029ABB0;
 
-/* Draws the stone in the middle of the campaign map, turning. */
-s32 Taku_Camp_STON(s32 packet) {
+/* Draws the stone in the middle of the campaign map, turning. (original: Taku_Camp_STON) */
+s32 Taku_Camp_STONE(s32 packet) {
     Rotation_0022A020 rotation;
     CampaignWork *state = &campaignWork;
     s16 i;
@@ -1179,7 +1179,7 @@ control_updated:
             break;
         }
     }
-    packet = Taku_Camp_3D_BOU(packet);
+    packet = Taku_Camp_3D_POLE(packet);
     switch (state->shipTo) {
     case 0:
         choice = 15;
@@ -1212,7 +1212,7 @@ control_updated:
     } else {
         state->unk01AC = 1;
     }
-    packet = Taku_Camp_3D_FUNE(packet, side, choice, kind);
+    packet = Taku_Camp_3D_SHIP(packet, side, choice, kind);
     packet = SzModel_Draw_Pipe(packet, 0x29, 0, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, 0x28, 0, 0, 0, 0, 0);
     Taku_Camp_3D_LeaderModel(packet);
@@ -1546,8 +1546,8 @@ int Taku_Camp_3D_LeaderModel(int cursor)
 #undef DOTR_LEADER_ANGLE
 #undef DOTR_LEADER_SPOT
 
-/* Picks the player's leader model. */
-s32 My_LedarModel_a_set(s32 leader) {
+/* Picks the player's leader model. (original: My_LedarModel_a_set) */
+s32 My_LeaderModel_a_set(s32 leader) {
     switch (leader) {
     case 0:
         campaignWork.leaderAlpha -= 4;
@@ -1649,8 +1649,8 @@ extern struct DotrGlideSpot D_00298BA0_22c570[];
 extern struct DotrGlideList D_00299020_22c570[2][16];
 int func_001EE4B0_b(int cursor, int index, struct DotrGlideVector3 *position, void *d, int e, int f, int g);
 
-/* Draws the place markers (bou: poles) on the campaign map. */
-int Taku_Camp_3D_BOU(int cursor)
+/* Draws the place markers (bou: poles) on the campaign map. (original: Taku_Camp_3D_BOU) */
+int Taku_Camp_3D_POLE(int cursor)
 {
     struct DotrGlideVector3 pos;
     CampaignWork *bank = &campaignWork;
@@ -1809,8 +1809,8 @@ int Taku_Camp_3D_BOU(int cursor)
     return cursor;
 }
 
-/* Draws the ship (fune) moving between two places. */
-s32 Taku_Camp_3D_FUNE(s32 packet, s16 arg1, s16 arg2, s16 arg3) {
+/* Draws the ship (fune) moving between two places. (original: Taku_Camp_3D_FUNE) */
+s32 Taku_Camp_3D_SHIP(s32 packet, s16 arg1, s16 arg2, s16 arg3) {
     extern s32 func_001A22C0(f32);
     extern s16 D_00299066[][16][38];
     /* The routes as rows of 129 floats (a CampaignRoute is 0x204 bytes), as the original reads them:

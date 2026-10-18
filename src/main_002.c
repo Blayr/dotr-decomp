@@ -18,8 +18,8 @@ void OBJ_I_V_IN(s32 *dst, f32 *src) {
     dst[2] = func_001A22C0(src[2]);
 }
 
-/* dst *= src (3 floats, one by one). */
-void OBJ_VE_SCL_KAKE(void *dstVec, void *srcVec) {
+/* dst *= src (3 floats, one by one). (original: OBJ_VE_SCL_KAKE) */
+void OBJ_VE_SCL_MUL(void *dstVec, void *srcVec) {
     f32 *dst = dstVec;
     f32 *src = srcVec;
 
@@ -28,8 +28,8 @@ void OBJ_VE_SCL_KAKE(void *dstVec, void *srcVec) {
     dst[2] *= src[2];
 }
 
-/* Multiplies four vectors by `srcVec`, one by one. */
-void OBJ_VE_SCL_KAKE_4(void *dstVecs, void *srcVec) {
+/* Multiplies four vectors by `srcVec`, one by one. (original: OBJ_VE_SCL_KAKE_4) */
+void OBJ_VE_SCL_MUL_4(void *dstVecs, void *srcVec) {
     f32 *matrix = (f32 *)dstVecs;
     f32 *scale = (f32 *)srcVec;
 
@@ -1192,8 +1192,8 @@ typedef struct Vec4_001098E0 {
     f32 x, y, z, w;
 } Vec4_001098E0;
 
-/* Collision: where the point `point` + `offset` hits the line a..b, into `out`. */
-void ATARI3(void *out, f32 *offset, f32 *point, f32 *a, f32 *b) {
+/* Collision: where the point `point` + `offset` hits the line a..b, into `out`. (original: ATARI3) */
+void HIT3(void *out, f32 *offset, f32 *point, f32 *a, f32 *b) {
     Vec4_001098E0 result;
     f32 zero;
     f32 dx, dy, dz;

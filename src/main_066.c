@@ -51,8 +51,8 @@ extern DotrDareWord func_001FE660_b(DotrDareWord cursor, int index, int x, int y
                                           float sx, float sy, void *e,
                                           void (*function)(void));
 
-/* Draws the speaker's name (dare: who) of a campaign text. */
-int Taku_Camp_BUN_DARE(int cursor)
+/* Draws the speaker's name (dare: who) of a campaign text. (original: Taku_Camp_BUN_DARE) */
+int Taku_Camp_TEXT_WHO(int cursor)
 {
     short xx, yy;
     unsigned char col[4];
@@ -178,8 +178,8 @@ int Taku_Camp_BUN_DARE(int cursor)
     return cursor;
 }
 
-/* Starts a campaign cut-scene (sinema) `scene`. */
-void Taku_Camp_SINEMA_Init(s8 scene) {
+/* Starts a campaign cut-scene (sinema) `scene`. (original: Taku_Camp_SINEMA_Init) */
+void Taku_Camp_CINEMA_Init(s8 scene) {
     campaignWork.cinemaState = 0;
     switch (scene) {
     case 0:
@@ -232,8 +232,8 @@ extern struct DotrSinemaQuad cinemaBlackBars[2]; /* original: tex_sinema_brack *
 #define DOTR_SINEMA_C1 (b->cinemaCut[1] * 64 / 64)
 #define DOTR_SINEMA_C2 (b->cinemaCut[2] * 116 / 116)
 
-/* Draws a campaign cut-scene picture with fade `fade`. */
-int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
+/* Draws a campaign cut-scene picture with fade `fade`. (original: Taku_Camp_SINEMA_CUT) */
+int Taku_Camp_CINEMA_CUT(int cursor, unsigned short fade)
 {
     CampaignWork *b = &campaignWork;
     struct DotrSinemaQuad q = D_0029AEC0;
