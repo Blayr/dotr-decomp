@@ -1306,7 +1306,7 @@ typedef struct Effect_00261760 {
     s32 value3;
 } Effect_00261760;
 
-/* Effect script 017_MEGUMI, step `ID`: its camera, fades and effect module; it changes attack or defence. (original: Ta_Eff_017_MEGUMI) */
+/* Effect script 017 (JP MEGUMI, "blessing"), step `ID`: its camera, fades and effect module; it changes attack or defence. (original: Ta_Eff_017_MEGUMI) */
 s32 Ta_Eff_017_BLESSING(void *eInfo, void *Temp, s32 ID) {
     Effect_00261760 effect;
     s32 complete;

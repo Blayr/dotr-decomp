@@ -2272,7 +2272,7 @@ void Taku_Camp_What_WINLOSE(int side);
 void Taku_Coord_Init(void *coord);
 void Taku_Coord_Set(u8 *coord);
 s32 Taku_DECK_CARD_DISP(s32 packetIn);
-void Taku_Base_Route_init(s16 player, s16 side, s8 state, s16 *items, s16 count);
+void Taku_RouteMarks_init(s16 player, s16 side, s8 state, s16 *items, s16 count);
 void *Taku_FT4_Set(void *packet, void *src, s16 x, s16 y, u16 flip);
 void Taku_Ship_init(s16 from, s16 to);
 void Taku_G4_Set(void *packet, void *src, s16 x, s16 y);

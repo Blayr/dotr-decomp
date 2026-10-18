@@ -136,7 +136,7 @@ void Taku_Flow2_set(s16 player, s16 side, s16 *items, s16 count) {
     case 0:
         campaignWork.cinemaState = 1;
         campaignWork.cinemaMode = 0;
-        Taku_Base_Route_init(player, side, 3, items, count);
+        Taku_RouteMarks_init(player, side, 3, items, count);
         (campaignWork.eventStep)++;
     case 1:
         if (campaignWork.cinemaState == 2) {
@@ -184,7 +184,7 @@ extern s8 D_00299E13[];
 extern s8 D_00299ED7;
 
 /* Sets up the route marks (dodai) between campaign places for `player` on `side`. (original: Taku_Dodai_Root_init) */
-void Taku_Base_Route_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
+void Taku_RouteMarks_init(s16 player, s16 side, s8 state, s16 *items, s16 count) {
     extern Side_00228660 campaignPlaces[];
     CampaignWork *work = &campaignWork;
     s8 *status = &campaignState;
@@ -393,7 +393,7 @@ s32 Taku_Focus_move1(s16 player, s16 place) {
     switch (mode) {
     case 0:
         if (campaignWork.eventStep == 0) {
-            Taku_Base_Route_init(player, place, 3, &routeCount, 0);
+            Taku_RouteMarks_init(player, place, 3, &routeCount, 0);
             campaignWork.eventStep += 1;
         }
         break;

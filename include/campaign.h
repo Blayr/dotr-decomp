@@ -114,7 +114,7 @@ typedef struct CampaignWork {
     s16 placeBlink[32];                      /* 0x532C: per place: a counter that makes a newly reached place blink (Taku_Camp_3D) */
     s16 eventStep;                           /* 0x536C: the step inside the current event's script (Taku_Camp_Event); reset when the cut-scene number changes */
     s16 eventCutScene;                       /* 0x536E: the cut-scene number the step belongs to (campaignState's cut-scene number last frame) */
-    s16 savedCutScene;                       /* 0x5370: the cut-scene number put aside while a route event plays (Taku_Base_Route_init) */
+    s16 savedCutScene;                       /* 0x5370: the cut-scene number put aside while a route event plays (Taku_RouteMarks_init) */
     s8 unk5372;                              /* 0x5372 */
     s8 leaderShow;                           /* 0x5373: the leader model is on the map (>0); while set, the cursor stays on the selected place (main_068) */
     s8 unk5374;                              /* 0x5374 */
