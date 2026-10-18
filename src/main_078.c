@@ -1063,7 +1063,7 @@ void *TaLogic_TreeAloc(u16 *wSize, u16 *NodeCount) {
     idx = *NodeCount;
     *NodeCount = idx + 1;
     *wSize += 0x18;
-    return &((Ent_002788D0 *)0x01ED0000)[idx];
+    return &((Ent_002788D0 *)CAMPAIGN_WORK_ADDR)[idx]; /* the search tree lives in the campaign work area */
 }
 
 typedef struct Entry_00278930 {

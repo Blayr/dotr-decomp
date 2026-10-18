@@ -1568,31 +1568,31 @@ void *RhModel_Draw(void *packet, void *model) {
     if (!obj->flags4.bit1 || !obj->flags5.bit2) {
         packet = RhVu1Mac_SetFogOnOff(packet, (u8)obj->flags4.bit1, obj->flags5.bit2);
     }
-    *(void **)0x700000C0 = packet;
-    *(u8 **)0x700000DC = obj->data + 0x10;
-    *(s32 *)0x700000D8 = ((Offset_0020F4E0 *)(obj->data + *(s32 *)(*(u8 **)0x700000DC + 8)))->value;
+    *(void **)(SCRATCHPAD_ADDR + 0xC0) = packet;
+    *(u8 **)(SCRATCHPAD_ADDR + 0xDC) = obj->data + 0x10;
+    *(s32 *)(SCRATCHPAD_ADDR + 0xD8) = ((Offset_0020F4E0 *)(obj->data + *(s32 *)(*(u8 **)(SCRATCHPAD_ADDR + 0xDC) + 8)))->value;
     RhGeom_PushMatrix(0);
-    transform = (Transform_0020F4E0 *)(obj->data + *(s32 *)*(u8 **)0x700000DC);
-    *(__int128 *)0x70000020 = transform->vector.quad;
-    *(s32 *)0x7000002C = 0x3F800000;
+    transform = (Transform_0020F4E0 *)(obj->data + *(s32 *)*(u8 **)(SCRATCHPAD_ADDR + 0xDC));
+    *(__int128 *)(SCRATCHPAD_ADDR + 0x20) = transform->vector.quad;
+    *(s32 *)(SCRATCHPAD_ADDR + 0x2C) = 0x3F800000;
     if (obj->flags5.bit4 != 0) {
-        RhMem_CopyMemory16((void *)0x70000000, (u8 *)model + 0x50, 1);
+        RhMem_CopyMemory16((void *)SCRATCHPAD_ADDR, (u8 *)model + 0x50, 1);
     } else {
-        RhGeom_MulMatrixVector((void *)0x70000000, NULL, (void *)0x70000020);
+        RhGeom_MulMatrixVector((void *)SCRATCHPAD_ADDR, NULL, (void *)(SCRATCHPAD_ADDR + 0x20));
     }
-    obj->result = RhView_GetSampleZ((void *)0x70000000, transform->vector.values.w);
+    obj->result = RhView_GetSampleZ((void *)SCRATCHPAD_ADDR, transform->vector.values.w);
     var_s1 = 0;
-    if (obj->flags4.bit0 && (RhVu1Mac_GetPointLight(NULL, (void *)0x70000050, (f32 *)0x70000030, (f32 *)0x70000034, (f32 *)0x70000038) != 0) && (RhGeom_GetPointsDistance((f32 *)0x70000050, (f32 *)0x70000000) <= (*(f32 *)0x70000034 + transform->vector.values.w))) {
+    if (obj->flags4.bit0 && (RhVu1Mac_GetPointLight(NULL, (void *)(SCRATCHPAD_ADDR + 0x50), (f32 *)(SCRATCHPAD_ADDR + 0x30), (f32 *)(SCRATCHPAD_ADDR + 0x34), (f32 *)(SCRATCHPAD_ADDR + 0x38)) != 0) && (RhGeom_GetPointsDistance((f32 *)(SCRATCHPAD_ADDR + 0x50), (f32 *)SCRATCHPAD_ADDR) <= (*(f32 *)(SCRATCHPAD_ADDR + 0x34) + transform->vector.values.w))) {
         var_s1 = 1;
     }
     require_coordinate_index = 0;
     if (obj->flags4.bit2 != 0) {
         packet = lRhModel_DrawNormalMethod(model, var_s1);
     } else {
-        *(s32 *)0x700000B0 = RhView_CheckViewVolume((void *)0x70000020, transform->vector.values.w);
-        temp_v1 = *(s32 *)0x700000B0;
+        *(s32 *)(SCRATCHPAD_ADDR + 0xB0) = RhView_CheckViewVolume((void *)(SCRATCHPAD_ADDR + 0x20), transform->vector.values.w);
+        temp_v1 = *(s32 *)(SCRATCHPAD_ADDR + 0xB0);
         if (temp_v1 & 1) {
-            if ((temp_v1 & 4) || (*(s32 *)(*(u8 **)0x700000DC + 0x1C) > 0) || (var_s1 != 0)) {
+            if ((temp_v1 & 4) || (*(s32 *)(*(u8 **)(SCRATCHPAD_ADDR + 0xDC) + 0x1C) > 0) || (var_s1 != 0)) {
                 packet = lRhModel_DrawNormalMethod(model, var_s1);
             } else {
                 packet = lRhModel_DrawFastMethod(model);

@@ -227,12 +227,12 @@ void func_00100610(s32 dim) {
 
     RhBase_GetScreenSize(&width, &height);
     RhBase_GetBufferFormatEx(0, &fbp, &psm, NULL);
-    *(s64 *)0x12000000 = ((s64) (dim ? 0x7F : 0xFF) << 8) | 0x23;
-    *(s64 *)0x12000090 = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
-    *(s64 *)0x120000A0 = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183227C);
-    *(s64 *)0x12000070 = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
-    *(s64 *)0x12000080 = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183327C);
-    *(s64 *)0x120000D0 = 0;
+    *(s64 *)GS_PMODE_ADDR = ((s64) (dim ? 0x7F : 0xFF) << 8) | 0x23;
+    *(s64 *)GS_DISPFB2_ADDR = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
+    *(s64 *)GS_DISPLAY2_ADDR = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183227C);
+    *(s64 *)GS_DISPFB1_ADDR = ((s64) psm << 15) | ((s64) (fbp >> 5) | ((s64) (width >> 6) << 9));
+    *(s64 *)GS_DISPLAY1_ADDR = ((s64) (height - 1) << 44) | (((s64) ((width * 4) - 1) << 32) | 0x0183327C);
+    *(s64 *)GS_EXTWRITE_ADDR = 0;
 }
 
 /* Loads the models every mode needs. */

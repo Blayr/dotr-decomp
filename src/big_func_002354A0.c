@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
 
@@ -19,10 +20,6 @@ struct DotrTekiWindowWindow {
 struct DotrTekiWindowInfo {
     int unknown_00[3];
     int w;                      
-};
-struct DotrTekiWindowFace {
-    unsigned char id, no, kind, mode;
-    unsigned short x, y;
 };
 struct DotrTekiWindowBoard {
     signed char b0;             
@@ -66,8 +63,6 @@ extern char D_0030F1EF[];
 struct DotrTekiWindowCard {
     unsigned char b0;
 };
-#define DOTR_TEKI_WINDOW_BASE 0x1ed0000
-#define DOTR_TEKI_WINDOW_FACE ((struct DotrTekiWindowFace *)0x1ed5424)
 extern int Taku_Window_Set_window(int cursor, struct DotrTekiWindowWindow *window, unsigned short flag, int a3,
                            unsigned short x, unsigned short y, int a6, int a7, int a8);
 extern int func_00217BD0_b(int cursor, struct DotrTekiWindowItem *item, short x, short y);
@@ -83,10 +78,6 @@ extern int func_001B6EA0_b(int cursor, int x, int y, int a, int flags, int width
 extern int func_001B6F70_b(int cursor, int x, int y, int a, int flags, int n,
                                        const char *text, int c);
 extern struct DotrTekiWindowCard *func_001DD0E0_b(int id);
-#define WB(o) (*(signed char *)(DOTR_TEKI_WINDOW_BASE + (o)))
-#define WH(o) (*(short *)(DOTR_TEKI_WINDOW_BASE + (o)))
-#define WU(o) (*(unsigned short *)(DOTR_TEKI_WINDOW_BASE + (o)))
-#define FACE DOTR_TEKI_WINDOW_FACE
 #define RATIO(cur, xx, yy, lim, limf) \
     info = func_001FEAB0_b(1); \
     if (info->w < lim) { \
@@ -122,10 +113,10 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
     k = b->b198;
     col[0] = col[1] = col[2] = 128;
     col[3] = 128;
-    x = WB(0x5440) * -640 / 100;
-    y = WH(0x6c) - 256;
-    yoff = (WH(0x68) << 8) >> 4;
-    if (WB(0x18c) == 1 && b->b198 == 11) {
+    x = campaignWork.unk5440 * -640 / 100;
+    y = campaignWork.windowOpen - 256;
+    yoff = (campaignWork.terrainWindowOpen << 8) >> 4;
+    if (campaignWork.unk018C == 1 && b->b198 == 11) {
         side = b->b0 ^ 1;
     } else if (b->b198 == 11) {
         side = b->b0 ^ 1;
@@ -147,20 +138,20 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
     case 9: name = 202; msg = 224; break;
     case 10: name = 201; msg = 223; break;
     case 11:
-        if (WB(0x18c) != 0) {
-            if (WB(0x53c2) == 2) {
+        if (campaignWork.unk018C != 0) {
+            if (campaignWork.duelMenuChoice == 2) {
                 name = 217; msg = 239;
                 side = 0;
             } else {
                 side = 1;
-                if (WB(0x53c2) == 1) {
+                if (campaignWork.duelMenuChoice == 1) {
                     name = 216; msg = 238;
                 } else {
                     name = 197; msg = 219;
                 }
             }
         } else if (b->b0 == 0 && b->lv[11] >= 3) {
-            if (WB(0x53c2) == 1) {
+            if (campaignWork.duelMenuChoice == 1) {
                 name = 216; msg = 238;
             } else {
                 name = 197; msg = 219;
@@ -184,8 +175,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
     default: name = 196; msg = 218; break;
     }
     b->h196 = name - 196;
-    if (WH(0x6c) != 0) {
-        if (WB(0x18c) != 0) {
+    if (campaignWork.windowOpen != 0) {
+        if (campaignWork.unk018C != 0) {
             if (b->b198 == 1 || b->b198 == 15 || b->b198 == 17) {
                 sel = 0;
                 disp = 0;
@@ -210,11 +201,11 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                 case 3:
                 case 4:
                 case 5:
-                    if (WB(0x53ab) != 0) {
+                    if (campaignWork.unk53AB != 0) {
                         sel = 0;
                     } else {
                         sel = 1;
-                        if (b->b198 == 11 && WB(0x53c2) == 1 && b->lv[11] < 4) {
+                        if (b->b198 == 11 && campaignWork.duelMenuChoice == 1 && b->lv[11] < 4) {
                             sel = 0;
                         }
                     }
@@ -237,7 +228,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                     break;
                 case 2:
                 case 3:
-                    if (WB(0x53ab) != 0) {
+                    if (campaignWork.unk53AB != 0) {
                         sel = 0;
                     } else {
                         sel = 1;
@@ -247,11 +238,11 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
                 }
             }
         }
-        if (WB(0x537b) != 0 && WB(0x5440) == 100) {
+        if (campaignWork.talkStep != 0 && campaignWork.unk5440 == 100) {
             sel = 1;
             disp = sel;
         }
-        if (WB(0x537a) != 0 && WB(0x537b) != 0 && WB(0x5440) < 100) {
+        if (campaignWork.unk537A != 0 && campaignWork.talkStep != 0 && campaignWork.unk5440 < 100) {
             sel = 1;
             disp = sel;
         }
@@ -261,48 +252,48 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             short cost;
 
             cursor = func_00217BD0_b(cursor, &roseSprites2[side], 0, y);
-            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[0], side, 0, 0, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[2], side, 0, 0, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[0], side, 0, 0, y, 0, 128, campaignWork.windowAlpha[0]);
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[2], side, 0, 0, y, 0, 128, campaignWork.windowAlpha[0]);
             yy = y - yoff;
             cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[3], side, 0, 0, yy, 1, 128, 0);
             no = b->h196 + 1;
             if (name == 217) {
                 no = b->h196;
             }
-            switch (WB(0x540a)) {
+            switch (campaignWork.opponentFaceState) {
             case 1:
-                FACE->id = 255;
+                campaignWork.opponentFace.id = 255;
                 
             case 2:
-                FACE->no = no;
-                FACE->kind = D_002999CC[no][WB(0x5468)];
-                FACE->mode = 1;
-                FACE->x = campaignEnemyWindow[3].x;
-                FACE->y = campaignEnemyWindow[3].y + y - yoff;
-                ShFace_Request(FACE);
-                WB(0x540a) = 2;
+                campaignWork.opponentFace.no = no;
+                campaignWork.opponentFace.kind = D_002999CC[no][campaignWork.opponentLook];
+                campaignWork.opponentFace.mode = 1;
+                campaignWork.opponentFace.x = campaignEnemyWindow[3].x;
+                campaignWork.opponentFace.y = campaignEnemyWindow[3].y + y - yoff;
+                ShFace_Request(&campaignWork.opponentFace);
+                campaignWork.opponentFaceState = 2;
                 break;
             case 10:
-                FACE->no = no;
-                FACE->kind = D_002999CC[no][WB(0x5468)];
-                FACE->mode = 3;
-                FACE->x = campaignEnemyWindow[3].x;
-                FACE->y = campaignEnemyWindow[3].y + y - yoff;
-                ShFace_Request(FACE);
-                WB(0x540a) = 2;
+                campaignWork.opponentFace.no = no;
+                campaignWork.opponentFace.kind = D_002999CC[no][campaignWork.opponentLook];
+                campaignWork.opponentFace.mode = 3;
+                campaignWork.opponentFace.x = campaignEnemyWindow[3].x;
+                campaignWork.opponentFace.y = campaignEnemyWindow[3].y + y - yoff;
+                ShFace_Request(&campaignWork.opponentFace);
+                campaignWork.opponentFaceState = 2;
                 break;
             case 100:
-                ShFace_Close(FACE);
-                WB(0x540a) = 0;
+                ShFace_Close((u8 *)&campaignWork.opponentFace);
+                campaignWork.opponentFaceState = 0;
                 break;
             }
             cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[2], 0, yy, 0);
             cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[3], 0, yy, 0);
             cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[side], 0, yy, 0);
-            if (WB(0x5406) == 0) {
+            if (campaignWork.unk5406 == 0) {
                 SzData_SetupFromConstDeck(1, b->h196 + 26);
             }
-            cost = WH(0x5444) = SzData_GetDeckCost(1, 0);
+            cost = campaignWork.opponentDeckCost = SzData_GetDeckCost(1, 0);
             cursor = func_00217BD0_b(cursor, &D_00298320[0], 0, y);
             cursor = func_001B6EA0_b(cursor, 410, y + 26, 0, 0, 4, cost);
             cursor = SzMsg_LoadFont_Pipe(cursor, 1, name, 0, 22);
@@ -322,12 +313,12 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             SzMsg_Free(1);
         }
         if (sel == 0) {
-            WB(0x5406) = -1;
-        } else if (WB(0x5406) == 0) {
-            WB(0x5406) = 1;
+            campaignWork.unk5406 = -1;
+        } else if (campaignWork.unk5406 == 0) {
+            campaignWork.unk5406 = 1;
         }
-        if (WB(0x537a) != 0 && WB(0x5440) == 100 && WB(0x5406) < 2) {
-            WB(0x5406) = 1;
+        if (campaignWork.unk537A != 0 && campaignWork.unk5440 == 100 && campaignWork.unk5406 < 2) {
+            campaignWork.unk5406 = 1;
         }
         if (sel) {
             int id;
@@ -337,11 +328,11 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             short tx;
             short ty;
 
-            WB(0x5488) = 1;
+            campaignWork.unk5488 = 1;
             id = SzData_GetLeader(1, 0);
-            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[1], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[4], side, 0, x, y, 0, 128, WH(0x224));
-            cursor = Taku_Window_Set_window(cursor, &D_00297BCA, side, 0, x, y, 0, 128, WH(0x224));
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[1], side, 0, x, y, 0, 128, campaignWork.windowAlpha[0]);
+            cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[4], side, 0, x, y, 0, 128, campaignWork.windowAlpha[0]);
+            cursor = Taku_Window_Set_window(cursor, &D_00297BCA, side, 0, x, y, 0, 128, campaignWork.windowAlpha[0]);
             xs = x;
             cursor = func_001B6F70_b(cursor, xs + 152, y + 63, 1, 1, 4, D_0030F102, 0);
             cursor = func_001B6F70_b(cursor, xs + 192, y + 63, 1, 1, 6, D_0030F1E8, 0);
@@ -400,7 +391,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             RATIO(cursor, tx, ty, 246, 246.0f)
         }
     }
-    if (WB(0x5472) != 0) {
+    if (campaignWork.unk5472 != 0) {
         short len;
         int len10;
         short tx;
@@ -421,8 +412,8 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         cursor = Taku_Window_Set_window(cursor, &campaignEnemyWindow[7], 2, 0, tx, 224, 0, 128, 64);
         cursor = func_001FE660_b(cursor, 1, tx + 8, 228, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
-    } else if (WB(0x5374) == 0 && WU(4) == 2 && WB(0x72) == 0 && WB(0x547a) == 0 && WB(0x6e) != 0
-               && WB(0x5481) != 0 && !SzEffect_IsUse2(-1, -1) && WB(0x5376) != 0 && WB(0x5482) == 0) {
+    } else if (campaignWork.unk5374 == 0 && campaignWork.unk0004 == 2 && campaignWork.unk0072 == 0 && campaignWork.cursorOnIcon == 0 && campaignWork.unk006E != 0
+               && campaignWork.unk5481 != 0 && !SzEffect_IsUse2(-1, -1) && campaignWork.routesIdle != 0 && campaignWork.placesReached == 0) {
         int cx;
         short wd;
         int tx;
@@ -434,18 +425,18 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         short px;
 
         func_0019BEF0(names.s[b->b198]);
-        if (WB(0x5446) == 0) {
+        if (campaignWork.unk5446 == 0) {
             m = msg;
         } else {
             m = 249;
-            WB(0x5446) = 0;
+            campaignWork.unk5446 = 0;
         }
         cursor = SzMsg_LoadFont_Pipe(cursor, 1, m, 0, 22);
         c = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         wd = *(short *)&info->w + 16;
         campaignEnemyWindow[5].w = wd;
-        cx = WH(0);
+        cx = campaignWork.cursorX;
         half = wd >> 1;
         d = cx - half;
         px = d;
@@ -456,7 +447,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
             px = 480 - wd;
         }
         tx = px;
-        ty = WH(2) + 32;
+        ty = campaignWork.cursorY + 32;
         if (tx < 128 && ty < 209) {
             ty = 208;
         } else if (ty < 121) {
@@ -469,7 +460,7 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
         cursor = func_001FE660_b(cursor, 1, tx + 8, ty + 4, 1.0f, 1.0f, col, func_001FDFE0_b);
         SzMsg_Free(1);
     }
-    if ((b->b0 == 0 && b->lv[11] >= 3) || WB(0x18c) != 0) {
+    if ((b->b0 == 0 && b->lv[11] >= 3) || campaignWork.unk018C != 0) {
         if (b->b198 == 11) {
             short yo;
             short ys;
@@ -488,10 +479,4 @@ int Taku_Camp_TEKI_WINDOW(int cursor)
     }
     return cursor;
 }
-#undef DOTR_TEKI_WINDOW_BASE
-#undef DOTR_TEKI_WINDOW_FACE
-#undef WB
-#undef WH
-#undef WU
-#undef FACE
 #undef RATIO

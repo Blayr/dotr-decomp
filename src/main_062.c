@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 /* Sets a campaign coordinate record to scale 1, no rotation, no move. */
 void Taku_Coord_Init(void *coord) {
@@ -215,40 +216,6 @@ s32 Taku_Bunsyou_Set(s32 packet, s32 slot, s32 msg, s64 x, s64 y, s32 arg5, s32 
 
 /* From the dotr-decomp CC0 bundle (commit 88c32bb2), chatC/imp/conv.py. */
 
-struct DotrCampEntryVec {
-    float x, y, z, w;
-};
-struct DotrCampEntryRecord {
-    float x[64];
-    float y[64];
-    short count;
-    short state;                
-};
-struct DotrCampEntryWork {
-    unsigned char unknown_0000[0x30];
-    struct DotrCampEntryVec from;   
-    struct DotrCampEntryVec to;     
-    unsigned char unknown_0050[0x18c - 0x50];
-    signed char all;                
-    unsigned char unknown_018d[0x22c - 0x18d];
-    struct DotrCampEntryRecord records[2][16];  
-    short unknown_42ac[2][16];
-    short unknown_42ec[2][16][64];
-    short rise[32];                 
-    short count[32];                
-    unsigned char unknown_536c[0x53a8 - 0x536c];
-    signed char byte_53a8;          
-    unsigned char unknown_53a9[0x53b3 - 0x53a9];
-    signed char byte_53b3;          
-    unsigned char unknown_53b4[0x53c7 - 0x53b4];
-    signed char byte_53c7;          
-    unsigned char unknown_53c8[0x53f6 - 0x53c8];
-    unsigned short hash;            
-    unsigned short pick[3];         
-    unsigned short deck[3];         
-    short leader;                   
-};
-#define DOTR_CAMP_ENTRY_WORK ((struct DotrCampEntryWork *)0x1ed0000)
 struct DotrCampEntryBoard {
     signed char side;               
     signed char done0;              
@@ -311,7 +278,7 @@ void TkCamp_Init(int mode)
 
     struct DotrCampEntryQuad pos;
     struct DotrCampEntryQuad rot;
-    struct DotrCampEntryWork *w = DOTR_CAMP_ENTRY_WORK;
+    CampaignWork *w = &campaignWork;
     struct DotrCampEntryBoard *board = &D_00299E10_b;
     int deck;
     int leader;
@@ -320,7 +287,7 @@ void TkCamp_Init(int mode)
     short r;
     short n;
     short k;
-    struct DotrCampEntryWork *p;
+    CampaignWork *p;
     int flag;
     short m;
 
@@ -333,13 +300,13 @@ void TkCamp_Init(int mode)
         SzModel_SetDrawFlag(i + 30, 0);
     }
     if (board->done0 != 0 && board->done1 != 0) {
-        DOTR_CAMP_ENTRY_WORK->all = 1;
+        campaignWork.unk018C = 1;
     } else {
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
     }
     Taku_Screen_Init();
     SzGame_SetMenuNum(11, 1);
-    DOTR_CAMP_ENTRY_WORK->byte_53c7 = 2;
+    campaignWork.nameTable = 2;
     
 
     switch (mode) {
@@ -351,12 +318,12 @@ void TkCamp_Init(int mode)
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 10020;
         board->started = 1;
         func_00233F50_b(3);
-        DOTR_CAMP_ENTRY_WORK->byte_53b3 = 1;
+        campaignWork.cameraMode = 1;
         D_0034F6F8_21c510 = 0;
         practiceDuelFlag = 0;
         func_00217980_b(24, 0);
@@ -372,37 +339,37 @@ void TkCamp_Init(int mode)
             rot = D_0029A7A0;
             deck = SzData_GetCurrentDeck(0);
             leader = SzData_GetLeader(0, deck);
-            DOTR_CAMP_ENTRY_WORK->leader = SzData_GetLeader(0, deck);
+            campaignWork.leaderCard = SzData_GetLeader(0, deck);
             SzModel_SetPos(30, &pos);
             SzModel_SetRot(30, &rot);
             SzModel_Load(30, -1, SzDuel_New2Xax(leader), 1);
         }
-        if (DOTR_CAMP_ENTRY_WORK->all != 0) {
+        if (campaignWork.unk018C != 0) {
             SzModel_LoadMerge(3, 2, 0);
             func_001F93F0_b(0, 7, 0, 0);
             SzEffect_SetIntensityOnly(7, 1.0f);
             board->done0 = 1;
             board->done1 = 1;
-            DOTR_CAMP_ENTRY_WORK->all = 1;
+            campaignWork.unk018C = 1;
             board->ticks = 0;
-            if (DOTR_CAMP_ENTRY_WORK->all != 0) {
-                p = DOTR_CAMP_ENTRY_WORK;
+            if (campaignWork.unk018C != 0) {
+                p = &campaignWork;
                 for (i = 0; i < 32; i++) {
-                    p->rise[i] = 0;
-                    p->count[i] = 0;
+                    p->placeReached[i] = 0;
+                    p->placeBlink[i] = 0;
                     board->seen[i] = 3;
                 }
-                p = DOTR_CAMP_ENTRY_WORK;
+                p = &campaignWork;
                 
                 for (m = 0; m < 2; m++) {
                     for (i = 0; i < 16; i++) {
-                        p->records[m][i].state = 3;
+                        p->routes[m][i].state = 3;
                     }
                 }
             }
             board->ticks = 0;
             func_00233F50_b(0);
-            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 0;
+            campaignWork.cameraMode = 0;
             func_00217980_b(4, 0);
             break;
         }
@@ -415,18 +382,18 @@ void TkCamp_Init(int mode)
                 board->side = 1;
                 board->done0 = 1;
                 board->done1 = 0;
-                DOTR_CAMP_ENTRY_WORK->all = 0;
+                campaignWork.unk018C = 0;
             } else if (board->done1 != 0) {
                 board->side = 0;
                 board->done0 = 0;
                 board->done1 = 1;
-                DOTR_CAMP_ENTRY_WORK->all = 0;
+                campaignWork.unk018C = 0;
             }
             DOTR_CAMP_ENTRY_CLEAR_SEEN();
             board->ticks = 10060;
             board->started = 1;
             func_00233F50_b(3);
-            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 3;
+            campaignWork.cameraMode = 3;
             func_00217980_b(25, 1);
             flag = 1;
         } else if (board->started != 0) {
@@ -442,7 +409,7 @@ void TkCamp_Init(int mode)
                 for (j = 1; j <= 11; j++) {
                     if (board->seen[j] == 3) {
                         for (r = 0; r < D_00298BA0_21c510[j].n; r++) {
-                            w->records[0][D_00298BA0_21c510[j].list[r]].state = 3;
+                            w->routes[0][D_00298BA0_21c510[j].list[r]].state = 3;
                         }
                     }
                 }
@@ -450,41 +417,41 @@ void TkCamp_Init(int mode)
                     if (board->seen[i] >= 3) {
                         n++;
                         if (n >= 8) {
-                            w->records[0][12].state = 3;
-                            w->records[0][13].state = 3;
-                            w->records[0][11].state = 3;
+                            w->routes[0][12].state = 3;
+                            w->routes[0][13].state = 3;
+                            w->routes[0][11].state = 3;
                         }
                     }
                 }
             } else {
-                DOTR_CAMP_ENTRY_WORK->records[1][0].state = 3;
-                p = DOTR_CAMP_ENTRY_WORK;
+                campaignWork.routes[1][0].state = 3;
+                p = &campaignWork;
                 
                 for (j = 12, n = 1; j <= 21; j++, n++) {
                     if (board->seen[j] == 3) {
-                        p->records[1][n].state = 3;
+                        p->routes[1][n].state = 3;
                     }
                 }
                 if (board->seen[0] == 3) {
-                    DOTR_CAMP_ENTRY_WORK->records[1][11].state = 3;
+                    campaignWork.routes[1][11].state = 3;
                 }
             }
             board->started = 1;
             func_00233F50_b(0);
-            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 0;
+            campaignWork.cameraMode = 0;
             
 
-            DOTR_CAMP_ENTRY_WORK->to.x = D_00298BA0_21c510[board->kind[0]].x;
-            DOTR_CAMP_ENTRY_WORK->to.y = 0.0f;
-            DOTR_CAMP_ENTRY_WORK->to.z = D_00298BA0_21c510[board->kind[0]].z;
-            DOTR_CAMP_ENTRY_WORK->to.x = D_00298BA0_21c510[board->kind[1]].x;
-            DOTR_CAMP_ENTRY_WORK->to.y = 0.0f;
-            DOTR_CAMP_ENTRY_WORK->to.z = D_00298BA0_21c510[board->kind[1]].z;
-            DOTR_CAMP_ENTRY_WORK->from.x = DOTR_CAMP_ENTRY_WORK->to.x;
-            DOTR_CAMP_ENTRY_WORK->from.y = 96.0f + DOTR_CAMP_ENTRY_WORK->to.y;
-            DOTR_CAMP_ENTRY_WORK->from.z = 96.0f + DOTR_CAMP_ENTRY_WORK->to.z;
-            DOTR_CAMP_ENTRY_WORK->from.w = DOTR_CAMP_ENTRY_WORK->to.w;
-            SzView_SetCamera(0, &DOTR_CAMP_ENTRY_WORK->from, &DOTR_CAMP_ENTRY_WORK->to);
+            campaignWork.cameraTarget[0] = D_00298BA0_21c510[board->kind[0]].x;
+            campaignWork.cameraTarget[1] = 0.0f;
+            campaignWork.cameraTarget[2] = D_00298BA0_21c510[board->kind[0]].z;
+            campaignWork.cameraTarget[0] = D_00298BA0_21c510[board->kind[1]].x;
+            campaignWork.cameraTarget[1] = 0.0f;
+            campaignWork.cameraTarget[2] = D_00298BA0_21c510[board->kind[1]].z;
+            campaignWork.cameraEye[0] = campaignWork.cameraTarget[0];
+            campaignWork.cameraEye[1] = 96.0f + campaignWork.cameraTarget[1];
+            campaignWork.cameraEye[2] = 96.0f + campaignWork.cameraTarget[2];
+            campaignWork.cameraEye[3] = campaignWork.cameraTarget[3];
+            SzView_SetCamera(0, (void *)&campaignWork.cameraEye[0], (void *)&campaignWork.cameraTarget[0]);
             func_00217980_b(4, 0);
         } else {
             SzModel_LoadMerge(3, 4, 0);
@@ -493,22 +460,22 @@ void TkCamp_Init(int mode)
                 board->side = 1;
                 board->done0 = 1;
                 board->done1 = 0;
-                DOTR_CAMP_ENTRY_WORK->all = 0;
-                DOTR_CAMP_ENTRY_WORK->byte_53a8 = 0;
+                campaignWork.unk018C = 0;
+                campaignWork.eventWindowChoice = 0;
                 board->byte_c9 = 0;
             } else if (board->done1 != 0) {
                 board->side = 0;
                 board->done0 = 0;
                 board->done1 = 1;
-                DOTR_CAMP_ENTRY_WORK->all = 0;
-                DOTR_CAMP_ENTRY_WORK->byte_53a8 = 1;
+                campaignWork.unk018C = 0;
+                campaignWork.eventWindowChoice = 1;
                 board->byte_c9 = 2;
             }
             DOTR_CAMP_ENTRY_CLEAR_SEEN();
             board->ticks = 10090;
             board->started = 1;
             func_00233F50_b(3);
-            DOTR_CAMP_ENTRY_WORK->byte_53b3 = 3;
+            campaignWork.cameraMode = 3;
         }
         DOTR_CAMP_ENTRY_MODULES();
         if (flag == 0) {
@@ -521,7 +488,7 @@ void TkCamp_Init(int mode)
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 10040;
         board->started = 1;
@@ -534,7 +501,7 @@ void TkCamp_Init(int mode)
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 11182;
         board->started = 1;
@@ -547,7 +514,7 @@ void TkCamp_Init(int mode)
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 12154;
         board->started = 1;
@@ -560,7 +527,7 @@ void TkCamp_Init(int mode)
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 11000;
         func_00217980_b(24, 1);
@@ -571,7 +538,7 @@ void TkCamp_Init(int mode)
         board->side = 1;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 12000;
         func_00217980_b(24, 1);
@@ -579,18 +546,18 @@ void TkCamp_Init(int mode)
     case 60:
         
 
-        DOTR_CAMP_ENTRY_WORK->hash = 0;
-        p = DOTR_CAMP_ENTRY_WORK;
+        campaignWork.deckHash = 0;
+        p = &campaignWork;
         for (k = 0; k < 3; k++) {
-            p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
-            p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
+            p->deckChoices[k] = (D_00299CE0_21c510[w->deckHash] >> (k * 5)) & 0x1f;
+            p->deckChoiceCards[k] = D_00299D00_21c510[p->deckChoices[k]].id & 0x3ff;
         }
         SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 10050;
         board->started = 1;
@@ -598,18 +565,18 @@ void TkCamp_Init(int mode)
         func_00217980_b(25, 1);
         break;
     case 10:
-        DOTR_CAMP_ENTRY_WORK->hash = 0;
-        p = DOTR_CAMP_ENTRY_WORK;
+        campaignWork.deckHash = 0;
+        p = &campaignWork;
         for (k = 0; k < 3; k++) {
-            p->pick[k] = (D_00299CE0_21c510[w->hash] >> (k * 5)) & 0x1f;
-            p->deck[k] = D_00299D00_21c510[p->pick[k]].id & 0x3ff;
+            p->deckChoices[k] = (D_00299CE0_21c510[w->deckHash] >> (k * 5)) & 0x1f;
+            p->deckChoiceCards[k] = D_00299D00_21c510[p->deckChoices[k]].id & 0x3ff;
         }
         SzModel_LoadMerge(3, 4, 0);
         DOTR_CAMP_ENTRY_MODULES();
         board->side = 0;
         board->done0 = 0;
         board->done1 = 0;
-        DOTR_CAMP_ENTRY_WORK->all = 0;
+        campaignWork.unk018C = 0;
         DOTR_CAMP_ENTRY_CLEAR_SEEN();
         board->ticks = 10070;
         board->started = 1;
@@ -637,7 +604,7 @@ extern s8 campaignHelpFlag; /* original: HELP_flg */
 
 /* Sets up the campaign state from the save: the decks, the places, the help flag. */
 void Taku_Camp_Data_Init(void) {
-    u8 *base = (u8 *)0x01ED0000;
+    CampaignWork *base = &campaignWork;
     u8 *record = (u8 *)&campaignState;
     f32 groundPoint0[4];
     f32 groundPoint1[4];
@@ -660,7 +627,7 @@ void Taku_Camp_Data_Init(void) {
     u32 *words;
     u16 *halves;
 
-    func_00195108((s32)base, 0x54B0);
+    func_00195108((s32)base, sizeof(CampaignWork)); /* clears the whole work area */
     groundPoint0[0] = 0.0f;
     groundPoint0[1] = 8.65f;
     groundPoint0[2] = 100.0f;
@@ -670,54 +637,54 @@ void Taku_Camp_Data_Init(void) {
     groundPoint2[0] = 100.0f;
     groundPoint2[1] = 8.65f;
     groundPoint2[2] = 0.0f;
-    Ex3d_GetSurfaceC(groundPoint0, groundPoint1, groundPoint2, (f32 *)0x01ED0190);
+    Ex3d_GetSurfaceC(groundPoint0, groundPoint1, groundPoint2, campaignWork.groundPlane);
     i = 0;
     do {
-        base[0x53CF + i] = 0;
-        base[0x53DB + i] = 6;
-        base[0x53E7 + i] = 1;
+        base->nameLetterTable[i] = 0;
+        base->nameLetterColumn[i] = 6;
+        base->nameLetterRow[i] = 1;
         i++;
     } while (i < 12);
-    *(s16 *)0x01ED547C = 0x80;
-    *(s16 *)0x01ED0000 = 0x140;
-    *(s16 *)0x01ED0002 = 0xBE;
-    *(s16 *)0x01ED0004 = 0;
-    *(s16 *)0x01ED001A = 0;
-    *(s16 *)0x01ED001C = 0;
-    *(s16 *)0x01ED001E = 0;
-    *(s16 *)0x01ED536E = *(s16 *)(record + 0xC2);
-    *(s16 *)0x01ED536C = 0;
-    *(s8 *)0x01ED5372 = 0;
-    *(s8 *)0x01ED006E = 0;
-    *(f32 *)0x01ED0040 = 0.0f;
-    *(f32 *)0x01ED0044 = 0.0f;
-    *(f32 *)0x01ED0048 = 0.0f;
-    *(f32 *)0x01ED004C = 0.0f;
-    *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
-    *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
-    *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
-    *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
-    SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
+    campaignWork.leaderAlpha = 0x80;
+    campaignWork.cursorX = 0x140;
+    campaignWork.cursorY = 0xBE;
+    *(s16 *)&campaignWork.unk0004 = 0;
+    campaignWork.cinemaMode = 0;
+    campaignWork.cinemaState = 0;
+    campaignWork.cinemaCut[0] = 0;
+    campaignWork.eventCutScene = *(s16 *)(record + 0xC2);
+    campaignWork.eventStep = 0;
+    campaignWork.unk5372 = 0;
+    campaignWork.unk006E = 0;
+    campaignWork.cameraTarget[0] = 0.0f;
+    campaignWork.cameraTarget[1] = 0.0f;
+    campaignWork.cameraTarget[2] = 0.0f;
+    campaignWork.cameraTarget[3] = 0.0f;
+    campaignWork.cameraEye[0] = campaignWork.cameraTarget[0];
+    campaignWork.cameraEye[1] = 96.0f + campaignWork.cameraTarget[1];
+    campaignWork.cameraEye[2] = 96.0f + campaignWork.cameraTarget[2];
+    campaignWork.cameraEye[3] = campaignWork.cameraTarget[3];
+    SzView_SetCamera(0, (void *)&campaignWork.cameraEye[0], (void *)&campaignWork.cameraTarget[0]);
 
     i = 0;
-    words = (u32 *)0x01ED0000;
+    words = (u32 *)&campaignWork; /* this loop clears placeScreenX[i] and placeScreenY[i] */
     do {
         words[0x8C / 4] = 0;
         words[0x10C / 4] = 0;
         words++;
         i++;
     } while (i < 32);
-    *(s16 *)0x01ED01A6 = 0;
-    *(s16 *)0x01ED01AE = 0;
-    *(s16 *)0x01ED01B0 = 0;
-    *(s16 *)0x01ED01B2 = 0;
-    *(s16 *)0x01ED0224 = 0x80;
-    rows = (u8 *)0x01ED0000;
-    *(s16 *)0x01ED0226 = 0x80;
-    *(s16 *)0x01ED0228 = 0x80;
-    outer = 0;
-    counts = (u8 *)0x01ED0000;
-    data = (u8 *)0x01ED0000;
+    campaignWork.shipT = 0;
+    campaignWork.unk01AE = 0;
+    campaignWork.shipPoint = 0;
+    campaignWork.shipTo = 0;
+    campaignWork.windowAlpha[0] = 0x80;
+    rows = (u8 *)&campaignWork;
+    campaignWork.windowAlpha[1] = 0x80;
+    campaignWork.windowAlpha[2] = 0x80;
+    outer = 0; /* these loops clear every route's state, routeDrawn and routePointRise */
+    counts = (u8 *)&campaignWork;
+    data = (u8 *)&campaignWork;
     do {
         inner = 0;
         row = rows;
@@ -746,7 +713,7 @@ void Taku_Camp_Data_Init(void) {
     {
         u16 *clear;
         s32 clear_count = 0;
-        clear = (u16 *)0x01ED0000;
+        clear = (u16 *)&campaignWork; /* clears placeReached[i] and unk532C[i] */
         do {
             clear_count++;
             clear[0x52EC / 2] = 0;
@@ -756,7 +723,7 @@ void Taku_Camp_Data_Init(void) {
     }
 
     if (campaignHelpFlag != 0) {
-        *(Buffer_0021D480 *)SzData_GetData(0) = *(Buffer_0021D480 *)0x01E301E0;
+        *(Buffer_0021D480 *)SzData_GetData(0) = *(Buffer_0021D480 *)GAME_DATA_COPY_ADDR;
         campaignHelpFlag = 0;
     }
     n = 0;
@@ -765,12 +732,12 @@ void Taku_Camp_Data_Init(void) {
         total += (s32)*(u16 *)(record + 0x24) % 16;
         record += 2;
     }
-    *(u16 *)0x01ED53F6 = total & 0xF;
+    campaignWork.deckHash = total & 0xF;
     j = 0;
     shift = 0;
-    halves = (u16 *)0x01ED0000;
+    halves = (u16 *)&campaignWork; /* halves[0x53F8 / 2] is deckChoices[j], halves[0x53FE / 2] unk53FE[j] */
     for (; j < 3; j++) {
-        halves[0x53F8 / 2] = ((s32)campaignDeckChoiceSets[*(u16 *)(base + 0x53F6)] >> shift) & 0x1F;
+        halves[0x53F8 / 2] = ((s32)campaignDeckChoiceSets[base->deckHash] >> shift) & 0x1F;
         shift += 5;
         halves[0x53FE / 2] = campaignDeckChoices[halves[0x53F8 / 2]].value & 0x3FF;
         halves++;
@@ -797,20 +764,20 @@ void Taku_Screen_Init(void) {
     Coord_0021D850 pos;
 
     Taku_Coord_Set(&campaignCoord);
-    *(f32 *)0x01ED0040 = *(f32 *)(campaignPlaces + D_00299ED6 * 0x34);
-    *(f32 *)0x01ED0044 = 0.0f;
-    *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
-    *(f32 *)0x01ED0040 = *(f32 *)(campaignPlaces + D_00299ED7 * 0x34);
-    *(f32 *)0x01ED0044 = 0.0f;
-    *(f32 *)0x01ED0048 = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
-    *(f32 *)0x01ED0030 = *(f32 *)0x01ED0040;
-    *(f32 *)0x01ED0034 = 96.0f + *(f32 *)0x01ED0044;
-    *(f32 *)0x01ED0038 = 96.0f + *(f32 *)0x01ED0048;
-    *(f32 *)0x01ED003C = *(f32 *)0x01ED004C;
-    SzView_SetCamera(0, (void *)0x01ED0030, (void *)0x01ED0040);
+    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + D_00299ED6 * 0x34);
+    campaignWork.cameraTarget[1] = 0.0f;
+    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
+    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + D_00299ED7 * 0x34);
+    campaignWork.cameraTarget[1] = 0.0f;
+    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
+    campaignWork.cameraEye[0] = campaignWork.cameraTarget[0];
+    campaignWork.cameraEye[1] = 96.0f + campaignWork.cameraTarget[1];
+    campaignWork.cameraEye[2] = 96.0f + campaignWork.cameraTarget[2];
+    campaignWork.cameraEye[3] = campaignWork.cameraTarget[3];
+    SzView_SetCamera(0, (void *)&campaignWork.cameraEye[0], (void *)&campaignWork.cameraTarget[0]);
     placeData = campaignPlaces;
     place = 0;
-    screen = (s32 *)0x01ED0000;
+    screen = (s32 *)&campaignWork; /* screen + 0x8C / 0x10C below are placeScreenX[place] and placeScreenY[place] */
     while (place <= 0x15) {
         pos.x = *(f32 *)placeData;
         pos.y = 8.65f + *(f32 *)(placeData + 4);
@@ -820,8 +787,8 @@ void Taku_Screen_Init(void) {
         screen++;
         place++;
     }
-    *(s16 *)0x01ED0000 = 0x140;
-    *(s16 *)0x01ED0002 = 0xBE;
+    campaignWork.cursorX = 0x140;
+    campaignWork.cursorY = 0xBE;
 }
 
 /* Draws the campaign map's 3D layer: the map, the clouds, the stone. */
@@ -864,49 +831,49 @@ void TkCamp_Draw_After(void) {
     void *var_s6;
 
     state = &campaignState;
-    angle = ((*(s16 *)0x01ED5478 << 10) >> 12) - 0x200;
+    angle = ((campaignWork.unk5478 << 10) >> 12) - 0x200;
     if (campaignMoveDone == 0) {
         var_s6 = Taku_Camp_2D(RhBase_GetVifPacketArea());
-        temp_v0 = *(s16 *)0x01ED006C;
+        temp_v0 = campaignWork.windowOpen;
         if (temp_v0 != 0) {
-            temp_a1 = *(s8 *)0x01ED5440;
+            temp_a1 = campaignWork.unk5440;
             y_offset = offset_y_0021DAA0(temp_v0);
             x_offset = (temp_a1 * -0x280) / 100;
-            if (*(s8 *)0x01ED5488 != 0) {
+            if (campaignWork.unk5488 != 0) {
                 var_s6 = Taku_G4_Set(var_s6, &teki_a_seru, x_offset, y_offset);
-                *(s8 *)0x01ED5488 = 0;
+                campaignWork.unk5488 = 0;
             }
             if (SzModel_IsModelLoading(0x1F) == 0) {
-                if ((*(s8 *)0x01ED5406 == 1) && (*(s16 *)0x01ED006C != 0)) {
+                if ((campaignWork.unk5406 == 1) && (campaignWork.windowOpen != 0)) {
                     sp80 = D_0029A7B0;
                     sp90 = D_0029A7C0;
-                    *(s16 *)0x01ED5404 = SzData_GetLeader(1, 0);
+                    campaignWork.leaderCard = SzData_GetLeader(1, 0);
                     SzModel_SetPos(0x1F, &sp80);
                     SzModel_SetRot(0x1F, &sp90);
-                    SzModel_Load(0x1F, -1, SzDuel_New2Xax(*(s16 *)0x01ED5404), 1);
-                    *(s8 *)0x01ED5406 = 2;
-                    *(s16 *)0x01ED543A = 0;
+                    SzModel_Load(0x1F, -1, SzDuel_New2Xax(campaignWork.leaderCard), 1);
+                    campaignWork.unk5406 = 2;
+                    campaignWork.unk543A = 0;
                 }
             }
-            if ((SzModel_IsModelStandby(0x1F) != 0) && (*(s8 *)0x01ED5406 == 2)) {
-                temp_v0_2 = *(s16 *)0x01ED543A;
+            if ((SzModel_IsModelStandby(0x1F) != 0) && (campaignWork.unk5406 == 2)) {
+                temp_v0_2 = campaignWork.unk543A;
                 if (temp_v0_2 < 0x80) {
-                    *(s16 *)0x01ED543A = temp_v0_2 + 8;
+                    campaignWork.unk543A = temp_v0_2 + 8;
                 }
-                if (*(s16 *)0x01ED543A >= 0x80) {
-                    *(s16 *)0x01ED543A = 0x80;
+                if (campaignWork.unk543A >= 0x80) {
+                    campaignWork.unk543A = 0x80;
                 }
                 temp_s4 = D_00298AD2;
                 temp_s5 = teki_a_seru;
                 var_s6 = Taku_Camp_Teki_Model_Disp(var_s6, 0x1F, temp_s5 + x_offset,
-                    temp_s4 + y_offset, (f32)SzDuel_GetCamDist(*(s16 *)0x01ED5404),
-                    D_00298AD4 - temp_s5, D_00298ADA - temp_s4, *(s16 *)0x01ED543A);
+                    temp_s4 + y_offset, (f32)SzDuel_GetCamDist(campaignWork.leaderCard),
+                    D_00298AD4 - temp_s5, D_00298ADA - temp_s4, campaignWork.unk543A);
             }
         }
-        if (*(s8 *)0x01ED5472 != 0) {
-            var_s6 = Taku_Camp_Card_Get(var_s6, (f32)angle, *state ^ 1, 0.0f, *(s32 *)0x01ED5474);
+        if (campaignWork.unk5472 != 0) {
+            var_s6 = Taku_Camp_Card_Get(var_s6, (f32)angle, *state ^ 1, 0.0f, campaignWork.unk5474);
         }
-        *(s8 *)0x01ED5481 = 0;
+        campaignWork.unk5481 = 0;
         RhBase_SetVifPacketArea((s32) var_s6);
     }
 }
@@ -924,35 +891,35 @@ s32 TkCamp_Draw_Pipe(s32 packet) {
         v = *(s16 *)(rec + 0xC2);
         switch (v) {
         case 0x2B98:
-            if (*(s16 *)0x01ED536C < 2) {
+            if (campaignWork.eventStep < 2) {
                 packet = Taku_Camp_3D(packet);
             } else {
                 packet = Taku_Camp_STON(packet);
             }
             break;
         case 0x2B9A:
-            if (*(s16 *)0x01ED536C >= 9) {
+            if (campaignWork.eventStep >= 9) {
                 packet = Taku_Camp_3D(packet);
             } else {
                 packet = Taku_Camp_STON(packet);
             }
             break;
         case 0x2BAC:
-            if (*(s16 *)0x01ED536C >= 2) {
+            if (campaignWork.eventStep >= 2) {
                 packet = Taku_Camp_STON(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F64:
-            if (*(s16 *)0x01ED536C < 0xA) {
+            if (campaignWork.eventStep < 0xA) {
                 packet = Taku_Camp_STON(packet);
             } else {
                 packet = Taku_Camp_3D(packet);
             }
             break;
         case 0x2F76:
-            if (*(s16 *)0x01ED536C > 1) {
+            if (campaignWork.eventStep > 1) {
                 packet = Taku_Camp_STON(packet);
             } else {
                 packet = Taku_Camp_3D(packet);

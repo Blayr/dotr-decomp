@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 typedef struct {
     __int128 value;
@@ -101,27 +102,6 @@ typedef struct { s16 u, v, w, h, page; } Image_00223600;
 typedef struct { s32 x, y, w, h; } Rect_00223600;
 typedef struct { s32 flags; Rect_00223600 rect; } Texture_00223600;
 
-typedef struct {
-    u8 pad0[0x53A6];
-    s8 mode;
-    s8 slide;
-    u8 pad53A8[0x1B];
-    s8 cursorX;
-    s8 cursorY;
-    s8 selCol;
-    s8 selRow;
-    s8 order;
-    s8 scrolling;
-    s8 scroll;
-    s8 selected;
-    s8 selMove;
-    s8 blink;
-    s8 count;
-    u8 pad53CE;
-    s8 listKind[12];
-    s8 listCell[12];
-    s8 listRow[12];
-} State_00223600;
 
 extern UV_00223600 D_0029A7E0;
 extern Palette_00223600 D_0029A7F0;
@@ -161,7 +141,7 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
     s16 colourIndex;
     s32 slide;
     s16 fromY;
-    State_00223600 *state;
+    CampaignWork *state;
     s16 shift;
     s16 scroll;
     s16 rowY;
@@ -215,7 +195,7 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
     Image_00223600 image;
     u8 rgba[4];
 
-    state = (State_00223600 *)0x01ED0000;
+    state = &campaignWork;
     font = 0;
     uv = D_0029A7E0;
     palette = D_0029A7F0;
@@ -227,24 +207,24 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
     rgba[2] = 255; rgba[1] = 255; rgba[0] = 255; rgba[3] = 128;
     image.page = 2;
     image.w = 0x300;
-    image.h = (state->slide * 404) / 100 + 16;
-    if (state->mode == 1) {
-        state->slide += 6;
-        if (state->slide >= 100) {
-            state->slide = 100;
-            state->mode = 2;
+    image.h = (state->eventWindowOpen * 404) / 100 + 16;
+    if (state->eventWindowState == 1) {
+        state->eventWindowOpen += 6;
+        if (state->eventWindowOpen >= 100) {
+            state->eventWindowOpen = 100;
+            state->eventWindowState = 2;
         }
     }
-    if (state->mode == 3) {
-        state->slide -= 6;
-        if (state->slide < 0) {
-            state->slide = 0;
-            state->mode = 4;
+    if (state->eventWindowState == 3) {
+        state->eventWindowOpen -= 6;
+        if (state->eventWindowOpen < 0) {
+            state->eventWindowOpen = 0;
+            state->eventWindowState = 4;
         }
     }
     packet = Taku_Window_Set(packet, &image, 2, 0, 0xFFC0, 16, 0, 128, 64);
-    if (0 < state->mode) {
-        slide = (state->slide * 640) / 100;
+    if (0 < state->eventWindowState) {
+        slide = (state->eventWindowOpen * 640) / 100;
         left = 640 - slide;
         image.page = 2;
         image.w = 236;
@@ -282,18 +262,18 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
             packet = (s32)Taku_FT4_Set((void *)packet, sprite, x, y, 0);
             sprite++;
         }
-        x = right + (state->count * 22 + 185);
-        if (0 <= state->blink) {
-            y = (s8)state->blink;
+        x = right + (state->nameLength * 22 + 185);
+        if (0 <= state->nameBlink) {
+            y = (s8)state->nameBlink;
         } else {
-            y = -(s8)state->blink;
+            y = -(s8)state->nameBlink;
         }
         cursor.alpha3 = y;
         cursor.alpha2 = y;
         cursor.alpha1 = y;
         cursor.a = y;
-        state->blink += 16;
-        if (state->count < 12) {
+        state->nameBlink += 16;
+        if (state->nameLength < 12) {
             packet = Taku_G4_Set(packet, &cursor, x, 94);
         }
         x = 48 + left;
@@ -316,9 +296,9 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
             packet = Taku_Bunsyou_Set(packet, 1, font, (s16)dx + (*entry)[0], (*entry)[1], 1.0f, 1.0f, 0, rgba);
             entry++;
         }
-        if (state->scrolling != 0) {
+        if (state->nameTableTurn != 0) {
             count = 3;
-            scroll = (state->scroll * 640) / 100;
+            scroll = (state->nameTableSlide * 640) / 100;
         } else {
             count = 1;
             scroll = 0;
@@ -335,7 +315,7 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
             }
             for (section = 0, sectionX = 0; section < 3; section++) {
                 band = 0;
-                switch (state->order) {
+                switch (state->nameTable) {
                 case 0:
                     switch (page) {
                     case 0:
@@ -403,7 +383,7 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
                 sectionX += 160;
             }
             for (textRow = 0; textRow < 3; textRow++) {
-                switch (state->order) {
+                switch (state->nameTable) {
                 case 0:
                     switch (page) {
                     case 0:
@@ -480,12 +460,12 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
                 SzMsg_Free(1);
             }
         }
-        if (state->selected == 1) {
+        if (state->nameTyping == 1) {
             for (k = 0; k < 3; k++) {
-                texCol = state->selCol % 5;
-                texRow = state->selRow;
-                if (state->selCol / 5 == k) {
-                    switch (state->order) {
+                texCol = state->namePickedColumn % 5;
+                texRow = state->namePickedRow;
+                if (state->namePickedColumn / 5 == k) {
+                    switch (state->nameTable) {
                     case 0:
                         font = k + 11;
                         break;
@@ -500,11 +480,11 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
                     selTex = (Texture_00223600 *)SzMsg_GetInfo(1);
                     selectedRect = selTex->rect;
                     rgba[2] = 0; rgba[1] = 0; rgba[0] = 0; rgba[3] = 128;
-                    toX = state->count * 22 + 190;
-                    fromX = tile.x + 5 + state->selCol * 32;
-                    fromY = tile.y + 5 + state->selRow * 36;
-                    px = fromX + (s16)((state->selMove * (toX - fromX)) / 100);
-                    sy = fromY + (s16)((state->selMove * (96 - fromY)) / 100);
+                    toX = state->nameLength * 22 + 190;
+                    fromX = tile.x + 5 + state->namePickedColumn * 32;
+                    fromY = tile.y + 5 + state->namePickedRow * 36;
+                    px = fromX + (s16)((state->nameTypingT * (toX - fromX)) / 100);
+                    sy = fromY + (s16)((state->nameTypingT * (96 - fromY)) / 100);
                     selX = selectedRect.x + (s16)texCol * 22;
                     selTex->rect.x = selX;
                     selY = selectedRect.y + (s16)texRow * 22;
@@ -513,10 +493,10 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
                     selTex->rect.h = 22;
                     packet = SzMsg_DrawRect_Pipe(packet, 1, px, sy, &uv, rgba);
                     rgba[2] = 255; rgba[1] = 255; rgba[0] = 255; rgba[3] = 128;
-                    fromX = tile.x + 3 + state->selCol * 32;
-                    fromY = tile.y + 3 + state->selRow * 36;
-                    px = fromX + (s16)((state->selMove * ((s16)(state->count * 22 + 188) - fromX)) / 100);
-                    sy = fromY + (s16)((state->selMove * (94 - fromY)) / 100);
+                    fromX = tile.x + 3 + state->namePickedColumn * 32;
+                    fromY = tile.y + 3 + state->namePickedRow * 36;
+                    px = fromX + (s16)((state->nameTypingT * ((s16)(state->nameLength * 22 + 188) - fromX)) / 100);
+                    sy = fromY + (s16)((state->nameTypingT * (94 - fromY)) / 100);
                     selTex->rect.x = selX;
                     selTex->rect.y = selY;
                     selTex->rect.w = 22;
@@ -529,8 +509,8 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
         image.page = 10;
         image.w = 36;
         image.h = 36;
-        x = (s16)(left + (tile.x - 4 + state->cursorX * 32));
-        y = (s16)(tile.y - 4 + state->cursorY * 36);
+        x = (s16)(left + (tile.x - 4 + state->nameColumn * 32));
+        y = (s16)(tile.y - 4 + state->nameRow * 36);
         packet = Taku_Window_Set(packet, &image, 3, 0, x, y, 0, 128, 0);
         n = 0;
         lx = 190;
@@ -579,11 +559,11 @@ s32 Taku_Camp_Ivent_Name(s32 packet) {
             void *Taku_FT4_Set(void *packet, void *src, s16 x, s16 y, u16 flip);
             s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, u16 depth, s32 unused, s16 alpha);
             s32 RhText_SetTextureFlush(s32 arg0);
-            cell = state->listCell[n];
+            cell = state->nameLetterColumn[n];
             lcol = cell % 5;
-            lrow = state->listRow[n];
+            lrow = state->nameLetterRow[n];
             group = cell / 5;
-            switch (state->listKind[n]) {
+            switch (state->nameLetterTable[n]) {
             case 0:
                 font = (s16)group + 11;
                 break;
@@ -630,17 +610,6 @@ typedef struct Tables_00224A40 {
     s32 type1[3];
 } Tables_00224A40;
 
-typedef struct State_00224A40 {
-    u8 pad[0x53CE];
-    s8 selected;
-    s8 types[12];
-    s8 cards[12];
-    s8 locations[12];
-    u8 pad2[3];
-    u16 checksum;
-    u16 codes[3];
-    u16 values[3];
-} State_00224A40;
 
 /* Picks the texts of the campaign event window for the current place and opponent. */
 void Taku_Camp_Ivent_Name_Set(void) {
@@ -649,7 +618,7 @@ void Taku_Camp_Ivent_Name_Set(void) {
     extern Tables_00224A40 D_002D19D0;
     extern s32 D_002D19D8;
     extern u16 D_002D49D4[];
-    State_00224A40 *state;
+    CampaignWork *state;
     s16 i;
     s16 group;
     s16 slot;
@@ -663,17 +632,17 @@ void Taku_Camp_Ivent_Name_Set(void) {
     s32 shift;
     u8 *code_ptr;
 
-    state = (State_00224A40 *)0x01ED0000;
+    state = &campaignWork;
     sum_ptr = (u8 *)&campaignState;
     i = 0;
     offset = 0;
     out = sum_ptr;
     while (i < 12) {
-        group = state->cards[i] / 5;
-        slot = (s16)(state->cards[i] % 5) + state->locations[i] * 6;
+        group = state->nameLetterColumn[i] / 5;
+        slot = (s16)(state->nameLetterColumn[i] % 5) + state->nameLetterRow[i] * 6;
         if (i == 0) {
             dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset);
-            switch (state->types[i]) {
+            switch (state->nameLetterTable[i]) {
             case 0:
                 *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
                 break;
@@ -686,7 +655,7 @@ void Taku_Camp_Ivent_Name_Set(void) {
             }
         }
         dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset + 4);
-        switch (state->types[i]) {
+        switch (state->nameLetterTable[i]) {
         case 0:
             *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
             break;
@@ -697,7 +666,7 @@ void Taku_Camp_Ivent_Name_Set(void) {
             *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
             break;
         }
-        if (i == 12 || i == state->selected) {
+        if (i == 12 || i == state->nameCursor) {
             *dest |= 0x8000;
         }
         i++;
@@ -712,12 +681,12 @@ void Taku_Camp_Ivent_Name_Set(void) {
         sum_index++;
         sum_ptr += 2;
     }
-    state->checksum = sum & 0xF;
+    state->deckHash = sum & 0xF;
     code_index = 0;
     shift = 0;
     code_ptr = (u8 *)state;
     while (code_index < 3) {
-        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckChoiceSets[state->checksum] >> shift) & 0x1F;
+        *(u16 *)(code_ptr + 0x53F8) = ((s32)campaignDeckChoiceSets[state->deckHash] >> shift) & 0x1F;
         shift += 5;
         *(u16 *)(code_ptr + 0x53FE) = campaignDeckChoices[*(u16 *)(code_ptr + 0x53F8)][0] & 0x3FF;
         code_index++;
@@ -759,15 +728,6 @@ typedef struct {
     u32 types;
 } Code_00224E40;
 
-typedef struct {
-    u8 pad[0x53A8];
-    s8 sel;
-    s8 pad53A9;
-    s8 mode;
-    u8 pad53AB[0x4D];
-    u16 codes[3];
-    u16 values[3];
-} State_00224E40;
 
 extern s16 D_00299ED2;
 extern Frame_00224E40 D_0029AA08;
@@ -800,7 +760,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     s16 flag2;
     s8 *ctx;
     s16 i;
-    State_00224E40 *state;
+    CampaignWork *state;
     s16 x;
     s16 y;
     s16 w;
@@ -848,7 +808,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     Color_00224E40 color;
 
     ctx = (s8 *)&campaignState;
-    state = (State_00224E40 *)0x01ED0000;
+    state = &campaignWork;
     frame = D_0029AA08;
     s100 = D_0029AA20;
     pair130 = D_0029AA50;
@@ -857,9 +817,9 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
     s200 = D_0029AB20;
     color.r = color.g = color.b = 0x80;
     color.a = 0x80;
-    if (D_00299ED2 == 0x2738 && *(s8 *)0x01ED53A6 != 0) {
+    if (D_00299ED2 == 0x2738 && campaignWork.eventWindowState != 0) {
         arg0 = Taku_Camp_Ivent_Name(arg0);
-    } else if (*(s8 *)0x01ED53A6 != 0) {
+    } else if (campaignWork.eventWindowState != 0) {
         switch (*(s16 *)(0xC2 + ctx)) {
         case 0x2738:
             x = 0x1B;
@@ -882,11 +842,11 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             break;
         }
         frame.kind = 2;
-        frame.x1 = ((w - 0x10) * *(s8 *)0x01ED53A7) / 100 + 0x10;
-        frame.y1 = ((h - 0x10) * *(s8 *)0x01ED53A7) / 100 + 0x10;
+        frame.x1 = ((w - 0x10) * campaignWork.eventWindowOpen) / 100 + 0x10;
+        frame.y1 = ((h - 0x10) * campaignWork.eventWindowOpen) / 100 + 0x10;
         arg0 = Taku_Window_Set(arg0, &frame, 2, 0, x, y, 0, 0x80, 0x40);
-        if (*(s8 *)0x01ED53A6 != 0) {
-            t = (*(s8 *)0x01ED53A7 * 0x280) / 100;
+        if (campaignWork.eventWindowState != 0) {
+            t = (campaignWork.eventWindowOpen * 0x280) / 100;
             nx = x + w - 0x8B;
             right = 0x280 - t;
             ny = y + h - 0x2A;
@@ -900,7 +860,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             switch (*(s16 *)(0xC2 + ctx)) {
             case 0x2738:
             case 0x276A:
-                if (*(s8 *)0x01ED53A6 == 2) {
+                if (campaignWork.eventWindowState == 2) {
                     tmpl = roseSprites;
                     for (i = 0; i < 2; i++) {
                         s100 = *tmpl;
@@ -925,7 +885,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                 } else {
                     x = 0xB0;
                 }
-                sel = *(s8 *)0x01ED53A8;
+                sel = campaignWork.eventWindowChoice;
                 t = (s16)((sel == 0) ? 0xB0 : 0xE0);
                 frame.kind = 8;
                 y = t;
@@ -933,12 +893,12 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                     frame.x1 = 0x148;
                     frame.y1 = 0x21;
                 }
-                if (*(s8 *)0x01ED53A6 == 2) {
+                if (campaignWork.eventWindowState == 2) {
                     arg0 = Taku_Window_Set(arg0, &frame, 3, 0, x + left, y, 0, 0x80, 0x40);
                 }
-                if (*(s8 *)0x01ED53A6 == 2) {
+                if (campaignWork.eventWindowState == 2) {
                     for (i2 = 0; i2 < 2; i2++) {
-                        if (i2 == state->sel) {
+                        if (i2 == state->eventWindowChoice) {
                             color.r = color.g = color.b = 0x80;
                             color.a = 0x80;
                         } else {
@@ -976,15 +936,15 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
             case 0x2757:
             case 0x2760:
                 for (n = 0; n < 3; n++) {
-                    hundreds[n] = campaignDeckChoices[state->codes[n]].number / 100;
-                    ones[n] = campaignDeckChoices[state->codes[n]].number % 100;
+                    hundreds[n] = campaignDeckChoices[state->deckChoices[n]].number / 100;
+                    ones[n] = campaignDeckChoices[state->deckChoices[n]].number % 100;
                     for (m = 0; m < 4; m++) {
-                        digits[n][m] = ((s32)campaignDeckChoices[state->codes[n]].digits >> (m * 3)) & 7;
-                        types[n][m] = (campaignDeckChoices[state->codes[n]].types >> (5 * m)) & 0x1F;
+                        digits[n][m] = ((s32)campaignDeckChoices[state->deckChoices[n]].digits >> (m * 3)) & 7;
+                        types[n][m] = (campaignDeckChoices[state->deckChoices[n]].types >> (5 * m)) & 0x1F;
                     }
                 }
-                if (*(s8 *)0x01ED5494 == 0) {
-                    switch (v = *(s8 *)0x01ED5495) {
+                if (campaignWork.deckShowPhase == 0) {
+                    switch (v = campaignWork.deckShowDone) {
                     case 0:
                         cur = 2;
                         break;
@@ -993,7 +953,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                         break;
                     }
                 } else {
-                    cur = *(s8 *)0x01ED53A8;
+                    cur = campaignWork.eventWindowChoice;
                 }
                 frame.kind = 1;
                 frame.x1 = 0xF0;
@@ -1136,7 +1096,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                         s230.y3 = 0x18;
                         flip = 1;
                     }
-                    mode = state->mode;
+                    mode = state->deckChoiceTurn;
                     if (mode == 0) {
                         if (k == 0) {
                             arg0 = Taku_FT4_Set(arg0, &s230, left + xx, 0xF1, flip);
@@ -1154,7 +1114,7 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                 frame.y1 = 0x22;
                 arg0 = Taku_Window_Set(arg0, &frame, 1, 0, 0x22 + left, 0xB2, 0, 0x80, 0x40);
                 arg0 = Taku_Obj_Set(arg0, &s200, 0x27 + left, 0xB7);
-                q = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, SzDuel_GetMsgName(state->values[cur]), 0, 0x16));
+                q = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(arg0, 1, SzDuel_GetMsgName(state->deckChoiceCards[cur]), 0, 0x16));
                 width = *(s32 *)((u8 *)SzMsg_GetInfo(1) + 0xC);
                 if (width <= 0xA9) {
                     sy = sx = 1.0f;
@@ -1166,33 +1126,33 @@ s32 Taku_Camp_Ivent_Window(s32 arg0) {
                 break;
             }
         }
-        if (*(s8 *)0x01ED53A6 == 1) {
-            *(s8 *)0x01ED53A7 += 6;
-            if (*(s8 *)0x01ED53A7 >= 100) {
-                *(s8 *)0x01ED53A7 = 100;
-                *(s8 *)0x01ED53A6 = 2;
+        if (campaignWork.eventWindowState == 1) {
+            campaignWork.eventWindowOpen += 6;
+            if (campaignWork.eventWindowOpen >= 100) {
+                campaignWork.eventWindowOpen = 100;
+                campaignWork.eventWindowState = 2;
             }
         }
         switch (*(s16 *)(ctx + 0xC2)) {
         case 0x2738:
         case 0x276A:
         case 0x2742:
-            if (*(s8 *)0x01ED53A6 == 3) {
-                *(s8 *)0x01ED53A7 -= 6;
-                if (*(s8 *)0x01ED53A7 < 0) {
-                    *(s8 *)0x01ED53A7 = 0;
-                    *(s8 *)0x01ED53A6 = 4;
+            if (campaignWork.eventWindowState == 3) {
+                campaignWork.eventWindowOpen -= 6;
+                if (campaignWork.eventWindowOpen < 0) {
+                    campaignWork.eventWindowOpen = 0;
+                    campaignWork.eventWindowState = 4;
                 }
             }
             break;
         case 0x2756:
         case 0x2757:
         case 0x2760:
-            if (*(s8 *)0x01ED53A6 == 3 && *(s8 *)0x01ED5494 >= 3) {
-                *(s8 *)0x01ED53A7 -= 6;
-                if (*(s8 *)0x01ED53A7 < 0) {
-                    *(s8 *)0x01ED53A7 = 0;
-                    *(s8 *)0x01ED53A6 = 4;
+            if (campaignWork.eventWindowState == 3 && campaignWork.deckShowPhase >= 3) {
+                campaignWork.eventWindowOpen -= 6;
+                if (campaignWork.eventWindowOpen < 0) {
+                    campaignWork.eventWindowOpen = 0;
+                    campaignWork.eventWindowState = 4;
                 }
             }
             break;
@@ -1226,7 +1186,7 @@ void *Taku_Camp_Kumo(void *packetIn) {
     s16 state;
     s16 i;
 
-    if (D_00299ED2 == 0x2724 && *(s16 *)0x01ED536C < 6) {
+    if (D_00299ED2 == 0x2724 && campaignWork.eventStep < 6) {
         packet.depth = -10;
     } else if (*(s16 *)(context + 0xC2) == 0x2BB0) {
         packet.depth = -10;
@@ -1234,67 +1194,67 @@ void *Taku_Camp_Kumo(void *packetIn) {
         packet.depth = -10;
     }
 
-    state = *(s16 *)0x01ED53A2;
+    state = campaignWork.cloudState;
     if (state != 0) {
         switch ((s16)state) {
         case 2:
             break;
         case 3:
-            if (0 <= *(s16 *)0x01ED53A4) {
-                *(s16 *)0x01ED53A4 -= 0x10;
-                if (*(s16 *)0x01ED53A4 <= 0) {
-                    *(s16 *)0x01ED53A4 = 0;
-                    *(s16 *)0x01ED53A2 = 0;
+            if (0 <= campaignWork.cloudCover) {
+                campaignWork.cloudCover -= 0x10;
+                if (campaignWork.cloudCover <= 0) {
+                    campaignWork.cloudCover = 0;
+                    campaignWork.cloudState = 0;
                 }
             }
             break;
         case 4:
-            if (*(s16 *)0x01ED53A4 <= 0x1000) {
-                *(s16 *)0x01ED53A4 += 0x20;
-                if (*(s16 *)0x01ED53A4 >= 0x1000) {
-                    *(s16 *)0x01ED53A4 = 0x1000;
-                    *(s16 *)0x01ED53A2 = 4;
+            if (campaignWork.cloudCover <= 0x1000) {
+                campaignWork.cloudCover += 0x20;
+                if (campaignWork.cloudCover >= 0x1000) {
+                    campaignWork.cloudCover = 0x1000;
+                    campaignWork.cloudState = 4;
                 }
             }
             break;
         case 10:
-            *(s16 *)0x01ED53A4 += 0x400;
-            if (*(s16 *)0x01ED53A4 >= 0x1000) {
-                *(s16 *)0x01ED53A4 = 0x1000;
-                *(s16 *)0x01ED53A2 = 11;
+            campaignWork.cloudCover += 0x400;
+            if (campaignWork.cloudCover >= 0x1000) {
+                campaignWork.cloudCover = 0x1000;
+                campaignWork.cloudState = 11;
             }
             break;
         case 20:
-            *(s16 *)0x01ED53A4 -= 0x100;
-            if (*(s16 *)0x01ED53A4 <= 0) {
-                *(s16 *)0x01ED53A4 = 0;
-                *(s16 *)0x01ED53A2 = 21;
+            campaignWork.cloudCover -= 0x100;
+            if (campaignWork.cloudCover <= 0) {
+                campaignWork.cloudCover = 0;
+                campaignWork.cloudState = 21;
             }
             break;
         case 22:
-            *(s16 *)0x01ED53A4 += 0x100;
-            if (*(s16 *)0x01ED53A4 >= 0x1000) {
-                *(s16 *)0x01ED53A4 = 0x1000;
-                *(s16 *)0x01ED53A2 = 23;
+            campaignWork.cloudCover += 0x100;
+            if (campaignWork.cloudCover >= 0x1000) {
+                campaignWork.cloudCover = 0x1000;
+                campaignWork.cloudState = 23;
             }
             break;
         case 30:
-            *(s16 *)0x01ED53A4 += 0x400;
-            if (*(s16 *)0x01ED53A4 >= 0x1000) {
-                *(s16 *)0x01ED53A4 = 0x1000;
-                *(s16 *)0x01ED53A2 = 31;
+            campaignWork.cloudCover += 0x400;
+            if (campaignWork.cloudCover >= 0x1000) {
+                campaignWork.cloudCover = 0x1000;
+                campaignWork.cloudState = 31;
             }
             break;
         case 32:
-            *(s16 *)0x01ED53A4 -= 0x20;
-            if (*(s16 *)0x01ED53A4 <= 0) {
-                *(s16 *)0x01ED53A4 = 0;
-                *(s16 *)0x01ED53A2 = 33;
+            campaignWork.cloudCover -= 0x20;
+            if (campaignWork.cloudCover <= 0) {
+                campaignWork.cloudCover = 0;
+                campaignWork.cloudState = 33;
             }
             break;
         }
 
-        state = *(s16 *)0x01ED53A2;
+        state = campaignWork.cloudState;
         if (state >= 30) {
             packet.r0 = packet.r1 = packet.r2 = packet.r3 = 255;
             packet.g0 = packet.g1 = packet.g2 = packet.g3 = 255;
@@ -1314,14 +1274,14 @@ void *Taku_Camp_Kumo(void *packetIn) {
         packet.y0 = packet.y1 = 0;
         packet.y2 = packet.y3 = 448;
 
-        if (*(s16 *)(context + 0xC2) == 0x2738 && *(s16 *)0x01ED536C > 1) {
+        if (*(s16 *)(context + 0xC2) == 0x2738 && campaignWork.eventStep > 1) {
             packet.a0 = packet.a1 = packet.a2 = packet.a3 = 0;
         } else if (*(s16 *)(context + 0xC2) == 0x2B9A ||
                    *(s16 *)(context + 0xC2) == 0x2F64) {
             packet.a0 = packet.a1 = packet.a2 = packet.a3 = 0;
         } else {
             packet.a0 = packet.a1 = packet.a2 = packet.a3 =
-                (*(s16 *)0x01ED53A4 << 7) >> 12;
+                (campaignWork.cloudCover << 7) >> 12;
             packetIn = Taku_G4_Set(packetIn, &packet, 0, 0);
         }
     }

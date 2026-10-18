@@ -1775,7 +1775,7 @@ extern s16 D_00351248;
 
 #pragma optimization_level 0
 
-/* Starts the slot machine on the reel cards at 0x1ED0000 (or, with `useTestReels`, a built-in set of 16 without
+/* Starts the slot machine on the reel cards at CAMPAIGN_WORK_ADDR (or, with `useTestReels`, a built-in set of 16 without
    starting the spin). */
 void ShSlot_Init(s32 useTestReels) {
     s32 i;
@@ -1789,7 +1789,7 @@ void ShSlot_Init(s32 useTestReels) {
     extern s32 ShSlot_Start();
 
     D_00351244 = useTestReels;
-    slotReelCards = (Deck_00285880 *)0x01ED0000;
+    slotReelCards = (Deck_00285880 *)CAMPAIGN_WORK_ADDR;
     if (D_00351244) {
         deck = slotReelCards;
         deck->count = 0x10;

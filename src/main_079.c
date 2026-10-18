@@ -128,7 +128,7 @@ u8 *TaLogic_RootTreeAloc(u16 *wSize, u16 *NodeCount) {
     temp_a2 = *NodeCount;
     *NodeCount = temp_a2 + 1;
     *wSize += 0x38;
-    return (u8 *) 0x01ED0000 + temp_a2 * 0x38;
+    return (u8 *)CAMPAIGN_WORK_ADDR + temp_a2 * 0x38; /* the search tree lives in the campaign work area */
 }
 
 /* Clears a unit's computer-opponent task (`Is1st` on its first turn). */

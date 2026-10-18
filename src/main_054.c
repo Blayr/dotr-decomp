@@ -78,12 +78,12 @@ s32 SzFile_InqRequestX(s32 owner, s32 byGroup) {
 void SzFile_DoRequest(void) {
     s32 start;
 
-    start = *(s32 *)0x10000800;
+    start = *(s32 *)T1_COUNT_ADDR;
     do {
         if (SzFile_DoRequestS() == 0) {
             break;
         }
-    } while (*(s32 *)0x10000800 - start <= 0x40);
+    } while (*(s32 *)T1_COUNT_ADDR - start <= 0x40);
 }
 
 typedef struct State_001FF420 {

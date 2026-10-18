@@ -368,7 +368,7 @@ void func_0017C648(void) {
     KPatch_0017C648 *t;
     u32 i;
 
-    if (!(*(volatile s32 *)0x10001810 & 0x100)) {
+    if (!(*(volatile s32 *)T3_MODE_ADDR & 0x100)) {
         t = (KPatch_0017C648 *)&D_0028C9C0;
         func_0017C5E0(t[0].addr, t[0].val);
         func_0017C5F0(0x80076000, &D_0028C258, 0x740);

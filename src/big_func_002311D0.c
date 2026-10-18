@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 typedef struct {
     s16 x0, y0, x1, y1;
@@ -31,76 +32,12 @@ extern BunG4 D_00298AF6 __attribute__((aligned(2)));
 extern BunWin D_00297B72 __attribute__((aligned(2)));
 
 
-typedef struct {
-    u8 pad0000[0x4];
-    u16 f0004;
-    u8 pad0006[0x5A];
-    s16 f0060;
-    u8 pad0062[0xA];
-    s16 f006C;
-    s8 f006E;
-    u8 pad006F[0x3];
-    s8 f0072;
-    u8 pad0073[0x119];
-    s8 f018C;
-    u8 pad018D[0x51DF];
-    s16 f536C;
-    u8 pad536E[0x4];
-    s8 f5372;
-    s8 f5373;
-    s8 f5374;
-    s8 f5375;
-    s8 f5376;
-    u8 pad5377[0x1];
-    s16 msg;
-    s8 f537A;
-    s8 step;
-    s8 f537C;
-    s8 f537D;
-    s8 mode;
-    u8 pad537F[0x1];
-    s16 tbl[4][4];
-    s8 f53A0;
-    u8 pad53A1[0xA];
-    s8 f53AB;
-    u8 pad53AC[0x8];
-    s8 f53B4;
-    s8 f53B5;
-    s16 f53B6;
-    s16 f53B8;
-    u8 pad53BA[0x6];
-    s8 f53C0;
-    u8 pad53C1[0x46];
-    s8 f5407;
-    s8 f5408;
-    u8 pad5409[0x1];
-    s8 f540A;
-    u8 pad540B[0x1];
-    u8 face0[8];
-    u8 face1[8];
-    u8 pad541C[0x10];
-    s16 lv[5];
-    u8 pad5436[0x1];
-    s8 f5437;
-    u8 pad5438[0x8];
-    s8 f5440;
-    u8 pad5441[0x27];
-    s8 f5468;
-    u8 pad5469[0x11];
-    s8 f547A;
-    u8 pad547B[0x6];
-    s8 f5481;
-    s8 f5482;
-    s8 f5483;
-} BunWork;
-
-#define W ((BunWork *)0x01ED0000)
 
 /* Draws (hyouji) the campaign text window: the speaker's face and the text line by line. */
 s32 Taku_Camp_BUN_HYOUJI(s32 p) {
     s16 flagB;
     s16 i;
-    BunWork *w;
+    CampaignWork *w;
     s8 *ctx;
     s16 j;
     s16 count;
@@ -114,7 +51,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
     s32 msg;
     s16 flagA;
 
-    w = W;
+    w = &campaignWork;
     msg = 0;
     flagB = 0;
     flagA = 0;
@@ -124,9 +61,9 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
         col[i][0] = col[i][1] = col[i][2] = 0x80;
         col[i][3] = 0x80;
     }
-    w->f5468 = 0;
-    if (w->step != 0) {
-        if (w->mode == 0) {
+    w->opponentLook = 0;
+    if (w->talkStep != 0) {
+        if (w->talkSpeaker == 0) {
             BunInfo *info;
             s32 x;
             s16 n;
@@ -134,7 +71,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
             s32 y;
 
             g4 = D_00298AF6;
-            p = SzMsg_LoadFont_Pipe(p, 1, w->msg, 0, 0x16);
+            p = SzMsg_LoadFont_Pipe(p, 1, w->talkMessage, 0, 0x16);
             p = RhText_SetTextureFlush(p);
             info = SzMsg_GetInfo(1);
             box = info->box;
@@ -144,151 +81,151 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                 count = 3;
             }
             if (*(s16 *)(ctx + 0xC2) < 200) {
-                w->f5468 = 0;
+                w->opponentLook = 0;
             } else if (*(s16 *)(ctx + 0xC2) < 300) {
-                w->f5468 = 1;
+                w->opponentLook = 1;
             } else {
-                w->f5468 = 2;
-                if (*(s16 *)(ctx + 0xC4) == 14 && w->f537D == 1) {
-                    w->f5468 = 3;
+                w->opponentLook = 2;
+                if (*(s16 *)(ctx + 0xC4) == 14 && w->talkPage == 1) {
+                    w->opponentLook = 3;
                 }
             }
-            switch (w->step) {
+            switch (w->talkStep) {
             case 1:
-                w->f53A0 = 0;
+                w->unk53A0 = 0;
                 for (j = 0; j < 3; j++) {
                     for (i = 0; i < 4; i++) {
-                        w->tbl[j + 1][i] = 0;
+                        w->unk5380[j + 1][i] = 0;
                     }
                 }
-                w->step++;
+                w->talkStep++;
                 break;
             case 2:
-                w->f53A0 += 20;
-                if (w->f53A0 >= 100) {
-                    w->f53A0 = 100;
-                    w->step++;
+                w->unk53A0 += 20;
+                if (w->unk53A0 >= 100) {
+                    w->unk53A0 = 100;
+                    w->talkStep++;
                 }
                 break;
             case 3:
-                w->f540A = 10;
+                w->opponentFaceState = 10;
                 for (j = 0; j < count; j++) {
                     for (i = 0; i < 4; i++) {
                         switch (i) {
                         case 1:
-                            if (w->tbl[j + 1][2] >= 0x80) {
-                                w->tbl[j + 1][i] += 0x20;
+                            if (w->unk5380[j + 1][2] >= 0x80) {
+                                w->unk5380[j + 1][i] += 0x20;
                             }
                             break;
                         case 2:
-                            if (w->tbl[j + 1][0] > 0x40) {
-                                w->tbl[j + 1][i] += 0x20;
+                            if (w->unk5380[j + 1][0] > 0x40) {
+                                w->unk5380[j + 1][i] += 0x20;
                             }
                             break;
                         case 3:
-                            if (w->tbl[j + 1][1] > 0x20) {
-                                w->tbl[j + 1][i] += 0x20;
+                            if (w->unk5380[j + 1][1] > 0x20) {
+                                w->unk5380[j + 1][i] += 0x20;
                             }
                             break;
                         default:
                             if (j == 0) {
-                                w->tbl[j + 1][i] += 0x20;
-                            } else if (w->tbl[j][1] >= 0x80) {
-                                w->tbl[j + 1][i] += 0x20;
+                                w->unk5380[j + 1][i] += 0x20;
+                            } else if (w->unk5380[j][1] >= 0x80) {
+                                w->unk5380[j + 1][i] += 0x20;
                             }
                             break;
                         }
-                        if (w->tbl[j + 1][i] >= 0x80) {
-                            w->tbl[j + 1][i] = 0x80;
+                        if (w->unk5380[j + 1][i] >= 0x80) {
+                            w->unk5380[j + 1][i] = 0x80;
                         }
                     }
                 }
-                if (w->tbl[count][3] >= 0x80) {
-                    w->step++;
+                if (w->unk5380[count][3] >= 0x80) {
+                    w->talkStep++;
                 }
                 break;
             case 4:
                 break;
             case 5:
-                if (w->f537D < w->f537C) {
+                if (w->talkPage < w->talkMessageCount) {
                     for (j = 0; j < count; j++) {
                         for (i = 0; i < 4; i++) {
-                            w->tbl[j + 1][i] -= 0x10;
-                            if (w->tbl[j + 1][i] <= 0) {
-                                w->tbl[j + 1][i] = 0;
+                            w->unk5380[j + 1][i] -= 0x10;
+                            if (w->unk5380[j + 1][i] <= 0) {
+                                w->unk5380[j + 1][i] = 0;
                             }
                         }
                     }
-                    if (w->tbl[count][3] <= 0) {
+                    if (w->unk5380[count][3] <= 0) {
                         for (j = 0; j < 3; j++) {
                             for (i = 0; i < 4; i++) {
-                                w->tbl[j + 1][i] = 0;
+                                w->unk5380[j + 1][i] = 0;
                             }
                         }
-                        w->step = 2;
-                        w->f537D++;
+                        w->talkStep = 2;
+                        w->talkPage++;
                         Taku_Camp_BUN_HANTEI();
                     }
                 } else {
-                    w->step = 11;
+                    w->talkStep = 11;
                 }
                 break;
             case 11:
                 for (j = 0; j < count; j++) {
                     for (i = 0; i < 4; i++) {
-                        w->tbl[j + 1][i] -= 0x10;
-                        if (w->tbl[j + 1][i] <= 0) {
-                            w->tbl[j + 1][i] = 0;
+                        w->unk5380[j + 1][i] -= 0x10;
+                        if (w->unk5380[j + 1][i] <= 0) {
+                            w->unk5380[j + 1][i] = 0;
                         }
                     }
                 }
-                if (w->tbl[count][3] <= 0) {
+                if (w->unk5380[count][3] <= 0) {
                     for (j = 0; j < 3; j++) {
                         for (i = 0; i < 4; i++) {
-                            w->tbl[j + 1][i] = 0;
+                            w->unk5380[j + 1][i] = 0;
                         }
                     }
-                    w->step = 12;
+                    w->talkStep = 12;
                 }
                 break;
             case 12:
-                if (0 <= w->f53A0) {
-                    w->f53A0 -= 20;
-                    if (w->f53A0 <= 0) {
+                if (0 <= w->unk53A0) {
+                    w->unk53A0 -= 20;
+                    if (w->unk53A0 <= 0) {
                         s16 ok;
 
-                        w->f53A0 = 0;
-                        if (w->f018C != 0 && *(s16 *)(ctx + 0xC2) >= 200) {
-                            w->f537D = 0;
-                            w->step = 0;
-                            w->f537A = 0;
+                        w->unk53A0 = 0;
+                        if (w->unk018C != 0 && *(s16 *)(ctx + 0xC2) >= 200) {
+                            w->talkPage = 0;
+                            w->talkStep = 0;
+                            w->unk537A = 0;
                             *(s16 *)(ctx + 0xC2) = 0;
-                            w->f536C = 0;
-                            w->f0060 = 0;
-                            w->f5372 = 0;
-                            w->f5373 = 0;
-                            w->f5375 = 0;
+                            w->eventStep = 0;
+                            w->moveStep = 0;
+                            w->unk5372 = 0;
+                            w->leaderShow = 0;
+                            w->unk5375 = 0;
                             break;
                         }
-                        w->f53AB = 0;
+                        w->unk53AB = 0;
                         ok = 1;
                         if (*(s16 *)(ctx + 0xC2) >= 300 && *(s16 *)(ctx + 0xC2) < 10000) {
-                            if (w->f537A == 3) {
+                            if (w->unk537A == 3) {
                                 ok = 1;
                             } else {
                                 ok = 0;
                             }
                         }
-                        if (w->f5440 <= 0 && ok) {
-                            w->f5440 = 0;
+                        if (w->unk5440 <= 0 && ok) {
+                            w->unk5440 = 0;
                             if (ctx[0] == 0 && *(s16 *)(ctx + 0xC2) == 0x139 &&
-                                ctx[3 + w->f53C0] != 0 && *(s16 *)(ctx + 0xC2) >= 300 &&
+                                ctx[3 + w->unk53C0] != 0 && *(s16 *)(ctx + 0xC2) >= 300 &&
                                 *(s16 *)(ctx + 0xC2) < 10000) {
                                 *(s16 *)(ctx + 0xC2) = 0x2BAC;
                                 ctx[0xE] = 5;
                                 break;
                             }
-                            if (ctx[3 + w->f53C0] < 3 && *(s16 *)(ctx + 0xC2) >= 300 &&
+                            if (ctx[3 + w->unk53C0] < 3 && *(s16 *)(ctx + 0xC2) >= 300 &&
                                 *(s16 *)(ctx + 0xC2) < 10000) {
                                 if (ctx[0] == 0) {
                                     if (*(s16 *)(ctx + 0xC2) == 0x134) {
@@ -311,41 +248,41 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                                     *(s16 *)(ctx + 0xC2) -= 200;
                                     ctx[3 + ctx[0xC6]] = 3;
                                 }
-                                w->f537D = 0;
-                                w->step = 0;
-                                w->f537A = 0;
-                                w->f536C = 0;
-                                w->f0060 = 0;
-                                w->f5372 = 1;
-                                w->f5373 = 0;
-                                w->f5375 = 1;
+                                w->talkPage = 0;
+                                w->talkStep = 0;
+                                w->unk537A = 0;
+                                w->eventStep = 0;
+                                w->moveStep = 0;
+                                w->unk5372 = 1;
+                                w->leaderShow = 0;
+                                w->unk5375 = 1;
                             } else if (*(s16 *)(ctx + 0xC2) >= 200) {
                                 if (ctx[0] == 0 && *(s16 *)(ctx + 0xC2) == 0xD5) {
                                     ctx[0xE] = 4;
                                 } else if (ctx[3 + ctx[0xC6]] == 1 && *(s16 *)(ctx + 0xC2) >= 200) {
                                     ctx[3 + ctx[0xC6]] = 2;
                                 }
-                                w->f537D = 0;
-                                w->step = 0;
-                                w->f537A = 0;
+                                w->talkPage = 0;
+                                w->talkStep = 0;
+                                w->unk537A = 0;
                                 *(s16 *)(ctx + 0xC2) = 0;
-                                w->f536C = 0;
-                                w->f0060 = 0;
-                                w->f5372 = 0;
-                                w->f5373 = 0;
-                                w->f5375 = 0;
+                                w->eventStep = 0;
+                                w->moveStep = 0;
+                                w->unk5372 = 0;
+                                w->leaderShow = 0;
+                                w->unk5375 = 0;
                             }
                         }
                     }
                 }
                 break;
             }
-            g4.v[5] = D_00298AF6.v[1] + w->f53A0 * (D_00298AF6.v[5] - D_00298AF6.v[1]) / 100;
+            g4.v[5] = D_00298AF6.v[1] + w->unk53A0 * (D_00298AF6.v[5] - D_00298AF6.v[1]) / 100;
             g4.v[7] = g4.v[5];
             p = func_00218970_b(p, &g4, 0, 0);
             for (i = 0; i < 4; i++) {
                 col[i][0] = col[i][1] = col[i][2] = 0x80;
-                col[i][3] = w->tbl[0][i];
+                col[i][3] = w->unk5380[0][i];
             }
             n = count;
             x = D_00298AF6.v[0] + 6;
@@ -354,7 +291,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                 s16 yy = y;
 
                 for (j = 0; j < 4; j++) {
-                    col[j][3] = w->tbl[i + 1][j];
+                    col[j][3] = w->unk5380[i + 1][j];
                 }
                 info->box.y = box.y + i * 0x16;
                 info->box.h = 0x16;
@@ -362,87 +299,87 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                 y = (s16)(y + 0x16);
             }
             SzMsg_Free(1);
-        } else if (w->mode == 1) {
+        } else if (w->talkSpeaker == 1) {
             s16 done;
 
             done = 0;
             if (*(s16 *)(ctx + 0xC2) == 0x2724) {
-                if (w->msg > 0x7F0) {
-                    w->lv[0] += 2;
-                    if (w->lv[0] >= 200) {
-                        w->lv[0] = 200;
+                if (w->talkMessage > 0x7F0) {
+                    w->unk542C[0] += 2;
+                    if (w->unk542C[0] >= 200) {
+                        w->unk542C[0] = 200;
                     }
                 }
-                if (w->msg > 0x7F2) {
-                    w->lv[1] += 2;
-                    if (w->lv[1] >= 200) {
-                        w->lv[1] = 200;
+                if (w->talkMessage > 0x7F2) {
+                    w->unk542C[1] += 2;
+                    if (w->unk542C[1] >= 200) {
+                        w->unk542C[1] = 200;
                     }
                 }
-                if (w->msg > 0x7F3) {
-                    w->lv[2] += 2;
-                    if (w->lv[2] >= 200) {
-                        w->lv[2] = 200;
+                if (w->talkMessage > 0x7F3) {
+                    w->unk542C[2] += 2;
+                    if (w->unk542C[2] >= 200) {
+                        w->unk542C[2] = 200;
                     }
                 }
-                if (w->msg > 0x7F5) {
-                    w->lv[3] += 2;
-                    if (w->lv[3] >= 200) {
-                        w->lv[3] = 200;
+                if (w->talkMessage > 0x7F5) {
+                    w->unk542C[3] += 2;
+                    if (w->unk542C[3] >= 200) {
+                        w->unk542C[3] = 200;
                     }
                 }
-                if (w->msg >= 0x7FB) {
-                    w->lv[4] += 2;
-                    if (w->lv[4] >= 200) {
-                        w->lv[4] = 200;
+                if (w->talkMessage >= 0x7FB) {
+                    w->unk542C[4] += 2;
+                    if (w->unk542C[4] >= 200) {
+                        w->unk542C[4] = 200;
                         done = 1;
                     }
                 }
             }
-            switch (w->step) {
+            switch (w->talkStep) {
             case 1:
-                w->f53A0 = 0;
+                w->unk53A0 = 0;
                 for (j = 0; j < 4; j++) {
-                    w->tbl[0][j] = 0;
+                    w->unk5380[0][j] = 0;
                 }
-                w->step++;
+                w->talkStep++;
                 break;
             case 2:
             case 3:
                 if (*(s16 *)(ctx + 0xC2) == 0x2724) {
-                    switch (w->msg) {
+                    switch (w->talkMessage) {
                     case 0x7F0:
-                        w->lv[0] += 2;
-                        if (w->lv[0] >= 100) {
-                            w->lv[0] = 100;
+                        w->unk542C[0] += 2;
+                        if (w->unk542C[0] >= 100) {
+                            w->unk542C[0] = 100;
                             flagA = 1;
                         }
                         break;
                     case 0x7F1:
-                        w->lv[1] += 2;
-                        if (w->lv[1] >= 100) {
-                            w->lv[1] = 100;
+                        w->unk542C[1] += 2;
+                        if (w->unk542C[1] >= 100) {
+                            w->unk542C[1] = 100;
                             flagA = 1;
                         }
                         break;
                     case 0x7F3:
-                        w->lv[2] += 2;
-                        if (w->lv[2] >= 100) {
-                            w->lv[2] = 100;
+                        w->unk542C[2] += 2;
+                        if (w->unk542C[2] >= 100) {
+                            w->unk542C[2] = 100;
                             flagA = 1;
                         }
                         break;
                     case 0x7F4:
-                        w->lv[3] += 2;
-                        if (w->lv[3] >= 100) {
-                            w->lv[3] = 100;
+                        w->unk542C[3] += 2;
+                        if (w->unk542C[3] >= 100) {
+                            w->unk542C[3] = 100;
                             flagA = 1;
                         }
                         break;
                     case 0x7FA:
-                        w->lv[4] += 2;
-                        if (w->lv[4] >= 100) {
-                            w->lv[4] = 100;
+                        w->unk542C[4] += 2;
+                        if (w->unk542C[4] >= 100) {
+                            w->unk542C[4] = 100;
                             flagA = 1;
                         }
                         break;
@@ -455,76 +392,76 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                     switch (j) {
                     case 1:
                     case 2:
-                        if (w->tbl[0][0] > 0x40) {
-                            w->tbl[0][j] += 0x20;
+                        if (w->unk5380[0][0] > 0x40) {
+                            w->unk5380[0][j] += 0x20;
                         }
                         break;
                     case 3:
-                        if (w->tbl[0][1] > 0x40) {
-                            w->tbl[0][j] += 0x20;
+                        if (w->unk5380[0][1] > 0x40) {
+                            w->unk5380[0][j] += 0x20;
                         }
                         break;
                     default:
-                        w->tbl[0][j] += 0x20;
+                        w->unk5380[0][j] += 0x20;
                         break;
                     }
-                    if (w->tbl[0][j] >= 0x80) {
-                        w->tbl[0][j] = 0x80;
+                    if (w->unk5380[0][j] >= 0x80) {
+                        w->unk5380[0][j] = 0x80;
                     }
                 }
                 if (*(s16 *)(ctx + 0xC2) == 0x2724) {
-                    if (flagA && w->tbl[0][3] >= 0x80) {
-                        w->step++;
+                    if (flagA && w->unk5380[0][3] >= 0x80) {
+                        w->talkStep++;
                     }
-                } else if (w->tbl[0][3] >= 0x80) {
-                    w->step++;
+                } else if (w->unk5380[0][3] >= 0x80) {
+                    w->talkStep++;
                 }
                 break;
             case 4:
                 break;
             case 5:
-                if (*(s16 *)(ctx + 0xC2) == 0x2724 && w->msg == 0x7F6) {
-                    w->lv[3] += 2;
-                    if (w->lv[3] >= 200) {
-                        w->lv[3] = 200;
+                if (*(s16 *)(ctx + 0xC2) == 0x2724 && w->talkMessage == 0x7F6) {
+                    w->unk542C[3] += 2;
+                    if (w->unk542C[3] >= 200) {
+                        w->unk542C[3] = 200;
                         flagA = 1;
                     }
                 }
-                if (w->f537D < w->f537C) {
+                if (w->talkPage < w->talkMessageCount) {
                     for (j = 0; j < 4; j++) {
                         switch (j) {
                         case 1:
                         case 2:
-                            if (w->tbl[0][0] < 0x40) {
-                                w->tbl[0][j] -= 0x20;
+                            if (w->unk5380[0][0] < 0x40) {
+                                w->unk5380[0][j] -= 0x20;
                             }
                             break;
                         case 3:
-                            if (w->tbl[0][1] < 0x40) {
-                                w->tbl[0][j] -= 0x20;
+                            if (w->unk5380[0][1] < 0x40) {
+                                w->unk5380[0][j] -= 0x20;
                             }
                             break;
                         default:
-                            w->tbl[0][j] -= 0x20;
+                            w->unk5380[0][j] -= 0x20;
                             break;
                         }
-                        if (w->tbl[0][j] <= 0) {
-                            w->tbl[0][j] = 0;
-                            if (*(s16 *)(ctx + 0xC2) == 0x2724 && w->msg == 0x7F6) {
+                        if (w->unk5380[0][j] <= 0) {
+                            w->unk5380[0][j] = 0;
+                            if (*(s16 *)(ctx + 0xC2) == 0x2724 && w->talkMessage == 0x7F6) {
                                 if (j == 3 && flagA) {
-                                    w->step = 3;
-                                    w->f537D++;
+                                    w->talkStep = 3;
+                                    w->talkPage++;
                                     Taku_Camp_BUN_HANTEI();
                                 }
                             } else if (j == 3) {
-                                w->step = 3;
-                                w->f537D++;
+                                w->talkStep = 3;
+                                w->talkPage++;
                                 Taku_Camp_BUN_HANTEI();
                             }
                         }
                     }
                 } else {
-                    w->step = 11;
+                    w->talkStep = 11;
                 }
                 break;
             case 11:
@@ -532,28 +469,28 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                     switch (j) {
                     case 1:
                     case 2:
-                        if (w->tbl[0][0] < 0x40) {
-                            w->tbl[0][j] -= 0x20;
+                        if (w->unk5380[0][0] < 0x40) {
+                            w->unk5380[0][j] -= 0x20;
                         }
                         break;
                     case 3:
-                        if (w->tbl[0][1] < 0x40) {
-                            w->tbl[0][j] -= 0x20;
+                        if (w->unk5380[0][1] < 0x40) {
+                            w->unk5380[0][j] -= 0x20;
                         }
                         break;
                     default:
-                        w->tbl[0][j] -= 0x20;
+                        w->unk5380[0][j] -= 0x20;
                         break;
                     }
-                    if (w->tbl[0][j] <= 0) {
-                        w->tbl[0][j] = 0;
+                    if (w->unk5380[0][j] <= 0) {
+                        w->unk5380[0][j] = 0;
                         if (j == 3) {
                             if (*(s16 *)(ctx + 0xC2) == 0x2724) {
                                 if (done) {
-                                    w->step = 12;
+                                    w->talkStep = 12;
                                 }
                             } else {
-                                w->step = 12;
+                                w->talkStep = 12;
                             }
                         }
                     }
@@ -562,9 +499,9 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
             }
             for (i = 0; i < 4; i++) {
                 col[i][0] = col[i][1] = col[i][2] = 0x80;
-                col[i][3] = w->tbl[0][i];
+                col[i][3] = w->unk5380[0][i];
             }
-            p = SzMsg_LoadFont_Pipe(p, 1, w->msg, 0, 0x16);
+            p = SzMsg_LoadFont_Pipe(p, 1, w->talkMessage, 0, 0x16);
             p = RhText_SetTextureFlush(p);
             p = func_001FE7D0_b(p, 1, 0x59, 0x150, col, SzMsg_DrawRectG_Pipe);
             SzMsg_Free(1);
@@ -575,7 +512,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
             s32 x;
             s32 ty;
 
-            p = SzMsg_LoadFont_Pipe(p, 1, w->msg, 0, 0x16);
+            p = SzMsg_LoadFont_Pipe(p, 1, w->talkMessage, 0, 0x16);
             p = RhText_SetTextureFlush(p);
             info = SzMsg_GetInfo(1);
             box2 = info->box;
@@ -584,111 +521,111 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
             if (count > 3) {
                 count = 3;
             }
-            switch (w->step) {
+            switch (w->talkStep) {
             case 1:
-                w->f53A0 = 0;
+                w->unk53A0 = 0;
                 for (j = 0; j < 3; j++) {
                     for (i = 0; i < 4; i++) {
-                        w->tbl[j + 1][i] = 0;
+                        w->unk5380[j + 1][i] = 0;
                     }
                 }
-                w->step++;
+                w->talkStep++;
                 break;
             case 2:
-                if (w->f53B4 != 0) {
-                    if (w->f5407 == 0) {
-                        w->f5407 = 1;
+                if (w->unk53B4 != 0) {
+                    if (w->duelistState[0] == 0) {
+                        w->duelistState[0] = 1;
                     }
-                    if (w->f53B6 < 0x400) {
-                        w->f53B6 += 0x40;
+                    if (w->duelistSlide[0] < 0x400) {
+                        w->duelistSlide[0] += 0x40;
                     }
-                    if (w->f53B6 >= 0x400) {
-                        w->f53B6 = 0x400;
-                    }
-                } else {
-                    if (0 < w->f53B6) {
-                        w->f53B6 -= 0x40;
-                    }
-                    if (w->f53B6 <= 0) {
-                        w->f53B6 = 0;
-                    }
-                }
-                if (w->f53B5 != 0) {
-                    if (w->f5408 == 0) {
-                        w->f5408 = 1;
-                    }
-                    if (w->f53B8 < 0x400) {
-                        w->f53B8 += 0x40;
-                    }
-                    if (w->f53B8 >= 0x400) {
-                        w->f53B8 = 0x400;
+                    if (w->duelistSlide[0] >= 0x400) {
+                        w->duelistSlide[0] = 0x400;
                     }
                 } else {
-                    if (0 < w->f53B8) {
-                        w->f53B8 -= 0x40;
+                    if (0 < w->duelistSlide[0]) {
+                        w->duelistSlide[0] -= 0x40;
                     }
-                    if (w->f53B8 <= 0) {
-                        w->f53B8 = 0;
+                    if (w->duelistSlide[0] <= 0) {
+                        w->duelistSlide[0] = 0;
                     }
                 }
-                if (w->f53B4 != 0 && w->f53B5 != 0) {
-                    if (w->f53B6 >= 0x400 && w->f53B8 >= 0x400) {
-                        w->step++;
+                if (w->unk53B5 != 0) {
+                    if (w->duelistState[1] == 0) {
+                        w->duelistState[1] = 1;
                     }
-                } else if (w->f53B4 != 0 && w->f53B5 == 0) {
-                    if (w->f53B6 >= 0x400 && w->f53B8 <= 0) {
-                        w->step++;
+                    if (w->duelistSlide[1] < 0x400) {
+                        w->duelistSlide[1] += 0x40;
                     }
-                } else if ((s8)w->f53B4 == 0 && w->f53B5 != 0) {
-                    if (w->f53B6 <= 0 && w->f53B8 >= 0x400) {
-                        w->step++;
+                    if (w->duelistSlide[1] >= 0x400) {
+                        w->duelistSlide[1] = 0x400;
                     }
-                } else if (w->f53B6 <= 0 && w->f53B8 <= 0) {
-                    w->step++;
+                } else {
+                    if (0 < w->duelistSlide[1]) {
+                        w->duelistSlide[1] -= 0x40;
+                    }
+                    if (w->duelistSlide[1] <= 0) {
+                        w->duelistSlide[1] = 0;
+                    }
+                }
+                if (w->unk53B4 != 0 && w->unk53B5 != 0) {
+                    if (w->duelistSlide[0] >= 0x400 && w->duelistSlide[1] >= 0x400) {
+                        w->talkStep++;
+                    }
+                } else if (w->unk53B4 != 0 && w->unk53B5 == 0) {
+                    if (w->duelistSlide[0] >= 0x400 && w->duelistSlide[1] <= 0) {
+                        w->talkStep++;
+                    }
+                } else if ((s8)w->unk53B4 == 0 && w->unk53B5 != 0) {
+                    if (w->duelistSlide[0] <= 0 && w->duelistSlide[1] >= 0x400) {
+                        w->talkStep++;
+                    }
+                } else if (w->duelistSlide[0] <= 0 && w->duelistSlide[1] <= 0) {
+                    w->talkStep++;
                 }
                 break;
             case 3:
-                if (w->mode == 2) {
-                    if (w->f53B5 != 0) {
-                        w->f5437 += 10;
-                        if (w->f5437 >= 100) {
-                            w->f5437 = 100;
-                            w->f5408 = 10;
+                if (w->talkSpeaker == 2) {
+                    if (w->unk53B5 != 0) {
+                        w->eventPictureZoom += 10;
+                        if (w->eventPictureZoom >= 100) {
+                            w->eventPictureZoom = 100;
+                            w->duelistState[1] = 10;
                             flagB = 1;
                         }
-                    } else if (w->f5437 <= 0) {
-                        w->f5437 += 10;
-                        if (0 <= w->f5437) {
+                    } else if (w->eventPictureZoom <= 0) {
+                        w->eventPictureZoom += 10;
+                        if (0 <= w->eventPictureZoom) {
                             flagB = 1;
-                            w->f5437 = 0;
+                            w->eventPictureZoom = 0;
                         }
                     } else {
-                        w->f5437 -= 10;
-                        if (w->f5437 <= 0) {
+                        w->eventPictureZoom -= 10;
+                        if (w->eventPictureZoom <= 0) {
                             flagB = 1;
-                            w->f5437 = 0;
+                            w->eventPictureZoom = 0;
                         }
                     }
                 }
-                if (w->mode == 3) {
-                    if (w->f53B4 != 0) {
-                        w->f5437 -= 10;
-                        if (w->f5437 < -100) {
-                            w->f5437 = -100;
-                            w->f5407 = 10;
+                if (w->talkSpeaker == 3) {
+                    if (w->unk53B4 != 0) {
+                        w->eventPictureZoom -= 10;
+                        if (w->eventPictureZoom < -100) {
+                            w->eventPictureZoom = -100;
+                            w->duelistState[0] = 10;
                             flagB = 1;
                         }
-                    } else if (w->f5437 <= 0) {
-                        w->f5437 += 10;
-                        if (0 <= w->f5437) {
+                    } else if (w->eventPictureZoom <= 0) {
+                        w->eventPictureZoom += 10;
+                        if (0 <= w->eventPictureZoom) {
                             flagB = 1;
-                            w->f5437 = 0;
+                            w->eventPictureZoom = 0;
                         }
                     } else {
-                        w->f5437 -= 10;
-                        if (w->f5437 <= 0) {
+                        w->eventPictureZoom -= 10;
+                        if (w->eventPictureZoom <= 0) {
                             flagB = 1;
-                            w->f5437 = 0;
+                            w->eventPictureZoom = 0;
                         }
                     }
                 }
@@ -697,126 +634,126 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                         for (i = 0; i < 4; i++) {
                             switch (i) {
                             case 1:
-                                if (w->tbl[j + 1][2] >= 0x80) {
-                                    w->tbl[j + 1][i] += 0x20;
+                                if (w->unk5380[j + 1][2] >= 0x80) {
+                                    w->unk5380[j + 1][i] += 0x20;
                                 }
                                 break;
                             case 2:
-                                if (w->tbl[j + 1][0] > 0x40) {
-                                    w->tbl[j + 1][i] += 0x20;
+                                if (w->unk5380[j + 1][0] > 0x40) {
+                                    w->unk5380[j + 1][i] += 0x20;
                                 }
                                 break;
                             case 3:
-                                if (w->tbl[j + 1][1] > 0x20) {
-                                    w->tbl[j + 1][i] += 0x20;
+                                if (w->unk5380[j + 1][1] > 0x20) {
+                                    w->unk5380[j + 1][i] += 0x20;
                                 }
                                 break;
                             default:
                                 if (j == 0) {
-                                    w->tbl[j + 1][i] += 0x20;
-                                } else if (w->tbl[j][1] >= 0x80) {
-                                    w->tbl[j + 1][i] += 0x20;
+                                    w->unk5380[j + 1][i] += 0x20;
+                                } else if (w->unk5380[j][1] >= 0x80) {
+                                    w->unk5380[j + 1][i] += 0x20;
                                 }
                                 break;
                             }
-                            if (w->tbl[j + 1][i] >= 0x80) {
-                                w->tbl[j + 1][i] = 0x80;
+                            if (w->unk5380[j + 1][i] >= 0x80) {
+                                w->unk5380[j + 1][i] = 0x80;
                             }
                         }
                     }
                 }
-                if (w->tbl[count][3] >= 0x80) {
-                    w->step++;
+                if (w->unk5380[count][3] >= 0x80) {
+                    w->talkStep++;
                 }
                 break;
             case 4:
                 break;
             case 5:
-                if (w->f537D < w->f537C) {
+                if (w->talkPage < w->talkMessageCount) {
                     for (j = 0; j < count; j++) {
                         for (i = 0; i < 4; i++) {
-                            w->tbl[j + 1][i] -= 0x10;
-                            if (w->tbl[j + 1][i] <= 0) {
-                                w->tbl[j + 1][i] = 0;
+                            w->unk5380[j + 1][i] -= 0x10;
+                            if (w->unk5380[j + 1][i] <= 0) {
+                                w->unk5380[j + 1][i] = 0;
                             }
                         }
                     }
-                    if (w->tbl[count][3] <= 0) {
+                    if (w->unk5380[count][3] <= 0) {
                         for (j = 0; j < 3; j++) {
                             for (i = 0; i < 4; i++) {
-                                w->tbl[j + 1][i] = 0;
+                                w->unk5380[j + 1][i] = 0;
                             }
                         }
-                        w->step = 2;
-                        w->f537D++;
+                        w->talkStep = 2;
+                        w->talkPage++;
                         Taku_Camp_BUN_HANTEI();
                     }
                 } else {
-                    w->step = 11;
+                    w->talkStep = 11;
                 }
                 break;
             case 11:
                 for (j = 0; j < count; j++) {
                     for (i = 0; i < 4; i++) {
-                        w->tbl[j + 1][i] -= 0x10;
-                        if (w->tbl[j + 1][i] <= 0) {
-                            w->tbl[j + 1][i] = 0;
+                        w->unk5380[j + 1][i] -= 0x10;
+                        if (w->unk5380[j + 1][i] <= 0) {
+                            w->unk5380[j + 1][i] = 0;
                         }
                     }
                 }
-                if (w->tbl[count][3] <= 0) {
+                if (w->unk5380[count][3] <= 0) {
                     for (j = 0; j < 3; j++) {
                         for (i = 0; i < 4; i++) {
-                            w->tbl[j + 1][i] = 0;
+                            w->unk5380[j + 1][i] = 0;
                         }
                     }
-                    w->step = 12;
+                    w->talkStep = 12;
                 }
                 break;
             case 13:
-                if (w->f5437 <= 0) {
-                    w->f5437 += 10;
-                    if (0 <= w->f5437) {
+                if (w->eventPictureZoom <= 0) {
+                    w->eventPictureZoom += 10;
+                    if (0 <= w->eventPictureZoom) {
                         flagB = 1;
-                        w->f5437 = 0;
+                        w->eventPictureZoom = 0;
                     }
                 } else {
-                    w->f5437 -= 10;
-                    if (w->f5437 <= 0) {
+                    w->eventPictureZoom -= 10;
+                    if (w->eventPictureZoom <= 0) {
                         flagB = 1;
-                        w->f5437 = 0;
+                        w->eventPictureZoom = 0;
                     }
                 }
                 if (flagB) {
-                    if (0 < w->f53B6) {
-                        w->f53B6 -= 0x40;
+                    if (0 < w->duelistSlide[0]) {
+                        w->duelistSlide[0] -= 0x40;
                     }
-                    if (0 < w->f53B8) {
-                        w->f53B8 -= 0x40;
+                    if (0 < w->duelistSlide[1]) {
+                        w->duelistSlide[1] -= 0x40;
                     }
-                    if (w->f53B6 <= 0) {
-                        w->f53B6 = 0;
-                        if (w->f5407 != 0) {
-                            ShFace_Close(w->face0);
-                            w->f5407 = 0;
+                    if (w->duelistSlide[0] <= 0) {
+                        w->duelistSlide[0] = 0;
+                        if (w->duelistState[0] != 0) {
+                            ShFace_Close((u8 *)&w->duelistFace[0]);
+                            w->duelistState[0] = 0;
                         }
                     }
-                    if (w->f53B8 <= 0) {
-                        w->f53B8 = 0;
-                        if (w->f5408 != 0) {
-                            ShFace_Close(w->face1);
-                            w->f5408 = 0;
+                    if (w->duelistSlide[1] <= 0) {
+                        w->duelistSlide[1] = 0;
+                        if (w->duelistState[1] != 0) {
+                            ShFace_Close((u8 *)&w->duelistFace[1]);
+                            w->duelistState[1] = 0;
                         }
                     }
-                    if (w->f53B6 <= 0 && w->f53B8 <= 0) {
-                        w->step = 14;
-                        w->f53B4 = 0;
-                        w->f53B5 = 0;
+                    if (w->duelistSlide[0] <= 0 && w->duelistSlide[1] <= 0) {
+                        w->talkStep = 14;
+                        w->unk53B4 = 0;
+                        w->unk53B5 = 0;
                     }
                 }
                 break;
             }
-            if (w->mode == 2) {
+            if (w->talkSpeaker == 2) {
                 x = 0xA0;
                 ty = 0x160;
             } else {
@@ -828,11 +765,11 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
                 s16 yy = y;
 
                 for (j = 0; j < 4; j++) {
-                    col[j][3] = w->tbl[i + 1][j];
+                    col[j][3] = w->unk5380[i + 1][j];
                 }
                 info->box.y = box2.y + i * 0x16;
                 info->box.h = 0x16;
-                if (w->f5483 == 0) {
+                if (w->unk5483 == 0) {
                     p = SzMsg_DrawRectG_Pipe(p, 1, x, ty + yy, &rect, col[0]);
                 }
                 y = (s16)(y + 0x16);
@@ -840,9 +777,9 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
             SzMsg_Free(1);
         }
     }
-    if (w->f006E != 0 && w->f006C == 0 && w->f5374 == 0 && w->f0004 == 0 &&
-        w->f0072 == 0 && w->f547A == 0 && w->f5481 != 0 && SzEffect_IsUse2(-1, -1) == 0 &&
-        w->f5376 != 0 && w->f5482 == 0) {
+    if (w->unk006E != 0 && w->windowOpen == 0 && w->unk5374 == 0 && w->unk0004 == 0 &&
+        w->unk0072 == 0 && w->cursorOnIcon == 0 && w->unk5481 != 0 && SzEffect_IsUse2(-1, -1) == 0 &&
+        w->routesIdle != 0 && w->placesReached == 0) {
         BunInfo *info;
         f32 sy;
         f32 sx;
@@ -874,7 +811,7 @@ s32 Taku_Camp_BUN_HYOUJI(s32 p) {
         msg = 0x8DF;
         break;
     }
-    if (w->f5483 != 0) {
+    if (w->unk5483 != 0) {
         BunInfo *info;
         s32 x;
 

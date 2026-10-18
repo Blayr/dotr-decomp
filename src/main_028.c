@@ -562,9 +562,9 @@ _func_00188538_001885BC:\n\
 
 /* Resets the IPU and the MPEG decoder state. */
 void sceVpu0Reset(void) {
-    *(volatile int *)0x10003830 = 0;
-    *(volatile int *)0x10003820 = 0;
-    *(volatile int *)0x10003810 = 1;
+    *(volatile int *)VIF0_MARK_ADDR = 0;
+    *(volatile int *)VIF0_ERR_ADDR = 0;
+    *(volatile int *)VIF0_FBRST_ADDR = 1;
     __asm__ __volatile__("\n\
 	.set push\n\
 	.set noreorder\n\
@@ -574,8 +574,8 @@ void sceVpu0Reset(void) {
 	ctc2	$8,$vi28\n\
 	sync.p\n\
 	" : : : "$8");
-    *(volatile __int128 *)0x10004000 = D_0028D9F0[0];
-    *(volatile __int128 *)0x10004000 = D_0028D9F0[1];
+    *(volatile __int128 *)VIF0_FIFO_ADDR = D_0028D9F0[0];
+    *(volatile __int128 *)VIF0_FIFO_ADDR = D_0028D9F0[1];
 }
 
 __asm__(".space 12");
@@ -621,7 +621,7 @@ extern char D_002BC6A8[];
 extern void func_00188880(void *d, s32 bx, s32 by, s32 mb_type, s32 motion_type, s32 *pmv, s32 *mvfs,
                           s32 *dmvector);
 
-#define IPU_BUSY_00188630() ((*(volatile u32 *)0x1000D400 >> 8) & 1)
+#define IPU_BUSY_00188630() ((*(volatile u32 *)D9_CHCR_ADDR >> 8) & 1)
 
 /* Starts decoding one macroblock: motion prediction from the reference pictures, then the IPU decode. */
 s32 func_00188630(void *arg0, s32 MBA, s32 MBAinc, s32 mb_type, s32 motion_type, void *pmv, s32 *mvfs,

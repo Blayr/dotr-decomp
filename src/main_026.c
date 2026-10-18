@@ -63,10 +63,10 @@ void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     switch (arg0) {
     case 0:
         p = (s16 *)sceGsGetGParam();
-        *(volatile u64 *)0x12001000 = 0x200;
+        *(volatile u64 *)GS_CSR_ADDR = 0x200;
         p[0] = arg1;
         p[1] = arg2;
-        p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
+        p[3] = (*(volatile u64 *)GS_CSR_ADDR >> 16) & 0xFF;
         GsPutIMR(0xFF00);
         p[2] = arg3 != 0;
         if (((s32 *)p)[2] != 0) {
@@ -78,14 +78,14 @@ void func_00184810(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
         SetGsCrt(arg1 & 1, arg2 & 0xFF, arg3 & 1);
         break;
     case 1:
-        *(volatile u64 *)0x12001000 = 0x100;
+        *(volatile u64 *)GS_CSR_ADDR = 0x100;
         break;
     case 5:
         p = (s16 *)sceGsGetGParam();
         p[2] = arg3 != 0;
         p[0] = arg1;
         p[1] = arg2;
-        p[3] = (*(volatile u64 *)0x12001000 >> 16) & 0xFF;
+        p[3] = (*(volatile u64 *)GS_CSR_ADDR >> 16) & 0xFF;
         SetGsCrt(arg1 & 1, arg2 & 0xFF, arg3 & 1);
         break;
     }
@@ -104,17 +104,17 @@ extern dk_int128 D_0028D900[2];
 void sceGsResetPath(void) {
     register u32 s __asm__("$4");
 
-    *(volatile u32 *)0x10003C10 = 1;
-    *(volatile u32 *)0x10003C20 = 2;
+    *(volatile u32 *)VIF1_FBRST_ADDR = 1;
+    *(volatile u32 *)VIF1_ERR_ADDR = 2;
     s = 0;
     __asm__ __volatile__("sync");
     __asm__ __volatile__("cfc2.ni %0, $vi28" : "=r"(s) : "0"(s));
     s |= 0x200;
     __asm__ __volatile__("ctc2.ni %0, $vi28" : : "r"(s));
     __asm__ __volatile__("sync.p");
-    *(volatile dk_int128 *)0x10005000 = D_0028D900[0];
-    *(volatile dk_int128 *)0x10005000 = D_0028D900[1];
-    *(volatile u32 *)0x10003000 = 1;
+    *(volatile dk_int128 *)VIF1_FIFO_ADDR = D_0028D900[0];
+    *(volatile dk_int128 *)VIF1_FIFO_ADDR = D_0028D900[1];
+    *(volatile u32 *)GIF_CTRL_ADDR = 1;
 }
 
 typedef struct {
@@ -222,16 +222,16 @@ s32 sceGsPutDispEnv(void *dispIn) {
 
     disp = dispIn;
     if (((s16 *)sceGsGetGParam())[3] == 1) {
-        *(volatile u64 *)0x12000000 = disp[0];
-        *(volatile u64 *)0x12000070 = disp[2];
-        *(volatile u64 *)0x12000080 = disp[3];
-        *(volatile u64 *)0x120000C0 = disp[4];
+        *(volatile u64 *)GS_PMODE_ADDR = disp[0];
+        *(volatile u64 *)GS_DISPFB1_ADDR = disp[2];
+        *(volatile u64 *)GS_DISPLAY1_ADDR = disp[3];
+        *(volatile u64 *)GS_EXTDATA_ADDR = disp[4];
     } else {
-        *(volatile u64 *)0x12000000 = disp[0];
-        *(volatile u64 *)0x12000020 = disp[1];
-        *(volatile u64 *)0x12000090 = disp[2];
-        *(volatile u64 *)0x120000A0 = disp[3];
-        *(volatile u64 *)0x120000E0 = disp[4];
+        *(volatile u64 *)GS_PMODE_ADDR = disp[0];
+        *(volatile u64 *)GS_SMODE2_ADDR = disp[1];
+        *(volatile u64 *)GS_DISPFB2_ADDR = disp[2];
+        *(volatile u64 *)GS_DISPLAY2_ADDR = disp[3];
+        *(volatile u64 *)GS_BGCOLOR_ADDR = disp[4];
     }
 }
 
@@ -378,19 +378,19 @@ s32 sceGsPutDrawEnv(void *giftag) {
     u32 i;
 
     i = 0;
-    while (*(volatile s32 *)0x1000A000 & 0x100) {
+    while (*(volatile s32 *)D2_CHCR_ADDR & 0x100) {
         if (i++ > 0x1000000) {
             func_00199B50(&D_002BC2D8);
             return -1;
         }
     }
-    *(volatile s32 *)0x1000A020 = (s32)(*(u64 *)giftag & 0x7FFF) + 1;
+    *(volatile s32 *)D2_QWC_ADDR = (s32)(*(u64 *)giftag & 0x7FFF) + 1;
     if (((u32)giftag & 0x70000000) == 0x70000000) {
-        *(volatile s32 *)0x1000A010 = ((u32)giftag & 0x0FFFFFFF) | 0x80000000;
+        *(volatile s32 *)D2_MADR_ADDR = ((u32)giftag & 0x0FFFFFFF) | 0x80000000;
     } else {
-        *(volatile s32 *)0x1000A010 = (u32)giftag & 0x0FFFFFFF;
+        *(volatile s32 *)D2_MADR_ADDR = (u32)giftag & 0x0FFFFFFF;
     }
-    *(volatile s32 *)0x1000A000 = 0x101;
+    *(volatile s32 *)D2_CHCR_ADDR = 0x101;
     return 0;
 }
 
@@ -521,7 +521,7 @@ s32 sceGsSyncV(s32 mode) {
     if (p[2] == 0) {
         func_0017BD70();
         if (*(s16 *)p == 1) {
-            return (*(volatile u64 *)0x12001000 >> 13) & 1;
+            return (*(volatile u64 *)GS_CSR_ADDR >> 13) & 1;
         }
         return 1;
     } else {
@@ -727,16 +727,16 @@ extern char D_002BC4D8[];
 extern char D_002BC508[];
 extern char D_002BC548[];
 
-#define D1_CHCR ((volatile u32 *)0x10009000)
-#define D1_MADR ((volatile u32 *)0x10009010)
-#define D1_QWC ((volatile u32 *)0x10009020)
-#define GS_CSR ((volatile u64 *)0x12001000)
-#define GS_BUSDIR ((volatile u64 *)0x12001040)
-#define VIF1_STAT ((volatile u32 *)0x10003C00)
-#define VIF1_FBRST ((volatile u32 *)0x10003C10)
-#define GIF_CTRL ((volatile u32 *)0x10003000)
+#define D1_CHCR ((volatile u32 *)D1_CHCR_ADDR)
+#define D1_MADR ((volatile u32 *)D1_MADR_ADDR)
+#define D1_QWC ((volatile u32 *)D1_QWC_ADDR)
+#define GS_CSR ((volatile u64 *)GS_CSR_ADDR)
+#define GS_BUSDIR ((volatile u64 *)GS_BUSDIR_ADDR)
+#define VIF1_STAT ((volatile u32 *)VIF1_STAT_ADDR)
+#define VIF1_FBRST ((volatile u32 *)VIF1_FBRST_ADDR)
+#define GIF_CTRL ((volatile u32 *)GIF_CTRL_ADDR)
 #define PRINTF ((s32 (*)(const char *, ...))func_00199B50)
-#define VIF1_FIFO ((volatile __int128 *)0x10005000)
+#define VIF1_FIFO ((volatile __int128 *)VIF1_FIFO_ADDR)
 #define SET_MADR(a) if (((u32)(a) & 0x70000000) == 0x70000000) *D1_MADR = ((u32)(a) & 0x0FFFFFFF) | 0x80000000; else *D1_MADR = (u32)(a) & 0x0FFFFFFF
 
 #define sp ((StoreImage_59D0 *)arg0)
@@ -997,7 +997,7 @@ s32 sceDmaReset(s32 mode) {
     s32 i;
     volatile s32 *ch;
 
-    prev = *(volatile s32 *)0x1000E000 & 1;
+    prev = *(volatile s32 *)D_CTRL_ADDR & 1;
     for (i = 0; i < 10; i++) {
         if ((&isclr)[i] != 0) {
             ch = (volatile s32 *)(&dch)[i];
@@ -1009,12 +1009,12 @@ s32 sceDmaReset(s32 mode) {
             ch[0x10] = 0;
         }
     }
-    *(volatile s32 *)0x1000E010 = 0xFF1F;
-    *(volatile s32 *)0x1000E010 &= 0xFF1F0000;
+    *(volatile s32 *)D_STAT_ADDR = 0xFF1F;
+    *(volatile s32 *)D_STAT_ADDR &= 0xFF1F0000;
     memclr((s8 *)sp0, 0x14);
     sceDmaPutEnv(sp0);
     if (mode == 1) {
-        *(volatile s32 *)0x1000E000 = *(volatile s32 *)0x1000E000 | 1;
+        *(volatile s32 *)D_CTRL_ADDR = *(volatile s32 *)D_CTRL_ADDR | 1;
     }
     return prev;
 }
@@ -1055,11 +1055,11 @@ extern u8 mfdtbl[16];
 
 s32 sceDmaPutEnv(void *arg0) {
     DmaEnv_00186238 *env = arg0;
-    s32 ctrl = *(volatile s32 *)0x1000E000;
-    s32 pcr = *(volatile s32 *)0x1000E020;
-    s32 sqwc = *(volatile s32 *)0x1000E030;
-    s32 rbor = *(volatile s32 *)0x1000E050;
-    s32 rbsr = *(volatile s32 *)0x1000E040;
+    s32 ctrl = *(volatile s32 *)D_CTRL_ADDR;
+    s32 pcr = *(volatile s32 *)D_PCR_ADDR;
+    s32 sqwc = *(volatile s32 *)D_SQWC_ADDR;
+    s32 rbor = *(volatile s32 *)D_RBOR_ADDR;
+    s32 rbsr = *(volatile s32 *)D_RBSR_ADDR;
 
     if (env->mfd >= 10) {
         return -1;
@@ -1086,11 +1086,11 @@ s32 sceDmaPutEnv(void *arg0) {
     sqwc = (env->tqwc << 16) | env->sqwc;
     rbor = (s32)env->rbadr;
     rbsr = env->rbsize;
-    *(volatile s32 *)0x1000E000 = ctrl;
-    *(volatile s32 *)0x1000E020 = pcr;
-    *(volatile s32 *)0x1000E030 = sqwc;
-    *(volatile s32 *)0x1000E050 = rbor;
-    *(volatile s32 *)0x1000E040 = rbsr;
+    *(volatile s32 *)D_CTRL_ADDR = ctrl;
+    *(volatile s32 *)D_PCR_ADDR = pcr;
+    *(volatile s32 *)D_SQWC_ADDR = sqwc;
+    *(volatile s32 *)D_RBOR_ADDR = rbor;
+    *(volatile s32 *)D_RBSR_ADDR = rbsr;
     sceDmaCurrentEnv = *(GsDef_00186410 *)env;
     return 0;
 }
@@ -1103,9 +1103,9 @@ void *sceDmaGetEnv(void *env) {
 
 /* Sets the DMA stall address `addr`. */
 s32 sceDmaPutStallAddr(u32 addr) {
-    s32 old = *(volatile s32 *)0x1000E060;
+    s32 old = *(volatile s32 *)D_STADR_ADDR;
     if (addr != 0xFFFFFFFF) {
-        *(volatile s32 *)0x1000E060 = addr;
+        *(volatile s32 *)D_STADR_ADDR = addr;
     }
     return old;
 }
@@ -1299,15 +1299,15 @@ s32 sceDmaWatch(void *dIn, void *addr, s32 mode, s32 timeout) {
 
 /* Clears bit 8 of DMA register `arg0` with the DMA held (DMA enable register). */
 void func_00186B58(volatile u32 *arg0) {
-    if (*(volatile s32 *)0x1000F520 == 0) {
-        *(volatile s32 *)0x1000F590 = 0x1000;
+    if (*(volatile s32 *)D_ENABLER_ADDR == 0) {
+        *(volatile s32 *)D_ENABLEW_ADDR = 0x1000;
     }
     {
         u32 m = 0xFFFFFEFF;
         m &= *arg0;
         *arg0 = m;
     }
-    *(volatile s32 *)0x1000F590 = 0;
+    *(volatile s32 *)D_ENABLEW_ADDR = 0;
 }
 
 /* Sets DMA register `arg0` to `arg1`; returns its old bit 8. */

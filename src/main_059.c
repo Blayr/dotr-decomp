@@ -29,48 +29,48 @@ void *lRhModel_DrawNormalMethod(void *part, s32 noClip) {
     flags |= noClip ? 2 : 0;
     RhGeomEx_SetMatrixForPointLight();
     if (!obj->flag4_2) {
-        if (*(s32 *)0x700000B0 & 4) {
+        if (*(s32 *)(SCRATCHPAD_ADDR + 0xB0) & 4) {
             flags |= 0x20;
         }
-        *(void **)0x700000C4 = RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, flags);
+        *(void **)(SCRATCHPAD_ADDR + 0xC4) = RhVu1Mac_ChangeDrawMethod(*(void **)(SCRATCHPAD_ADDR + 0xC0), flags);
     } else {
-        *(void **)0x700000C4 = RhVu1Mac_ReserveChangeDrawMethod(*(void **)0x700000C0);
+        *(void **)(SCRATCHPAD_ADDR + 0xC4) = RhVu1Mac_ReserveChangeDrawMethod(*(void **)(SCRATCHPAD_ADDR + 0xC0));
     }
     lRhModel_DrawCommonPart(obj);
-    if (!(*(s32 *)0x700000B0 & 1)) {
-        return *(void **)0x700000C0;
+    if (!(*(s32 *)(SCRATCHPAD_ADDR + 0xB0) & 1)) {
+        return *(void **)(SCRATCHPAD_ADDR + 0xC0);
     }
-    if (*(s32 *)(*(u8 **)0x700000DC + 0x1C) > 0) {
+    if (*(s32 *)(*(u8 **)(SCRATCHPAD_ADDR + 0xDC) + 0x1C) > 0) {
         if (obj->flag5_3) {
-            result = *(s32 *)0x700000D0;
+            result = *(s32 *)(SCRATCHPAD_ADDR + 0xD0);
         } else {
-            RhMem_CopyMemory16(gRhModel_mlsmSwapArea, (void *)0x70000000, 0x11);
+            RhMem_CopyMemory16(gRhModel_mlsmSwapArea, (void *)SCRATCHPAD_ADDR, 0x11);
             result = RhBase_SetZBufferMode((s32)RhModelCpu_DrawAlpha(
-                (u8 *)RhBase_SetZBufferMode(*(s32 *)0x700000D0, 0),
-                *(s32 *)0x700000CC,
-                *(s32 *)(*(u8 **)0x700000DC + 0x1C),
+                (u8 *)RhBase_SetZBufferMode(*(s32 *)(SCRATCHPAD_ADDR + 0xD0), 0),
+                *(s32 *)(SCRATCHPAD_ADDR + 0xCC),
+                *(s32 *)(*(u8 **)(SCRATCHPAD_ADDR + 0xDC) + 0x1C),
                 obj->flag4_1), 1);
-            RhMem_CopyMemory16((void *)0x70000000, gRhModel_mlsmSwapArea, 0x11);
+            RhMem_CopyMemory16((void *)SCRATCHPAD_ADDR, gRhModel_mlsmSwapArea, 0x11);
         }
-        *(s32 *)0x700000D4 = result;
+        *(s32 *)(SCRATCHPAD_ADDR + 0xD4) = result;
     } else {
-        *(s32 *)0x700000D4 = *(s32 *)0x700000C8;
+        *(s32 *)(SCRATCHPAD_ADDR + 0xD4) = *(s32 *)(SCRATCHPAD_ADDR + 0xC8);
     }
-    if (*(s32 *)0x700000B0 & 4) {
+    if (*(s32 *)(SCRATCHPAD_ADDR + 0xB0) & 4) {
         flags |= 0x20;
     } else if (noClip == 0) {
-        RhView_GetViewScreenMatrix((void *)0x70000000);
-        lRhModel_ChangeL2VtoL2S(*(s32 *)0x700000B4 + 0x10, 0x70000000,
-                     ((*(s32 *)0x700000D8 - 0x10) >> 4) / 7);
+        RhView_GetViewScreenMatrix((void *)SCRATCHPAD_ADDR);
+        lRhModel_ChangeL2VtoL2S(*(s32 *)(SCRATCHPAD_ADDR + 0xB4) + 0x10, 0x70000000,
+                     ((*(s32 *)(SCRATCHPAD_ADDR + 0xD8) - 0x10) >> 4) / 7);
     }
-    if (*(void **)0x700000B4 == (void *)0x700000F0) {
-        RhMem_CopyMemory16(*(u8 **)0x700000C4 + 0x10, (void *)0x70000100,
-                     (*(s32 *)0x700000D8 - 0x10) >> 4);
+    if (*(void **)(SCRATCHPAD_ADDR + 0xB4) == (void *)(SCRATCHPAD_ADDR + 0xF0)) {
+        RhMem_CopyMemory16(*(u8 **)(SCRATCHPAD_ADDR + 0xC4) + 0x10, (void *)(SCRATCHPAD_ADDR + 0x100),
+                     (*(s32 *)(SCRATCHPAD_ADDR + 0xD8) - 0x10) >> 4);
     }
     if (obj->flag4_2) {
-        RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, flags);
+        RhVu1Mac_ChangeDrawMethod(*(void **)(SCRATCHPAD_ADDR + 0xC0), flags);
     }
-    return *(void **)0x700000D4;
+    return *(void **)(SCRATCHPAD_ADDR + 0xD4);
 }
 
 typedef struct {
@@ -89,15 +89,15 @@ void *lRhModel_DrawFastMethod(void *part) {
     u32 flag5 = ((Flags_0020FA10 *)part)->flag5 ? 0x40 : 0;
     u32 flag4 = (((Flags_0020FA10 *)part)->flag4 != 0) ? 0x10 : 0;
     mode |= flag4 | flag5;
-    *(void **)0x700000C4 = RhVu1Mac_ChangeDrawMethod(*(void **)0x700000C0, mode);
-    RhView_GetViewScreenMatrix((void *)0x70000000);
-    RhGeomEx_SetMatrixForStraightLight((void *)0x70000000);
+    *(void **)(SCRATCHPAD_ADDR + 0xC4) = RhVu1Mac_ChangeDrawMethod(*(void **)(SCRATCHPAD_ADDR + 0xC0), mode);
+    RhView_GetViewScreenMatrix((void *)SCRATCHPAD_ADDR);
+    RhGeomEx_SetMatrixForStraightLight((void *)SCRATCHPAD_ADDR);
     lRhModel_DrawCommonPart(part);
-    if (*(u8 **)0x700000B4 == (u8 *)0x700000F0) {
-        RhMem_CopyMemory16(*(u8 **)0x700000C4 + 0x10, (void *)0x70000100, (*(s32 *)0x700000D8 - 0x10) >> 4);
+    if (*(u8 **)(SCRATCHPAD_ADDR + 0xB4) == (u8 *)(SCRATCHPAD_ADDR + 0xF0)) {
+        RhMem_CopyMemory16(*(u8 **)(SCRATCHPAD_ADDR + 0xC4) + 0x10, (void *)(SCRATCHPAD_ADDR + 0x100), (*(s32 *)(SCRATCHPAD_ADDR + 0xD8) - 0x10) >> 4);
     }
-    *(void **)0x700000D4 = *(void **)0x700000C8;
-    return *(void **)0x700000D4;
+    *(void **)(SCRATCHPAD_ADDR + 0xD4) = *(void **)(SCRATCHPAD_ADDR + 0xC8);
+    return *(void **)(SCRATCHPAD_ADDR + 0xD4);
 }
 
 typedef struct {
@@ -145,40 +145,40 @@ void lRhModel_DrawCommonPart(void *part) {
     Args_0020FAF0 *arg = part;
     s32 value24;
 
-    if ((*(s32 *)0x700000D8 + ((*(Data_0020FAF0 **)0x700000DC)->value58 << 8)) > 0x3F10) {
-        *(u8 **)0x700000B4 = *(u8 **)0x700000C4;
+    if ((*(s32 *)(SCRATCHPAD_ADDR + 0xD8) + ((*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->value58 << 8)) > 0x3F10) {
+        *(u8 **)(SCRATCHPAD_ADDR + 0xB4) = *(u8 **)(SCRATCHPAD_ADDR + 0xC4);
     } else {
-        *(u8 **)0x700000B4 = (u8 *)0x700000F0;
+        *(u8 **)(SCRATCHPAD_ADDR + 0xB4) = (u8 *)(SCRATCHPAD_ADDR + 0xF0);
     }
 
-    **(__int128 **)0x700000C4 = *(__int128 *)(arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset8);
-    RhMem_CopyMemory16(*(u8 **)0x700000C4 + *(s32 *)0x700000D8,
-                 arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset8 + *(s32 *)0x700000D8,
-                 ((*(Data_0020FAF0 **)0x700000DC)->sizeC - *(s32 *)0x700000D8) >> 4);
-    lRhModel_DynamicAddressBind(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000C4, 0);
-    *(u8 **)0x700000C8 = *(u8 **)0x700000C4 + (*(Data_0020FAF0 **)0x700000DC)->sizeC;
+    **(__int128 **)(SCRATCHPAD_ADDR + 0xC4) = *(__int128 *)(arg->data + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->offset8);
+    RhMem_CopyMemory16(*(u8 **)(SCRATCHPAD_ADDR + 0xC4) + *(s32 *)(SCRATCHPAD_ADDR + 0xD8),
+                 arg->data + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->offset8 + *(s32 *)(SCRATCHPAD_ADDR + 0xD8),
+                 ((*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->sizeC - *(s32 *)(SCRATCHPAD_ADDR + 0xD8)) >> 4);
+    lRhModel_DynamicAddressBind(arg->data, *(u8 **)(SCRATCHPAD_ADDR + 0xC4), *(u8 **)(SCRATCHPAD_ADDR + 0xC4), 0);
+    *(u8 **)(SCRATCHPAD_ADDR + 0xC8) = *(u8 **)(SCRATCHPAD_ADDR + 0xC4) + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->sizeC;
 
-    if ((*(Data_0020FAF0 **)0x700000DC)->size1C > 0) {
+    if ((*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->size1C > 0) {
         if (arg->flags5.bit3) {
-            *(u8 **)0x700000CC = (u8 *)RhBase_SetZBufferMode((s32)*(u8 **)0x700000C8, 0);
+            *(u8 **)(SCRATCHPAD_ADDR + 0xCC) = (u8 *)RhBase_SetZBufferMode((s32)*(u8 **)(SCRATCHPAD_ADDR + 0xC8), 0);
         } else {
-            **(s32 **)0x700000C8 = 0x20000000;
-            (*(s32 **)0x700000C8)[1] = (s32)(*(u8 **)0x700000C8 + (*(Data_0020FAF0 **)0x700000DC)->size1C + 0x10);
-            (*(s32 **)0x700000C8)[2] = 0;
-            (*(s32 **)0x700000C8)[3] = 0;
-            *(u8 **)0x700000CC = *(u8 **)0x700000C8 + 0x10;
+            **(s32 **)(SCRATCHPAD_ADDR + 0xC8) = 0x20000000;
+            (*(s32 **)(SCRATCHPAD_ADDR + 0xC8))[1] = (s32)(*(u8 **)(SCRATCHPAD_ADDR + 0xC8) + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->size1C + 0x10);
+            (*(s32 **)(SCRATCHPAD_ADDR + 0xC8))[2] = 0;
+            (*(s32 **)(SCRATCHPAD_ADDR + 0xC8))[3] = 0;
+            *(u8 **)(SCRATCHPAD_ADDR + 0xCC) = *(u8 **)(SCRATCHPAD_ADDR + 0xC8) + 0x10;
         }
-        RhMem_CopyMemory16(*(u8 **)0x700000CC,
-                     arg->data + (*(Data_0020FAF0 **)0x700000DC)->offset18,
-                     (*(Data_0020FAF0 **)0x700000DC)->size1C >> 4);
-        lRhModel_DynamicAddressBind(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, 1);
-        *(u8 **)0x700000D0 = *(u8 **)0x700000CC + (*(Data_0020FAF0 **)0x700000DC)->size1C;
+        RhMem_CopyMemory16(*(u8 **)(SCRATCHPAD_ADDR + 0xCC),
+                     arg->data + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->offset18,
+                     (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->size1C >> 4);
+        lRhModel_DynamicAddressBind(arg->data, *(u8 **)(SCRATCHPAD_ADDR + 0xC4), *(u8 **)(SCRATCHPAD_ADDR + 0xCC), 1);
+        *(u8 **)(SCRATCHPAD_ADDR + 0xD0) = *(u8 **)(SCRATCHPAD_ADDR + 0xCC) + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->size1C;
         if (arg->flags5.bit3) {
-            *(u8 **)0x700000D0 = (u8 *)RhBase_SetZBufferMode((s32)*(u8 **)0x700000D0, 1);
+            *(u8 **)(SCRATCHPAD_ADDR + 0xD0) = (u8 *)RhBase_SetZBufferMode((s32)*(u8 **)(SCRATCHPAD_ADDR + 0xD0), 1);
         }
     } else {
-        *(u8 **)0x700000CC = NULL;
-        *(u8 **)0x700000D0 = NULL;
+        *(u8 **)(SCRATCHPAD_ADDR + 0xCC) = NULL;
+        *(u8 **)(SCRATCHPAD_ADDR + 0xD0) = NULL;
     }
 
     if (arg->flags4.bit6) {
@@ -186,21 +186,21 @@ void lRhModel_DrawCommonPart(void *part) {
     } else {
         value24 = -1;
     }
-    lRhModel_SetupTexture(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, value24);
-    lRhModel_SetupOptionObject(arg->data, *(u8 **)0x700000C4, *(u8 **)0x700000CC, !arg->flags4.bit5, arg->value20);
+    lRhModel_SetupTexture(arg->data, *(u8 **)(SCRATCHPAD_ADDR + 0xC4), *(u8 **)(SCRATCHPAD_ADDR + 0xCC), value24);
+    lRhModel_SetupOptionObject(arg->data, *(u8 **)(SCRATCHPAD_ADDR + 0xC4), *(u8 **)(SCRATCHPAD_ADDR + 0xCC), !arg->flags4.bit5, arg->value20);
     if (arg->flags4.bit7 || arg->flags5.bit0 || arg->flags5.bit1) {
-        lRhModel_SetMaterialIntensity(*(u8 **)0x700000C4,
-                     *(u8 **)0x700000C4 + (*(Data_0020FAF0 **)0x700000DC)->sizeC,
-                     *(u8 **)0x700000CC,
-                     *(u8 **)0x700000CC + (*(Data_0020FAF0 **)0x700000DC)->size1C,
+        lRhModel_SetMaterialIntensity(*(u8 **)(SCRATCHPAD_ADDR + 0xC4),
+                     *(u8 **)(SCRATCHPAD_ADDR + 0xC4) + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->sizeC,
+                     *(u8 **)(SCRATCHPAD_ADDR + 0xCC),
+                     *(u8 **)(SCRATCHPAD_ADDR + 0xCC) + (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->size1C,
                      arg);
     }
-    *(s32 *)0x700000B8 = arg->value28;
+    *(s32 *)(SCRATCHPAD_ADDR + 0xB8) = arg->value28;
     if (!arg->flags4.bit2) {
         lRhModel_SetupNoMotion(arg->data);
     } else {
-        *(s32 *)0x700000B0 = 0;
-        *(f32 *)0x700000BC = (*(Data_0020FAF0 **)0x700000DC)->value54;
+        *(s32 *)(SCRATCHPAD_ADDR + 0xB0) = 0;
+        *(f32 *)(SCRATCHPAD_ADDR + 0xBC) = (*(Data_0020FAF0 **)(SCRATCHPAD_ADDR + 0xDC))->value54;
         if (arg->flags4.bit3) {
             lRhModel_SetupMultiMotion(arg->data, arg->src8 + 0xC, arg->src10 + 0xC,
                          arg->valueC, arg->value14, arg->value18, arg->value1C);
@@ -269,7 +269,7 @@ extern u8 gRhModel_vecScale[];
 
 /* Builds a model's node matrices from its rest pose (no motion). */
 s32 lRhModel_SetupNoMotion(void *model) {
-    Spr_0020FF80 *spr = (Spr_0020FF80 *)0x70000000;
+    Spr_0020FF80 *spr = (Spr_0020FF80 *)SCRATCHPAD_ADDR;
     u8 *data = (u8 *)model + *(s32 *)((u8 *)model + 0x10);
 
     if (spr->dst != NULL) {
@@ -282,7 +282,7 @@ s32 lRhModel_SetupNoMotion(void *model) {
         la at, D_70004000
         addiu sp, at, 0
     }
-    lRhModel_SetupNoMotionRecursive((void *)0x70000000, data, gRhModel_vecScale);
+    lRhModel_SetupNoMotionRecursive((void *)SCRATCHPAD_ADDR, data, gRhModel_vecScale);
     asm {
         la v0, gRhModel_dwStack
         lw sp, 0(v0)
@@ -415,7 +415,7 @@ extern u8 gRhModel_vecScale[];
 
 /* Builds a model's node matrices from two motions blended at their frames and weights. */
 s32 lRhModel_SetupMultiMotion(void *arg0, void *arg1, void *arg2, f32 frame, f32 frame2, f32 value, f32 value2) {
-    Spr_00210260 *spr = (Spr_00210260 *)0x70000000;
+    Spr_00210260 *spr = (Spr_00210260 *)SCRATCHPAD_ADDR;
     Motion_00210260 *m1 = arg1;
     Motion_00210260 *m2 = arg2;
     s32 c1;
@@ -505,7 +505,7 @@ extern s32 require_coordinate_index;
 /* One node of lRhModel_SetupMultiMotion, then its children and siblings. */
 s32 lRhModel_SetupMultiMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern Slot_00210310 require_coordinate[];
-    Spr_00210310 *spr = (Spr_00210310 *)0x70000000;
+    Spr_00210310 *spr = (Spr_00210310 *)SCRATCHPAD_ADDR;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
     u32 flags;
@@ -614,18 +614,18 @@ s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f3
     f32 *scale = scl;
     s32 result;
 
-    RhMem_CopyMemory16((void *)0x70000030, (void *)0x70000000, 3);
-    RhMem_CopyMemory16((void *)0x70000060, (void *)0x70000000, 3);
-    flags = lRhModel_GetInterpolateMotionItem(src0, time0, flags, (f32 *)0x70000050, (void *)0x70000040, (void *)0x70000030, multiplier);
-    result = lRhModel_GetInterpolateMotionItem(src1, time1, flags, (f32 *)0x70000080, (void *)0x70000070, (void *)0x70000060, multiplier);
-    position[0] = ((f32 *)0x70000050)[0] * weight0 + ((f32 *)0x70000080)[0] * weight1;
-    position[1] = ((f32 *)0x70000050)[1] * weight0 + ((f32 *)0x70000080)[1] * weight1;
-    position[2] = ((f32 *)0x70000050)[2] * weight0 + ((f32 *)0x70000080)[2] * weight1;
-    RhGeom_RoationComplexInterpolate(rotation, (s32 *)0x70000040, (s32 *)0x70000070, weight0, weight1);
+    RhMem_CopyMemory16((void *)(SCRATCHPAD_ADDR + 0x30), (void *)SCRATCHPAD_ADDR, 3);
+    RhMem_CopyMemory16((void *)(SCRATCHPAD_ADDR + 0x60), (void *)SCRATCHPAD_ADDR, 3);
+    flags = lRhModel_GetInterpolateMotionItem(src0, time0, flags, (f32 *)(SCRATCHPAD_ADDR + 0x50), (void *)(SCRATCHPAD_ADDR + 0x40), (void *)(SCRATCHPAD_ADDR + 0x30), multiplier);
+    result = lRhModel_GetInterpolateMotionItem(src1, time1, flags, (f32 *)(SCRATCHPAD_ADDR + 0x80), (void *)(SCRATCHPAD_ADDR + 0x70), (void *)(SCRATCHPAD_ADDR + 0x60), multiplier);
+    position[0] = ((f32 *)(SCRATCHPAD_ADDR + 0x50))[0] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x80))[0] * weight1;
+    position[1] = ((f32 *)(SCRATCHPAD_ADDR + 0x50))[1] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x80))[1] * weight1;
+    position[2] = ((f32 *)(SCRATCHPAD_ADDR + 0x50))[2] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x80))[2] * weight1;
+    RhGeom_RoationComplexInterpolate(rotation, (s32 *)(SCRATCHPAD_ADDR + 0x40), (s32 *)(SCRATCHPAD_ADDR + 0x70), weight0, weight1);
     if (!(result & 4)) {
-        scale[0] = ((f32 *)0x70000030)[0] * weight0 + ((f32 *)0x70000060)[0] * weight1;
-        scale[1] = ((f32 *)0x70000030)[1] * weight0 + ((f32 *)0x70000060)[1] * weight1;
-        scale[2] = ((f32 *)0x70000030)[2] * weight0 + ((f32 *)0x70000060)[2] * weight1;
+        scale[0] = ((f32 *)(SCRATCHPAD_ADDR + 0x30))[0] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x60))[0] * weight1;
+        scale[1] = ((f32 *)(SCRATCHPAD_ADDR + 0x30))[1] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x60))[1] * weight1;
+        scale[2] = ((f32 *)(SCRATCHPAD_ADDR + 0x30))[2] * weight0 + ((f32 *)(SCRATCHPAD_ADDR + 0x60))[2] * weight1;
     }
     return result;
 }
@@ -635,7 +635,7 @@ s32 lRhModel_GetMultiMotionItem(void *src0, void *src1, s32 flags, f32 time0, f3
 
 /* Builds a model's node matrices from a key-framed (float) motion at `time`. */
 s32 lRhModel_SetupFloatMotion(u8 *model, u8 *motion, f32 time) {
-    u8 *spr = (u8 *)0x70000000;
+    u8 *spr = (u8 *)SCRATCHPAD_ADDR;
     register void **saved;
 
     model += *(s32 *)(model + 0x10);
@@ -714,7 +714,7 @@ extern s32 require_coordinate_index;
 s32 lRhModel_SetupFloatMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern s32 lRhModel_GetInterpolateMotionItem(void *, u16, f32, void *, void *, void *, f32);
     extern Slot_00210940 require_coordinate[];
-    Spr_00210940 *spr = (Spr_00210940 *)0x70000000;
+    Spr_00210940 *spr = (Spr_00210940 *)SCRATCHPAD_ADDR;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
     u32 flags;
@@ -824,7 +824,7 @@ s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *posit
     void **tracks;
     u32 *counts;
 
-    if (*(u16 *)0x700000E0 & 4) {
+    if (*(u16 *)(SCRATCHPAD_ADDR + 0xE0) & 4) {
         counts = (u32 *)((u8 *)src + 12);
         tracks = src;
     } else {
@@ -919,7 +919,7 @@ s32 lRhModel_GetInterpolateMotionItem(void *src, f32 time, s32 flags, f32 *posit
             }
         }
     }
-    if (*(u16 *)0x700000E0 & 4) {
+    if (*(u16 *)(SCRATCHPAD_ADDR + 0xE0) & 4) {
         FloatKey_00210CF0 *keys = tracks[2];
         if (keys != 0) {
             FloatKey_00210CF0 *key;
@@ -977,7 +977,7 @@ extern u8 gRhModel_vecScale[];
 
 /* Builds a model's node matrices from a per-frame (pulse) motion at `time`. */
 s32 lRhModel_SetupPulseMotion(u8 *model, u8 *motion, f32 time) {
-    u8 *spr = (u8 *)0x70000000;
+    u8 *spr = (u8 *)SCRATCHPAD_ADDR;
     register void **saved;
 
     model += *(s32 *)(model + 0x10);
@@ -1058,7 +1058,7 @@ extern Slot_00211530 require_coordinate[];
 /* One node of lRhModel_SetupPulseMotion, then its children and siblings. */
 s32 lRhModel_SetupPulseMotionRecursive(void *arg0, s32 depth, void *arg2) {
     extern s32 lRhModel_GetPulseMotionItem(void *, s64, u16, void *, void *, void *, f32);
-    Spr_00211530 *spr = (Spr_00211530 *)0x70000000;
+    Spr_00211530 *spr = (Spr_00211530 *)SCRATCHPAD_ADDR;
     u8 buf[32];
     f32 *vec = (f32 *)(((s32)buf + 0xF) & ~0xF);
     u32 flags;
@@ -1182,7 +1182,7 @@ s32 lRhModel_GetPulseMotionItem(void *src, u32 time, s32 flags, f32 *position,
     FloatKey_002118F0 *previous;
     FloatKey_002118F0 *next;
 
-    if (*(u16 *)0x700000E0 & 4) {
+    if (*(u16 *)(SCRATCHPAD_ADDR + 0xE0) & 4) {
         counts = (u32 *)((u8 *)src + 12);
         tracks = src;
     } else {
@@ -1274,7 +1274,7 @@ s32 lRhModel_GetPulseMotionItem(void *src, u32 time, s32 flags, f32 *position,
         }
     }
 
-    if (*(u16 *)0x700000E0 & 4) {
+    if (*(u16 *)(SCRATCHPAD_ADDR + 0xE0) & 4) {
         if (tracks->scale != NULL) {
             scale_keys = tracks->scale;
             high = counts[2];
@@ -1842,7 +1842,7 @@ typedef struct Spr_002130A0 {
 
 /* Sets up the CPU drawer's matrices and lights (`withLight`). */
 s32 lRhModelCpu_SetupGlobal(s32 withLight) {
-    Spr_002130A0 *spr = (Spr_002130A0 *)0x70000000;
+    Spr_002130A0 *spr = (Spr_002130A0 *)SCRATCHPAD_ADDR;
     u8 e[4];
     f32 near;
     f32 far;
@@ -1851,7 +1851,7 @@ s32 lRhModelCpu_SetupGlobal(s32 withLight) {
 
     RhView_GetViewScreenMatrix(spr);
     {
-        register u8 *m = (u8 *)0x70000000;
+        register u8 *m = (u8 *)SCRATCHPAD_ADDR;
         asm {
             lqc2 vf20, 0x0(m)
             lqc2 vf21, 0x10(m)
@@ -1887,7 +1887,7 @@ s32 lRhModelCpu_SetupGlobal(s32 withLight) {
 
 /* Transforms a model part's dynamic block on the CPU into `out`. */
 u8 *lRhModelCpu_TraceDynamicBlock(u8 *out, s32 data, s32 size) {
-    u8 *spr = (u8 *)0x70000000;
+    u8 *spr = (u8 *)SCRATCHPAD_ADDR;
     u32 cmd;
 
     size = data + size;
@@ -1964,7 +1964,7 @@ u8 *lRhModelCpu_TraceDynamicBlock(u8 *out, s32 data, s32 size) {
 /* Transforms a model part's static block on the CPU. */
 s32 lRhModelCpu_TraceStaticBlock(s32 arg0, u32 cursor, s32 size) {
     u32 end = cursor + size;
-    u32 *scratchpad = (u32 *)0x70000000;
+    u32 *scratchpad = (u32 *)SCRATCHPAD_ADDR;
     u32 packet;
 
     if (cursor < end) {
@@ -2016,7 +2016,7 @@ s32 lRhModelCpu_CalcIndepStrip(s32 arg0, s32 *arg1) {
     s32 var_s4;
 
     var_s1 = (u8 *)arg1 + 0x18;
-    scratch = (u8 *)0x70000000;
+    scratch = (u8 *)SCRATCHPAD_ADDR;
     var_s4 = 0;
     temp_s3 = arg1[1] & 0x7FFF;
     for (i = 0; i < temp_s3; i++) {
@@ -2085,7 +2085,7 @@ typedef struct In_00213680 {
 
 /* Transforms one separate vertex on the CPU. */
 s8 lRhModelCpu_CalcIndepPoint(s32 arg0, s32 *arg1) {
-    Spr_00213680 *spr = (Spr_00213680 *)0x70000000;
+    Spr_00213680 *spr = (Spr_00213680 *)SCRATCHPAD_ADDR;
     register f32 *src = spr->in;
     register f32 *dst = spr->res;
     f32 w;
@@ -2168,7 +2168,7 @@ s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
 
     var_s1 = (u8 *)arg1 + 0x14;
     prim = (Prim_002138D0 *)arg0;
-    scratch = (u8 *)0x70000000;
+    scratch = (u8 *)SCRATCHPAD_ADDR;
     var_s4 = 0;
     temp_s3 = arg1[1] & 0x7FFF;
     for (i = 0; i < temp_s3; i++) {
@@ -2187,7 +2187,7 @@ s32 lRhModelCpu_CalcSharedStrip(s32 arg0, s32 *arg1) {
         var_s1 = (u8 *)((Item_002138D0 *)(var_s1 + 6) + *(u16 *)(var_s1 + 4));
         var_s4 = (var_s4 + 1) % 3;
     }
-    *(u32 *)0x700000FC = (u32)(var_s1 + 3) & ~3;
+    *(u32 *)(SCRATCHPAD_ADDR + 0xFC) = (u32)(var_s1 + 3) & ~3;
     return (s32)prim;
 }
 #pragma opt_lifetimes reset
@@ -2237,7 +2237,7 @@ typedef struct In_00213A40 {
 
 /* Transforms one shared vertex on the CPU. */
 s8 lRhModelCpu_CalcSharedPoint(s32 arg0, s32 *arg1) {
-    Spr_00213A40 *spr = (Spr_00213A40 *)0x70000000;
+    Spr_00213A40 *spr = (Spr_00213A40 *)SCRATCHPAD_ADDR;
     register Weight_00213A40 *rec;
     s32 i;
     s32 n;
@@ -2328,7 +2328,7 @@ struct DotrWalkSortPad {
     unsigned char unknown_000[0x120];
     struct DotrWalkPolygon temp;
 };
-#define DOTR_WALK_SORT_PAD ((struct DotrWalkSortPad *)0x70000000)
+#define DOTR_WALK_SORT_PAD ((struct DotrWalkSortPad *)SCRATCHPAD_ADDR)
 #define DOTR_SORT_AT(i) (first + (i) - 1)
 #define DOTR_SORT_COPY(k) ((struct DotrWalkPolygon *)(((k) << 7) + (DotrWalkAddr)first - 128))
 

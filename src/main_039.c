@@ -815,22 +815,22 @@ s32 lSzDuel_DrawWindow_DualShock2_Pipe(s32 packet, s32 x, s32 y, s32 alpha) {
     ((UV_001B7820 *)&sprite.corners[3].uv)->v = texture->bottom * 16;
     RhGeom_GetRotXYZMatrix(&matrix, &rotation);
     RhGeom_PushMatrix((s32)&matrix);
-    RhGeom_MulMatrixVectorArray((void *)0x70000000, 0, &corners, 4);
+    RhGeom_MulMatrixVectorArray((void *)SCRATCHPAD_ADDR, 0, &corners, 4);
     RhGeom_PopMatrix();
-    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[0]) - 8;
-    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[1]) - 8;
+    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[0]) - 8;
+    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[1]) - 8;
     sprite.corners[0].xyz.z = state->depth;
     sprite.corners[0].xyz.fog = 0;
-    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[4]) - 8;
-    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[5]) - 8;
+    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[4]) - 8;
+    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[5]) - 8;
     sprite.corners[1].xyz.z = state->depth;
     sprite.corners[1].xyz.fog = 0;
-    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[8]) - 8;
-    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[9]) - 8;
+    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[8]) - 8;
+    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[9]) - 8;
     sprite.corners[2].xyz.z = state->depth;
     sprite.corners[2].xyz.fog = 0;
-    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[12]) - 8;
-    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[13]) - 8;
+    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[12]) - 8;
+    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[13]) - 8;
     sprite.corners[3].xyz.z = state->depth;
     sprite.corners[3].xyz.fog = 0;
     packet = RhBase_SetZBufferMode(packet, 0);
@@ -1157,9 +1157,10 @@ void SzDuel_InitBuildDeck(s32 side) {
 
     state = duelState.b;
     deckNo = SzData_GetCurrentDeck(side);
-    bag = (s16 *)0x01ED0000;
-    deck = (s16 *)0x01ED06AC;
-    counts = (u8 *)0x01ED06FE;
+    /* the card lists live in the campaign work area, borrowed as scratch */
+    bag = (s16 *)CAMPAIGN_WORK_ADDR;
+    deck = (s16 *)(CAMPAIGN_WORK_ADDR + 0x6AC);
+    counts = (u8 *)(CAMPAIGN_WORK_ADDR + 0x6FE);
     sortOption = SzData_GetOption(0, 0);
     duelState.s.depth = 0xFFFFF8;
     if (sortOption != 0) {
@@ -1168,9 +1169,9 @@ void SzDuel_InitBuildDeck(s32 side) {
         names = D_002CCB48;
     }
     *(u8 **)(state + 0x6D4) = names;
-    *(s32 *)(state + 0x6D8) = 0x01ED0000;
-    *(s32 *)(state + 0x6DC) = 0x01ED06AC;
-    *(s32 *)(state + 0x6D0) = 0x01ED06FE;
+    *(s32 *)(state + 0x6D8) = CAMPAIGN_WORK_ADDR;
+    *(s32 *)(state + 0x6DC) = CAMPAIGN_WORK_ADDR + 0x6AC;
+    *(s32 *)(state + 0x6D0) = CAMPAIGN_WORK_ADDR + 0x6FE;
     *(u16 *)(state + 0xC8C) = 0;
     card = 0;
     do {
@@ -1184,7 +1185,7 @@ void SzDuel_InitBuildDeck(s32 side) {
         bag++;
     } while (card < 0x356);
     *(u16 *)(state + 0xC90) = 0;
-    *(s16 *)0x01ED06AC = SzData_GetLeader(side, deckNo);
+    *(s16 *)(CAMPAIGN_WORK_ADDR + 0x6AC) = SzData_GetLeader(side, deckNo);
     deck++;
     i = 0;
     *(u16 *)(state + 0xC90) = (u16)(*(u16 *)(state + 0xC90) + 1);

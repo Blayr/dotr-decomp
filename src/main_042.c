@@ -249,6 +249,8 @@ struct DotrCustomDuel {
     unsigned char f8c;
     unsigned char f8d;
 };
+/* 0xa9c000 is CUSTOM_DUEL_ADDR (common.h). The literals stay spelled out in this file: SzDuel_Act, further down,
+   matches only with them written as they are (the compiler carries state from the functions before it). */
 #define DOTR_CUSTOM_DUEL ((struct DotrCustomDuel *)0xa9c000)
 struct DotrCustomDuelFlags {
     unsigned char unknown_0000[0xff9c];
@@ -4026,9 +4028,9 @@ s32 SzDuel_Act(void) {
         case 0x2B: {
             u16 *buf;
             u16 *buf2;
-            buf = (u16 *)0x01ED0000;
+            buf = (u16 *)CAMPAIGN_WORK_ADDR;
             *(u16 **)(duel + 0x6D8) = buf;
-            buf2 = (u16 *)0x01ED00F0;
+            buf2 = (u16 *)(CAMPAIGN_WORK_ADDR + 0xF0);
             *(u16 **)(duel + 0x6DC) = buf2;
             DUEL[0xD5E] = 0;
             DUEL[0xD5F] = 0;
@@ -4244,7 +4246,7 @@ s32 SzDuel_Act(void) {
             prevZ = me[0x33E];
             bpl = DUEL[0xD36] & 0x7F;
             k = 0;
-            buf = (u16 *)0x01ED0000;
+            buf = (u16 *)CAMPAIGN_WORK_ADDR;
             *(u16 **)(duel + 0x6D8) = buf;
             DUEL[0xD5E] = 0;
             *(u16 *)(duel + 0xC8C) = 0;
@@ -5312,7 +5314,7 @@ s32 SzDuel_Act(void) {
             u16 *buf;
             *(u16 *)(duel + 0xC8A) = 0;
             *(u16 *)(duel + 0xC8C) = 0;
-            buf = (u16 *)0x01ED0000;
+            buf = (u16 *)CAMPAIGN_WORK_ADDR;
             if (fullA && !fullB) {
                 for (n = 0; n < 0x356; n++) {
                     tx = func_00215D30(0, n);
@@ -5352,7 +5354,7 @@ s32 SzDuel_Act(void) {
             break;
         }
         case 0x5F:
-            *(u16 *)(duel + 0xCAA) = ((u16 *)0x01ED0000)[*(u16 *)(duel + 0xC8A)];
+            *(u16 *)(duel + 0xCAA) = ((u16 *)CAMPAIGN_WORK_ADDR)[*(u16 *)(duel + 0xC8A)];
             func_00217710(0, 4);
             DUEL[0xD57] = 0x60;
         case 0x60:
@@ -5375,7 +5377,7 @@ s32 SzDuel_Act(void) {
             return 0;
         case 0x62:
             if (((fullA && DUEL[0xD50] == 0) || (fullB && DUEL[0xD50] == 1)) &&
-                func_00251060(DUEL[0xD50] ^ 1, (void *)0x01ED0000) != 0) {
+                func_00251060(DUEL[0xD50] ^ 1, (void *)CAMPAIGN_WORK_ADDR) != 0) {
                 func_001A87C0(0xF, -1);
             } else {
                 func_001A8920();

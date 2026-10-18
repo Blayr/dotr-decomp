@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 struct DotrCampSystemSpot {
     float x;
@@ -25,16 +26,6 @@ struct DotrCampSystemBoard {
     signed char b201;
 };
 extern struct DotrCampSystemBoard D_00299E10_b;
-struct DotrCampSystemRecord {
-    float x[64];
-    float y[64];
-    short count;
-    short flag;                 
-};
-struct DotrCampSystemBank {
-    unsigned char unknown_0000[0x22c];
-    struct DotrCampSystemRecord records[2][16];     
-};
 struct DotrCampSystemList {
     unsigned char unknown_00[70];
     short cell;                 
@@ -42,20 +33,14 @@ struct DotrCampSystemList {
 };
 extern struct DotrCampSystemList campaignRoutes[2][16]; /* original: root_no */
 extern int campaignAct2Lock; /* original: ACT2_Rock */
-#define DOTR_CAMP_SYSTEM_BASE 0x1ed0000
-#define DOTR_CAMP_SYSTEM_BANK ((struct DotrCampSystemBank *)0x1ed0000)
 extern int func_00229140_b(int a, int b, int limit);
 extern int func_002294B0_b(int side, int pick);
 extern void func_00217980_b(int n, int b);
 extern void func_00228940_b(int a, int b);
 extern void func_00228660_b(int side, int row, int value, short *list, int count);
 extern int func_00228F50_b(int side, int row);
-#define WB(o) (*(signed char *)(DOTR_CAMP_SYSTEM_BASE + (o)))
-#define WH(o) (*(short *)(DOTR_CAMP_SYSTEM_BASE + (o)))
-#define WF(o) (*(float *)(DOTR_CAMP_SYSTEM_BASE + (o)))
-#define BANK DOTR_CAMP_SYSTEM_BANK
 #define COPY(K) n = spot[K].n; for (i = 0; i < n; i++) { buf[i] = spot[K].list[sd][i]; }
-#define FLOATS WF(0x40) = WF(0x1b8); WF(0x48) = WF(0x1c0);
+#define FLOATS campaignWork.cameraTarget[0] = campaignWork.shipPos[0]; campaignWork.cameraTarget[2] = campaignWork.shipPos[2];
 #define NAG(C, K, F) case C: COPY(K) Taku_Nagare2_set(side, K, buf, n, F); break;
 #define NAG1(C, K) case C: buf[0] = spot[K].list[sd][0]; Taku_Nagare2_set(side, K, buf, 1, 0); break;
 #define KM(C, K) case C: func_002294B0_b(side, K); break;
@@ -73,29 +58,29 @@ void Taku_Camp_System(void)
     short n;
     short buf[8];
 
-    if (WB(0x18c) != 0) {
+    if (campaignWork.unk018C != 0) {
         if (b->h194 < 200) {
-            WB(0x537a) = 0;
-            WB(0x537b) = 0;
+            campaignWork.unk537A = 0;
+            campaignWork.talkStep = 0;
             func_00229140_b(side, 0, 0);
         } else if (b->h194 < 300) {
             func_002294B0_b(side, b->b198);
         } else if (b->h194 < 400) {
             func_002294B0_b(side, b->b198);
         }
-        WB(0x53b4) = 0;
-        WB(0x53b5) = 0;
-        WH(0x53b6) = 0;
-        WH(0x53b8) = 0;
-        if (WB(0x546c) == 0) {
+        campaignWork.unk53B4 = 0;
+        campaignWork.unk53B5 = 0;
+        campaignWork.duelistSlide[0] = 0;
+        campaignWork.duelistSlide[1] = 0;
+        if (campaignWork.unk546C == 0) {
             func_00217980_b(4, 1);
-            WB(0x546c) = 1;
+            campaignWork.unk546C = 1;
         }
         campaignAct2Lock = 0;
         return;
     }
     if (b->h194 >= 100 && b->h194 < 200) {
-        WB(0x537a) = 0;
+        campaignWork.unk537A = 0;
         campaignAct2Lock = 0;
     }
     if (b->h194 < 10000) {
@@ -103,9 +88,9 @@ void Taku_Camp_System(void)
         case 104:
             break;
         default:
-            if (WB(0x546c) == 0) {
+            if (campaignWork.unk546C == 0) {
                 func_00217980_b(4, 1);
-                WB(0x546c) = 1;
+                campaignWork.unk546C = 1;
             }
             break;
         }
@@ -115,56 +100,56 @@ void Taku_Camp_System(void)
     if (sd == 0) {
         switch (b->h194) {
         case 0:
-            WB(0x537a) = 0;
+            campaignWork.unk537A = 0;
             func_00229140_b(side, 0, 0);
             campaignAct2Lock = 0;
             break;
         case 100:
             COPY(11)
             b->lv[11] = 1;
-            switch (WH(0x536c)) {
+            switch (campaignWork.eventStep) {
             case 0:
-                WH(0x1c) = 1;
-                WH(0x1a) = 2;
+                campaignWork.cinemaState = 1;
+                campaignWork.cinemaMode = 2;
                 func_00228940_b(0, 0);
                 func_00228660_b(side, 0, 0, buf, 1);
                 b->b199 = 11;
-                WH(0x536c)++;
+                campaignWork.eventStep++;
                 break;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 0);
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 break;
             case 2:
                 FLOATS
-                if (WH(0x1a4) == 3) {
+                if (campaignWork.shipState == 3) {
                     func_00217980_b(27, 0);
-                    WH(0x536c)++;
-                    WB(0x537b)++;
-                    WB(0x537d) = 1;
+                    campaignWork.eventStep++;
+                    campaignWork.talkStep++;
+                    campaignWork.talkPage = 1;
                 }
                 break;
             case 3:
                 FLOATS
                 if (b->lv[0] != 0) {
                     if (My_LedarModel_a_set(1)) {
-                        WH(0x1c) = 1;
-                        WH(0x1a) = 3;
-                        WH(0x536c)++;
+                        campaignWork.cinemaState = 1;
+                        campaignWork.cinemaMode = 3;
+                        campaignWork.eventStep++;
                     }
                 }
                 break;
             case 4:
-                if (WB(0x537b) == 4) {
-                    WB(0x537b)++;
+                if (campaignWork.talkStep == 4) {
+                    campaignWork.talkStep++;
                 }
-                if (WB(0x537b) == 12 && WH(0x1c) == 2) {
-                    WB(0x537b) = 0;
-                    WB(0x537d) = 0;
+                if (campaignWork.talkStep == 12 && campaignWork.cinemaState == 2) {
+                    campaignWork.talkStep = 0;
+                    campaignWork.talkPage = 0;
                     b->h194 = 11020;
-                    WH(0x536c) = 0;
+                    campaignWork.eventStep = 0;
                 }
                 break;
             }
@@ -173,12 +158,12 @@ void Taku_Camp_System(void)
         case 101:
             COPY(0)
             b->lv[0] = 1;
-            switch (WH(0x536c)) {
+            switch (campaignWork.eventStep) {
             case 0:
-                WF(0x40) = spot[0].x;
-                WF(0x48) = spot[0].y;
-                WH(0x1c) = 1;
-                WH(0x1a) = 2;
+                campaignWork.cameraTarget[0] = spot[0].x;
+                campaignWork.cameraTarget[2] = spot[0].y;
+                campaignWork.cinemaState = 1;
+                campaignWork.cinemaMode = 2;
                 func_00228940_b(0, 1);
                 buf[0] = 0;
                 func_00228660_b(side, 0, 3, buf, 1);
@@ -186,28 +171,28 @@ void Taku_Camp_System(void)
                 buf[1] = 2;
                 func_00228660_b(side, 1, 0, buf, 2);
                 b->lv[0] = 0;
-                WH(0x536c)++;
+                campaignWork.eventStep++;
                 return;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 1);
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 2:
                 FLOATS
-                if (WH(0x1a4) == 3) {
-                    WH(0x536c)++;
+                if (campaignWork.shipState == 3) {
+                    campaignWork.eventStep++;
                 }
                 return;
             case 3:
                 FLOATS
                 if (b->lv[1] != 0) {
                     if (My_LedarModel_a_set(1)) {
-                        WH(0x1c) = 1;
-                        WH(0x1a) = 0;
+                        campaignWork.cinemaState = 1;
+                        campaignWork.cinemaMode = 0;
                         b->h194++;
-                        WH(0x536c) = 0;
+                        campaignWork.eventStep = 0;
                     }
                 }
                 return;
@@ -235,7 +220,7 @@ void Taku_Camp_System(void)
     } else {
         switch (b->h194) {
         case 0:
-            WB(0x537a) = 0;
+            campaignWork.unk537A = 0;
             func_00229140_b(side, 0, 0);
             campaignAct2Lock = 0;
             break;
@@ -250,30 +235,30 @@ void Taku_Camp_System(void)
         case 104:
             buf[0] = spot[15].list[sd][0];
             b->lv[15] = 3;
-            switch (WH(0x536c)) {
+            switch (campaignWork.eventStep) {
             case 0:
-                WH(0x1c) = 1;
-                WH(0x1a) = 2;
-                WH(0x60) = 0;
-                WB(0x5372) = 1;
-                WB(0x5373) = 0;
-                WB(0x537b) = 0;
-                WB(0x53a0) = 0;
-                WB(0x5375) = 0;
+                campaignWork.cinemaState = 1;
+                campaignWork.cinemaMode = 2;
+                campaignWork.moveStep = 0;
+                campaignWork.unk5372 = 1;
+                campaignWork.leaderShow = 0;
+                campaignWork.talkStep = 0;
+                campaignWork.unk53A0 = 0;
+                campaignWork.unk5375 = 0;
                 func_00228940_b(0, 2);
                 func_00228660_b(side, 15, 3, buf, 1);
-                WH(0x536c)++;
+                campaignWork.eventStep++;
                 return;
             case 1:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 2);
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 2:
                 FLOATS
-                if (WH(0x1a4) == 3) {
-                    WH(0x536c) = 0;
+                if (campaignWork.shipState == 3) {
+                    campaignWork.eventStep = 0;
                     b->h194 = 12041;
                     b->b199 = 16;
                 }
@@ -282,10 +267,10 @@ void Taku_Camp_System(void)
                 FLOATS
                 if (b->lv[spot[15].list[sd][buf[0]]] != 0) {
                     if (My_LedarModel_a_set(1)) {
-                        WH(0x1c) = 1;
-                        WH(0x1a) = 0;
-                        BANK->records[sd][buf[0]].flag = 1;
-                        WH(0x536c)++;
+                        campaignWork.cinemaState = 1;
+                        campaignWork.cinemaMode = 0;
+                        campaignWork.routes[sd][buf[0]].state = 1;
+                        campaignWork.eventStep++;
                     }
                 }
                 return;
@@ -295,41 +280,41 @@ void Taku_Camp_System(void)
             buf[0] = spot[16].list[sd][0];
             buf[1] = spot[17].list[sd][0];
             b->lv[16] = 3;
-            switch (WH(0x536c)) {
+            switch (campaignWork.eventStep) {
             case 0:
-                WH(0x1c) = 0;
-                WH(0x1a) = 2;
-                WH(0x60) = 0;
-                WB(0x5372) = 1;
-                WB(0x5373) = 0;
-                WB(0x537b) = 0;
-                WB(0x53a0) = 0;
-                WB(0x5375) = 0;
+                campaignWork.cinemaState = 0;
+                campaignWork.cinemaMode = 2;
+                campaignWork.moveStep = 0;
+                campaignWork.unk5372 = 1;
+                campaignWork.leaderShow = 0;
+                campaignWork.talkStep = 0;
+                campaignWork.unk53A0 = 0;
+                campaignWork.unk5375 = 0;
                 func_00228940_b(0, 3);
                 func_00228660_b(side, 16, 3, buf, 2);
                 func_00228660_b(side, 17, 0, buf, 2);
                 func_00217980_b(35, 1);
                 b->b199 = 16;
-                WH(0x536c)++;
+                campaignWork.eventStep++;
                 return;
             case 1:
-                if (WH(0x6c) == 0) {
-                    WH(0x1c) = 1;
-                    WH(0x536c)++;
+                if (campaignWork.windowOpen == 0) {
+                    campaignWork.cinemaState = 1;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 2:
-                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && WH(0x1c) == 2) {
+                if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido() && campaignWork.cinemaState == 2) {
                     func_00228940_b(1, 3);
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 3:
                 FLOATS
-                if (WH(0x1a4) == 3) {
-                    WH(0x536c)++;
-                    WB(0x537b)++;
-                    WB(0x537d) = 1;
+                if (campaignWork.shipState == 3) {
+                    campaignWork.eventStep++;
+                    campaignWork.talkStep++;
+                    campaignWork.talkPage = 1;
                     b->b199 = 17;
                 }
                 return;
@@ -337,11 +322,11 @@ void Taku_Camp_System(void)
                 FLOATS
                 if (b->lv[campaignRoutes[sd][buf[0]].cell] != 0) {
                     if (My_LedarModel_a_set(1)) {
-                        WH(0x1c) = 1;
-                        WH(0x1a) = 0;
-                        BANK->records[sd][buf[0]].flag = 1;
+                        campaignWork.cinemaState = 1;
+                        campaignWork.cinemaMode = 0;
+                        campaignWork.routes[sd][buf[0]].state = 1;
                         b->h194++;
-                        WH(0x536c) = 0;
+                        campaignWork.eventStep = 0;
                     }
                 }
                 return;
@@ -350,9 +335,9 @@ void Taku_Camp_System(void)
         case 106:
             buf[0] = spot[17].list[sd][0];
             Taku_Nagare2_set(side, 17, buf, 1, 0);
-            if (WB(0x546c) == 0) {
+            if (campaignWork.unk546C == 0) {
                 func_00217980_b(4, 1);
-                WB(0x546c) = 1;
+                campaignWork.unk546C = 1;
             }
             break;
         NAG1(107, 18)
@@ -361,90 +346,90 @@ void Taku_Camp_System(void)
         NAG1(110, 21)
         case 111:
             buf[0] = spot[0].list[sd][0];
-            switch (WH(0x536c)) {
+            switch (campaignWork.eventStep) {
             case 0:
-                WH(0x1c) = 0;
-                WH(0x1a) = 2;
-                WH(0x60) = 0;
-                WB(0x5372) = 1;
-                WB(0x5373) = 0;
-                WB(0x537b) = 0;
-                WB(0x53a0) = 0;
-                WB(0x5375) = 0;
+                campaignWork.cinemaState = 0;
+                campaignWork.cinemaMode = 2;
+                campaignWork.moveStep = 0;
+                campaignWork.unk5372 = 1;
+                campaignWork.leaderShow = 0;
+                campaignWork.talkStep = 0;
+                campaignWork.unk53A0 = 0;
+                campaignWork.unk5375 = 0;
                 func_00228940_b(0, 4);
                 func_00228660_b(side, 0, 3, buf, 1);
                 b->lv[0] = 3;
-                WH(0x536c)++;
+                campaignWork.eventStep++;
                 return;
             case 1:
-                if (WH(0x6c) == 0) {
-                    WH(0x1c) = 1;
-                    WH(0x536c)++;
+                if (campaignWork.windowOpen == 0) {
+                    campaignWork.cinemaState = 1;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 2:
-                if (WH(0x1c) == 2) {
-                    WB(0x537b)++;
-                    WB(0x537d) = 1;
-                    WB(0x5375) = 1;
-                    WH(0x536c)++;
+                if (campaignWork.cinemaState == 2) {
+                    campaignWork.talkStep++;
+                    campaignWork.talkPage = 1;
+                    campaignWork.unk5375 = 1;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 3:
-                if (WB(0x537b) == 14) {
-                    WB(0x537b) = 0;
-                    WB(0x537d) = 0;
-                    WH(0x536c)++;
+                if (campaignWork.talkStep == 14) {
+                    campaignWork.talkStep = 0;
+                    campaignWork.talkPage = 0;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 4:
                 if (My_LedarModel_a_set(0) && Taku_Tyumoku_ido()) {
                     func_00228940_b(1, 4);
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 5:
                 FLOATS
-                if (WH(0x1a4) == 3) {
+                if (campaignWork.shipState == 3) {
                     b->b199 = 11;
-                    WH(0x536c)++;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 6:
                 FLOATS
                 if (b->lv[11] != 0) {
                     if (My_LedarModel_a_set(1)) {
-                        WH(0x1c) = 1;
-                        WH(0x1a) = 0;
-                        WH(0x536c)++;
+                        campaignWork.cinemaState = 1;
+                        campaignWork.cinemaMode = 0;
+                        campaignWork.eventStep++;
                     }
                 }
                 return;
             case 7:
-                if (WH(0x60) == 0) {
-                    WF(0x50) = WF(0x40);
-                    WF(0x58) = WF(0x48);
+                if (campaignWork.moveStep == 0) {
+                    campaignWork.moveFromX = campaignWork.cameraTarget[0];
+                    campaignWork.moveFromZ = campaignWork.cameraTarget[2];
                 }
-                WF(0x40) = WF(0x50) * (float)(256 - WH(0x60)) / 256.0f + spot[11].x * (float)WH(0x60) / 256.0f;
-                WF(0x48) = WF(0x58) * (float)(256 - WH(0x60)) / 256.0f + spot[11].y * (float)WH(0x60) / 256.0f;
-                WH(0x60) += 16;
-                if (WH(0x60) > 256) {
-                    WH(0x60) = 0;
-                    WF(0x50) = WF(0x40);
-                    WF(0x58) = WF(0x48);
-                    WB(0x5372) = 0;
-                    WB(0x5375) = 0;
-                    WH(0x536c)++;
+                campaignWork.cameraTarget[0] = campaignWork.moveFromX * (float)(256 - campaignWork.moveStep) / 256.0f + spot[11].x * (float)campaignWork.moveStep / 256.0f;
+                campaignWork.cameraTarget[2] = campaignWork.moveFromZ * (float)(256 - campaignWork.moveStep) / 256.0f + spot[11].y * (float)campaignWork.moveStep / 256.0f;
+                campaignWork.moveStep += 16;
+                if (campaignWork.moveStep > 256) {
+                    campaignWork.moveStep = 0;
+                    campaignWork.moveFromX = campaignWork.cameraTarget[0];
+                    campaignWork.moveFromZ = campaignWork.cameraTarget[2];
+                    campaignWork.unk5372 = 0;
+                    campaignWork.unk5375 = 0;
+                    campaignWork.eventStep++;
                 }
                 return;
             case 8:
-                WH(0x1c) = 1;
-                WH(0x1a) = 3;
-                WH(0x536c)++;
+                campaignWork.cinemaState = 1;
+                campaignWork.cinemaMode = 3;
+                campaignWork.eventStep++;
                 return;
             case 9:
-                if (WH(0x1c) == 2) {
-                    WH(0x536c) = 0;
+                if (campaignWork.cinemaState == 2) {
+                    campaignWork.eventStep = 0;
                     b->h194 = 12130;
                 }
                 return;
@@ -458,12 +443,6 @@ void Taku_Camp_System(void)
         }
     }
 }
-#undef DOTR_CAMP_SYSTEM_BASE
-#undef DOTR_CAMP_SYSTEM_BANK
-#undef WB
-#undef WH
-#undef WF
-#undef BANK
 #undef COPY
 #undef FLOATS
 #undef NAG

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 typedef struct Vec3_0023B1F0 {
     f32 x;
@@ -25,7 +26,7 @@ void TkCamp_Act2(s32 param) {
     extern s32 campaignAct2Lock;
     extern void Taku_3D_2D_Set();
     Vec4_0023B1F0 top;
-    u8 *work;
+    CampaignWork *work;
     s16 show;
     s8 *state;
     s16 result;
@@ -41,11 +42,11 @@ void TkCamp_Act2(s32 param) {
     s32 radius;
 
     state = &campaignState;
-    work = (u8 *)0x01ED0000;
+    work = &campaignWork;
     result = 0;
     Taku_Coord_Set(campaignCoord);
     item = campaignPlaces;
-    for (i = 0, spot = (s32 *)work; i <= 21; i++) {
+    for (i = 0, spot = (s32 *)work; i <= 21; i++) { /* spot[0x23] is placeScreenX[i], spot[0x43] placeScreenY[i] */
         show = 0;
         top.x = item->pos.x;
         top.y = 8.65f + item->pos.y;
@@ -56,7 +57,7 @@ void TkCamp_Act2(s32 param) {
         if (param != 0) {
             show = 1;
         }
-        if (*(s8 *)(work + 0x18C) != 0) {
+        if (work->unk018C != 0) {
             show = 1;
         } else if (state[0] == 0) {
             if (i == 0 || i == 11) {
@@ -76,13 +77,13 @@ void TkCamp_Act2(s32 param) {
             Taku_3D_2D_Set(&sx, &sy, &side);
             radius = sx - spot[0x23];
             if (campaignAct2Lock == 0) {
-                if (*(s8 *)(work + 0x5373) != 0) {
-                    *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
-                    *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
+                if (work->leaderShow != 0) {
+                    work->cursorX = *(s16 *)&work->placeScreenX[state[0xC6]];
+                    work->cursorY = *(s16 *)&work->placeScreenY[state[0xC6]];
                 }
-                dx = *(s16 *)(work + 0x0) - spot[0x23];
-                if (func_001A6C60(func_001A6C48(dx, 2.0f) + func_001A6C48(*(s16 *)(work + 0x2) - spot[0x43], 2.0f)) < radius) {
-                    if (*(s16 *)(work + 0x6C) == 0 || *(s8 *)(work + 0x5373) != 0) {
+                dx = work->cursorX - spot[0x23];
+                if (func_001A6C60(func_001A6C48(dx, 2.0f) + func_001A6C48(work->cursorY - spot[0x43], 2.0f)) < radius) {
+                    if (work->windowOpen == 0 || work->leaderShow != 0) {
                         if (i != state[0xC6]) {
                             state[0xC6] = i;
                         }
@@ -90,9 +91,9 @@ void TkCamp_Act2(s32 param) {
                     if (state[0xC6] == i) {
                         result = 1;
                     }
-                    if (*(s8 *)(work + 0x5373) != 0) {
-                        *(s16 *)(work + 0x0) = *(s16 *)(work + 0x8C + state[0xC6] * 4);
-                        *(s16 *)(work + 0x2) = *(s16 *)(work + 0x10C + state[0xC6] * 4);
+                    if (work->leaderShow != 0) {
+                        work->cursorX = *(s16 *)&work->placeScreenX[state[0xC6]];
+                        work->cursorY = *(s16 *)&work->placeScreenY[state[0xC6]];
                     }
                 }
             } else {
@@ -104,20 +105,20 @@ void TkCamp_Act2(s32 param) {
     }
     rect = campaignSystemIcons;
     for (j = 0; j < 4; j++) {
-        if (rect[0] - 2 <= *(s16 *)(work + 0x0) && *(s16 *)(work + 0x0) <= rect[2] + 2 &&
-            rect[1] - 2 <= *(s16 *)(work + 0x2) && *(s16 *)(work + 0x2) <= rect[3] + 2) {
-            *(s16 *)(work + 0x80) = j;
-            *(s8 *)(work + 0x547A) = 1;
+        if (rect[0] - 2 <= work->cursorX && work->cursorX <= rect[2] + 2 &&
+            rect[1] - 2 <= work->cursorY && work->cursorY <= rect[3] + 2) {
+            work->iconUnderCursor = j;
+            work->cursorOnIcon = 1;
             result = 2;
         }
         rect = (s16 *)((u8 *)rect + 0x26);
     }
-    if (*(u16 *)0x01ED0004 != 1) {
+    if (campaignWork.unk0004 != 1) {
         switch (result) {
         case 0:
-            *(s8 *)0x01ED006A = 0;
-            *(s8 *)0x01ED007E = 0;
-            *(u16 *)0x01ED0004 = 0;
+            campaignWork.unk006A = 0;
+            campaignWork.unk007E = 0;
+            campaignWork.unk0004 = 0;
             break;
         case 1:
             if (state[0xC6] == 11) {
@@ -128,11 +129,11 @@ void TkCamp_Act2(s32 param) {
                 case 3:
                 case 4:
                 case 5:
-                    if (*(s8 *)0x01ED0072 == 0 || *(s8 *)0x01ED537A != 0) {
-                        *(s8 *)0x01ED006A = 1;
-                        *(s8 *)0x01ED007E = 0;
-                        *(u16 *)0x01ED0004 = 0;
-                        *(u16 *)0x01ED0004 = 2;
+                    if (campaignWork.unk0072 == 0 || campaignWork.unk537A != 0) {
+                        campaignWork.unk006A = 1;
+                        campaignWork.unk007E = 0;
+                        campaignWork.unk0004 = 0;
+                        campaignWork.unk0004 = 2;
                     }
                     break;
                 }
@@ -141,57 +142,57 @@ void TkCamp_Act2(s32 param) {
                 case 1:
                 case 2:
                 case 3:
-                    if (*(s8 *)0x01ED0072 == 0 || *(s8 *)0x01ED537A != 0) {
-                        *(s8 *)0x01ED006A = 1;
-                        *(s8 *)0x01ED007E = 0;
-                        *(u16 *)0x01ED0004 = 2;
+                    if (campaignWork.unk0072 == 0 || campaignWork.unk537A != 0) {
+                        campaignWork.unk006A = 1;
+                        campaignWork.unk007E = 0;
+                        campaignWork.unk0004 = 2;
                     }
                     break;
                 }
             }
             break;
         case 2:
-            *(s8 *)0x01ED007E = 1;
-            *(s8 *)0x01ED006A = 0;
-            *(u16 *)0x01ED0004 = 2;
-            *(s8 *)0x01ED547A = 1;
+            campaignWork.unk007E = 1;
+            campaignWork.unk006A = 0;
+            campaignWork.unk0004 = 2;
+            campaignWork.cursorOnIcon = 1;
             break;
         }
     } else {
-        *(s8 *)0x01ED006A = 0;
-        *(s8 *)0x01ED007E = 0;
+        campaignWork.unk006A = 0;
+        campaignWork.unk007E = 0;
     }
-    if (*(s16 *)0x01ED0002 < 0x78) {
-        *(s16 *)0x01ED0224 -= 8;
-        if (*(s16 *)0x01ED0224 <= 0x60) {
-            *(s16 *)0x01ED0224 = 0x60;
+    if (campaignWork.cursorY < 0x78) {
+        campaignWork.windowAlpha[0] -= 8;
+        if (campaignWork.windowAlpha[0] <= 0x60) {
+            campaignWork.windowAlpha[0] = 0x60;
         }
     } else {
-        *(s16 *)0x01ED0224 += 8;
-        if (*(s16 *)0x01ED0224 >= 0x80) {
-            *(s16 *)0x01ED0224 = 0x80;
+        campaignWork.windowAlpha[0] += 8;
+        if (campaignWork.windowAlpha[0] >= 0x80) {
+            campaignWork.windowAlpha[0] = 0x80;
         }
     }
-    if (*(s16 *)0x01ED0002 >= 0x154) {
-        *(s16 *)0x01ED0226 -= 8;
-        if (*(s16 *)0x01ED0226 <= 0x60) {
-            *(s16 *)0x01ED0226 = 0x60;
+    if (campaignWork.cursorY >= 0x154) {
+        campaignWork.windowAlpha[1] -= 8;
+        if (campaignWork.windowAlpha[1] <= 0x60) {
+            campaignWork.windowAlpha[1] = 0x60;
         }
     } else {
-        *(s16 *)0x01ED0226 += 8;
-        if (*(s16 *)0x01ED0226 >= 0x80) {
-            *(s16 *)0x01ED0226 = 0x80;
+        campaignWork.windowAlpha[1] += 8;
+        if (campaignWork.windowAlpha[1] >= 0x80) {
+            campaignWork.windowAlpha[1] = 0x80;
         }
     }
-    if (*(s16 *)0x01ED0000 >= 0x1C8) {
-        *(s16 *)0x01ED0228 -= 8;
-        if (*(s16 *)0x01ED0228 <= 0x60) {
-            *(s16 *)0x01ED0228 = 0x60;
+    if (campaignWork.cursorX >= 0x1C8) {
+        campaignWork.windowAlpha[2] -= 8;
+        if (campaignWork.windowAlpha[2] <= 0x60) {
+            campaignWork.windowAlpha[2] = 0x60;
         }
     } else {
-        *(s16 *)0x01ED0228 += 8;
-        if (*(s16 *)0x01ED0228 >= 0x80) {
-            *(s16 *)0x01ED0228 = 0x80;
+        campaignWork.windowAlpha[2] += 8;
+        if (campaignWork.windowAlpha[2] >= 0x80) {
+            campaignWork.windowAlpha[2] = 0x80;
         }
     }
 }
@@ -212,11 +213,11 @@ void TkCamp_Term(void) {
     s32 y;
 
     if (campaignHelpFlag != 0) {
-        *(Copy_0023B920 *)0x01E301E0 = *(Copy_0023B920 *)SzData_GetData(0);
+        *(Copy_0023B920 *)GAME_DATA_COPY_ADDR = *(Copy_0023B920 *)SzData_GetData(0);
         a = SzData_GetOption(0, 0);
         b = SzData_GetOption(0, 1);
         c = SzData_GetOption(0, 2);
-        switch (*(s8 *)0x01ED546B) {
+        switch (campaignWork.helpPick) {
         case 0:
             i = 0x20;
             x = 0x11;
@@ -320,7 +321,7 @@ extern s8 campaignHelpFlag; /* original: HELP_flg */
 /* Opens the campaign's help screen. */
 void Taku_Camp_Go_Help(void) {
     campaignHelpFlag = 1;
-    *(Copy_0023BC80 *)0x01E301E0 = *(Copy_0023BC80 *)SzData_GetData(0);
+    *(Copy_0023BC80 *)GAME_DATA_COPY_ADDR = *(Copy_0023BC80 *)SzData_GetData(0);
     SzGame_Push(1, 0);
 }
 
@@ -334,10 +335,6 @@ struct DotrHelpWindows {
 };
 extern struct DotrHelpWindows D_0029B020;
 extern signed char D_00299E10_b[];
-#define DOTR_HELP_BLOCK ((signed char *)0x1ed0000)
-#define DOTR_HELP_OPEN (*(signed char *)0x1ed543c)
-#define DOTR_HELP_STEP (*(signed char *)0x1ed543d)
-#define DOTR_HELP_PICK (*(signed char *)0x1ed546b)
 extern DotrHelpWord Taku_Window_Set_window(DotrHelpWord cursor, struct DotrHelpWindow *window,
                                     unsigned short flag, int a3, unsigned short x,
                                     unsigned short y, int a6, int a7, int a8);
@@ -359,15 +356,15 @@ int Taku_Camp_Help_Window(int cursor)
     short xx;
     int no;
     int px;
-    signed char *blk;
+    CampaignWork *blk;
 
     st = D_00299E10_b;
     win = D_0029B020;
     col[0] = col[1] = col[2] = 128;
     col[3] = 128;
-    y = 512 - ((DOTR_HELP_STEP << 9) >> 3);
-    blk = DOTR_HELP_BLOCK;
-    if (DOTR_HELP_OPEN != 0) {
+    y = 512 - ((campaignWork.helpStep << 9) >> 3);
+    blk = &campaignWork; /* helpPick is read both directly and through this pointer, as in the original */
+    if (campaignWork.helpOpen != 0) {
         cursor = Taku_Window_Set_window(cursor, &win.w[0], 2, 0, 128, y + 80, 0, 128, 101);
         cursor = Taku_Window_Set_window(cursor, &win.w[1], 2, 0, 128, y + 80, 0, 128, 101);
         cursor = Taku_Window_Set_window(cursor, &win.w[3], st[0] + 10, 0, 282, y + 94, 0, 128, 128);
@@ -379,10 +376,10 @@ int Taku_Camp_Help_Window(int cursor)
         xx = px;
         ix = xx;
         yy = 144;
-        cursor = Taku_Window_Set_window(cursor, &win.w[2], 2, 0, px, y + ((short)(DOTR_HELP_PICK * 36) + yy), 0, 128, 0);
+        cursor = Taku_Window_Set_window(cursor, &win.w[2], 2, 0, px, y + ((short)(campaignWork.helpPick * 36) + yy), 0, 128, 0);
         yy += 2;
         for (i = 0; i < 5; i++) {
-            if (i == blk[0x546b]) {
+            if (i == blk->helpPick) {
                 col[0] = col[1] = col[2] = 255;
                 col[3] = 128;
             } else {
@@ -412,10 +409,6 @@ int Taku_Camp_Help_Window(int cursor)
     }
     return cursor;
 }
-#undef DOTR_HELP_BLOCK
-#undef DOTR_HELP_OPEN
-#undef DOTR_HELP_STEP
-#undef DOTR_HELP_PICK
 
 typedef struct Flags_0023BFF0 {
     s8 unused : 4;
@@ -2353,7 +2346,7 @@ s32 card_icon_tukuru(void) {
     case 4:
         {
             s32 size = D_0029B054[s->index] - anOfs_ICON[s->index];
-            s->ret = func_00194058(s->handles[s->port], (u8 *)0x1E301E0 + anOfs_ICON[s->index], size);
+            s->ret = func_00194058(s->handles[s->port], (u8 *)GAME_DATA_COPY_ADDR + anOfs_ICON[s->index], size);
         }
         s->sync = func_00194248(1, &s->command, &s->result);
         if (s->sync == 1) {
@@ -4182,7 +4175,7 @@ s32 vblankHandler(s32 val) {
     s32 *tag;
 
     dmaGif = (void *)sceDmaGetChan(2);
-    (&isCountVblank)[6] = (*(volatile u64 *)0x12001000 >> 13) & 1;
+    (&isCountVblank)[6] = (*(volatile u64 *)GS_CSR_ADDR >> 13) & 1;
     if (isCountVblank) {
         vblankCount++;
         handler_error = sceGsSyncPath(1, 0);

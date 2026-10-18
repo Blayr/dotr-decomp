@@ -830,7 +830,7 @@ s32 SzGame_VSync(void) {
 
 /* The GS horizontal-sync counter (hardware register 0x10000800). */
 s32 SzGame_GetHSyncCount(void) {
-    return *(s32 *)0x10000800;
+    return *(s32 *)T1_COUNT_ADDR;
 }
 
 /* Frames drawn so far. */
@@ -2242,7 +2242,7 @@ void SzGame_InitMemCardProc(s32 job) {
         u8 path[128];
 
         func_0019B648(path, D_002BE821, (s32)SzFile_GetEnv((s32)D_002BE7D0));
-        SzFile_ReadRequestParam(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        SzFile_ReadRequestParam(0, 0, (s32)path, GAME_DATA_COPY_ADDR, -1, 0, -1, 0, 0);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     }
@@ -2250,7 +2250,7 @@ void SzGame_InitMemCardProc(s32 job) {
         u8 path[128];
 
         func_0019B648(path, D_002BE821, (s32)SzFile_GetEnv((s32)D_002BE7D0));
-        SzFile_ReadRequestParam(0, 0, (s32)path, 0x01E301E0, -1, 0, -1, 0, 0);
+        SzFile_ReadRequestParam(0, 0, (s32)path, GAME_DATA_COPY_ADDR, -1, 0, -1, 0, 0);
         ((Flags2E_001AAFA0 *)(data + 0x22E))->value = 1;
         break;
     }

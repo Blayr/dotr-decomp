@@ -47,8 +47,8 @@ s32 sceTtyInit(void) {
 s32 kputchar(s32 c) {
     do {
 
-    } while (*(volatile s32 *)0x1000F130 & 0x8000);
-    *(volatile s8 *)0x1000F180 = (s8) c;
+    } while (*(volatile s32 *)SIO_ISR_ADDR & 0x8000);
+    *(volatile s8 *)SIO_TXFIFO_ADDR = (s8) c;
     return c;
 }
 
@@ -468,10 +468,10 @@ void sceSifInitCmd(void) {
     D_00310EC0[1].data = &cmdData_0017DB70;
     func_00184428();
     FlushCache(0);
-    if (*(volatile u32 *)0x1000E010 & 0x20) {
-        *(volatile u32 *)0x1000E010 = 0x20;
+    if (*(volatile u32 *)D_STAT_ADDR & 0x20) {
+        *(volatile u32 *)D_STAT_ADDR = 0x20;
     }
-    if ((*(volatile u32 *)0x1000C000 & 0x100) == 0) {
+    if ((*(volatile u32 *)D5_CHCR_ADDR & 0x100) == 0) {
         sceSifSetDChain();
     }
     D_00310E94 = AddDmacHandler(5, func_0017E068, 0);

@@ -481,7 +481,7 @@ void SzEffect_Draw(s32 group) {
             continue;
         }
         flags = -1;
-        addr = (void *)0x1ED0000;
+        addr = (void *)CAMPAIGN_WORK_ADDR;
         data = NULL;
         if (entry->kind != 1) {
             continue;
@@ -511,9 +511,9 @@ void SzEffect_Draw(s32 group) {
         target = entry->target;
         source = entry->source;
         if (state->group != source || state->entry != target) {
-            RhMem_CopyMemory16((void *)0x1E00000, data, 0x800);
+            RhMem_CopyMemory16((void *)OVERLAY_ADDR, data, 0x800);
             iFlushCache(0);
-            mwOverlayInit(0x1E00000, *(s32 *)0x1E0001C - 0x1E00000);
+            mwOverlayInit(OVERLAY_ADDR, *(s32 *)(OVERLAY_ADDR + 0x1C) - OVERLAY_ADDR);
             state->group = source;
             state->entry = target;
         }
@@ -697,13 +697,13 @@ s32 SzEffect_EntryCallback(s32 kind, s32 card, s32 mode, s32 from, s32 target, s
     }
     index = 0;
     do {
-        destination = (void *)0x01ED0000;
+        destination = (void *)CAMPAIGN_WORK_ADDR;
         if (slot->state == 0) {
             Cache_001F4900 *cache = &effectState;
             if (D_0031BE90 != kind || cache->entry != card) {
-                RhMem_CopyMemory16((void *)0x01E00000, (void *)source, 0x800);
+                RhMem_CopyMemory16((void *)OVERLAY_ADDR, (void *)source, 0x800);
                 iFlushCache(0);
-                mwOverlayInit(0x01E00000, *(s32 *)0x01E0001C + 0xFE200000);
+                mwOverlayInit(OVERLAY_ADDR, *(s32 *)(OVERLAY_ADDR + 0x1C) + 0xFE200000);
                 cache->group = kind;
                 cache->entry = card;
             }

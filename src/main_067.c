@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 /* Draws the terrain (tikei) window of the campaign place under the cursor. */
 s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
@@ -28,20 +29,20 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
 
     baseX = D_00299ED4;
     state = &campaignState;
-    if (*(s8 *)0x01ED0066 != 0) {
-        *(s16 *)0x01ED0068 += 2;
-        if (*(s16 *)0x01ED0068 > 16) {
-            *(s16 *)0x01ED0068 = 16;
+    if (campaignWork.terrainWindowOn != 0) {
+        campaignWork.terrainWindowOpen += 2;
+        if (campaignWork.terrainWindowOpen > 16) {
+            campaignWork.terrainWindowOpen = 16;
         }
     } else {
-        *(s16 *)0x01ED0068 -= 2;
-        if (*(s16 *)0x01ED0068 < 0) {
-            *(s16 *)0x01ED0068 = 0;
+        campaignWork.terrainWindowOpen -= 2;
+        if (campaignWork.terrainWindowOpen < 0) {
+            campaignWork.terrainWindowOpen = 0;
         }
     }
-    fade = *(s16 *)0x01ED0068;
+    fade = campaignWork.terrainWindowOpen;
     alpha = (s16)(256 - ((fade << 8) >> 4));
-    if (*(s8 *)0x01ED018C == 1 && state[0xC6] == 11) {
+    if (campaignWork.unk018C == 1 && state[0xC6] == 11) {
         side = (s8)(state[0] ^ 1);
     } else if (state[0xC6] == 11) {
         side = (s8)(state[0] ^ 1);
@@ -54,7 +55,7 @@ s32 Taku_Camp_TIKEI_WINDOW(s32 packet) {
     }
     if (fade != 0) {
         packet = Taku_Window_Set(packet, campaignMapWindow, (u16)(s8)side & 0xFFFF, 0,
-                              alpha, 0, 0, 128, *(s16 *)0x01ED0228);
+                              alpha, 0, 0, 128, campaignWork.windowAlpha[2]);
         packet = Taku_Camp_TIKEI_Map_Hyouji(packet, baseX, alpha, 0);
         packet = Taku_Window_Set(packet, D_00297B9A, (u16)(s8)side, 0,
                               alpha, 0, 0, 128, 128);
@@ -92,10 +93,6 @@ typedef struct Sprite_00236F90 {
     s16 tile;
 } Sprite_00236F90;
 
-typedef struct Work_00236F90 {
-    s16 pad0[3];
-    s16 counts[10];
-} Work_00236F90;
 
 /* Draws (hyouji) the small terrain map of deck `deck`'s place at (x, y). */
 s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
@@ -111,7 +108,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     extern s16 D_00297BB0;
     extern s16 D_00297BB2;
     extern s16 D_00297BB4;
-    Work_00236F90 *work;
+    CampaignWork *work;
     s8 *mode;
     s32 row;
     u8 *grid;
@@ -129,11 +126,11 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
     s32 k;
 
     mode = &campaignState;
-    work = (Work_00236F90 *)0x01ED0000;
+    work = &campaignWork;
     card = D_0029AFA0;
     bar = D_0029AFD0;
     for (i = 0; i < 10; i++) {
-        work->counts[i] = 0;
+        work->terrainCounts[i] = 0;
     }
     for (row = 0, grid = &D_002CEE5C[deck * 49]; row < 7; row++) {
         cell = grid;
@@ -141,43 +138,43 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
             switch ((s16)*cell) {
             case 0:
                 tile = 'A';
-                work->counts[0]++;
+                work->terrainCounts[0]++;
                 break;
             case 1:
                 tile = 'B';
-                work->counts[1]++;
+                work->terrainCounts[1]++;
                 break;
             case 2:
                 tile = 'C';
-                work->counts[2]++;
+                work->terrainCounts[2]++;
                 break;
             case 3:
                 tile = 'D';
-                work->counts[3]++;
+                work->terrainCounts[3]++;
                 break;
             case 4:
                 tile = 'E';
-                work->counts[4]++;
+                work->terrainCounts[4]++;
                 break;
             case 5:
                 tile = 'F';
-                work->counts[5]++;
+                work->terrainCounts[5]++;
                 break;
             case 6:
                 tile = 'G';
-                work->counts[6]++;
+                work->terrainCounts[6]++;
                 break;
             case 7:
                 tile = 'H';
-                work->counts[7]++;
+                work->terrainCounts[7]++;
                 break;
             case 8:
                 tile = 'I';
-                work->counts[8]++;
+                work->terrainCounts[8]++;
                 break;
             case 9:
                 tile = 'J';
-                work->counts[9]++;
+                work->terrainCounts[9]++;
                 break;
             default:
                 tile = 'A';
@@ -209,12 +206,12 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
         dy += 16;
     }
     for (i = 0, dy = 0; i < 10; i++, dy += 16) {
-        if (work->counts[i] >= 49) {
+        if (work->terrainCounts[i] >= 49) {
             scale = 76.0f;
-        } else if (work->counts[i] <= 0) {
+        } else if (work->terrainCounts[i] <= 0) {
             scale = 0.0f;
         } else {
-            scale = (76.0f * work->counts[i]) / 49.0f;
+            scale = (76.0f * work->terrainCounts[i]) / 49.0f;
         }
         for (k = 0; k < 2; k++) {
             for (j = 0; j < 8; j++) {
@@ -224,7 +221,7 @@ s32 Taku_Camp_TIKEI_Map_Hyouji(s32 gp, u16 deck, u16 x, u16 y) {
         }
         gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((D_00297BAE + D_00297BB2) >> 1),
                                               y + (dy + campaignTerrainGauge[i][0].xy[1]), 1, 2,
-                                              (u16)((work->counts[i] < 10) ? 1 : 2), work->counts[i]);
+                                              (u16)((work->terrainCounts[i] < 10) ? 1 : 2), work->terrainCounts[i]);
     }
     return gp;
 }

@@ -183,8 +183,8 @@ s32 sceDevVu0PutCnd(void *cndIn) {
 
 /* Resets VIF0. */
 void sceDevVif0Reset(void) {
-    *(volatile s32 *)0x10003810 = 1;
-    *(volatile s32 *)0x10003820 = 6;
+    *(volatile s32 *)VIF0_FBRST_ADDR = 1;
+    *(volatile s32 *)VIF0_ERR_ADDR = 6;
 }
 
 /* Stops VIF0 (`mode`). */
@@ -199,9 +199,9 @@ s32 sceDevVif0Pause(s32 mode) {
         return 0;
     }
     if (mode == 0) {
-        *(volatile s32 *)0x10003810 = 2;
+        *(volatile s32 *)VIF0_FBRST_ADDR = 2;
     } else if (mode == 1) {
-        *(volatile s32 *)0x10003810 = 4;
+        *(volatile s32 *)VIF0_FBRST_ADDR = 4;
     }
     return 1;
 }
@@ -211,27 +211,27 @@ s32 sceDevVif0Continue(void) {
     if (sceDevVif0Sync() != 1) {
         return 0;
     }
-    *(volatile u32 *)0x10003810 = 8;
+    *(volatile u32 *)VIF0_FBRST_ADDR = 8;
     return 1;
 }
 
 /* Sets VIF0's error masks. */
 u32 sceDevVif0PutErr(u32 interrupt, u32 miss1, u32 miss2) {
     u32 v = interrupt | (miss1 << 1) | (miss2 << 2);
-    *(volatile u32 *)0x10003820 = v;
+    *(volatile u32 *)VIF0_ERR_ADDR = v;
     return v;
 }
 
 /* VIF0's error masks. */
 s32 sceDevVif0GetErr(void) {
-    return *(volatile s32 *)0x10003820;
+    return *(volatile s32 *)VIF0_ERR_ADDR;
 }
 
 /* Waits for VIF0 to finish. */
 u32 sceDevVif0Sync(void) {
     s32 temp_a0;
 
-    temp_a0 = *(volatile s32 *)0x10003800;
+    temp_a0 = *(volatile s32 *)VIF0_STAT_ADDR;
     if (!(temp_a0 & 3)) {
         return 0U;
     }
@@ -248,29 +248,29 @@ u32 sceDevVif0Sync(void) {
 s32 sceDevVif0GetCnd(void *cnd) {
     u32 temp_s4;
 
-    temp_s4 = *(volatile u32 *)0x10003840;
+    temp_s4 = *(volatile u32 *)VIF0_CYCLE_ADDR;
     if (sceDevVif0Sync() >= 2U) {
         return 0;
     }
-    (*(s32 *)cnd) = (s32) *(volatile s32 *)0x10003900;
-    (*(s32 *)((u8 *)cnd + 4)) = (s32) *(volatile s32 *)0x10003910;
-    (*(s32 *)((u8 *)cnd + 8)) = (s32) *(volatile s32 *)0x10003920;
-    (*(s32 *)((u8 *)cnd + 0xC)) = (s32) *(volatile s32 *)0x10003930;
-    (*(s32 *)((u8 *)cnd + 0x10)) = (s32) *(volatile s32 *)0x10003940;
-    (*(s32 *)((u8 *)cnd + 0x14)) = (s32) *(volatile s32 *)0x10003950;
-    (*(s32 *)((u8 *)cnd + 0x18)) = (s32) *(volatile s32 *)0x10003960;
-    (*(s32 *)((u8 *)cnd + 0x1C)) = (s32) *(volatile s32 *)0x10003970;
-    (*(s32 *)((u8 *)cnd + 0x20)) = (s32) *(volatile s32 *)0x10003870;
-    (*(s32 *)((u8 *)cnd + 0x24)) = (s32) *(volatile s32 *)0x10003880;
-    (*(s32 *)((u8 *)cnd + 0x28)) = (s32) *(volatile s32 *)0x10003800;
-    (*(s16 *)((u8 *)cnd + 0x2C)) = (s16) *(volatile s32 *)0x100038D0;
-    (*(s16 *)((u8 *)cnd + 0x2E)) = (s16) *(volatile s32 *)0x10003890;
-    (*(s16 *)((u8 *)cnd + 0x30)) = (s16) *(volatile s32 *)0x10003830;
-    (*(s16 *)((u8 *)cnd + 0x32)) = (s16) *(volatile s32 *)0x10003860;
-    (*(s8 *)((u8 *)cnd + 0x34)) = (s8) *(volatile s32 *)0x10003820;
+    (*(s32 *)cnd) = (s32) *(volatile s32 *)VIF0_R0_ADDR;
+    (*(s32 *)((u8 *)cnd + 4)) = (s32) *(volatile s32 *)VIF0_R1_ADDR;
+    (*(s32 *)((u8 *)cnd + 8)) = (s32) *(volatile s32 *)VIF0_R2_ADDR;
+    (*(s32 *)((u8 *)cnd + 0xC)) = (s32) *(volatile s32 *)VIF0_R3_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x10)) = (s32) *(volatile s32 *)VIF0_C0_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x14)) = (s32) *(volatile s32 *)VIF0_C1_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x18)) = (s32) *(volatile s32 *)VIF0_C2_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x1C)) = (s32) *(volatile s32 *)VIF0_C3_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x20)) = (s32) *(volatile s32 *)VIF0_MASK_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x24)) = (s32) *(volatile s32 *)VIF0_CODE_ADDR;
+    (*(s32 *)((u8 *)cnd + 0x28)) = (s32) *(volatile s32 *)VIF0_STAT_ADDR;
+    (*(s16 *)((u8 *)cnd + 0x2C)) = (s16) *(volatile s32 *)VIF0_ITOP_ADDR;
+    (*(s16 *)((u8 *)cnd + 0x2E)) = (s16) *(volatile s32 *)VIF0_ITOPS_ADDR;
+    (*(s16 *)((u8 *)cnd + 0x30)) = (s16) *(volatile s32 *)VIF0_MARK_ADDR;
+    (*(s16 *)((u8 *)cnd + 0x32)) = (s16) *(volatile s32 *)VIF0_NUM_ADDR;
+    (*(s8 *)((u8 *)cnd + 0x34)) = (s8) *(volatile s32 *)VIF0_ERR_ADDR;
     (*(s8 *)((u8 *)cnd + 0x35)) = (s8) temp_s4;
     (*(s8 *)((u8 *)cnd + 0x36)) = (s8) (temp_s4 >> 8);
-    (*(s8 *)((u8 *)cnd + 0x37)) = (s8) *(volatile s32 *)0x10003850;
+    (*(s8 *)((u8 *)cnd + 0x37)) = (s8) *(volatile s32 *)VIF0_MODE_ADDR;
     return 1;
 }
 
@@ -279,10 +279,10 @@ s32 sceDevVif0PutFifo(__int128 *data, s32 n) {
     s32 i = 0;
 
     while (--n != -1) {
-        if (*(volatile u32 *)0x10003800 & 0x10000000) {
+        if (*(volatile u32 *)VIF0_STAT_ADDR & 0x10000000) {
             return i;
         }
-        *(volatile __int128 *)0x10004000 = *data++;
+        *(volatile __int128 *)VIF0_FIFO_ADDR = *data++;
         i++;
     }
     return i;

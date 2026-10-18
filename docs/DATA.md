@@ -42,3 +42,18 @@
   `modelGroupInfo`) or one by one (`SzModel_Load`), into the 84 `modelSlots`.
 - Textures are TIM2 files kept as texture items (`textureItems`, 1024 records, categories 0..9) and sent to
   GS memory per frame (`SzText_DoRequest_Pipe`).
+
+## Fixed memory areas
+
+Memory the game uses at fixed addresses outside the program's own data (names in `include/common.h`):
+
+- `CAMPAIGN_WORK_ADDR` (0x01ED0000, 0x54B0 bytes): the campaign map's running state, laid out as
+  `CampaignWork` in `include/campaign.h` and read as `campaignWork.field` (the camera, the routes between
+  places, the event script's step, the talk window, the cut-scene player, the name entry, the starting-deck
+  choice, the windows and menus). Deck building, trade, the duel, effects, the AI's search tree and the slot
+  machine borrow the same memory as scratch while the campaign is not running.
+- `CUSTOM_DUEL_ADDR` (0x00A9C000): the custom-duel and map-editor settings (layout in the comment beside it).
+- `OVERLAY_ADDR` (0x01E00000): where a duel effect's code overlay is copied and linked.
+- `GAME_DATA_COPY_ADDR` (0x01E301E0): a copy of the game data; the save file is read into it.
+- `include/ee_regs.h`: the EE and GS hardware registers and the scratchpad (`SCRATCHPAD_ADDR`), by the names of
+  Sony's manuals, as plain addresses (`*(volatile u32 *)D_STAT_ADDR`).

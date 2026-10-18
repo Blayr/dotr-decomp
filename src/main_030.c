@@ -525,13 +525,13 @@ s32 _PES_packet(s32 mp, int *bs, void *arg2) {
 /* Starts the MPEG library. */
 void sceMpegInit(void) {
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B000 &= 0xFFFFFEFF;
-    *(volatile s32 *)0x1000B400 &= 0xFFFFFEFF;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D3_CHCR_ADDR &= 0xFFFFFEFF;
+    *(volatile s32 *)D4_CHCR_ADDR &= 0xFFFFFEFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    *(volatile s32 *)0x1000B020 = 0;
-    *(volatile s32 *)0x1000B420 = 0;
+    *(volatile s32 *)D3_QWC_ADDR = 0;
+    *(volatile s32 *)D4_QWC_ADDR = 0;
     func_00190498();
 }
 

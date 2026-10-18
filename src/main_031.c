@@ -4,7 +4,7 @@
 void _clearOnce(void *mp) {
     u8 *spr;
 
-    spr = (u8 *)0x70000000;
+    spr = (u8 *)SCRATCHPAD_ADDR;
     _ipuSetMPEG1(1);
     *(u8 **)((u8 *)mp + 0x590) = spr;
     *(u8 **)((u8 *)mp + 0x594) = spr + 0x1800;
@@ -18,16 +18,16 @@ void _clearEach(void *mp) {
     (*(s32 *)((u8 *)mp + 0x818)) = 1;
     (*(s32 *)((u8 *)mp + 0x1B0)) = 0;
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B000 = 0;
-    *(volatile s32 *)0x1000B400 = 0;
-    *(volatile s32 *)0x1000D400 = 0;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D3_CHCR_ADDR = 0;
+    *(volatile s32 *)D4_CHCR_ADDR = 0;
+    *(volatile s32 *)D9_CHCR_ADDR = 0;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    *(volatile s32 *)0x1000B020 = 0;
-    *(volatile s32 *)0x1000B420 = 0;
-    *(volatile s32 *)0x1000D420 = 0;
-    *(volatile s32 *)0x10002010 = 0x40000000;
+    *(volatile s32 *)D3_QWC_ADDR = 0;
+    *(volatile s32 *)D4_QWC_ADDR = 0;
+    *(volatile s32 *)D9_QWC_ADDR = 0;
+    *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
     sceIpuSync(0, 0);
 }
 
@@ -83,9 +83,9 @@ void _sendDataToIPU(s32 buf, u32 data, s32 size) {
     }
     FlushCache(0);
     func_001843E0();
-    *(volatile u32 *)0x1000B430 = (u32)tag & 0x0FFFFFFF;
-    *(volatile u32 *)0x1000B420 = 0;
-    *(volatile u32 *)0x1000B400 = 0x105;
+    *(volatile u32 *)D4_TADR_ADDR = (u32)tag & 0x0FFFFFFF;
+    *(volatile u32 *)D4_QWC_ADDR = 0;
+    *(volatile u32 *)D4_CHCR_ADDR = 0x105;
     func_00184428();
 }
 
@@ -236,12 +236,12 @@ void _setDefaultQM(void *d, s32 intra, s32 nonIntra) {
     sp0[0] = /* extra? */ 2;
     _dispatchMpegCallback((*(s32 *)((u8 *)d + 0x858)), sp0);
     func_0018B580(d);
-    *(volatile s32 *)0x10002000 = 0;
+    *(volatile s32 *)IPU_CMD_ADDR = 0;
     func_0018B580(d);
     func_001843E0();
-    *(volatile s32 *)0x1000B410 = nonIntra & 0x0FFFFFFF;
-    *(volatile s32 *)0x1000B420 = 4;
-    *(volatile s32 *)0x1000B400 = 0x101;
+    *(volatile s32 *)D4_MADR_ADDR = nonIntra & 0x0FFFFFFF;
+    *(volatile s32 *)D4_QWC_ADDR = 4;
+    *(volatile s32 *)D4_CHCR_ADDR = 0x101;
     func_00184428();
     func_0018B550(d, intra);
     func_0018B580(d);
@@ -330,37 +330,37 @@ void _defRestartDMA(void *data) {
 /* Writes IPU-in DMA control `arg0` with the DMA held. */
 void func_001900C0(s32 arg0) {
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B000 = arg0;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D3_CHCR_ADDR = arg0;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
 }
 
 /* Writes IPU-out DMA control `arg0` with the DMA held. */
 void func_00190128(s32 arg0) {
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B400 = arg0;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D4_CHCR_ADDR = arg0;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
 }
 
 /* Stops the IPU DMAs and saves their registers into `arg0`. */
 void func_00190190(s32 arg0) {
     func_00190128(1);
-    (*(s32 *)arg0) = (s32) *(volatile s32 *)0x1000B410;
-    (*(s32 *)((u8 *)arg0 + 4)) = (s32) *(volatile s32 *)0x1000B430;
-    (*(s32 *)((u8 *)arg0 + 8)) = (s32) *(volatile s32 *)0x1000B420;
-    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) *(volatile s32 *)0x1000B400;
+    (*(s32 *)arg0) = (s32) *(volatile s32 *)D4_MADR_ADDR;
+    (*(s32 *)((u8 *)arg0 + 4)) = (s32) *(volatile s32 *)D4_TADR_ADDR;
+    (*(s32 *)((u8 *)arg0 + 8)) = (s32) *(volatile s32 *)D4_QWC_ADDR;
+    (*(s32 *)((u8 *)arg0 + 0xC)) = (s32) *(volatile s32 *)D4_CHCR_ADDR;
     do {
 
-    } while (*(volatile s32 *)0x10002010 & 0xF0);
+    } while (*(volatile s32 *)IPU_CTRL_ADDR & 0xF0);
     func_001900C0(0);
-    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) *(volatile s32 *)0x1000B010;
-    (*(s32 *)((u8 *)arg0 + 0x14)) = (s32) *(volatile s32 *)0x1000B020;
-    (*(s32 *)((u8 *)arg0 + 0x18)) = (s32) *(volatile s32 *)0x1000B000;
-    (*(s32 *)((u8 *)arg0 + 0x1C)) = (s32) *(volatile s32 *)0x10002020;
-    (*(s32 *)((u8 *)arg0 + 0x20)) = (s32) *(volatile s32 *)0x10002010;
+    (*(s32 *)((u8 *)arg0 + 0x10)) = (s32) *(volatile s32 *)D3_MADR_ADDR;
+    (*(s32 *)((u8 *)arg0 + 0x14)) = (s32) *(volatile s32 *)D3_QWC_ADDR;
+    (*(s32 *)((u8 *)arg0 + 0x18)) = (s32) *(volatile s32 *)D3_CHCR_ADDR;
+    (*(s32 *)((u8 *)arg0 + 0x1C)) = (s32) *(volatile s32 *)IPU_BP_ADDR;
+    (*(s32 *)((u8 *)arg0 + 0x20)) = (s32) *(volatile s32 *)IPU_CTRL_ADDR;
 }
 
 /* Restarts the IPU DMAs from the registers saved in `arg0`. */
@@ -381,22 +381,22 @@ void func_00190278(s32 arg0) {
     temp_s2 = (*(s32 *)((u8 *)arg0 + 8)) + temp_v0_2;
     temp_s1 = temp_a1 - (temp_v0_2 * 0x10);
     if ((temp_a2 != 0) && ((*(s32 *)((u8 *)arg0 + 0x14)) != 0)) {
-        *(volatile s32 *)0x1000B010 = temp_a2;
-        *(volatile s32 *)0x1000B020 = (*(s32 *)((u8 *)arg0 + 0x14));
+        *(volatile s32 *)D3_MADR_ADDR = temp_a2;
+        *(volatile s32 *)D3_QWC_ADDR = (*(s32 *)((u8 *)arg0 + 0x14));
         func_001900C0((*(s32 *)((u8 *)arg0 + 0x18)) | 0x100);
     }
     do {
 
-    } while (*(volatile s32 *)0x10002010 < 0);
-    *(volatile s32 *)0x10002000 = temp_s3;
+    } while (*(volatile s32 *)IPU_CTRL_ADDR < 0);
+    *(volatile s32 *)IPU_CMD_ADDR = temp_s3;
     do {
 
-    } while (*(volatile s32 *)0x10002010 < 0);
+    } while (*(volatile s32 *)IPU_CTRL_ADDR < 0);
     if (temp_s1 != 0) {
         if (temp_s2 != 0) {
-            *(volatile s32 *)0x1000B410 = temp_s1;
-            *(volatile s32 *)0x1000B430 = (*(s32 *)((u8 *)arg0 + 4));
-            *(volatile s32 *)0x1000B420 = temp_s2;
+            *(volatile s32 *)D4_MADR_ADDR = temp_s1;
+            *(volatile s32 *)D4_TADR_ADDR = (*(s32 *)((u8 *)arg0 + 4));
+            *(volatile s32 *)D4_QWC_ADDR = temp_s2;
             func_00190128((*(s32 *)((u8 *)arg0 + 0xC)) | 0x100);
         }
     }
@@ -409,12 +409,12 @@ s32 sceIpuSync(s32 mode, s32 timeout) {
     r = 0;
     switch (mode) {
     case 0:
-        while (*(volatile s32 *)0x10002010 < 0) {
+        while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {
         }
         r = 0;
         break;
     case 1:
-        r = (u32)*(volatile s32 *)0x10002010 >> 31;
+        r = (u32)*(volatile s32 *)IPU_CTRL_ADDR >> 31;
         break;
     }
     return r;
@@ -423,9 +423,9 @@ s32 sceIpuSync(s32 mode, s32 timeout) {
 /* Writes IPU-out DMA control `arg0` with the DMA held. */
 void func_00190430(s32 arg0) {
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B400 = arg0;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D4_CHCR_ADDR = arg0;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
 }
 
@@ -436,32 +436,32 @@ extern __int128 D_0028DC60[2];
 
 void func_00190498(void) {
     func_00190430(1);
-    *(volatile s32 *)0x10002010 = 0x40000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile s32 *)0x10002000 = 0;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile __int128 *)0x10007010 = D_0028DC10[0];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[1];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[2];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[3];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
-    *(volatile __int128 *)0x10007010 = D_0028DC10[4];
-    *(volatile s32 *)0x10002000 = 0x50000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile s32 *)0x10002000 = 0x58000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile __int128 *)0x10007010 = D_0028DC60[0];
-    *(volatile __int128 *)0x10007010 = D_0028DC60[1];
-    *(volatile s32 *)0x10002000 = 0x60000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile s32 *)0x10002000 = 0x90000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile s32 *)0x10002010 = 0x40000000;
-    while (*(volatile s32 *)0x10002010 < 0) {}
-    *(volatile s32 *)0x10002000 = 0;
-    while (*(volatile s32 *)0x10002010 < 0) {}
+    *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile s32 *)IPU_CMD_ADDR = 0;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[0];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[1];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[2];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[3];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[4];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[4];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[4];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC10[4];
+    *(volatile s32 *)IPU_CMD_ADDR = 0x50000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile s32 *)IPU_CMD_ADDR = 0x58000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC60[0];
+    *(volatile __int128 *)IPU_IN_FIFO_ADDR = D_0028DC60[1];
+    *(volatile s32 *)IPU_CMD_ADDR = 0x60000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile s32 *)IPU_CMD_ADDR = 0x90000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
+    *(volatile s32 *)IPU_CMD_ADDR = 0;
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {}
 }
 
 extern s8 D_002BCBC0;

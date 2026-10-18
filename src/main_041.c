@@ -1465,7 +1465,7 @@ struct DotrCustomDuel {
     unsigned char f8c;
     unsigned char f8d;
 };
-#define DOTR_CUSTOM_DUEL ((struct DotrCustomDuel *)0xa9c000)
+#define DOTR_CUSTOM_DUEL ((struct DotrCustomDuel *)CUSTOM_DUEL_ADDR)
 struct DotrCustomDuelFlags {
     unsigned char unknown_0000[0xff9c];
     unsigned int b0 : 5;
@@ -1584,7 +1584,7 @@ void SzDuel_TermCustomDuel(void) {
 s32 SzDuel_ActCustomDuel(void) {
     s32 result = lSzDuel_ActCustomDuelProc(0);
 
-    if (result != 0 || *(u8 *)0xA9C088 != 0) {
+    if (result != 0 || *(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) {
         return result;
     }
     return lSzDuel_ActCustomDuelProc(1);
@@ -1624,7 +1624,7 @@ struct DotrCustomProc {
     unsigned char yes;                  
 };
 struct DotrCustomProcAt {
-    unsigned char pad[0xa9c000];
+    unsigned char pad[CUSTOM_DUEL_ADDR];
     unsigned char cur;
     unsigned char pad01;
     unsigned char menu;
@@ -1645,7 +1645,7 @@ struct DotrCustomProcAt {
     short pad12;
     short lp2;
 };
-#define DOTR_CUSTOM_PROC ((struct DotrCustomProc *)0xa9c000)
+#define DOTR_CUSTOM_PROC ((struct DotrCustomProc *)CUSTOM_DUEL_ADDR)
 #define DOTR_CUSTOM_PROC_BYTES_AT(i) ((struct DotrCustomProcAt *)(i))
 #define DOTR_CUSTOM_PROC_WORDS_AT(i) ((struct DotrCustomProcAt *)((i) * 2))
 struct DotrCustomProcSave {
@@ -2078,8 +2078,8 @@ s32 SzDuel_DrawCustomDuel_Pipe(s32 packet) {
     s32 fy;
 
     id = lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(lSzDuel_DrawCustomDuel_Title_Pipe(lSzDuel_DrawCustomDuel_Base_Pipe(SzDuel_StartWindowSessionWithPalette_Pipe(packet, 2)), 0, 0), 0, 0x10, 0x40), 1, 0x140, 0x40);
-    mode = *(u8 *)0xA9C002 & 0xF0;
-    if (mode == 0x40 || (*(u8 *)0xA9C003 & 0xF0) == 0x40) {
+    mode = *(u8 *)(CUSTOM_DUEL_ADDR + 0x2) & 0xF0;
+    if (mode == 0x40 || (*(u8 *)(CUSTOM_DUEL_ADDR + 0x3) & 0xF0) == 0x40) {
         id = lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(id, 0, 0x1E, 0xE0);
     } else {
         if (mode == 0x20) {
@@ -2094,8 +2094,8 @@ s32 SzDuel_DrawCustomDuel_Pipe(s32 packet) {
         } else {
             id = lSzDuel_DrawCustomDuel_Menu_Pipe(id, 0, 0x10, 0xE6);
         }
-        if (*(u8 *)0xA9C088 == 0) {
-            if ((*(u8 *)0xA9C003 & 0xF0) == 0x20) {
+        if (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) == 0) {
+            if ((*(u8 *)(CUSTOM_DUEL_ADDR + 0x3) & 0xF0) == 0x20) {
                 text = D_002BF03A;
                 lSzDuel_GetFontSize(2, 3, strlen(text), text, &width2, &height2);
                 width2 += 0x18;
@@ -2109,7 +2109,7 @@ s32 SzDuel_DrawCustomDuel_Pipe(s32 packet) {
             }
         }
     }
-    if ((*(u8 *)0xA9C002 & 0xF0) == 0x30 || (*(u8 *)0xA9C003 & 0xF0) == 0x30) {
+    if ((*(u8 *)(CUSTOM_DUEL_ADDR + 0x2) & 0xF0) == 0x30 || (*(u8 *)(CUSTOM_DUEL_ADDR + 0x3) & 0xF0) == 0x30) {
         id = lSzDuel_DrawCustomDuel_Exit_Pipe(lSzDuel_Draw_Fade_Pipe(id, 0, 0, 0x280, 0x1C0, 0x40), 0, 0);
     }
     SzMsg_Free(0);
@@ -2303,14 +2303,14 @@ s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 packet, s32 side, s32 left, s32 t
     temp_v0 = func_002158B0(side);
     temp_v0_2 = func_002159D0(side, temp_v0);
     temp_fp = func_001DD0E0(temp_v0_2);
-    if (*((u8 *)side + 0xA9C00E) != 0) {
+    if (*((u8 *)side + (CUSTOM_DUEL_ADDR + 0xE)) != 0) {
         var_s7 = (s8 *)D_002BF051;
     } else {
         var_s7 = (s8 *)D_002BF056;
     }
     var_a2 = 3;
     if (side != 0) {
-        u8 mode = *(u8 *)0xA9C088;
+        u8 mode = *(u8 *)(CUSTOM_DUEL_ADDR + 0x88);
         switch (mode) {
         case 0:
             var_a2 = 4;
@@ -2356,7 +2356,7 @@ s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 packet, s32 side, s32 left, s32 t
         temp_s0_3 = func_001B3CC0(temp_s0_2, duelIcons + (temp_s2_2 * 10), px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
         var_s3 = func_001FE660(temp_s0_3, 2, left + 0x9B, top + 0x47, scale_001C7D20(2, 138), 1.0f, 0, SzMsg_DrawRect_Pipe);
         func_001FEAF0(2);
-        if (*(u8 *)0xA9C088 != 0 || *((u8 *)side + 0xA9C00A) != 0) {
+        if (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0 || *((u8 *)side + (CUSTOM_DUEL_ADDR + 0xA)) != 0) {
             temp_s0_4 = func_001B4540(var_s3, left + 0x81, top + 0x65, temp_fp_2, 1, 0);
             var_s3 = func_001FE660(temp_s0_4, 3, left + 0x9B, top + 0x65, scale_001C7D20(3, 138), 1.0f, 0, SzMsg_DrawRect_Pipe);
         }
@@ -2369,7 +2369,7 @@ s32 lSzDuel_DrawCustomDuel_PlayerInfo_Pipe(s32 packet, s32 side, s32 left, s32 t
     nx = left + 0xAC;
     ny = top + 0x8A;
     ret = func_001B6EA0(ret, nx, ny, 0, hint != 0 ? 1 : 0, 2, func_001DE690(side));
-    if (*(u8 *)0xA9C088 == 0) {
+    if (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) == 0) {
         nx = left + 0x100;
         ny = top + 0x8A;
         ret = func_001B6F70(ret, nx, ny, 0, 2, func_0019BEF0((const char *)var_s7), var_s7, hint != 0 ? (s32)D_002BE944 : 0);
@@ -2382,7 +2382,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_Pipe(s32 packet, u8 *side, s32 left, s32 top) {
     extern s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32, u8 *, s32, s32);
     u8 kind;
 
-    kind = side[0xA9C002];
+    kind = side[CUSTOM_DUEL_ADDR + 0x2];
     if ((kind & 0xF0) == 0x10) {
         switch (kind & 0xF) {
         case 0:
@@ -2429,7 +2429,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
     extern s32 D_00290A62;
     extern s32 D_00290A6C;
     extern s32 D_00290A76;
-    u8 *cursor = (u8 *)0xA9C000;
+    u8 *cursor = (u8 *)CUSTOM_DUEL_ADDR;
     s8 *text1 = D_002BF05B;
     s8 *text2 = D_002BEF98;
     s8 *text3 = D_002BF03A;
@@ -2447,8 +2447,8 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
     s32 px;
     s32 py;
 
-    width = (*(u8 *)0xA9C088 != 0) ? width : 0x12A;
-    list = D_002BEAC0[(*(u8 *)0xA9C088 != 0) ? 1 : 0];
+    width = (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? width : 0x12A;
+    list = D_002BEAC0[(*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? 1 : 0];
     packet = SzMsg_LoadFont_Pipe(packet, 1, 0x81, 0, 0x16);
     packet = SzMsg_LoadFont_Pipe(packet, 2, 0x82, 0, 0x2C);
     packet = SzMsg_LoadFont_Pipe(packet, 3, 0x83, 0, 0x42);
@@ -2532,9 +2532,9 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
                          hint != 0 ? (s32)D_002BE944 : 0);
 }
 
-/* Where a side's custom-duel settings are kept (0xA9C000 + the side). */
+/* Where a side's custom-duel settings are kept (CUSTOM_DUEL_ADDR + the side). */
 static inline u8 *save_001C8DC0(u8 *save) {
-    return save + 0xA9C000;
+    return save + CUSTOM_DUEL_ADDR;
 }
 
 /* Draws the deck-choice menu for `side`. */
@@ -2553,7 +2553,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectDeck_Pipe(s32 packet, u8 *side, s32 x, s32
     u8 *state = duelState.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
-    s32 color = (side[0xA9C002] & 0xF) + 0x81;
+    s32 color = (side[CUSTOM_DUEL_ADDR + 0x2] & 0xF) + 0x81;
     s32 width = 0x244;
     f32 scale;
     s32 hint = 0;
@@ -2575,7 +2575,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectDeck_Pipe(s32 packet, u8 *side, s32 x, s32
     s32 py;
     s32 by;
 
-    width = (*(u8 *)0xA9C088 != 0) ? width : 0x114;
+    width = (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? width : 0x114;
     scale = 1.0f;
     id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, color, 0, 0x16));
     cx = x + (width >> 1);
@@ -2704,7 +2704,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LifeSet_Pipe(s32 out, s32 player, s32 x, s32 y) 
     u8 *state = duelState.b;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
-    s32 tmp = (((u8 *)player)[0xA9C002] & 0xF) + 0x81;
+    s32 tmp = (((u8 *)player)[CUSTOM_DUEL_ADDR + 0x2] & 0xF) + 0x81;
     s32 width;
     s32 hint = 0;
     s32 cx;
@@ -2717,7 +2717,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LifeSet_Pipe(s32 out, s32 player, s32 x, s32 y) 
     Pair_001C92C0 colors;
     Packet_001C92C0 packet __attribute__((aligned(8)));
 
-    if (*(u8 *)0xA9C088 != 0) {
+    if (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) {
         width = 0x244;
     } else {
         width = 0x114;
@@ -2732,7 +2732,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LifeSet_Pipe(s32 out, s32 player, s32 x, s32 y) 
     px = x + 0x68A + (width >> 1);
     py = y + 0x75A;
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_00290A1C, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
-    life = &((s16 *)0xA9C010)[player];
+    life = &((s16 *)(CUSTOM_DUEL_ADDR + 0x10))[player];
     id = SzDuel_DrawWindow_FontDigit_Pipe(id, cx - 0xE, y + 0x3C, 0, 0, 4, *life);
     px = x + 0x64E + (width >> 1);
     py = y + 0x76C;
@@ -2810,7 +2810,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 packet, u8 *side, s32 x, s
     extern s32 D_00290A6C;
     s8 *text3 = D_002BF05B;
     s8 *text4 = D_002BEF93;
-    s32 color = (side[0xA9C002] & 0xF) + 0x81;
+    s32 color = (side[CUSTOM_DUEL_ADDR + 0x2] & 0xF) + 0x81;
     s32 width;
     f32 scale;
     s32 hint = 0;
@@ -2820,7 +2820,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 packet, u8 *side, s32 x, s
     s32 px;
     s32 py;
 
-    if (*(u8 *)0xA9C088 != 0) {
+    if (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) {
         width = 0x244;
     } else {
         width = 0x114;
@@ -2843,7 +2843,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SummonCharge_Pipe(s32 packet, u8 *side, s32 x, s
     px = x + 0x6A4 + (width >> 1);
     py = y + 0x768;
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_002908E6, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
-    id = SzDuel_DrawWindow_FontDigit_Pipe(id, cx - 6, y + 0x4A, 0, 0, 2, side[0xA9C006]);
+    id = SzDuel_DrawWindow_FontDigit_Pipe(id, cx - 6, y + 0x4A, 0, 0, 2, side[CUSTOM_DUEL_ADDR + 0x6]);
     px = x + 0x6E0 + (width >> 1);
     py = y + 0x764;
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_002908A0, px, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
@@ -2890,7 +2890,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_LeaderAbility_Pipe(s32 packet, u8 *side, s32 x, 
     s32 ty;
     s32 id;
 
-    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, (side[0xA9C002] & 0xF) + 0x81, 0, 0x16));
+    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, (side[CUSTOM_DUEL_ADDR + 0x2] & 0xF) + 0x81, 0, 0x16));
     id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xC, 3, 4, x + 0x31, y, -0xB2, -0x20, 1);
     id = SzMsg_DrawX_Pipe(id, 1, x + 0x8A - (((s32 *)SzMsg_GetInfo(1))[3] >> 1), y + 5, 0,
                        SzMsg_DrawRect_Pipe);
@@ -2899,11 +2899,11 @@ s32 lSzDuel_DrawCustomDuel_Menu_LeaderAbility_Pipe(s32 packet, u8 *side, s32 x, 
     tx = x + 0x5C;
     ty = y + 0x4D;
     id = SzDuel_DrawWindow_Font_Pipe(win, tx, ty, 0, 3, func_0019BEF0((char *)text1), text1,
-                       side[0xA9C008] != 0 ? (s32)D_002BE944 : 0);
+                       side[CUSTOM_DUEL_ADDR + 0x8] != 0 ? (s32)D_002BE944 : 0);
     tx = x + 0xB8;
     ty = y + 0x4D;
     id = SzDuel_DrawWindow_Font_Pipe(id, tx, ty, 0, 3, func_0019BEF0((char *)text2), text2,
-                       side[0xA9C008] != 0 ? 0 : (s32)D_002BE944);
+                       side[CUSTOM_DUEL_ADDR + 0x8] != 0 ? 0 : (s32)D_002BE944);
     id = lSzDuel_DrawWindow_ExBoard_Pipe(id, (s32)side, x + 0x12, y + 0x7A, -0xF0, -0x34, -1, 0);
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_00290A58, x + 0x6FE, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_00290A62, x + 0x70E, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
@@ -2942,7 +2942,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_CardDisp_Pipe(s32 packet, u8 *side, s32 x, s32 y
     s32 ty;
     s32 id;
 
-    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, (side[0xA9C002] & 0xF) + 0x81, 0, 0x16));
+    id = RhText_SetTextureFlush(SzMsg_LoadFont_Pipe(packet, 1, (side[CUSTOM_DUEL_ADDR + 0x2] & 0xF) + 0x81, 0, 0x16));
     id = lSzDuel_DrawWindow_Frame_Pipe(id, 0xC, 3, 4, x + 0x31, y, -0xB2, -0x20, 1);
     id = SzMsg_DrawX_Pipe(id, 1, x + 0x8A - (((s32 *)SzMsg_GetInfo(1))[3] >> 1), y + 5, 0,
                        SzMsg_DrawRect_Pipe);
@@ -2951,11 +2951,11 @@ s32 lSzDuel_DrawCustomDuel_Menu_CardDisp_Pipe(s32 packet, u8 *side, s32 x, s32 y
     tx = x + 0x5C;
     ty = y + 0x4D;
     id = SzDuel_DrawWindow_Font_Pipe(win, tx, ty, 0, 3, func_0019BEF0((char *)text1), text1,
-                       side[0xA9C00C] != 0 ? (s32)D_002BE944 : 0);
+                       side[CUSTOM_DUEL_ADDR + 0xC] != 0 ? (s32)D_002BE944 : 0);
     tx = x + 0xB8;
     ty = y + 0x4D;
     id = SzDuel_DrawWindow_Font_Pipe(id, tx, ty, 0, 3, func_0019BEF0((char *)text2), text2,
-                       side[0xA9C00C] != 0 ? 0 : (s32)D_002BE944);
+                       side[CUSTOM_DUEL_ADDR + 0xC] != 0 ? 0 : (s32)D_002BE944);
     id = lSzDuel_DrawWindow_ExBoard_Pipe(id, (s32)side, x + 0x12, y + 0x7A, -0xF0, -0x34, -1, 0);
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_00290A58, x + 0x6FE, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     id = lSzDuel_DrawWindow_ExIcon_Pipe(id, &D_00290A62, x + 0x70E, y + 0x7A1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
@@ -3068,7 +3068,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
     extern s32 D_00290A6C;
     s32 ret;
     u8 *state = duelState.b;
-    u8 *save = (u8 *)0xA9C000;
+    u8 *save = (u8 *)CUSTOM_DUEL_ADDR;
     Maps_001CA7C0 *maps;
     s8 *text1;
     s8 *text2;
@@ -3095,7 +3095,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
 
     text1 = D_002BF06E;
     text2 = D_002BEF93;
-    sel = (*(u8 *)0xA9C089 + 2) % *(u8 *)0xA9C08A;
+    sel = (*(u8 *)(CUSTOM_DUEL_ADDR + 0x89) + 2) % *(u8 *)(CUSTOM_DUEL_ADDR + 0x8A);
     id = func_001B4780(func_0020F290(func_001FD680(func_001FD680(func_001FD680(func_001FD680(id, 1, 0x89, 0, 0x16),
                                                                  2, 0x8B, 0, 0x2C),
                                                    3, 0x8C, 0, 0x42),
@@ -3145,7 +3145,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
     id = func_001B3CC0(id, &D_00290832, x + 0x71D, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
     py = y + 0x7D7;
     id = func_001B3CC0(id, &D_00290AB2, x + 0x73D, py, 0, 1, 0, 0, 0, 0, 1, 0, -1, hint != 0 ? 0x40 : 0x80);
-    p = &((u16 *)0xA9C018)[sel];
+    p = &((u16 *)(CUSTOM_DUEL_ADDR + 0x18))[sel];
     switch (*p >> 8) {
         case 0:
             maps = func_002145E0(0);

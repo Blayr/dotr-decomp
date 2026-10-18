@@ -309,16 +309,16 @@ void func_0017BD70(void) {
     s32 temp_v0_2;
 
     temp_v0 = func_001843E0();
-    *(volatile s32 *)0x1000F000 = 4;
+    *(volatile s32 *)INTC_STAT_ADDR = 4;
     __asm__ volatile("sync");
     if (temp_v0 != 0) {
         func_00184428();
     }
     do {
 
-    } while (!(*(volatile s32 *)0x1000F000 & 4));
+    } while (!(*(volatile s32 *)INTC_STAT_ADDR & 4));
     temp_v0_2 = func_001843E0();
-    *(volatile s32 *)0x1000F000 = 4;
+    *(volatile s32 *)INTC_STAT_ADDR = 4;
     __asm__ volatile("sync");
     if (temp_v0_2 != 0) {
         func_00184428();
@@ -334,15 +334,15 @@ s64 func_0017BE00(void) {
     done = 0;
     SetVSyncFlag((void *)&done, (s64 *)&val);
     eie = func_001843E0();
-    *(volatile s32 *)0x1000F000 = 4;
+    *(volatile s32 *)INTC_STAT_ADDR = 4;
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();
     }
-    while (!(*(volatile s32 *)0x1000F000 & 4) && done == 0) {
+    while (!(*(volatile s32 *)INTC_STAT_ADDR & 4) && done == 0) {
     }
     eie = func_001843E0();
-    *(volatile s32 *)0x1000F000 = 4;
+    *(volatile s32 *)INTC_STAT_ADDR = 4;
     __asm__ volatile("sync");
     if (eie) {
         func_00184428();

@@ -1722,8 +1722,8 @@ s32 RhBase_Init(s32 modeIn, s32 interlace, s32 field, s32 start, s32 end, s32 si
     mode.compare_flag = 0;
     mode.overflow_flag = 1;
     mode.reserved = 0;
-    *(s32 *)0x10000810 = *(s32 *)&mode;
-    *(s32 *)0x10000800 = 0;
+    *(s32 *)T1_MODE_ADDR = *(s32 *)&mode;
+    *(s32 *)T1_COUNT_ADDR = 0;
     state->start = start;
     state->end = end;
     state->size = size;
@@ -1838,7 +1838,7 @@ s32 RhBase_FlipBuffer(void) {
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
-    (void)*(volatile u32 *)0x10000800;
+    (void)*(volatile u32 *)T1_COUNT_ADDR;
     if (sceGsSyncPath(0, 0) < 0) {
         RhBase_ResetGsEnv(D_00326188);
     }
@@ -1860,7 +1860,7 @@ s32 RhBase_FlipBuffer(void) {
                 result = sceGsSyncV(0);
             }
         }
-        if (*(volatile u32 *)0x10000800 > (u32)(period * (D_00325E30 + 1))) {
+        if (*(volatile u32 *)T1_COUNT_ADDR > (u32)(period * (D_00325E30 + 1))) {
             break;
         }
     }
@@ -1882,11 +1882,11 @@ s32 RhBase_FlipBuffer(void) {
         func_00100610(1);
     }
     sceGsSyncPath(0, 0);
-    *(volatile s32 *)0x10009020 = 0;
-    *(volatile s32 *)0x10009030 = (u32)state->dmaAddress & 0x0FFFFFFF;
-    *(volatile s32 *)0x1000E010 = 2;
+    *(volatile s32 *)D1_QWC_ADDR = 0;
+    *(volatile s32 *)D1_TADR_ADDR = (u32)state->dmaAddress & 0x0FFFFFFF;
+    *(volatile s32 *)D_STAT_ADDR = 2;
     FlushCache(0);
-    *(volatile s32 *)0x10009000 = 0x145;
+    *(volatile s32 *)D1_CHCR_ADDR = 0x145;
     if (state->currentBuffer != 0) {
         state->dmaAddress = state->buffer1;
         state->dmaBuffer = state->buffer1;
@@ -1900,16 +1900,16 @@ s32 RhBase_FlipBuffer(void) {
     result = 1;
     if (*(s32 *)(D_00293F14 + D_00326188 * 0x28) == 2) {
         if (state->width == 0x1C0) {
-            if (*(volatile u32 *)0x10000800 > 0x21C) {
+            if (*(volatile u32 *)T1_COUNT_ADDR > 0x21C) {
                 result = 2;
             }
-        } else if (*(volatile u32 *)0x10000800 > 0x10E) {
+        } else if (*(volatile u32 *)T1_COUNT_ADDR > 0x10E) {
             result = 2;
         }
-    } else if (*(volatile u32 *)0x10000800 > 0x280) {
+    } else if (*(volatile u32 *)T1_COUNT_ADDR > 0x280) {
         result = 2;
     }
-    *(volatile u32 *)0x10000800 = 0;
+    *(volatile u32 *)T1_COUNT_ADDR = 0;
     RhZSort_Start(state->dmaAddress, state->dmaAddress + state->dmaSize);
     RhBase_SetVifPacketArea(lRhBase_SetRandomDither(RhBase_GetVifPacketArea()));
     return result;

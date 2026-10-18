@@ -156,8 +156,8 @@ void initAll(s32 name) {
     extern s32 videoDecSetStream(void *, s32, s32, void (*)(), s32);
     extern void voBufCreate();
 
-    *(s32 *)0x1000E000 |= 3;
-    *(s32 *)0x1000E010 = 4;
+    *(s32 *)D_CTRL_ADDR |= 3;
+    *(s32 *)D_STAT_ADDR = 4;
     readBufCreate((void *)readBuf);
     sceMpegInit();
     videoDecCreate(videoDec, mpegWork, 0x1C9168, viBufData,
@@ -976,13 +976,13 @@ s32 viBufReset(void *f) {
         obj->tags[i].tag = ((u64)((obj->base + i * 0x800) & 0x0FFFFFFF) << 32) | 0x30000080;
     }
     obj->tags[i].tag = ((u64)((u32)obj->tags & 0x0FFFFFFF) << 32) | 0x20000000;
-    *(u32 *)0x1000B420 = 0;
-    *(u32 *)0x1000B410 = obj->base & 0x0FFFFFFF;
-    *(u32 *)0x1000B430 = (u32)obj->tags & 0x0FFFFFFF;
+    *(u32 *)D4_QWC_ADDR = 0;
+    *(u32 *)D4_MADR_ADDR = obj->base & 0x0FFFFFFF;
+    *(u32 *)D4_TADR_ADDR = (u32)obj->tags & 0x0FFFFFFF;
     func_001843E0();
-    *(u32 *)0x1000F590 = *(u32 *)0x1000F520 | 0x10000;
-    *(u32 *)0x1000B400 = 5;
-    *(u32 *)0x1000F590 = *(u32 *)0x1000F520 & 0xFFFEFFFF;
+    *(u32 *)D_ENABLEW_ADDR = *(u32 *)D_ENABLER_ADDR | 0x10000;
+    *(u32 *)D4_CHCR_ADDR = 5;
+    *(u32 *)D_ENABLEW_ADDR = *(u32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
     return 1;
 }
@@ -1088,13 +1088,13 @@ s32 viBufAddDMA(void *f) {
     }
 
     func_001843E0();
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-    *(volatile s32 *)0x1000B400 = 5;
-    *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile s32 *)D4_CHCR_ADDR = 5;
+    *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    chcr = *(volatile s32 *)0x1000B400;
+    chcr = *(volatile s32 *)D4_CHCR_ADDR;
     count = ring->count;
-    current = *(volatile s32 *)0x1000B410;
+    current = *(volatile s32 *)D4_MADR_ADDR;
     if (current == ((u32)(ring->tags + (count + 1) * 16) & 0x0FFFFFFF)) {
         current = 0;
     } else {
@@ -1129,9 +1129,9 @@ s32 viBufAddDMA(void *f) {
             chcr = (chcr & 0x0FFFFFFF) | 0x30000000;
         }
         func_001843E0();
-        *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-        *(volatile s32 *)0x1000B400 = chcr | 0x100;
-        *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+        *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+        *(volatile s32 *)D4_CHCR_ADDR = chcr | 0x100;
+        *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
         func_00184428();
     }
     SignalSema(ring->sema);
@@ -1143,26 +1143,26 @@ s32 viBufStopDMA(u8 *f) {
     WaitSema(*(s32 *)(f + 0x40));
     *(s32 *)(f + 0x44) = 0;
     func_001843E0();
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
-    *(volatile u32 *)0x1000B400 = 5;
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile u32 *)D4_CHCR_ADDR = 5;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    *(s32 *)(f + 0x1C) = *(volatile u32 *)0x1000B410;
-    *(s32 *)(f + 0x20) = *(volatile u32 *)0x1000B430;
-    *(s32 *)(f + 0x24) = *(volatile u32 *)0x1000B420;
-    *(s32 *)(f + 0x28) = *(volatile u32 *)0x1000B400;
+    *(s32 *)(f + 0x1C) = *(volatile u32 *)D4_MADR_ADDR;
+    *(s32 *)(f + 0x20) = *(volatile u32 *)D4_TADR_ADDR;
+    *(s32 *)(f + 0x24) = *(volatile u32 *)D4_QWC_ADDR;
+    *(s32 *)(f + 0x28) = *(volatile u32 *)D4_CHCR_ADDR;
     do {
-    } while (*(volatile u32 *)0x10002010 & 0xF0);
+    } while (*(volatile u32 *)IPU_CTRL_ADDR & 0xF0);
     func_001843E0();
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
-    *(volatile u32 *)0x1000B000 = 0;
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile u32 *)D3_CHCR_ADDR = 0;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    *(s32 *)(f + 0x2C) = *(volatile u32 *)0x1000B010;
-    *(s32 *)(f + 0x30) = *(volatile u32 *)0x1000B020;
-    *(s32 *)(f + 0x34) = *(volatile u32 *)0x1000B000;
-    *(s32 *)(f + 0x38) = *(volatile u32 *)0x10002020;
-    *(s32 *)(f + 0x3C) = *(volatile u32 *)0x10002010;
+    *(s32 *)(f + 0x2C) = *(volatile u32 *)D3_MADR_ADDR;
+    *(s32 *)(f + 0x30) = *(volatile u32 *)D3_QWC_ADDR;
+    *(s32 *)(f + 0x34) = *(volatile u32 *)D3_CHCR_ADDR;
+    *(s32 *)(f + 0x38) = *(volatile u32 *)IPU_BP_ADDR;
+    *(s32 *)(f + 0x3C) = *(volatile u32 *)IPU_CTRL_ADDR;
     SignalSema(*(s32 *)(f + 0x40));
     return 1;
 }
@@ -1312,13 +1312,13 @@ int viBufRestartDMA(void *p_v)
 /* Frees the video input FIFO. */
 s32 viBufDelete(void *f) {
     func_001843E0();
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 | 0x10000;
-    *(volatile u32 *)0x1000B400 = 5;
-    *(volatile u32 *)0x1000F590 = *(volatile u32 *)0x1000F520 & 0xFFFEFFFF;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR | 0x10000;
+    *(volatile u32 *)D4_CHCR_ADDR = 5;
+    *(volatile u32 *)D_ENABLEW_ADDR = *(volatile u32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
     func_00184428();
-    *(volatile u32 *)0x1000B420 = 0;
-    *(volatile u32 *)0x1000B410 = 0;
-    *(volatile u32 *)0x1000B430 = 0;
+    *(volatile u32 *)D4_QWC_ADDR = 0;
+    *(volatile u32 *)D4_MADR_ADDR = 0;
+    *(volatile u32 *)D4_TADR_ADDR = 0;
     DeleteSema(*(s32 *)((u8 *)f + 0x40));
     return 1;
 }
@@ -1533,9 +1533,9 @@ s32 viBufGetTs(void *fIn, void *tsIn)
     f = fIn;
     ts = tsIn;
 
-    d4madr = *(volatile u32 *)0x1000B410;
+    d4madr = *(volatile u32 *)D4_MADR_ADDR;
     isEnd = 0;
-    ipubp = *(volatile u32 *)0x10002020;
+    ipubp = *(volatile u32 *)IPU_BP_ADDR;
     bp = f->ipubp & 0x7F;
     fp = (ipubp >> 16) & 3;
     ifc = (ipubp >> 8) & 0xF;

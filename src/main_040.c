@@ -3114,7 +3114,7 @@ static inline void initPrim_001C1FE0(s32 kind, void *prim) {
 /* Draws a fading square board under a model. */
 void lSzDuel_DrawFadeBoard_Pipe(s32 packet, f32 *position, u8 alpha, f32 width, f32 height) {
     extern s32 ExSortNode_Pipe(s32, void *, s32, s32, s32, s32);
-    void *scratchpad = (void *)0x70000000;
+    void *scratchpad = (void *)SCRATCHPAD_ADDR;
     Vertex_001C1FE0 *vertices = (Vertex_001C1FE0 *)((u8 *)scratchpad + 0x2000);
     s32 count;
     Prim_001C1FE0 prim;
@@ -3164,10 +3164,11 @@ void SzDuel_InitTrade(void) {
     u8 *names;
 
     state = duelState.b;
-    bag0 = (s16 *)0x01ED0000;
-    bag1 = (s16 *)0x01ED06AC;
-    picked0 = (s8 *)0x01ED0D58;
-    picked1 = (s8 *)0x01ED10AE;
+    /* the card lists live in the campaign work area, borrowed as scratch */
+    bag0 = (s16 *)CAMPAIGN_WORK_ADDR;
+    bag1 = (s16 *)(CAMPAIGN_WORK_ADDR + 0x6AC);
+    picked0 = (s8 *)(CAMPAIGN_WORK_ADDR + 0xD58);
+    picked1 = (s8 *)(CAMPAIGN_WORK_ADDR + 0x10AE);
     result = SzData_GetOption(0, 0);
     duelState.s.depth = 0xFFFFF8;
     if (result != 0) {
@@ -3176,9 +3177,9 @@ void SzDuel_InitTrade(void) {
         names = D_002CCB48;
     }
     *(u8 **)(state + 0x6D4) = names;
-    *(s32 *)(state + 0x6D8) = 0x01ED0000;
-    *(s32 *)(state + 0x6DC) = 0x01ED06AC;
-    *(s32 *)(state + 0x6E0) = 0x01ED0D58;
+    *(s32 *)(state + 0x6D8) = CAMPAIGN_WORK_ADDR;
+    *(s32 *)(state + 0x6DC) = CAMPAIGN_WORK_ADDR + 0x6AC;
+    *(s32 *)(state + 0x6E0) = CAMPAIGN_WORK_ADDR + 0xD58;
     *(s32 *)(state + 0x6E4) = (s32)picked1;
     i = 0;
     do {

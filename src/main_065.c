@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 typedef struct State_0022F1C0 {
     u16 halves[18];
@@ -17,7 +18,7 @@ s32 Taku_Camp_BOTAN_MATI(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
 
     local = D_0029ABC0;
     flag = 1;
-    switch (*(s8 *)0x01ED537E) {
+    switch (campaignWork.talkSpeaker) {
     case 0:
         arg2 = 0x1CC;
         arg3 = 0x68;
@@ -35,7 +36,7 @@ s32 Taku_Camp_BOTAN_MATI(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
         arg3 = 0x68;
         break;
     }
-    step = *(u8 *)0x01ED53B2 % 15;
+    step = *(u8 *)&campaignWork.unk53B2 % 15;
     if (step < 5) {
         local.field_24 = 0x98;
     } else if (step < 10) {
@@ -52,9 +53,9 @@ s32 Taku_Camp_BOTAN_MATI(s32 packet, s32 arg1, s16 arg2, s16 arg3) {
     if (slide[0] == 1 && *(s16 *)(slide + 0xC2) == 0x6A) {
         flag = 0;
     }
-    if ((*(s8 *)0x01ED537B == 4 || *(s8 *)0x01ED53AC == 2) && flag != 0) {
+    if ((campaignWork.talkStep == 4 || campaignWork.eventPictureState == 2) && flag != 0) {
         packet = Taku_Obj_Set(packet, &local, arg2, arg3);
-        *(u8 *)0x01ED53B2 += 1;
+        *(u8 *)&campaignWork.unk53B2 += 1;
     }
     return packet;
 }

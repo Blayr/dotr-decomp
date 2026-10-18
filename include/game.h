@@ -108,7 +108,10 @@ typedef struct DuelState {
     s16 scroll;                    /* 0xC92 */
     s16 scrollTo;                  /* 0xC94 */
     u16 idleTimer;                 /* 0xC96: frames left of a 90-frame wait (reset on input) */
-    u8 padC98[0xCB6 - 0xC98];
+    s16 unkC98;                    /* 0xC98 */
+    s16 popupPos[4][2];            /* 0xC9A: x, y of the duel pop-ups: 0 options, 2 hand card, 3 message */
+    u16 popupValue[4];             /* 0xCAA: what each pop-up holds (the hand slot, the message's card) */
+    s8 popupState[4];              /* 0xCB2: each pop-up's state; 0x18 = closed */
     u8 sort[3];                    /* 0xCB6 */
     u8 sort2[3];                   /* 0xCB9 */
     u8 sort3;                      /* 0xCBC */
@@ -447,10 +450,10 @@ extern s8 D_0031747B;
 
 
 
-extern s8 D_00318144;
-extern s8 D_00318145;
+extern s8 D_00318144; /* duelState.s.popupState[2] as a symbol of its own (the close functions read it so) */
+extern s8 D_00318145; /* duelState.s.popupState[3] */
 extern s32 D_0031AB90;
-extern s8 D_00318142;
+extern s8 D_00318142; /* duelState.s.popupState[0] */
 
 extern s32 modelDrawCache; /* original: gSzModel_pfhCache */
 

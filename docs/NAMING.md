@@ -62,6 +62,9 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
   `u8 padXXX[...]` (named by its offset); a field whose use is known but not its meaning is `unkXXX`.
 - Special numbers get names: `#define CARD_NONE 999` (an empty card slot), `CARD_COUNT`, the operation codes
   `DUEL_CALC_ADD`..`DUEL_CALC_SET`; enums for states and phases.
+- A fixed memory area with a layout gets a struct and a name for it (`campaignWork`, `include/campaign.h`).
+  Where the original reads a field with another type than the declared one, the read keeps it:
+  `*(u8 *)&campaignWork.eventPictureAlpha` is the same address, and the read type picks the instruction.
 - The function-local view structs the decompiler wrote (`Entry_001DE5C0`, `State_001C35A0`) are replaced by the
   shared types once the shared type covers them.
 - Changing a shared header recompiles every file: run the full `make check`, and watch the state-sensitive

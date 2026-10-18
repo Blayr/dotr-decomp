@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 typedef struct {
     s16 x0, y0, x1, y1, x2, y2, x3, y3;
@@ -115,12 +116,12 @@ s32 Taku_Window_Set(s32 p, void *rect_arg, u16 style, u16 mode, u16 dx, u16 dy, 
         g = 0;
         b = 0x60;
     } else if (style == 10) {
-        t = (*(s16 *)0x01ED006C * 0x60) >> 8;
+        t = (campaignWork.windowOpen * 0x60) >> 8;
         g = t;
         r = 0x60 - t;
         b = g;
     } else if (style == 11) {
-        t = (*(s16 *)0x01ED006C * 0x60) >> 8;
+        t = (campaignWork.windowOpen * 0x60) >> 8;
         g = 0x60 - t;
         r = t;
         b = g;

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "campaign.h"
 
 /* Starts the duel of the chosen campaign place. */
 void Taku_Camp_Set_Go_Duel(void) {
@@ -33,26 +34,10 @@ struct DotrDareInfo {
     int unknown_00[3];
     int w;
 };
-struct DotrDareFace {
-    unsigned char id, no, kind, mode;
-    unsigned short x, y;
-};
 extern struct DotrDareWindow campaignEnemyWindow[]; /* original: camp_window_Teki_data */
 extern struct DotrDareItem roseSprites2[]; /* original: tex_bara_data2 */
 extern struct DotrDareItem campaignEnemyWindowItems[]; /* original: camp_window_teki3 */
 extern unsigned char D_002999CC[][4];
-#define DOTR_DARE_SLIDE0 (*(short *)0x1ed53b6)
-#define DOTR_DARE_SLIDE1 (*(short *)0x1ed53b8)
-#define DOTR_DARE_NAME0 (*(short *)0x1ed53ba)
-#define DOTR_DARE_NAME1 (*(short *)0x1ed53bc)
-#define DOTR_DARE_SIDE0 (*(signed char *)0x1ed53be)
-#define DOTR_DARE_SIDE1 (*(signed char *)0x1ed53bf)
-#define DOTR_DARE_STATE0 (*(signed char *)0x1ed5407)
-#define DOTR_DARE_STATE1 (*(signed char *)0x1ed5408)
-#define DOTR_DARE_FACE0 ((struct DotrDareFace *)0x1ed540c)
-#define DOTR_DARE_FACE1 ((struct DotrDareFace *)0x1ed5414)
-#define DOTR_DARE_LOOK1 (*(signed char *)0x1ed5469)
-#define DOTR_DARE_LOOK0 (*(signed char *)0x1ed546a)
 extern DotrDareWord Taku_Window_Set_b(DotrDareWord cursor, struct DotrDareWindow *window,
                                     unsigned short flag, int a3, unsigned short x, int y,
                                     int a6, int a7, int a8);
@@ -76,7 +61,7 @@ int Taku_Camp_BUN_DARE(int cursor)
     col[3] = 128;
     xx = 0;
     yy = 0;
-    if (DOTR_DARE_SLIDE0 != 0) {
+    if (campaignWork.duelistSlide[0] != 0) {
         short x;
         short y;
         signed char n;
@@ -84,45 +69,45 @@ int Taku_Camp_BUN_DARE(int cursor)
         short w;
         struct DotrDareInfo *info;
 
-        w = DOTR_DARE_SLIDE0;
+        w = campaignWork.duelistSlide[0];
         x = (w * 640 >> 10) - 640;
         y = (w * 256 >> 10) - 256;
-        n = DOTR_DARE_SIDE0;
+        n = campaignWork.duelistSide[0];
         cursor = func_00217BD0_b(cursor, &roseSprites2[n], x + xx, 0);
         cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[0], n, 0, x + xx, 0, 0, 128, 128);
-        no = DOTR_DARE_NAME0 - 195;
-        switch (DOTR_DARE_STATE0) {
+        no = campaignWork.duelistName[0] - 195;
+        switch (campaignWork.duelistState[0]) {
         case 1:
-            DOTR_DARE_FACE0->id = 255;
+            campaignWork.duelistFace[0].id = 255;
             
         case 2:
-            DOTR_DARE_FACE0->no = no;
-            DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
-            DOTR_DARE_FACE0->mode = 1;
-            DOTR_DARE_FACE0->x = campaignEnemyWindow[3].x + xx;
-            DOTR_DARE_FACE0->y = y + (campaignEnemyWindow[3].y + yy);
-            ShFace_Request(DOTR_DARE_FACE0);
-            DOTR_DARE_STATE0 = 2;
+            campaignWork.duelistFace[0].no = no;
+            campaignWork.duelistFace[0].kind = D_002999CC[no][campaignWork.duelist0Look];
+            campaignWork.duelistFace[0].mode = 1;
+            campaignWork.duelistFace[0].x = campaignEnemyWindow[3].x + xx;
+            campaignWork.duelistFace[0].y = y + (campaignEnemyWindow[3].y + yy);
+            ShFace_Request(&campaignWork.duelistFace[0]);
+            campaignWork.duelistState[0] = 2;
             break;
         case 10:
-            DOTR_DARE_FACE0->no = no;
-            DOTR_DARE_FACE0->kind = D_002999CC[no][DOTR_DARE_LOOK0];
-            DOTR_DARE_FACE0->mode = 3;
-            DOTR_DARE_FACE0->x = campaignEnemyWindow[3].x + xx;
-            DOTR_DARE_FACE0->y = y + (campaignEnemyWindow[3].y + yy);
-            ShFace_Request(DOTR_DARE_FACE0);
-            DOTR_DARE_STATE0 = 2;
+            campaignWork.duelistFace[0].no = no;
+            campaignWork.duelistFace[0].kind = D_002999CC[no][campaignWork.duelist0Look];
+            campaignWork.duelistFace[0].mode = 3;
+            campaignWork.duelistFace[0].x = campaignEnemyWindow[3].x + xx;
+            campaignWork.duelistFace[0].y = y + (campaignEnemyWindow[3].y + yy);
+            ShFace_Request(&campaignWork.duelistFace[0]);
+            campaignWork.duelistState[0] = 2;
             break;
         case 100:
-            ShFace_Close(DOTR_DARE_FACE0);
-            DOTR_DARE_STATE0 = 0;
+            ShFace_Close((u8 *)&campaignWork.duelistFace[0]);
+            campaignWork.duelistState[0] = 0;
             break;
         }
         cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[2], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[3], xx, y + yy, 0);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[n], xx, y + yy, 0);
-        cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME0, 0, 22);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, campaignWork.duelistName[0], 0, 22);
         cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         if (info->w < 324) {
@@ -132,7 +117,7 @@ int Taku_Camp_BUN_DARE(int cursor)
         }
         SzMsg_Free(1);
     }
-    if (DOTR_DARE_SLIDE1 != 0) {
+    if (campaignWork.duelistSlide[1] != 0) {
         short x;
         short y;
         signed char n;
@@ -140,47 +125,47 @@ int Taku_Camp_BUN_DARE(int cursor)
         short w;
         struct DotrDareInfo *info;
 
-        w = DOTR_DARE_SLIDE1;
+        w = campaignWork.duelistSlide[1];
         x = 640 - (w * 640 >> 10);
         y = 256 - (w * 256 >> 10);
-        n = DOTR_DARE_SIDE1;
+        n = campaignWork.duelistSide[1];
         cursor = func_00217BD0_b(cursor, &roseSprites2[n], x + 144, 304);
         cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[0], n, 0, x + 144, 304, 0, 128, 128);
         xx = -480;
         yy = 320;
-        no = DOTR_DARE_NAME1 - 195;
-        switch (DOTR_DARE_STATE1) {
+        no = campaignWork.duelistName[1] - 195;
+        switch (campaignWork.duelistState[1]) {
         case 1:
-            DOTR_DARE_FACE1->id = 255;
+            campaignWork.duelistFace[1].id = 255;
             
         case 2:
-            DOTR_DARE_FACE1->no = no;
-            DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
-            DOTR_DARE_FACE1->mode = 1;
-            DOTR_DARE_FACE1->x = campaignEnemyWindow[3].x + xx;
-            DOTR_DARE_FACE1->y = y + (campaignEnemyWindow[3].y + yy);
-            ShFace_Request(DOTR_DARE_FACE1);
-            DOTR_DARE_STATE1 = 2;
+            campaignWork.duelistFace[1].no = no;
+            campaignWork.duelistFace[1].kind = D_002999CC[no][campaignWork.duelist1Look];
+            campaignWork.duelistFace[1].mode = 1;
+            campaignWork.duelistFace[1].x = campaignEnemyWindow[3].x + xx;
+            campaignWork.duelistFace[1].y = y + (campaignEnemyWindow[3].y + yy);
+            ShFace_Request(&campaignWork.duelistFace[1]);
+            campaignWork.duelistState[1] = 2;
             break;
         case 10:
-            DOTR_DARE_FACE1->no = no;
-            DOTR_DARE_FACE1->kind = D_002999CC[no][DOTR_DARE_LOOK1];
-            DOTR_DARE_FACE1->mode = 3;
-            DOTR_DARE_FACE1->x = campaignEnemyWindow[3].x + xx;
-            DOTR_DARE_FACE1->y = y + (campaignEnemyWindow[3].y + yy);
-            ShFace_Request(DOTR_DARE_FACE1);
-            DOTR_DARE_STATE1 = 2;
+            campaignWork.duelistFace[1].no = no;
+            campaignWork.duelistFace[1].kind = D_002999CC[no][campaignWork.duelist1Look];
+            campaignWork.duelistFace[1].mode = 3;
+            campaignWork.duelistFace[1].x = campaignEnemyWindow[3].x + xx;
+            campaignWork.duelistFace[1].y = y + (campaignEnemyWindow[3].y + yy);
+            ShFace_Request(&campaignWork.duelistFace[1]);
+            campaignWork.duelistState[1] = 2;
             break;
         case 100:
-            ShFace_Close(DOTR_DARE_FACE1);
-            DOTR_DARE_STATE1 = 0;
+            ShFace_Close((u8 *)&campaignWork.duelistFace[1]);
+            campaignWork.duelistState[1] = 0;
             break;
         }
         cursor = Taku_Window_Set_b(cursor, &campaignEnemyWindow[3], n, 0, xx, (unsigned short)(y + yy), 1, 128, 0);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[4], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[5], xx, y + 184, 2);
         cursor = func_00218020_b(cursor, &campaignEnemyWindowItems[n], xx, y + 176, 0);
-        cursor = SzMsg_LoadFont_Pipe(cursor, 1, DOTR_DARE_NAME1, 0, 22);
+        cursor = SzMsg_LoadFont_Pipe(cursor, 1, campaignWork.duelistName[1], 0, 22);
         cursor = RhText_SetTextureFlush(cursor);
         info = func_001FEAB0_b(1);
         if (info->w < 324) {
@@ -192,46 +177,34 @@ int Taku_Camp_BUN_DARE(int cursor)
     }
     return cursor;
 }
-#undef DOTR_DARE_SLIDE0
-#undef DOTR_DARE_SLIDE1
-#undef DOTR_DARE_NAME0
-#undef DOTR_DARE_NAME1
-#undef DOTR_DARE_SIDE0
-#undef DOTR_DARE_SIDE1
-#undef DOTR_DARE_STATE0
-#undef DOTR_DARE_STATE1
-#undef DOTR_DARE_FACE0
-#undef DOTR_DARE_FACE1
-#undef DOTR_DARE_LOOK1
-#undef DOTR_DARE_LOOK0
 
 /* Starts a campaign cut-scene (sinema) `scene`. */
 void Taku_Camp_SINEMA_Init(s8 scene) {
-    *(s16 *)0x01ED001C = 0;
+    campaignWork.cinemaState = 0;
     switch (scene) {
     case 0:
-        *(s16 *)0x01ED001A = 0;
-        *(s16 *)0x01ED001E = 0;
-        *(s16 *)0x01ED0020 = 0;
-        *(s16 *)0x01ED0022 = 0;
+        campaignWork.cinemaMode = 0;
+        campaignWork.cinemaCut[0] = 0;
+        campaignWork.cinemaCut[1] = 0;
+        campaignWork.cinemaCut[2] = 0;
         break;
     case 1:
-        *(s16 *)0x01ED001A = 1;
-        *(s16 *)0x01ED001E = 0x40;
-        *(s16 *)0x01ED0020 = 0;
-        *(s16 *)0x01ED0022 = 0;
+        campaignWork.cinemaMode = 1;
+        campaignWork.cinemaCut[0] = 0x40;
+        campaignWork.cinemaCut[1] = 0;
+        campaignWork.cinemaCut[2] = 0;
         break;
     case 2:
-        *(s16 *)0x01ED001A = 2;
-        *(s16 *)0x01ED001E = 0x40;
-        *(s16 *)0x01ED0020 = 0x40;
-        *(s16 *)0x01ED0022 = 0;
+        campaignWork.cinemaMode = 2;
+        campaignWork.cinemaCut[0] = 0x40;
+        campaignWork.cinemaCut[1] = 0x40;
+        campaignWork.cinemaCut[2] = 0;
         break;
     case 3:
-        *(s16 *)0x01ED001A = 3;
-        *(s16 *)0x01ED001E = 0x40;
-        *(s16 *)0x01ED0020 = 0x40;
-        *(s16 *)0x01ED0022 = 0x74;
+        campaignWork.cinemaMode = 3;
+        campaignWork.cinemaCut[0] = 0x40;
+        campaignWork.cinemaCut[1] = 0x40;
+        campaignWork.cinemaCut[2] = 0x74;
         break;
     }
 }
@@ -244,23 +217,6 @@ struct DotrTikeiItem {
 };
 extern DotrTikeiWord func_00218970_b(DotrTikeiWord cursor, struct DotrTikeiItem *quad, short dx,
                                  short dy);
-struct DotrSinemaWork {
-    short unknown_00[13];
-    short mode;                 
-    short state;                
-    short cut0;                 
-    short cut1;                 
-    short cut2;                 
-    char unknown_24[72];
-    short hold;                 
-};
-#define DOTR_SINEMA_BLOCK ((struct DotrSinemaWork *)0x1ed0000)
-#define DOTR_SINEMA_MODE (*(short *)0x1ed001a)
-#define DOTR_SINEMA_STATE (*(short *)0x1ed001c)
-#define DOTR_SINEMA_CUT0 (*(short *)0x1ed001e)
-#define DOTR_SINEMA_CUT1 (*(short *)0x1ed0020)
-#define DOTR_SINEMA_CUT2 (*(short *)0x1ed0022)
-#define DOTR_SINEMA_HOLD (*(short *)0x1ed006c)
 struct DotrSinemaQuad {
     short w[8];
     unsigned char col[16];
@@ -271,119 +227,120 @@ struct DotrSinemaQuad {
 };
 extern struct DotrSinemaQuad D_0029AEC0;
 extern struct DotrSinemaQuad cinemaBlackBars[2]; /* original: tex_sinema_brack */
-#define DOTR_SINEMA_C0 (b->cut0 * 64 / 64)
-#define DOTR_SINEMA_C1 (b->cut1 * 64 / 64)
-#define DOTR_SINEMA_C2 (b->cut2 * 116 / 116)
+/* The bar heights; the "* 64 / 64" forms are the original's and change the instructions. */
+#define DOTR_SINEMA_C0 (b->cinemaCut[0] * 64 / 64)
+#define DOTR_SINEMA_C1 (b->cinemaCut[1] * 64 / 64)
+#define DOTR_SINEMA_C2 (b->cinemaCut[2] * 116 / 116)
 
 /* Draws a campaign cut-scene picture with fade `fade`. */
 int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
 {
-    struct DotrSinemaWork *b = DOTR_SINEMA_BLOCK;
+    CampaignWork *b = &campaignWork;
     struct DotrSinemaQuad q = D_0029AEC0;
     int i;
     int j;
     int n;
 
     if (fade == 0) {
-        if (DOTR_SINEMA_STATE == 1 && DOTR_SINEMA_HOLD == 0) {
+        if (campaignWork.cinemaState == 1 && campaignWork.windowOpen == 0) {
             n = 0;
-            if (DOTR_SINEMA_MODE == 0) {
-                if (0 <= DOTR_SINEMA_CUT0) {
-                    DOTR_SINEMA_CUT0 -= 8;
-                    if (DOTR_SINEMA_CUT0 <= 0) {
-                        DOTR_SINEMA_CUT0 = 0;
+            if (campaignWork.cinemaMode == 0) {
+                if (0 <= campaignWork.cinemaCut[0]) {
+                    campaignWork.cinemaCut[0] -= 8;
+                    if (campaignWork.cinemaCut[0] <= 0) {
+                        campaignWork.cinemaCut[0] = 0;
                         n++;
                     }
                 }
-                if (0 <= DOTR_SINEMA_CUT1) {
-                    DOTR_SINEMA_CUT1 -= 8;
-                    if (DOTR_SINEMA_CUT1 <= 0) {
-                        DOTR_SINEMA_CUT1 = 0;
+                if (0 <= campaignWork.cinemaCut[1]) {
+                    campaignWork.cinemaCut[1] -= 8;
+                    if (campaignWork.cinemaCut[1] <= 0) {
+                        campaignWork.cinemaCut[1] = 0;
                         n++;
                     }
                 }
-                if (0 <= DOTR_SINEMA_CUT2) {
-                    DOTR_SINEMA_CUT2 -= 8;
-                    if (DOTR_SINEMA_CUT2 <= 0) {
-                        DOTR_SINEMA_CUT2 = 0;
+                if (0 <= campaignWork.cinemaCut[2]) {
+                    campaignWork.cinemaCut[2] -= 8;
+                    if (campaignWork.cinemaCut[2] <= 0) {
+                        campaignWork.cinemaCut[2] = 0;
                         n++;
                     }
                 }
-            } else if (DOTR_SINEMA_MODE == 1) {
-                if (DOTR_SINEMA_CUT0 <= 64) {
-                    DOTR_SINEMA_CUT0 += 8;
-                    if (DOTR_SINEMA_CUT0 >= 64) {
-                        DOTR_SINEMA_CUT0 = 64;
+            } else if (campaignWork.cinemaMode == 1) {
+                if (campaignWork.cinemaCut[0] <= 64) {
+                    campaignWork.cinemaCut[0] += 8;
+                    if (campaignWork.cinemaCut[0] >= 64) {
+                        campaignWork.cinemaCut[0] = 64;
                         n++;
                     }
                 }
-                if (0 <= DOTR_SINEMA_CUT1) {
-                    DOTR_SINEMA_CUT1 -= 8;
-                    if (DOTR_SINEMA_CUT1 <= 0) {
-                        DOTR_SINEMA_CUT1 = 0;
+                if (0 <= campaignWork.cinemaCut[1]) {
+                    campaignWork.cinemaCut[1] -= 8;
+                    if (campaignWork.cinemaCut[1] <= 0) {
+                        campaignWork.cinemaCut[1] = 0;
                         n++;
                     }
                 }
-                if (0 <= DOTR_SINEMA_CUT2) {
-                    DOTR_SINEMA_CUT2 -= 8;
-                    if (DOTR_SINEMA_CUT2 <= 0) {
-                        DOTR_SINEMA_CUT2 = 0;
+                if (0 <= campaignWork.cinemaCut[2]) {
+                    campaignWork.cinemaCut[2] -= 8;
+                    if (campaignWork.cinemaCut[2] <= 0) {
+                        campaignWork.cinemaCut[2] = 0;
                         n++;
                     }
                 }
-            } else if (DOTR_SINEMA_MODE == 2) {
-                if (DOTR_SINEMA_CUT0 < 64) {
-                    DOTR_SINEMA_CUT0 += 8;
-                    if (DOTR_SINEMA_CUT0 >= 64) {
-                        DOTR_SINEMA_CUT0 = 64;
+            } else if (campaignWork.cinemaMode == 2) {
+                if (campaignWork.cinemaCut[0] < 64) {
+                    campaignWork.cinemaCut[0] += 8;
+                    if (campaignWork.cinemaCut[0] >= 64) {
+                        campaignWork.cinemaCut[0] = 64;
                         n++;
                     }
                 } else {
-                    DOTR_SINEMA_CUT0 = 64;
+                    campaignWork.cinemaCut[0] = 64;
                     n++;
-                    if (DOTR_SINEMA_CUT1 <= 64) {
-                        DOTR_SINEMA_CUT1 += 8;
-                        if (DOTR_SINEMA_CUT1 >= 64) {
-                            DOTR_SINEMA_CUT1 = 64;
+                    if (campaignWork.cinemaCut[1] <= 64) {
+                        campaignWork.cinemaCut[1] += 8;
+                        if (campaignWork.cinemaCut[1] >= 64) {
+                            campaignWork.cinemaCut[1] = 64;
                             n++;
                         }
                     }
                 }
-                if (0 <= DOTR_SINEMA_CUT2) {
-                    DOTR_SINEMA_CUT2 -= 8;
-                    if (DOTR_SINEMA_CUT2 <= 0) {
-                        DOTR_SINEMA_CUT2 = 0;
+                if (0 <= campaignWork.cinemaCut[2]) {
+                    campaignWork.cinemaCut[2] -= 8;
+                    if (campaignWork.cinemaCut[2] <= 0) {
+                        campaignWork.cinemaCut[2] = 0;
                         n++;
                     }
                 }
-            } else if (DOTR_SINEMA_MODE == 3) {
-                if (DOTR_SINEMA_CUT0 < 64) {
-                    DOTR_SINEMA_CUT0 += 8;
-                    if (DOTR_SINEMA_CUT0 >= 64) {
-                        DOTR_SINEMA_CUT0 = 64;
+            } else if (campaignWork.cinemaMode == 3) {
+                if (campaignWork.cinemaCut[0] < 64) {
+                    campaignWork.cinemaCut[0] += 8;
+                    if (campaignWork.cinemaCut[0] >= 64) {
+                        campaignWork.cinemaCut[0] = 64;
                         n++;
                     }
-                } else if (DOTR_SINEMA_CUT1 < 64) {
-                    DOTR_SINEMA_CUT0 = 64;
-                    DOTR_SINEMA_CUT1 += 8;
+                } else if (campaignWork.cinemaCut[1] < 64) {
+                    campaignWork.cinemaCut[0] = 64;
+                    campaignWork.cinemaCut[1] += 8;
                     n++;
-                    if (DOTR_SINEMA_CUT1 >= 64) {
-                        DOTR_SINEMA_CUT1 = 64;
+                    if (campaignWork.cinemaCut[1] >= 64) {
+                        campaignWork.cinemaCut[1] = 64;
                         n++;
                     }
                 } else {
-                    DOTR_SINEMA_CUT0 = 64;
-                    DOTR_SINEMA_CUT1 = 64;
-                    DOTR_SINEMA_CUT2 += 8;
+                    campaignWork.cinemaCut[0] = 64;
+                    campaignWork.cinemaCut[1] = 64;
+                    campaignWork.cinemaCut[2] += 8;
                     n += 2;
-                    if (DOTR_SINEMA_CUT2 >= 116) {
-                        DOTR_SINEMA_CUT2 = 116;
+                    if (campaignWork.cinemaCut[2] >= 116) {
+                        campaignWork.cinemaCut[2] = 116;
                         n++;
                     }
                 }
             }
             if (n >= 3) {
-                DOTR_SINEMA_STATE = 2;
+                campaignWork.cinemaState = 2;
             }
         }
         for (i = 0; i < 2; i++) {
@@ -407,32 +364,32 @@ int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
             cursor = func_00218970_b(cursor, (struct DotrTikeiItem *)&q, 0, 0);
         }
     } else {
-        if (DOTR_SINEMA_STATE == 1) {
-            if (DOTR_SINEMA_MODE == 0) {
-                if (DOTR_SINEMA_CUT0 < 255) {
-                    DOTR_SINEMA_CUT0 += 32;
-                    if (DOTR_SINEMA_CUT0 >= 255) {
-                        DOTR_SINEMA_CUT0 = 255;
-                        DOTR_SINEMA_MODE = 1;
-                        DOTR_SINEMA_STATE = 0;
+        if (campaignWork.cinemaState == 1) {
+            if (campaignWork.cinemaMode == 0) {
+                if (campaignWork.cinemaCut[0] < 255) {
+                    campaignWork.cinemaCut[0] += 32;
+                    if (campaignWork.cinemaCut[0] >= 255) {
+                        campaignWork.cinemaCut[0] = 255;
+                        campaignWork.cinemaMode = 1;
+                        campaignWork.cinemaState = 0;
                     }
                 } else {
-                    DOTR_SINEMA_MODE = 1;
-                    DOTR_SINEMA_CUT0 = 255;
-                    DOTR_SINEMA_STATE = 0;
+                    campaignWork.cinemaMode = 1;
+                    campaignWork.cinemaCut[0] = 255;
+                    campaignWork.cinemaState = 0;
                 }
             } else {
-                if (0 < DOTR_SINEMA_CUT0) {
-                    DOTR_SINEMA_CUT0 -= 32;
-                    if (DOTR_SINEMA_CUT0 <= 0) {
-                        DOTR_SINEMA_CUT0 = 0;
-                        DOTR_SINEMA_MODE = 0;
-                        DOTR_SINEMA_STATE = 0;
+                if (0 < campaignWork.cinemaCut[0]) {
+                    campaignWork.cinemaCut[0] -= 32;
+                    if (campaignWork.cinemaCut[0] <= 0) {
+                        campaignWork.cinemaCut[0] = 0;
+                        campaignWork.cinemaMode = 0;
+                        campaignWork.cinemaState = 0;
                     }
                 } else {
-                    DOTR_SINEMA_MODE = 0;
-                    DOTR_SINEMA_CUT0 = 0;
-                    DOTR_SINEMA_STATE = 0;
+                    campaignWork.cinemaMode = 0;
+                    campaignWork.cinemaCut[0] = 0;
+                    campaignWork.cinemaState = 0;
                 }
             }
         }
@@ -440,19 +397,12 @@ int Taku_Camp_SINEMA_CUT(int cursor, unsigned short fade)
             for (j = 0; j < 8; j++) {
                 q.w[j] = cinemaBlackBars[i].w[j];
             }
-            q.col[3] = q.col[7] = q.col[11] = q.col[15] = b->cut0;
+            q.col[3] = q.col[7] = q.col[11] = q.col[15] = b->cinemaCut[0];
             cursor = func_00218970_b(cursor, (struct DotrTikeiItem *)&q, 0, 0);
         }
     }
     return cursor;
 }
-#undef DOTR_SINEMA_BLOCK
-#undef DOTR_SINEMA_MODE
-#undef DOTR_SINEMA_STATE
-#undef DOTR_SINEMA_CUT0
-#undef DOTR_SINEMA_CUT1
-#undef DOTR_SINEMA_CUT2
-#undef DOTR_SINEMA_HOLD
 #undef DOTR_SINEMA_C0
 #undef DOTR_SINEMA_C1
 #undef DOTR_SINEMA_C2
@@ -496,11 +446,6 @@ extern struct DotrStWindowItem campaignCardItems[]; /* original: camp_card */
 extern struct DotrStWindowItem campaignWindowItems[]; /* original: camp_window_data */
 extern char D_0030F0F7[];
 extern char D_0030F0FC[];
-#define DOTR_ST_WINDOW_BASE 0x1ed0000
-struct DotrStWindowBank {
-    char unknown_000[0x226];
-    short depth;                
-};
 extern int Taku_Window_Set_window(int cursor, struct DotrStWindowWindow *window, unsigned short flag, int a3,
                            unsigned short x, unsigned short a5, int a6, int a7, int a8);
 extern int Taku_Obj_Set_b(int cursor, struct DotrStWindowItem *item, short x, short y);
@@ -513,18 +458,12 @@ extern int SzDuel_DrawWindow_FontDigit_Pipe_b(int cursor, int x, int y, int a, i
                                             int value);
 extern int SzDuel_DrawWindow_Font_Pipe_b(int cursor, int x, int y, int a, int flags, int n,
                                        const char *text, int c);
-#define ST_MODE (*(signed char *)(DOTR_ST_WINDOW_BASE + 0x18c))
-#define ST_SLIDE (*(short *)(DOTR_ST_WINDOW_BASE + 0x70))
-#define ST_OPEN (*(short *)(DOTR_ST_WINDOW_BASE + 0x6c))
-#define ST_LOC11 (*(signed char *)(DOTR_ST_WINDOW_BASE + 0x53c2))
-#define ST_DEPTH (*(short *)(DOTR_ST_WINDOW_BASE + 0x226))
-#define ST_COST (*(short *)(DOTR_ST_WINDOW_BASE + 0x5442))
 
 /* Draws the campaign status window. */
 int Taku_Camp_ST_WINDOW(int cursor)
 {
     struct DotrStWindowBoard *w;
-    struct DotrStWindowBank *g;
+    CampaignWork *g;
     unsigned char col[4];
     short y;
     int t;
@@ -545,13 +484,13 @@ int Taku_Camp_ST_WINDOW(int cursor)
     float sy;
 
     w = &D_00299E10_b;
-    y = 128 - (ST_SLIDE * 128 >> 8);
+    y = 128 - (campaignWork.iconSlide * 128 >> 8);
     col[0] = col[1] = col[2] = 128;
     col[3] = 128;
-    g = (struct DotrStWindowBank *)DOTR_ST_WINDOW_BASE;
-    if (ST_MODE) {
+    g = &campaignWork; /* windowAlpha[1] is read through this pointer, as in the original */
+    if (campaignWork.unk018C) {
         if (w->kind == 11) {
-            if (ST_LOC11 < 2) { t = 1; } else { t = 0; }
+            if (campaignWork.duelMenuChoice < 2) { t = 1; } else { t = 0; }
         } else if (campaignPlaces[w->kind].kind == 8) {
             t = 0;
         } else {
@@ -560,28 +499,28 @@ int Taku_Camp_ST_WINDOW(int cursor)
         if (w->mode == (signed char)t) {
             cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
             for (i = 0; i < 3; i++) {
-                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode + 10, 0, 0, y, 0, 128, g->depth);
+                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode + 10, 0, 0, y, 0, 128, g->windowAlpha[1]);
             }
-            if (ST_OPEN == 256) {
+            if (campaignWork.windowOpen == 256) {
                 w->mode ^= 1;
             }
         } else {
             cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
             for (i = 0; i < 3; i++) {
-                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->depth);
+                cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->windowAlpha[1]);
             }
         }
     } else {
         cursor = Taku_Obj_Set_b(cursor, &roseSprites[w->mode], 0, y);
         for (i = 0; i < 3; i++) {
-            cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->depth);
+            cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[i], w->mode, 0, 0, y, 0, 128, g->windowAlpha[1]);
         }
     }
-    cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[16], w->mode, 0, 0, y, 0, 128, ST_DEPTH);
+    cursor = Taku_Window_Set_window(cursor, &campaignPlayerWindow[16], w->mode, 0, 0, y, 0, 128, campaignWork.windowAlpha[1]);
     deck = SzData_GetCurrentDeck(0);
     cursor = Taku_Obj_Set_b(cursor, &campaignDeckSprites[deck], 0, y);
     cost = SzData_GetDeckCost(0, deck);
-    ST_COST = cost;
+    campaignWork.playerDeckCost = cost;
     leader = SzData_GetLeader(0, deck);
     rank = SzData_GetRank_b(0, leader);
     if (rank != 0) {
@@ -688,18 +627,11 @@ int Taku_Camp_ST_WINDOW(int cursor)
     SzMsg_Free(1);
     return cursor;
 }
-#undef DOTR_ST_WINDOW_BASE
-#undef ST_MODE
-#undef ST_SLIDE
-#undef ST_OPEN
-#undef ST_LOC11
-#undef ST_DEPTH
-#undef ST_COST
 
 /* Draws the campaign's system icons. */
 void *Taku_Camp_SYS_ICON(void *packet) {
     s16 coords[19];
-    u8 *state;
+    CampaignWork *state;
     s64 alpha;
     s32 i;
     s16 *row;
@@ -715,13 +647,13 @@ void *Taku_Camp_SYS_ICON(void *packet) {
     extern void *Taku_Obj_Set();
     extern void *SzDuel_DrawWindow_Font_Pipe();
 
-    alpha = (s16)(0x80 - ((*(s16 *)0x01ED0070 << 7) >> 8));
-    state = (u8 *)0x01ED0000;
+    alpha = (s16)(0x80 - ((campaignWork.iconSlide << 7) >> 8));
+    state = &campaignWork;
     packet = Taku_G4_Set(packet, D_002982F8, 0, alpha);
     row = campaignSystemIcons;
     y = (s16)alpha + 0x14F;
     i = 0;
-    fade = state;
+    fade = state; /* fade + 0x82 walks iconGrow[i], 2 bytes per icon */
     do {
         dst = coords;
         count = 19;
@@ -732,7 +664,7 @@ void *Taku_Camp_SYS_ICON(void *packet) {
             src++;
             dst++;
         } while (count > 0);
-        if (i == *(s16 *)(state + 0x80) && *(s8 *)(state + 0x7E) != 0) {
+        if (i == state->iconUnderCursor && state->unk007E != 0) {
             *(s16 *)(fade + 0x82) += 4;
             if (*(s16 *)(fade + 0x82) >= 16) {
                 *(s16 *)(fade + 0x82) = 16;
@@ -750,8 +682,8 @@ void *Taku_Camp_SYS_ICON(void *packet) {
             }
         }
         packet = Taku_Obj_Set(packet, coords, 0, alpha);
-        mode = *(s8 *)(state + 0x7E);
-        if (mode == 1 && i == *(s16 *)(state + 0x80) && mode != 0) {
+        mode = state->unk007E;
+        if (mode == 1 && i == state->iconUnderCursor && mode != 0) {
             if (i == 0) {
                 text = D_0030F102;
                 length = 4;
@@ -771,12 +703,12 @@ void *Taku_Camp_SYS_ICON(void *packet) {
         row += 19;
         fade += 2;
     } while (i < 4);
-    if (*(s8 *)0x01ED007E == 0) {
+    if (campaignWork.unk007E == 0) {
         packet = Taku_Obj_Set(packet, campaignButtonIcons, 0, alpha);
     } else {
         packet = Taku_Obj_Set(packet, D_00298B76, 0, alpha);
     }
-    if (*(s8 *)0x01ED007E == 0) {
+    if (campaignWork.unk007E == 0) {
         packet = SzDuel_DrawWindow_Font_Pipe(packet, 0x232, y, 1, 1, 6, D_0030F118, 0);
     }
     return packet;

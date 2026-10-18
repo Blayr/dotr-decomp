@@ -134,7 +134,7 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     }
     RhGeom_GetRotXYZMatrix(&matrix, &rotation);
     RhGeom_PushMatrix((s32)&matrix);
-    RhGeom_MulMatrixVectorArray((void *)0x70000000, 0, &corners, 8);
+    RhGeom_MulMatrixVectorArray((void *)SCRATCHPAD_ADDR, 0, &corners, 8);
     RhGeom_PopMatrix();
     ((Tag_001E4570 *)sprite.tag)->flags = 0x24;
     ((Tag_001E4570 *)sprite.tag)->count = 9;
@@ -164,14 +164,14 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     ((UV_001E4570 *)&sprite.corners[2].uv)->v = (first->bottom << 4) - dv;
     ((UV_001E4570 *)&sprite.corners[3].uv)->u = (first->right << 4) - du;
     ((UV_001E4570 *)&sprite.corners[3].uv)->v = (first->bottom << 4) - dv;
-    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[0]);
-    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[1]);
-    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[4]);
-    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[5]);
-    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[8]);
-    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[9]);
-    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[12]);
-    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[13]);
+    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[0]);
+    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[1]);
+    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[4]);
+    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[5]);
+    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[8]);
+    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[9]);
+    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[12]);
+    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[13]);
     packet = ExSortPrim_Pipe(packet, (s32)&sprite, 0, 0);
     ExAssignTexture(&sprite, state->textures[second->texture], 0);
     ((UV_001E4570 *)&sprite.corners[0].uv)->u = (second->left << 4) + du;
@@ -182,14 +182,14 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     ((UV_001E4570 *)&sprite.corners[2].uv)->v = (second->bottom << 4) - dv;
     ((UV_001E4570 *)&sprite.corners[3].uv)->u = (second->right << 4) - du;
     ((UV_001E4570 *)&sprite.corners[3].uv)->v = (second->bottom << 4) - dv;
-    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[16]);
-    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[17]);
-    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[20]);
-    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[21]);
-    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[24]);
-    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[25]);
-    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)0x70000000)[28]);
-    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)0x70000000)[29]);
+    sprite.corners[0].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[16]);
+    sprite.corners[0].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[17]);
+    sprite.corners[1].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[20]);
+    sprite.corners[1].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[21]);
+    sprite.corners[2].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[24]);
+    sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[25]);
+    sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[28]);
+    sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[29]);
     ExSortPrim_Pipe(packet, (s32)&sprite, 0, 0);
 }
 
@@ -1288,7 +1288,7 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 model, s32 arg2, f32 fparg0, f32 fpar
 
         opacityScale = (func_001F27A0(model) << 6) >> 7;
         scale = fparg1 / 800.0f;
-        scratchpad = (u8 *)0x70000000;
+        scratchpad = (u8 *)SCRATCHPAD_ADDR;
         width = 320.0f * scale;
         height = 224.0f * scale;
         scratch = (Vertex_001E6F90 *)(0x2000 + scratchpad);

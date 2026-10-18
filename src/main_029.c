@@ -2,7 +2,7 @@
 
 /* Sets the IPU to MPEG-1 or MPEG-2 (`mpeg1`). */
 void _ipuSetMPEG1(s32 mpeg1) {
-    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFF7FFFFF) | (mpeg1 << 0x17);
+    *(s32 *)IPU_CTRL_ADDR = (*(s32 *)IPU_CTRL_ADDR & 0xFF7FFFFF) | (mpeg1 << 0x17);
 }
 
 typedef struct MpegCb_0018A3A0 {
@@ -26,14 +26,14 @@ s32 _waitBdecOut(void *d) {
 
     ok = 1;
     func_0018B580(d);
-    while (*(volatile s32 *)0x1000B020 != 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
-        if (*(volatile s32 *)0x1000B420 == 0 && !(*(volatile s32 *)0x1000B400 & 0x100)) {
+    while (*(volatile s32 *)D3_QWC_ADDR != 0 && !(*(volatile s32 *)IPU_CTRL_ADDR & 0x4000)) {
+        if (*(volatile s32 *)D4_QWC_ADDR == 0 && !(*(volatile s32 *)D4_CHCR_ADDR & 0x100)) {
             cb.type = 1;
             _dispatchMpegCallback(*(s32 *)((u8 *)d + 0x858), &cb);
         }
     }
-    bp = *(volatile s32 *)0x10002020;
-    top = *(s64 *)0x10002030;
+    bp = *(volatile s32 *)IPU_BP_ADDR;
+    top = *(s64 *)IPU_TOP_ADDR;
     *(s32 *)((u8 *)d + 0x838) = top;
     if (top < 0) {
         if (bp & 0x1F) {
@@ -45,7 +45,7 @@ s32 _waitBdecOut(void *d) {
         n = 0x20;
     }
     *(s32 *)((u8 *)d + 0x83C) = n;
-    if (*(volatile s32 *)0x10002010 & 0x4000) {
+    if (*(volatile s32 *)IPU_CTRL_ADDR & 0x4000) {
         /* Both arms are the same: GCC merges them after register allocation; written twice, d gets the
            saved register the original gives it (found by decomp-permuter). */
         if (top) {
@@ -53,29 +53,29 @@ s32 _waitBdecOut(void *d) {
             ok = 0;
             cb2.type = 2;
             _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
-            *(volatile s32 *)0x10002010 = 0x40000000;
+            *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
             cb2.type = 3;
             _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             func_001843E0();
-            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-            *(volatile s32 *)0x1000B000 = 0;
-            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+            *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+            *(volatile s32 *)D3_CHCR_ADDR = 0;
+            *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
             func_00184428();
-            *(volatile s32 *)0x1000B020 = 0;
+            *(volatile s32 *)D3_QWC_ADDR = 0;
         } else {
             _Error((s32)d, D_002BC748);
             ok = 0;
             cb2.type = 2;
             _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
-            *(volatile s32 *)0x10002010 = 0x40000000;
+            *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
             cb2.type = 3;
             _dispatchMpegCallback((s32)*(void **)((u8 *)d + 0x858), &cb2);
             func_001843E0();
-            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 | 0x10000;
-            *(volatile s32 *)0x1000B000 = 0;
-            *(volatile s32 *)0x1000F590 = *(volatile s32 *)0x1000F520 & 0xFFFEFFFF;
+            *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR | 0x10000;
+            *(volatile s32 *)D3_CHCR_ADDR = 0;
+            *(volatile s32 *)D_ENABLEW_ADDR = *(volatile s32 *)D_ENABLER_ADDR & 0xFFFEFFFF;
             func_00184428();
-            *(volatile s32 *)0x1000B020 = 0;
+            *(volatile s32 *)D3_QWC_ADDR = 0;
         }
     }
     return ok;
@@ -166,7 +166,7 @@ s32 _pictureData0(void *d) {
     if (_waitBdecOut(d) == 0) {
         ret = 2;
     }
-    while ((*(volatile u32 *)0x1000D400 >> 8) & 1) {
+    while ((*(volatile u32 *)D9_CHCR_ADDR >> 8) & 1) {
     }
     if (ret == 0) {
         func_001893A8(d, (*(s32 *)((u8 *)d + 0x810)) == 0);
@@ -321,7 +321,7 @@ s32 _decMB0(void *dIn, s32 *arg1, s32 *arg2, s32 *arg3, void *arg4, s32 *arg5, s
 
     d = dIn;
     PMV = arg4;
-    *(volatile s32 *)0x10002010 = (*(volatile s32 *)0x10002010 & 0xF8FFFFFF) | (*(s32 *)(d + 0x150) << 24);
+    *(volatile s32 *)IPU_CTRL_ADDR = (*(volatile s32 *)IPU_CTRL_ADDR & 0xF8FFFFFF) | (*(s32 *)(d + 0x150) << 24);
     t = func_0018B6D8((s32)d, 1);
     *arg1 = t;
     if (t == 0) {
@@ -478,7 +478,7 @@ void func_0018B400(s32 arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4, s32 arg5,
 s32 func_0018B550(void *arg0, s32 arg1) {
     s32 temp_v0;
 
-    *(volatile s32 *)0x10002000 = arg1;
+    *(volatile s32 *)IPU_CMD_ADDR = arg1;
     temp_v0 = (&D_0028DA50)[((u32) arg1 >> 0x1C)];
     (*(s32 *)((u8 *)arg0 + 0x818)) = temp_v0;
     return temp_v0;
@@ -489,7 +489,7 @@ void func_0018B580(void *arg0) {
     s32 n;
 
     n = 0;
-    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+    while ((*(volatile s32 *)IPU_CTRL_ADDR & 0x80004000) == 0x80000000) {
         if (n++ > 5000) {
             _dispatchMpegCbNodata((*(s32 *)((u8 *)arg0 + 0x858)));
             n = 0;
@@ -503,7 +503,7 @@ s64 func_0018B628(void *arg0) {
     s64 r;
 
     i = 0;
-    while ((r = *(volatile s64 *)0x10002000) < 0 && !(*(volatile s32 *)0x10002010 & 0x4000)) {
+    while ((r = *(volatile s64 *)IPU_CMD_ADDR) < 0 && !(*(volatile s32 *)IPU_CTRL_ADDR & 0x4000)) {
         if (i++ > 5000) {
             _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
             i = 0;
@@ -523,25 +523,25 @@ s32 func_0018B6D8(s32 arg0, s32 arg1) {
 
     n = 0;
     m = 0;
-    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+    while ((*(volatile s32 *)IPU_CTRL_ADDR & 0x80004000) == 0x80000000) {
         if (m++ > 5000) {
             _dispatchMpegCbNodata(*(s32 *)(arg0 + 0x858));
             m = 0;
         }
     }
     cmd = (arg1 << 26) | 0x30000000;
-    *(volatile s32 *)0x10002000 = cmd;
+    *(volatile s32 *)IPU_CMD_ADDR = cmd;
     *(s32 *)(arg0 + 0x818) = (&D_0028DA50)[cmd >> 28];
-    r = *(volatile s64 *)0x10002000;
+    r = *(volatile s64 *)IPU_CMD_ADDR;
     while (r < 0) {
         if (n++ > 5000) {
             _dispatchMpegCbNodata(*(s32 *)(arg0 + 0x858));
             n = 0;
         }
-        r = *(volatile s64 *)0x10002000;
+        r = *(volatile s64 *)IPU_CMD_ADDR;
     }
-    bp = *(volatile s32 *)0x10002020;
-    top = *(s64 *)0x10002030;
+    bp = *(volatile s32 *)IPU_BP_ADDR;
+    top = *(s64 *)IPU_TOP_ADDR;
     *(s32 *)(arg0 + 0x838) = top;
     if (top < 0) {
         *(s32 *)(arg0 + 0x83C) = -(bp & 0x1F) & 0x1F;
@@ -559,13 +559,13 @@ s32 func_0018B850(void *arg0, s32 arg1) {
 
     if (*(s32 *)((u8 *)arg0 + 0x818) != 0 || *(s32 *)((u8 *)arg0 + 0x83C) < arg1) {
         i = 0;
-        while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+        while ((*(volatile s32 *)IPU_CTRL_ADDR & 0x80004000) == 0x80000000) {
             if (i++ > 5000) {
                 _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
                 i = 0;
             }
         }
-        *(volatile s32 *)0x10002000 = 0x40000000;
+        *(volatile s32 *)IPU_CMD_ADDR = 0x40000000;
         tbl = &D_0028DA50;
         *(s32 *)((u8 *)arg0 + 0x818) = tbl[4];
         *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
@@ -579,14 +579,14 @@ void func_0018B958(void *arg0, s32 arg1) {
     s32 i;
     s32 cmd;
     i = 0;
-    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+    while ((*(volatile s32 *)IPU_CTRL_ADDR & 0x80004000) == 0x80000000) {
         if (i++ > 5000) {
             _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
             i = 0;
         }
     }
     cmd = arg1 | 0x40000000;
-    *(volatile u32 *)0x10002000 = cmd;
+    *(volatile u32 *)IPU_CMD_ADDR = cmd;
     *(s32 *)((u8 *)arg0 + 0x818) = (&D_0028DA50)[(u32)cmd >> 28];
 
     *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
@@ -602,14 +602,14 @@ s32 func_0018BA48(void *arg0, s32 arg1) {
     u32 v;
 
     i = 0;
-    while ((*(volatile s32 *)0x10002010 & 0x80004000) == 0x80000000) {
+    while ((*(volatile s32 *)IPU_CTRL_ADDR & 0x80004000) == 0x80000000) {
         if (i++ > 5000) {
             _dispatchMpegCbNodata(*(s32 *)((u8 *)arg0 + 0x858));
             i = 0;
         }
     }
     if (*(s32 *)((u8 *)arg0 + 0x818) != 0 || *(s32 *)((u8 *)arg0 + 0x83C) < arg1) {
-        *(volatile s32 *)0x10002000 = 0x40000000;
+        *(volatile s32 *)IPU_CMD_ADDR = 0x40000000;
         tbl = &D_0028DA50;
         *(s32 *)((u8 *)arg0 + 0x818) = tbl[4];
         *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
@@ -617,7 +617,7 @@ s32 func_0018BA48(void *arg0, s32 arg1) {
     cmd = arg1 | 0x40000000;
     v = *(u32 *)((u8 *)arg0 + 0x838) >> (0x20 - arg1);
     *(s32 *)((u8 *)arg0 + 0x83C) = 0x20;
-    *(volatile u32 *)0x10002000 = cmd;
+    *(volatile u32 *)IPU_CMD_ADDR = cmd;
     *(s32 *)((u8 *)arg0 + 0x818) = (&D_0028DA50)[(u32)cmd >> 28];
     *(s32 *)((u8 *)arg0 + 0x838) = func_0018B628(arg0);
     return v;
@@ -628,7 +628,7 @@ void func_0018BB98(void *arg0) {
     s32 n;
 
     func_0018B580(arg0);
-    n = -(*(volatile s32 *)0x10002020 & 7) & 7;
+    n = -(*(volatile s32 *)IPU_BP_ADDR & 7) & 7;
     if (n != 0) {
         func_0018B958(arg0, n);
     }
@@ -741,7 +741,7 @@ void func_0018BF80(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x168)) = func_0018BA48(arg0, 4);
     (*(s32 *)((u8 *)arg0 + 0x16C)) = func_0018BA48(arg0, 4);
     (*(s32 *)((u8 *)arg0 + 0x170)) = func_0018BA48(arg0, 4);
-    *(s32 *)0x10002010 = (*(s32 *)0x10002010 & 0xFFFCFFFF) | (func_0018BA48(arg0, 2) << 0x10);
+    *(s32 *)IPU_CTRL_ADDR = (*(s32 *)IPU_CTRL_ADDR & 0xFFFCFFFF) | (func_0018BA48(arg0, 2) << 0x10);
     temp_v0 = func_0018BA48(arg0, 2);
     (*(s32 *)((u8 *)arg0 + 0x174)) = temp_v0;
     if ((*(s32 *)((u8 *)arg0 + 0xD4)) == 0) {
@@ -750,9 +750,9 @@ void func_0018BF80(void *arg0) {
     (*(s32 *)((u8 *)arg0 + 0x178)) = func_0018BA48(arg0, 1);
     (*(s32 *)((u8 *)arg0 + 0x17C)) = func_0018BA48(arg0, 1);
     (*(s32 *)((u8 *)arg0 + 0x180)) = func_0018BA48(arg0, 1);
-    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFBFFFFF) | (func_0018BA48(arg0, 1) << 0x16));
-    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFDFFFFF) | (func_0018BA48(arg0, 1) << 0x15));
-    *(volatile s32 *)0x10002010 = (s32) ((*(volatile s32 *)0x10002010 & 0xFFEFFFFF) | (func_0018BA48(arg0, 1) << 0x14));
+    *(volatile s32 *)IPU_CTRL_ADDR = (s32) ((*(volatile s32 *)IPU_CTRL_ADDR & 0xFFBFFFFF) | (func_0018BA48(arg0, 1) << 0x16));
+    *(volatile s32 *)IPU_CTRL_ADDR = (s32) ((*(volatile s32 *)IPU_CTRL_ADDR & 0xFFDFFFFF) | (func_0018BA48(arg0, 1) << 0x15));
+    *(volatile s32 *)IPU_CTRL_ADDR = (s32) ((*(volatile s32 *)IPU_CTRL_ADDR & 0xFFEFFFFF) | (func_0018BA48(arg0, 1) << 0x14));
     (*(s32 *)((u8 *)arg0 + 0x184)) = func_0018BA48(arg0, 1);
     func_0018BA48(arg0, 1);
     (*(s32 *)((u8 *)arg0 + 0x188)) = func_0018BA48(arg0, 1);
@@ -1183,22 +1183,22 @@ void func_0018C9D8(void *arg0, s32 *s) {
         p = dst;
         for (j = 0; j < s[3]; j++) {
             func_001843E0();
-            *(volatile s32 *)0x1000D480 = 0;
-            *(volatile s32 *)0x1000D410 = src;
-            *(volatile s32 *)0x1000D420 = qwc;
-            *(volatile s32 *)0x1000D400 = 0x101;
+            *(volatile s32 *)D9_SADR_ADDR = 0;
+            *(volatile s32 *)D9_MADR_ADDR = src;
+            *(volatile s32 *)D9_QWC_ADDR = qwc;
+            *(volatile s32 *)D9_CHCR_ADDR = 0x101;
             func_00184428();
-            while (*(volatile s32 *)0x1000D400 & 0x100) {
+            while (*(volatile s32 *)D9_CHCR_ADDR & 0x100) {
             }
             func_001843E0();
-            *(volatile s32 *)0x1000D080 = 0;
-            *(volatile s32 *)0x1000D010 = p;
-            *(volatile s32 *)0x1000D020 = qwc;
-            *(volatile s32 *)0x1000D000 = 0x100;
+            *(volatile s32 *)D8_SADR_ADDR = 0;
+            *(volatile s32 *)D8_MADR_ADDR = p;
+            *(volatile s32 *)D8_QWC_ADDR = qwc;
+            *(volatile s32 *)D8_CHCR_ADDR = 0x100;
             func_00184428();
-            while (*(volatile s32 *)0x1000D000 & 0x100) {
+            while (*(volatile s32 *)D8_CHCR_ADDR & 0x100) {
             }
-            while (*(volatile s32 *)0x1000D020 != 0) {
+            while (*(volatile s32 *)D8_QWC_ADDR != 0) {
             }
             p += inc_dst;
             src += inc_src;
@@ -1414,19 +1414,19 @@ void func_0018D0C8(void *arg0) {
     }
     func_001843E0();
     __asm__ volatile("sync");
-    *(volatile s32 *)0x1000D480 = d->bufs[d->cur].spr;
-    *(volatile s32 *)0x1000D430 = (s32)&D_00315300;
-    *(volatile s32 *)0x1000D420 = 0;
-    *(volatile s32 *)0x1000D400 = 0x105;
+    *(volatile s32 *)D9_SADR_ADDR = d->bufs[d->cur].spr;
+    *(volatile s32 *)D9_TADR_ADDR = (s32)&D_00315300;
+    *(volatile s32 *)D9_QWC_ADDR = 0;
+    *(volatile s32 *)D9_CHCR_ADDR = 0x105;
     func_00184428();
 }
 
 /* Starts a DMA of `arg1` bytes from `arg0` into the IPU. */
 void func_0018D220(s32 arg0, s32 arg1) {
     func_001843E0();
-    *(volatile s32 *)0x1000B010 = (arg0 & 0x0FFFFFFF) | 0x80000000;
-    *(volatile s32 *)0x1000B020 = arg1 >> 4;
-    *(volatile s32 *)0x1000B000 = 0x100;
+    *(volatile s32 *)D3_MADR_ADDR = (arg0 & 0x0FFFFFFF) | 0x80000000;
+    *(volatile s32 *)D3_QWC_ADDR = arg1 >> 4;
+    *(volatile s32 *)D3_CHCR_ADDR = 0x100;
     func_00184428();
 }
 
@@ -1435,21 +1435,21 @@ void func_0018D290(void *arg0, s32 arg1, s32 arg2) {
     s32 sp0[8];
     do {
 
-    } while (*(volatile s32 *)0x10002010 < 0);
+    } while (*(volatile s32 *)IPU_CTRL_ADDR < 0);
     func_001843E0();
-    *(volatile s32 *)0x1000B010 = arg1 & 0x0FFFFFFF;
-    *(volatile s32 *)0x1000B020 = arg2 << 6;
-    *(volatile u32 *)0x1000B000 = 0x100;
+    *(volatile s32 *)D3_MADR_ADDR = arg1 & 0x0FFFFFFF;
+    *(volatile s32 *)D3_QWC_ADDR = arg2 << 6;
+    *(volatile u32 *)D3_CHCR_ADDR = 0x100;
     func_00184428();
     func_0018B550(arg0, arg2 | 0x70000000);
     sp0[0] = 4;
     _dispatchMpegCallback((*(s32 *)((u8 *)arg0 + 0x858)), sp0);
     do {
 
-    } while (((u32) *(volatile s32 *)0x1000B000 >> 8) & 1);
+    } while (((u32) *(volatile s32 *)D3_CHCR_ADDR >> 8) & 1);
     do {
 
-    } while (*(volatile s32 *)0x10002010 < 0);
+    } while (*(volatile s32 *)IPU_CTRL_ADDR < 0);
 }
 
 typedef struct {
@@ -1464,28 +1464,28 @@ typedef struct {
 s32 func_0018D3A8(s32 ch, void *arg) {
     IpuDmaState *st = arg;
 
-    *(volatile u32 *)0x1000E010 = 8;
+    *(volatile u32 *)D_STAT_ADDR = 8;
     st->count++;
-    if (*(volatile u32 *)0x1000B020 != 0 || (*(volatile u32 *)0x1000B000 & 0x100)) {
+    if (*(volatile u32 *)D3_QWC_ADDR != 0 || (*(volatile u32 *)D3_CHCR_ADDR & 0x100)) {
         st->done = 1;
         return 0;
     }
     if (st->count < st->n - 1) {
         func_001843E0();
-        *(volatile u32 *)0x1000B010 = st->addr;
-        *(volatile u32 *)0x1000B020 = 0xFFC0;
-        *(volatile u32 *)0x1000B000 = 0x100;
+        *(volatile u32 *)D3_MADR_ADDR = st->addr;
+        *(volatile u32 *)D3_QWC_ADDR = 0xFFC0;
+        *(volatile u32 *)D3_CHCR_ADDR = 0x100;
         func_00184428();
-        *(volatile u32 *)0x10002000 = 0x700003FF;
+        *(volatile u32 *)IPU_CMD_ADDR = 0x700003FF;
         st->addr = (st->addr + 0xFFC00) & 0x0FFFFFFF;
     } else if (st->count == st->n - 1) {
         st->remain -= st->count * 1023;
         func_001843E0();
-        *(volatile u32 *)0x1000B010 = st->addr;
-        *(volatile u32 *)0x1000B020 = st->remain << 6;
-        *(volatile u32 *)0x1000B000 = 0x100;
+        *(volatile u32 *)D3_MADR_ADDR = st->addr;
+        *(volatile u32 *)D3_QWC_ADDR = st->remain << 6;
+        *(volatile u32 *)D3_CHCR_ADDR = 0x100;
         func_00184428();
-        *(volatile u32 *)0x10002000 = st->remain | 0x70000000;
+        *(volatile u32 *)IPU_CMD_ADDR = st->remain | 0x70000000;
     }
     __asm__ volatile("sync");
     __asm__ volatile("ei");
@@ -1513,18 +1513,18 @@ void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
     st.count = 0;
     st.addr = (arg1 + 0xFFC00) & 0x0FFFFFFF;
     st.remain = arg2;
-    while (*(volatile s32 *)0x10002010 < 0) {
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {
     }
     hid = AddDmacHandler2(3, func_0018D3A8, 0, (u32 *)&st);
-    *(volatile u32 *)0x1000E010 = 8;
+    *(volatile u32 *)D_STAT_ADDR = 8;
     func_0017C4F8(3);
     do {
         func_001843E0();
-        *(volatile u32 *)0x1000B010 = arg1 & 0x0FFFFFFF;
-        *(volatile u32 *)0x1000B020 = 0xFFC0;
-        *(volatile u32 *)0x1000B000 = 0x100;
+        *(volatile u32 *)D3_MADR_ADDR = arg1 & 0x0FFFFFFF;
+        *(volatile u32 *)D3_QWC_ADDR = 0xFFC0;
+        *(volatile u32 *)D3_CHCR_ADDR = 0x100;
         func_00184428();
-        *(volatile u32 *)0x10002000 = 0x700003FF;
+        *(volatile u32 *)IPU_CMD_ADDR = 0x700003FF;
     } while (0);
     sp0[0] = 4;
     _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), sp0);
@@ -1533,7 +1533,7 @@ void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
     if (st.done != 0) {
         _Error((s32)arg0, &D_002BC970);
     }
-    while (*(volatile s32 *)0x10002010 < 0) {
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {
     }
     func_0017C490(3);
     RemoveDmacHandler(3, hid);
@@ -1543,24 +1543,24 @@ void func_0018D520(void *arg0, s32 arg1, s32 arg2) {
 s32 func_0018D6D0(s32 arg0, void *arg1) {
     u32 temp_v0;
 
-    *(volatile s32 *)0x1000E010 = 0x10;
+    *(volatile s32 *)D_STAT_ADDR = 0x10;
     temp_v0 = (*(u32 *)arg1);
     if (temp_v0 == 0) {
         return 1;
     }
     if (temp_v0 > 0xFFFFU) {
         func_001843E0();
-        *(volatile s32 *)0x1000B410 = (*(s32 *)((u8 *)arg1 + 4));
-        *(volatile u32 *)0x1000B420 = 0xFFFF;
-        *(volatile s32 *)0x1000B400 = 0x101;
+        *(volatile s32 *)D4_MADR_ADDR = (*(s32 *)((u8 *)arg1 + 4));
+        *(volatile u32 *)D4_QWC_ADDR = 0xFFFF;
+        *(volatile s32 *)D4_CHCR_ADDR = 0x101;
         func_00184428();
         (*(u32 *)arg1) = (u32) ((*(u32 *)arg1) - 0xFFFF);
         (*(s32 *)((u8 *)arg1 + 4)) = (s32) (((*(s32 *)((u8 *)arg1 + 4)) + 0xFFFF0) & 0x0FFFFFFF);
     } else {
         func_001843E0();
-        *(volatile s32 *)0x1000B410 = (s32) (*(s32 *)((u8 *)arg1 + 4));
-        *(volatile s32 *)0x1000B420 = (u32) (*(u32 *)arg1);
-        *(volatile s32 *)0x1000B400 = 0x101;
+        *(volatile s32 *)D4_MADR_ADDR = (s32) (*(s32 *)((u8 *)arg1 + 4));
+        *(volatile s32 *)D4_QWC_ADDR = (u32) (*(u32 *)arg1);
+        *(volatile s32 *)D4_CHCR_ADDR = 0x101;
         func_00184428();
         (*(u32 *)arg1) = 0U;
     }
@@ -1586,26 +1586,26 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
     mbs = arg1[3] * arg1[4];
     cb.type = 2;
     _dispatchMpegCallback(*(s32 *)((u8 *)arg0 + 0x858), &cb);
-    if (*(volatile s32 *)0x10002010 & 0x4000) {
-        *(volatile s32 *)0x10002010 = 0x40000000;
+    if (*(volatile s32 *)IPU_CTRL_ADDR & 0x4000) {
+        *(volatile s32 *)IPU_CTRL_ADDR = 0x40000000;
     }
     small = mbs < 0x400;
-    while (*(volatile s32 *)0x10002010 < 0) {
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {
     }
     func_0018B550(arg0, 0);
     addr = arg1[0];
-    while (*(volatile s32 *)0x10002010 < 0) {
+    while (*(volatile s32 *)IPU_CTRL_ADDR < 0) {
     }
     cb.qwc = mbs * 0x18;
     cb.addr = addr & 0x0FFFFFFF;
     if (cb.qwc > 0xFFFF) {
         hid = AddDmacHandler2(4, func_0018D6D0, 0, &cb.qwc);
-        *(volatile s32 *)0x1000E010 = 0x10;
+        *(volatile s32 *)D_STAT_ADDR = 0x10;
         func_0017C4F8(4);
         func_001843E0();
-        *(volatile u32 *)0x1000B410 = cb.addr;
-        *(volatile u32 *)0x1000B420 = 0xFFFF;
-        *(volatile u32 *)0x1000B400 = 0x101;
+        *(volatile u32 *)D4_MADR_ADDR = cb.addr;
+        *(volatile u32 *)D4_QWC_ADDR = 0xFFFF;
+        *(volatile u32 *)D4_CHCR_ADDR = 0x101;
         func_00184428();
         cb.addr = (cb.addr + 0xFFFF0) & 0x0FFFFFFF;
         cb.qwc -= 0xFFFF;
@@ -1618,9 +1618,9 @@ void func_0018D7D8(void *arg0, s32 *arg1) {
         RemoveDmacHandler(4, hid);
     } else {
         func_001843E0();
-        *(volatile u32 *)0x1000B410 = arg1[0] & 0x0FFFFFFF;
-        *(volatile u32 *)0x1000B420 = cb.qwc;
-        *(volatile u32 *)0x1000B400 = 0x101;
+        *(volatile u32 *)D4_MADR_ADDR = arg1[0] & 0x0FFFFFFF;
+        *(volatile u32 *)D4_QWC_ADDR = cb.qwc;
+        *(volatile u32 *)D4_CHCR_ADDR = 0x101;
         func_00184428();
         cb.qwc = 0;
         if (small) {

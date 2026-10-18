@@ -31,6 +31,26 @@ typedef int dk_int128 __attribute__((mode(TI)));
 #define MW_ALIGN(n)
 #endif
 
+/* The campaign work area (its layout: include/campaign.h). Other screens borrow the same memory as scratch
+ * while the campaign map is not running: deck building, trade, the duel, effects, the AI's search tree, the
+ * slot machine. */
+#define CAMPAIGN_WORK_ADDR 0x01ED0000
+
+/* The custom-duel settings, fixed memory past the program (main_041, main_042). Per side (+ 0 or 1): +0x2 the
+ * side's menu state (high nibble) and duelist (low nibble), +0x6 a number shown in digits, +0x8, +0xA, +0xC,
+ * +0xE on/off options; +0x10 the two sides' life points (s16 each); +0x18 a list of u16 entries. +0x88: 0 when
+ * side 1 has a menu of its own (two players); +0x89/+0x8A and +0x8C/+0x8D the top and length of two lists;
+ * +0x8F/+0x90 the map editor's cursor (column, row), +0x91 its key-repeat timer, +0x92 flags. */
+#define CUSTOM_DUEL_ADDR 0xA9C000
+
+/* Where the duel effects' code overlays are copied and linked (mwOverlayInit); +0x1C holds the overlay's end. */
+#define OVERLAY_ADDR 0x01E00000
+
+/* A copy of the game data (SzData_GetData(0)): the save file is read into it (main_037), and the campaign's
+ * help screen keeps the data there while it runs (main_068, main_062). */
+#define GAME_DATA_COPY_ADDR 0x01E301E0
+
+#include "ee_regs.h"
 #include "dk_asm.h"
 #include "structs.h"
 #include "game.h"

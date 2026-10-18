@@ -2041,7 +2041,7 @@ static inline void initPrim_001DBD50(s32 kind, void *prim) {
 /* Draws a square cursor at `position`, w x h, in `color`, pulsing unless `still`. */
 s32 SzDuel_DrawCursor_Pipe(s32 packet, f32 *position, f32 width, f32 height,
                    s32 alpha, u8 *color, s32 still) {
-    void *scratchpad = (void *)0x70000000;
+    void *scratchpad = (void *)SCRATCHPAD_ADDR;
     Vertex_001DBD50 *vertices = (Vertex_001DBD50 *)((u8 *)scratchpad + 0x2000);
     s32 repeats = 2;
     s32 count;
@@ -2130,85 +2130,85 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     s32 nodeL2V3In;
     s32 pipe3;
 
-    *(u8 *)0x70002018 = 0;
-    *(u8 *)0x70002019 = 0;
-    *(u8 *)0x7000201A = 0;
-    *(u8 *)0x7000201B = 0xFF;
+    *(u8 *)(SCRATCHPAD_ADDR + 0x2018) = 0;
+    *(u8 *)(SCRATCHPAD_ADDR + 0x2019) = 0;
+    *(u8 *)(SCRATCHPAD_ADDR + 0x201A) = 0;
+    *(u8 *)(SCRATCHPAD_ADDR + 0x201B) = 0xFF;
     if (color != NULL) {
-        *(u8 *)0x70002018 = color[2];
-        *(u8 *)0x70002019 = color[1];
-        *(u8 *)0x7000201A = color[0];
-        *(u8 *)0x7000201B = color[3];
+        *(u8 *)(SCRATCHPAD_ADDR + 0x2018) = color[2];
+        *(u8 *)(SCRATCHPAD_ADDR + 0x2019) = color[1];
+        *(u8 *)(SCRATCHPAD_ADDR + 0x201A) = color[0];
+        *(u8 *)(SCRATCHPAD_ADDR + 0x201B) = color[3];
     }
-    *(s32 *)0x7000201C = 0x3F800000;
+    *(s32 *)(SCRATCHPAD_ADDR + 0x201C) = 0x3F800000;
     if (withTop != 0) {
         init_001DBFE0(&prim, 5);
     } else {
         init_001DBFE0(&prim, 2);
     }
-    if (*(u8 *)0x7000201B != 0xFF) {
+    if (*(u8 *)(SCRATCHPAD_ADDR + 0x201B) != 0xFF) {
         ExAssignAlpha(&prim, 0x48 | ((s64)0x80 << 32));
     }
-    *(f32 *)0x70002000 = position[0] - half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2000) = position[0] - half_width;
     temp_f20 = -height;
-    *(f32 *)0x70002004 = position[1] - height;
-    *(f32 *)0x70002008 = position[2] - half_width;
-    *(f32 *)0x70002030 = position[0] - half_width;
-    *(f32 *)0x70002034 = temp_f20;
-    *(f32 *)0x70002038 = position[2] - half_width;
-    *(f32 *)0x70002060 = position[0] + half_width;
-    *(f32 *)0x70002064 = temp_f20;
-    *(f32 *)0x70002068 = position[2] - half_width;
-    *(f32 *)0x70002090 = position[0] + half_width;
-    *(f32 *)0x70002094 = position[1] - height;
-    *(f32 *)0x70002098 = position[2] - half_width;
-    nodeL2V = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, nodeL2V, (void *)0x70002000);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2004) = position[1] - height;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2008) = position[2] - half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2030) = position[0] - half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2034) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2038) = position[2] - half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2060) = position[0] + half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2064) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2068) = position[2] - half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2090) = position[0] + half_width;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2094) = position[1] - height;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2098) = position[2] - half_width;
+    nodeL2V = Ex3d_NodeL2V(0, 4, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V, (void *)(SCRATCHPAD_ADDR + 0x2000));
     pipe = ExSortNode_Pipe(packet, &prim, nodeL2V, 0x70002000, 0, 0);
-    *(f32 *)0x70002000 = (position[0] - half_width);
-    *(f32 *)0x70002004 = (position[1] - height);
-    *(f32 *)0x70002008 = (position[2] + half_width);
-    *(f32 *)0x70002030 = (position[0] - half_width);
-    *(f32 *)0x70002034 = temp_f20;
-    *(f32 *)0x70002038 = (position[2] + half_width);
-    *(f32 *)0x70002060 = (position[0] + half_width);
-    *(f32 *)0x70002064 = temp_f20;
-    *(f32 *)0x70002068 = (position[2] + half_width);
-    *(f32 *)0x70002090 = (position[0] + half_width);
-    *(f32 *)0x70002094 = (position[1] - height);
-    *(f32 *)0x70002098 = (position[2] + half_width);
-    nodeL2V2 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, nodeL2V2, (void *)0x70002000);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2000) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2004) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2008) = (position[2] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2030) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2034) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2038) = (position[2] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2060) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2064) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2068) = (position[2] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2090) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2094) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2098) = (position[2] + half_width);
+    nodeL2V2 = Ex3d_NodeL2V(0, 4, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V2, (void *)(SCRATCHPAD_ADDR + 0x2000));
     pipe3 = ExSortNode_Pipe(pipe, &prim, nodeL2V2, 0x70002000, 0, 0);
-    *(f32 *)0x70002000 = (position[0] - half_width);
-    *(f32 *)0x70002004 = (position[1] - height);
-    *(f32 *)0x70002008 = (position[2] - half_width);
-    *(f32 *)0x70002030 = (position[0] - half_width);
-    *(f32 *)0x70002034 = temp_f20;
-    *(f32 *)0x70002038 = (position[2] - half_width);
-    *(f32 *)0x70002060 = (position[0] - half_width);
-    *(f32 *)0x70002064 = temp_f20;
-    *(f32 *)0x70002068 = (position[2] + half_width);
-    *(f32 *)0x70002090 = (position[0] - half_width);
-    *(f32 *)0x70002094 = (position[1] - height);
-    *(f32 *)0x70002098 = (position[2] + half_width);
-    nodeL2V3 = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, nodeL2V3, (void *)0x70002000);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2000) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2004) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2008) = (position[2] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2030) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2034) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2038) = (position[2] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2060) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2064) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2068) = (position[2] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2090) = (position[0] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2094) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2098) = (position[2] + half_width);
+    nodeL2V3 = Ex3d_NodeL2V(0, 4, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V3, (void *)(SCRATCHPAD_ADDR + 0x2000));
     pipe2 = ExSortNode_Pipe(pipe3, &prim, nodeL2V3, 0x70002000, 0, 0);
-    *(f32 *)0x70002000 = (position[0] + half_width);
-    *(f32 *)0x70002004 = (position[1] - height);
-    *(f32 *)0x70002008 = (position[2] - half_width);
-    *(f32 *)0x70002030 = (position[0] + half_width);
-    *(f32 *)0x70002034 = temp_f20;
-    *(f32 *)0x70002038 = (position[2] - half_width);
-    *(f32 *)0x70002060 = (position[0] + half_width);
-    *(f32 *)0x70002064 = temp_f20;
-    *(f32 *)0x70002068 = (position[2] + half_width);
-    *(f32 *)0x70002090 = (position[0] + half_width);
-    *(f32 *)0x70002094 = (position[1] - height);
-    *(f32 *)0x70002098 = (position[2] + half_width);
-    nodeL2V3In = Ex3d_NodeL2V(0, 4, (void *)0x70002000, 0xAA, (void *)0x70000000, 0, 0);
-    Ex3d_NodeV2S(NULL, nodeL2V3In, (void *)0x70002000);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2000) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2004) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2008) = (position[2] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2030) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2034) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2038) = (position[2] - half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2060) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2064) = temp_f20;
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2068) = (position[2] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2090) = (position[0] + half_width);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2094) = (position[1] - height);
+    *(f32 *)(SCRATCHPAD_ADDR + 0x2098) = (position[2] + half_width);
+    nodeL2V3In = Ex3d_NodeL2V(0, 4, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0, 0);
+    Ex3d_NodeV2S(NULL, nodeL2V3In, (void *)(SCRATCHPAD_ADDR + 0x2000));
     ExSortNode_Pipe(pipe2, &prim, nodeL2V3In, 0x70002000, 0, 0);
 }
 
@@ -2400,7 +2400,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
         {
             s32 first;
             u32 i = 0;
-            Vertex_001DC790 *vertex = (Vertex_001DC790 *)0x70002000;
+            Vertex_001DC790 *vertex = (Vertex_001DC790 *)(SCRATCHPAD_ADDR + 0x2000);
             f32 *p = points.v[0];
             intensity = (u8)intensity;
             do {
@@ -2420,8 +2420,8 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
                 p += 4;
                 vertex++;
             } while ((s32)i < 4);
-            count = Ex3d_NodeL2V(0, i, (void *)0x70002000, 0xAA, (void *)0x70000000, 0xF, 0);
-            Ex3d_NodeV2S(0, count, (void *)0x70002000);
+            count = Ex3d_NodeL2V(0, i, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0xF, 0);
+            Ex3d_NodeV2S(0, count, (void *)(SCRATCHPAD_ADDR + 0x2000));
             out = ExSortNode_Pipe(out, &packet, count, 0x70002000, 0, 0);
             if (outline != 0) {
                 Vertex_001DC790 *vertex2;
@@ -2431,12 +2431,12 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
                 *bits = 0;
                 *data = 0;
                 ExAssignAlpha(&packet, 0x8000000048LL);
-                *(u8 *)0x70002018 = (info->red * intensity) >> 7;
-                *(u8 *)0x70002019 = (info->green * intensity) >> 7;
-                *(u8 *)0x7000201A = (info->blue * intensity) >> 7;
-                *(u8 *)0x7000201B = baseAlpha;
-                *(f32 *)0x7000201C = 1.0f;
-                vertex2 = (Vertex_001DC790 *)0x70002000;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x2018) = (info->red * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x2019) = (info->green * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x201A) = (info->blue * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x201B) = baseAlpha;
+                *(f32 *)(SCRATCHPAD_ADDR + 0x201C) = 1.0f;
+                vertex2 = (Vertex_001DC790 *)(SCRATCHPAD_ADDR + 0x2000);
                 j = 0;
                 do {
                     vertex2->x = position[0] + points.v[j % 4][0];
@@ -2445,8 +2445,8 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
                     j++;
                     vertex2++;
                 } while (j < 5);
-                count = Ex3d_NodeL2V(0, j, (void *)0x70002000, 0xAA, (void *)0x70000000, 0xF, 0);
-                Ex3d_NodeV2S(0, count, (void *)0x70002000);
+                count = Ex3d_NodeL2V(0, j, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0xF, 0);
+                Ex3d_NodeV2S(0, count, (void *)(SCRATCHPAD_ADDR + 0x2000));
                 out = ExSortNode_Pipe(out, &packet, count, 0x70002000, 0, 0);
             }
         }

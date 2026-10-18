@@ -1706,10 +1706,10 @@ s32 SzDuel_GetCardRgba(s32 side, s32 unit, void *out) {
 
 /* Opens the hand pop-up for hand card `slot` at (x, y). */
 void SzDuel_OpenHandPopup(s32 slot, s32 x, s32 y) {
-    *(s8 *)0x00318144 = 0x12;
-    *(s16 *)0x0031813E = slot;
-    *(s16 *)0x00318132 = x;
-    *(s16 *)0x00318134 = y;
+    duelState.s.popupState[2] =  0x12;
+    duelState.s.popupValue[2] =  slot;
+    duelState.s.popupPos[2][0] =  x;
+    duelState.s.popupPos[2][1] =  y;
 }
 
 /* Closes the hand pop-up. */
@@ -1723,10 +1723,10 @@ void SzDuel_OpenOptionPopup(s32 side, s16 x, s16 y) {
     s32 i;
     s32 bit;
 
-    *(s8 *)0x00318142 = 7;
-    *(s16 *)0x0031813A = 0;
-    *(s16 *)0x0031812A = x;
-    *(s16 *)0x0031812C = y;
+    duelState.s.popupState[0] =  7;
+    duelState.s.popupValue[0] =  0;
+    duelState.s.popupPos[0][0] =  x;
+    duelState.s.popupPos[0][1] =  y;
     if (side >= 0) {
         state[0xD54] = side;
         state[0xD35] = 0;
@@ -1884,8 +1884,8 @@ void SzDuel_CloseMsgPopup(void) {
 
 /* Opens the hand cursor on hand card `slot` at (x, y). */
 void SzDuel_OpenHandCursor(s32 slot, s32 x, s32 y) {
-    *(s8 *)0x00318144 = 0x17;
-    *(s16 *)0x0031813E = slot;
-    *(s16 *)0x00318132 = x;
-    *(s16 *)0x00318134 = y;
+    duelState.s.popupState[2] =  0x17;
+    duelState.s.popupValue[2] =  slot;
+    duelState.s.popupPos[2][0] =  x;
+    duelState.s.popupPos[2][1] =  y;
 }
