@@ -43,8 +43,18 @@ None of the compilers are included.
    `{"disc": "/path/to/your.iso"}`, or in the `DK_DISC` environment variable.
 2. `make split`, `make split-modules`, then `make check`.
 
-The scripts currently assume our local toolchain layout (`~/decomp/toolchain`, see `config.mk` and `tools/cc.sh`)
-and our helper kit for reading the disc image; expect to adapt a few paths.
+The scripts currently assume our local toolchain layout (`~/decomp/toolchain`, see `config.mk` and `tools/cc.sh`),
+set up by [decomp-kit](https://github.com/kira-502/decomp-kit), which also reads the disc image; expect to adapt a
+few paths.
+
+## PC port
+
+[DotR-PC](https://github.com/kira-502/dotr-pc) is a native Windows port built from this C: its generator turns
+the decompilation into C for 32-bit Windows, and the 762 code modules are translated from MIPS. Like this
+repository it holds no game data: bring your own disc. Its README and BUILDING.md say how to build it;
+[decomp-kit](https://github.com/kira-502/decomp-kit) sets up the toolchain this repository builds with.
+
+Neither project is affiliated with or endorsed by Konami.
 
 ## Layout
 
