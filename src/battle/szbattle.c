@@ -1238,6 +1238,9 @@ s32 lSzBattle_DrawFakeShadow(s32 arg0, s32 model, s32 arg2, f32 fparg0, f32 fpar
     f32 matrix[4][4];
     f32 midpoint[6];
     Header_001E6F90 header __attribute__((aligned(8)));
+    /* the header's tail: ExSortNode_Pipe reads TEX0/TEX1 at header + 0x18 for the textured (0x35) header, and on
+       the EE saved sits right there. One struct would say so, but it changes the compiler's memory this file's
+       float arguments depend on (see the README): a port must keep the two together. */
     s64 saved[3] __attribute__((aligned(8)));
     Range_001E6F90 range __attribute__((aligned(8)));
     s32 alpha;

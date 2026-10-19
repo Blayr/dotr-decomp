@@ -2294,6 +2294,7 @@ typedef struct Vertex_001B4780 {
 typedef struct Gradient_001B4780 {
     u64 tag[2];
     Vertex_001B4780 v[4];
+    u64 alpha;                      /* 0x50: the alpha word ExAssignAlpha writes and ExSortPrim_Pipe reads (flags 0x214) */
 } Gradient_001B4780;
 
 typedef struct Corner_001B4780 {
@@ -2344,7 +2345,6 @@ static inline void tag_001B4780(Tag_001B4780 *tag, s32 count, s32 flags, u64 reg
 s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 style, s32 x, s32 y, s32 cols, s32 rows, s64 bright) {
     Sprite_001B4780 sprite __attribute__((aligned(8)));
     Gradient_001B4780 gradient __attribute__((aligned(8)));
-    u64 spare;
     Quad_001B4780 arrow __attribute__((aligned(8)));
     Quad_001B4780 cursor __attribute__((aligned(8)));
     Quad_001B4780 page __attribute__((aligned(8)));
@@ -2373,7 +2373,6 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     extern s32 ExSortPrim_Pipe();
     u32 tmp;
 
-    (void)&spare; /* spare's 8-byte slot sits between gradient and arrow in the original frame */
     graphics = (State_001B4780 *)duelState.b;
     tmp = style;
     parts = &duelIcons_2[tmp * 9 + 0x3B];

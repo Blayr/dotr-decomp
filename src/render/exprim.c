@@ -627,22 +627,6 @@ typedef struct {
 } Header_00208280;
 
 typedef struct {
-    Header_00208280 header;
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 a;
-    f32 q;
-    f32 s0;
-    f32 t0;
-    Xyzf_00208280 v0;
-    f32 s1;
-    f32 t1;
-    Xyzf_00208280 v1;
-    u64 extra[1];
-} Packet_00208280;
-
-typedef struct {
     u8 pad0[4];
     u8 : 2;
     u8 tcc : 1;
@@ -656,13 +640,29 @@ typedef struct {
     u64 clamp;
 } Regs_00208280;
 
+typedef struct {
+    Header_00208280 header;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+    f32 q;
+    f32 s0;
+    f32 t0;
+    Xyzf_00208280 v0;
+    f32 s1;
+    f32 t1;
+    Xyzf_00208280 v1;
+    u64 extra[1];
+    Regs_00208280 regs;             /* 0x40: TEX0/TEX1/CLAMP, the tail ExSortPrim_Pipe reads (flags 0x226) */
+} Packet_00208280;
+
 /* Draws a copy of the frame buffer `frame` moved by (dx, dy) over the screen in `color` (soft focus). */
 s32 ExSortSoftFocus_Pipe(s32 cursor, s32 ot, s32 z, s32 frame, s32 dx, s32 dy, u8 *color) {
     extern Color_00208280 D_00293ED8;
     extern s32 ExFrameBuffer2Texture_Pipe();
     Color_00208280 def;
     Packet_00208280 packet;
-    Regs_00208280 regs;
     s32 obj;
 
     def = D_00293ED8;
@@ -692,8 +692,8 @@ s32 ExSortSoftFocus_Pipe(s32 cursor, s32 ot, s32 z, s32 frame, s32 dx, s32 dy, u
     packet.s1 = 0.625f;
     packet.t1 = 0.875f;
     cursor = RhText_SetTextureFlush(cursor);
-    obj = RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(cursor, RhBase_GetUserGsAddress(), frame, &regs.tex0, &regs.tex1));
-    regs.tex0.tcc = 1;
+    obj = RhText_SetTextureFlush(ExFrameBuffer2Texture_Pipe(cursor, RhBase_GetUserGsAddress(), frame, &packet.regs.tex0, &packet.regs.tex1));
+    packet.regs.tex0.tcc = 1;
     return ExSortPrim_Pipe(obj, (s32)&packet, ot, z);
 }
 
