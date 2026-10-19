@@ -117,7 +117,10 @@ duelist's name (`TaLogic_Weevil_GetMinimumTask`; a developers' name that was alr
 `TaLogic002_GetNearUnit`, stays). Where his reading of a function says more than ours and the code agrees, his name
 is the function's name (`SzGame_DEBUGMENU`, `Ta_Eff_001_Revive`), the developers' name kept as an alias and a note.
 Globals our code still called by address (`D_0029008A`) carry his labels (`AttributeIconID`), 110 of
-them. Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
+them. His structs for a unit, a board square and the computer opponent's tasks (`Unit`, `MapInfo`, `UnitTask`,
+`MinimumTask`, the first part of `DuelPlayer`, which he calls `LogicData`) are in `include/game.h`, the unit's
+layout checked against the developers' own debug information, and his enumerations (terrain, attributes,
+duelists, map places, cut scenes, card ids, ...) in `include/enums.h`. Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
 in `build/main.map`. Thanks to batzpup for them.
 
 ## License

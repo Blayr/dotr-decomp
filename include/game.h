@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "common.h"
+#include "enums.h"
 
 /* Declarations collected by `dk accept`. Move them into topic headers as the
  * game's structure becomes clear. */
@@ -58,8 +59,118 @@ typedef struct DuelHand {
 
 /* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
    Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
+/* Board squares, units and the AI's task records. Names from batzpup's Ghidra project; the unit's layout is the
+   developers' own (the Japanese release's debug information for the AI files, whose names follow each field). */
+
+/* One unit record (duelUnits: [3][11], side 2 = the leaders' spare row; 0x5C bytes). */
+typedef struct Unit {
+    void *constInfo;                /* 0x00: the card's constant record (pConstInfo) */
+    void *cardModel;                /* 0x04: its card request (pCardReq) */
+    union {
+        struct { u32 type, data; } effects[5];
+        u16 leaderAbilities[20];
+    } cardEffects;                  /* 0x08: monster effects, or a leader's abilities (aVarEffIdx) */
+    s32 VisualRelated;              /* 0x30: its rotation (nRotY) */
+    s16 xOffsetTerrain;             /* 0x34 (sOfsX) */
+    s16 yOffsetTerrain;             /* 0x36 (sOfsZ) */
+    s16 apBoost;                    /* 0x38 (sVarAP) */
+    s16 dpBoost;                    /* 0x3A (sVarDP) */
+    u16 cardNo;                     /* 0x3C: card id (wCardNo) */
+    u8 kind;                        /* 0x3E (bVarKind) */
+    u8 attr;                        /* 0x3F: Attribute (bVarAttr) */
+    u8 locCol;                      /* 0x40: board column (bMapX) */
+    u8 locRow;                      /* 0x41: board row (bMapZ) */
+    u8 toMoveCol;                   /* 0x42 (bPosX) */
+    u8 toMoveRow;                   /* 0x43 (bPosZ) */
+    u8 team;                        /* 0x44: the side that owns it (bOwner) */
+    u8 slot;                        /* 0x45: its unit number, 0 = leader (bID) */
+    u8 modelId;                     /* 0x46 (bModelID) */
+    u8 summonOrder;                 /* 0x47 (bSummonOrder) */
+    u8 lvRev;                       /* 0x48 (bSummonCost) */
+    u8 curseRest;                   /* 0x49 (bCurseRest) */
+    u8 spellRest;                   /* 0x4A (bSpellRest) */
+    u8 delayCount;                  /* 0x4B (bDelayCount) */
+    u8 bMovable;                    /* 0x4C (bMovable) */
+    u8 CardHighlight;               /* 0x4D: its glow (bDarkRate) */
+    u8 ctlModeC;                    /* 0x4E (bCtlModeC) */
+    u8 ctlModeM;                    /* 0x4F (bCtlModeM) */
+    u8 ctlGoalC;                    /* 0x50 (bCtlGoalC) */
+    u8 ctlGoalM;                    /* 0x51 (bCtlGoalM) */
+    u8 ctlRateC;                    /* 0x52 (bCtlRateC) */
+    u8 ctlRateM;                    /* 0x53 (bCtlRateM) */
+    u8 openRate;                    /* 0x54 (bOpenRate) */
+    u8 defenseRate;                 /* 0x55 (bDefenseRate) */
+    u8 SomeStatusBitfield;          /* 0x56: flags nCtlFlipC, nCtlFlipM, nOpenFlip, nDefenseFlip */
+    u8 status;                      /* 0x57: flags fFinish, fRevolt, fOpen, fDefense, fOpenF, fDefenseF, fPickup,
+                                       fCardBusy */
+    u16 modelStatusFlags;           /* 0x58: flags fModelBusy, fCardColBusy, fHand, fCurse, nEffHandle */
+    u8 padding1;                    /* 0x5A */
+    u8 padding2;                    /* 0x5B */
+} Unit;
+
+/* One board square (boardSquares: [7][7], [row][column]; 0x1C bytes). */
+typedef struct MapInfo {
+    Unit *unit;                     /* 0x00: the unit standing here, or NULL */
+    u8 TargetBlueHighlight;         /* 0x04 */
+    u8 TargetGreenHighlight;        /* 0x05 */
+    u8 TargetRedHighlight;          /* 0x06 */
+    u8 TargetHighlightHeightOpacity; /* 0x07 */
+    u8 BlueHighlight;               /* 0x08 */
+    u8 GreenHighlight;              /* 0x09 */
+    u8 RedHighlight;                /* 0x0A */
+    u8 HighlightHeightOpacity;      /* 0x0B */
+    u8 TargetBorderOutlineBlueValue; /* 0x0C */
+    u8 TargetBorderOutlineGreenValue; /* 0x0D */
+    u8 BorderOutlineEnabled;        /* 0x0E */
+    u8 BorderOutlineStrengthRed;    /* 0x0F */
+    u8 BorderOutlineStrengthBlue;   /* 0x10 */
+    u8 BorderOutlineStrengthGreen;  /* 0x11 */
+    u8 BorderOutlinedOpacity;       /* 0x12 */
+    u8 BorderOutlineRelated;        /* 0x13 */
+    u16 fieldRate;                  /* 0x14 */
+    u8 field;                       /* 0x16: the terrain (Field) */
+    u8 MapMovable;                  /* 0x17 */
+    u8 TargetSelectionHighlight;    /* 0x18 */
+    u8 SelectionHighlightType;      /* 0x19 */
+    u8 mapAlpha;                    /* 0x1A */
+    u8 field23_0x1b;                /* 0x1B */
+} MapInfo;
+
+/* The computer opponent's plan for one of its units (DuelPlayer.taskList; 0x10 bytes). */
+typedef struct UnitTask {
+    u16 ownerId;                    /* 0x00: (side << 8) | unit */
+    u16 summonOrder;                /* 0x02 */
+    u8 mission1;                    /* 0x04: UnitMission; the upper bits are the mission type */
+    u8 mission2Main;                /* 0x05: UnitMission */
+    u8 field4_0x6;                  /* 0x06 */
+    u8 field5_0x7;                  /* 0x07 */
+    u16 goalLoc1[2];                /* 0x08 */
+    u8 field7_0xc;                  /* 0x0C */
+    u8 field8_0xd;                  /* 0x0D */
+    u8 field9_0xe;                  /* 0x0E */
+    u8 field10_0xf;                 /* 0x0F */
+} UnitTask;
+
+/* What the computer opponent does next (a TaLogic_*_GetMinimumTask result; 0x14 bytes). */
+typedef struct MinimumTask {
+    u16 unitOwnerId;                /* 0x00 */
+    u8 taskType;                    /* 0x02: TaskType */
+    u8 padding1;                    /* 0x03 */
+    u16 loc;                        /* 0x04: (z << 8) | x */
+    u8 handPlay[5];                 /* 0x06 */
+    u8 padding2;                    /* 0x0B */
+    s32 shouldFlipUp;               /* 0x0C: 0 face down, 1 face up, 2 no change */
+    u8 atkDefPosition;              /* 0x10: 0 attack, 1 defence, 2 no change */
+    u8 padding3[3];
+} MinimumTask;
+
 typedef struct DuelPlayer {
-    u8 pad000[0x1D0];
+    UnitTask taskList[22];         /* 0x000: the computer opponent's plan, one task per unit */
+    u16 inputQue[32];              /* 0x160: the pad inputs it queued (Input) */
+    u8 inputQueueSize;             /* 0x1A0: bits 0-4: how many tasks have been turned into inputs */
+    u8 AiActiveRelated;            /* 0x1A1 */
+    u16 inputCount;                /* 0x1A2 */
+    u8 pad1A4[0x1D0 - 0x1A4];
     s32 cameraOrbit[4];            /* 0x1D0: the camera around this side's cursor: distance, heading, pitch
                                       (SzDuel_Init: 200, 0x4000 or 0xC000, 0x2000; SzView_IV2V reads it) */
     DuelDeck deck;                 /* 0x1E0 */
@@ -85,6 +196,7 @@ typedef struct DuelPlayer {
     } flags346;                    /* 0x346 */
     u8 pad347[0x350 - 0x347];
 } DuelPlayer;
+typedef DuelPlayer LogicData; /* batzpup's name for it */
 
 typedef struct DuelState {
     DuelPlayer players[2];         /* 0x000: the two sides */
