@@ -50,14 +50,6 @@ extern Vec4f D_002915D0;
 extern Vec4i D_002915E0;
 extern Vec4f D_002915F0;
 extern int func_001F1A00_b(int index, int value);
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_1df5f0(int x, int y)
-{
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return 0;
-    }
-    return &boardSquares[y][x];
-}
 /* A free card request record, cleared. */
 static inline CardRequest *free_object(void)
 {
@@ -108,7 +100,7 @@ int SzDuel_AddUnit2(int side, int x, int y, void *src_v, int leader)
 {
     Unit *src = src_v;
     DuelPlayer *rec = &D_00317490_b[side];
-    MapInfo *c = cell_1df5f0(x, y);
+    MapInfo *c = SzDuel_MapInfo(x, y);
     int count = 1;
     int first = 0;
     int id;
@@ -261,14 +253,6 @@ static inline s32 release_001DFBB0(void *p) {
     return 1;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001DFBB0(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Card control record i, or NULL. */
 static inline u8 *slot_001DFBB0(s32 i) {
     if (i < 0 || i >= 6) {
@@ -293,7 +277,7 @@ s32 SzDuel_DelUnit(s32 side, s32 unit) {
         if (obj->cardModel != NULL) {
             release_001DFBB0(obj->cardModel);
         }
-        cell_001DFBB0(obj->locCol, obj->locRow)->unit = NULL;
+        SzDuel_MapInfo(obj->locCol, obj->locRow)->unit = NULL;
     } else if (unit > 0) {
         slot = slot_001DFBB0(unit);
         if (slot != NULL) {
@@ -322,7 +306,8 @@ static inline void remove_object_001DFD50(CardRequest *object) {
     }
 }
 
-/* Moves unit (side, unit) to board square (x, y). */
+/* Moves unit (side, unit) to board square (x, y). Its three square lookups stay written out: as SzDuel_MapInfo calls
+   the bytes differ. */
 void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
     extern void *SzDuel_GetCardInfo();
     Unit *piece;
@@ -957,11 +942,7 @@ void *SzDuel_GetUnitConstEffect2(void *unitInfo, s32 index) {
     }
     x = object->x;
     y = object->y;
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        cell = NULL;
-    } else {
-        cell = &boardSquares[y][x];
-    }
+    cell = SzDuel_MapInfo(x, y);
     if (cell == NULL || *(void **)cell != object) {
         on_board = 0;
     }
@@ -1282,14 +1263,6 @@ static inline Unit *check_001E11B0(s32 a0, s32 a1) {
     return p;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001E11B0(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* SzDuel_CalcUnitPos written out. */
 static inline void place_001E11B0(s32 x, s32 z, s32 height, void *outPos) {
     f32 *out = outPos;
@@ -1314,7 +1287,7 @@ s32 SzDuel_GetUnitPos(s32 side, s32 unit, f32 *pos) {
     if (p == NULL) {
         return 0;
     }
-    place_001E11B0(p->locCol, p->locRow, cell_001E11B0(p->locCol, p->locRow)->fieldRate, pos);
+    place_001E11B0(p->locCol, p->locRow, SzDuel_MapInfo(p->locCol, p->locRow)->fieldRate, pos);
     pos[0] += (f32) p->xOffsetTerrain;
     pos[2] += (f32) p->yOffsetTerrain;
     return 1;

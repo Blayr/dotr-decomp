@@ -33,10 +33,7 @@ void SzDuel_InitMapInfo(void *cell) {
 
 /* The record of board square (x, y), or NULL off the board. */
 void *SzDuel_GetMapInfo(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
+    return SzDuel_MapInfo(x, y);
 }
 
 typedef struct Pair_001DCD70 {

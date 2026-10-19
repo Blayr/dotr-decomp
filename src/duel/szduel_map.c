@@ -2,19 +2,11 @@
 
 #include "common.h"
 
-/* Board square (x, z)'s record, or NULL off the board. */
-static inline MapInfo *get_001E2220(s32 x, s32 z) {
-    if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[z][x];
-}
-
 /* Sets board square (x, z)'s field type. */
 s32 SzDuel_SetField(s32 x, s32 z, s8 field) {
     MapInfo *cell;
 
-    cell = get_001E2220(x, z);
+    cell = SzDuel_MapInfo(x, z);
     if (cell == NULL) {
         return 0;
     }
@@ -22,19 +14,11 @@ s32 SzDuel_SetField(s32 x, s32 z, s8 field) {
     return 1;
 }
 
-/* Board square (x, z)'s record, or NULL off the board. */
-static inline MapInfo *get_001E22B0(s32 x, s32 z) {
-    if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[z][x];
-}
-
 /* Board square (x, z)'s field type, or -1 off the board. */
 s32 SzDuel_GetField(s32 x, s32 z) {
     MapInfo *cell;
 
-    cell = get_001E22B0(x, z);
+    cell = SzDuel_MapInfo(x, z);
     if (cell == NULL) {
         return -1;
     }
@@ -57,19 +41,11 @@ void SzDuel_InitFieldRate(void) {
     } while (y < 7);
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001E23A0(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Sets board square (x, z)'s field-rate (its highlight), clamped. */
 s32 SzDuel_SetFieldRate(s32 x, s32 z, s32 rate) {
     MapInfo *cell;
 
-    cell = cell_001E23A0(x, z);
+    cell = SzDuel_MapInfo(x, z);
     if (cell == NULL) {
         return -1;
     }
@@ -83,38 +59,22 @@ s32 SzDuel_SetFieldRate(s32 x, s32 z, s32 rate) {
     return rate;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *lookup_001E2450(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Board square (x, z)'s field-rate (its highlight). */
 s16 SzDuel_GetFieldRate(s32 x, s32 z) {
     MapInfo *entry;
 
-    entry = lookup_001E2450(x, z);
+    entry = SzDuel_MapInfo(x, z);
     if (entry == NULL) {
         return 0;
     }
     return entry->fieldRate;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001E24E0(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* How far a unit can still walk from square (x, y) (the move highlight), or 0xFF. */
 u8 SzDuel_GetMapMovable(s32 x, s32 y) {
     MapInfo *cell;
 
-    cell = cell_001E24E0(x, y);
+    cell = SzDuel_MapInfo(x, y);
     if (cell == NULL) {
         return 0xFFU;
     }
@@ -122,18 +82,10 @@ u8 SzDuel_GetMapMovable(s32 x, s32 y) {
 }
 
 Unit *func_001E36E0_b(int x, int y);
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_1e2570(int x, int y)
-{
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return 0;
-    }
-    return &boardSquares[y][x];
-}
 /* Sets a square's summon-enable mark. */
 static inline void set_17(int x, int y, int value)
 {
-    MapInfo *c = cell_1e2570(x, y);
+    MapInfo *c = SzDuel_MapInfo(x, y);
     if (c != 0) {
         c->MapMovable = value;
     }
@@ -141,7 +93,7 @@ static inline void set_17(int x, int y, int value)
 /* A square's walk distance. */
 static inline int get_16(int x, int y)
 {
-    MapInfo *c = cell_1e2570(x, y);
+    MapInfo *c = SzDuel_MapInfo(x, y);
     if (c != 0) {
         return c->field;
     }
@@ -185,17 +137,9 @@ void lSzDuel_CalcMapSummonEnable(int side, int cx, int cy)
     }
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001E27D0(s32 x, s32 y) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Sets a square's walk distance. */
 static inline void set_001E27D0(s32 x, s32 y, s32 value) {
-    MapInfo *cell = cell_001E27D0(x, y);
+    MapInfo *cell = SzDuel_MapInfo(x, y);
     if (cell != NULL) {
         cell->MapMovable = value;
     }
@@ -280,17 +224,9 @@ void lSzDuel_CalcMapMovable(s32 pathOnly, s32 isLeader, s32 side, s32 startX, s3
     }
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001E2A60(s32 x, s32 y) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* A square's field type. */
 static inline s32 terrain_001E2A60(s32 x, s32 y) {
-    MapInfo *cell = cell_001E2A60(x, y);
+    MapInfo *cell = SzDuel_MapInfo(x, y);
     s32 terrain;
     if (cell != NULL) {
         terrain = cell->field;
@@ -302,7 +238,7 @@ static inline s32 terrain_001E2A60(s32 x, s32 y) {
 
 /* A square's walk distance (0xFF unreached). */
 static inline s32 distance_001E2A60(s32 x, s32 y) {
-    MapInfo *cell = cell_001E2A60(x, y);
+    MapInfo *cell = SzDuel_MapInfo(x, y);
     if (cell != NULL) {
         return cell->MapMovable;
     }
@@ -311,7 +247,7 @@ static inline s32 distance_001E2A60(s32 x, s32 y) {
 
 /* Sets a square's walk distance. */
 static inline void set_distance_001E2A60(s32 x, s32 y, s32 distance) {
-    MapInfo *cell = cell_001E2A60(x, y);
+    MapInfo *cell = SzDuel_MapInfo(x, y);
     if (cell != NULL) {
         cell->MapMovable = distance;
     }
@@ -432,11 +368,7 @@ s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s
     s32 dim;
     Unit *entity;
 
-    if (x < 0 || x >= 7 || z < 0 || z >= 7) {
-        cell = NULL;
-    } else {
-        cell = &boardSquares[z][x];
-    }
+    cell = SzDuel_MapInfo(x, z);
 
     channel = (D_00318118 >> 8) & 0xFF;
     inverse = (0x80 - channel) & 0xFF;
@@ -497,14 +429,6 @@ static inline s32 clamp_001E3230(s32 value) {
     return 8;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *lookup_001E3230(s32 x, s32 y) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Works out board square (x, y)'s colour from its field type, highlight and blinking. */
 s32 SzDuel_CalcMapColor(s32 x, s32 y) {
     MapInfo *p;
@@ -512,7 +436,7 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
     u8 current;
     u8 target;
 
-    p = lookup_001E3230(x, y);
+    p = SzDuel_MapInfo(x, y);
     if (p == NULL) {
         return 0;
     }
@@ -620,19 +544,11 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
     return 1;
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *lookup_001E3650(s32 x, s32 y) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return &boardSquares[y][x];
-}
-
 /* Sets board square (x, z)'s alpha. */
 s32 SzDuel_SetMapAlpha(s32 x, s32 z, s8 alpha) {
     MapInfo *cell;
 
-    cell = lookup_001E3650(x, z);
+    cell = SzDuel_MapInfo(x, z);
     if (cell == NULL) {
         return 0;
     }
@@ -640,24 +556,16 @@ s32 SzDuel_SetMapAlpha(s32 x, s32 z, s8 alpha) {
     return 1;
 }
 
-/* A board square's unit pointer, or NULL off the board. */
-static inline void **cell_001E36E0(s32 x, s32 y) {
-    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
-        return NULL;
-    }
-    return (void **)&boardSquares[y][x];
-}
-
 /* The unit standing on board square (x, z), or 0. */
 s32 SzDuel_GetMapUnit(s32 x, s32 z) {
-    void **cell;
+    MapInfo *cell;
     void *result;
 
-    cell = cell_001E36E0(x, z);
+    cell = SzDuel_MapInfo(x, z);
     if (cell == NULL) {
         return 0;
     }
-    result = *cell;
+    result = cell->unit;
     if (result == NULL) {
         return 0;
     }
@@ -667,25 +575,17 @@ s32 SzDuel_GetMapUnit(s32 x, s32 z) {
     return (s32)result;
 }
 
-/* A board square's unit pointer, or NULL off the board. */
-static inline void **lookup_001E3790(s32 x, s32 z) {
-    if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
-        return NULL;
-    }
-    return (void **)&boardSquares[z][x];
-}
-
 /* The unit standing on board square (x, z) as (side << 8) | unit, or -1. */
 s32 SzDuel_GetMapUnitID(s32 x, s32 z) {
     u8 unit;
-    void **slot;
+    MapInfo *slot;
     void *info;
 
-    slot = lookup_001E3790(x, z);
+    slot = SzDuel_MapInfo(x, z);
     if (slot == NULL) {
         return -1;
     }
-    info = *slot;
+    info = slot->unit;
     if (info == NULL) {
         return -1;
     }

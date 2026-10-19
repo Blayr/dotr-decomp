@@ -488,6 +488,15 @@ extern volatile s32 D_0035060C;
 extern u16 AlternateCardIds[];
 extern MapInfo boardSquares[7][7]; /* [row][column]; original: gSzDuel_aaMapInfo */
 
+/* Board square (x, y)'s record, or NULL off the board. SzDuel_GetMapInfo returns it; the compiler wrote it inline
+   into the duel functions that look a square up. */
+static inline MapInfo *SzDuel_MapInfo(s32 x, s32 y) {
+    if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
+        return NULL;
+    }
+    return &boardSquares[y][x];
+}
+
 
 
 
