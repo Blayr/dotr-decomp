@@ -4666,8 +4666,8 @@ s32 SzModel_IsModelLoading(s32 index) {
     return ret;
 }
 
-/* Whether model slot `index` has a model booked (SzModel_Preset) and ready. */
-s32 SzModel_IsModelStandby(s32 index) {
+/* SzModel_IsModelStandby's body, which the compiler also wrote inline into this file's other functions. */
+static inline s32 lSzModel_IsModelStandby(s32 index) {
     Obj_0031ABB0 *obj;
 
     if (index < 0 || index >= 0x54) {
@@ -4682,6 +4682,11 @@ s32 SzModel_IsModelStandby(s32 index) {
         return 1;
     }
     return 0;
+}
+
+/* Whether model slot `index` has a model booked (SzModel_Preset) and ready. */
+s32 SzModel_IsModelStandby(s32 index) {
+    return lSzModel_IsModelStandby(index);
 }
 
 typedef struct {
@@ -5205,23 +5210,6 @@ typedef struct {
     s8 unused1 : 2;
 } Flags_001F2050;
 
-/* Whether model slot `index` has a model bound. */
-static inline s32 check_001F2050(s32 index) {
-    Obj_0031ABB0 *obj;
-
-    if (index < 0 || index >= 0x54) {
-        return 0;
-    }
-    obj = modelSlots[index];
-    if (obj == NULL) {
-        return 0;
-    }
-    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
-        return 1;
-    }
-    return 0;
-}
-
 /* Model slot `index`'s centre in the world into `out`. */
 s32 SzModel_GetCenter(s32 index, void *out) {
     Obj_0031ABB0 *obj;
@@ -5233,7 +5221,7 @@ s32 SzModel_GetCenter(s32 index, void *out) {
     if (obj == NULL) {
         return 0;
     }
-    if (check_001F2050(index) == 0) {
+    if (lSzModel_IsModelStandby(index) == 0) {
         return 0;
     }
     if ((s32)*(u8 *)((u8 *)obj + 0x1FE) <= 0) {
@@ -5246,23 +5234,6 @@ s32 SzModel_GetCenter(s32 index, void *out) {
         *(Vec4f *)out = *(Vec4f *)((u8 *)obj + 0x80);
     }
     return 1;
-}
-
-/* Whether model slot `index` has a model bound. */
-static inline s32 ready_001F2150(s32 index) {
-    Obj_0031ABB0 *obj;
-
-    if (index < 0 || index >= 0x54) {
-        return 0;
-    }
-    obj = modelSlots[index];
-    if (obj == NULL) {
-        return 0;
-    }
-    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
-        return 1;
-    }
-    return 0;
 }
 
 /* Model slot `index`'s centre offset (from its centre node) into `out`. */
@@ -5281,7 +5252,7 @@ s32 SzModel_GetCenterOfs(s32 index, f32 *out) {
     if (obj == NULL) {
         return 0;
     }
-    if (ready_001F2150(index) == 0) {
+    if (lSzModel_IsModelStandby(index) == 0) {
         return 0;
     }
     if ((s32)*(u8 *)((u8 *)obj + 0x1FE) <= 0) {
@@ -5805,23 +5776,6 @@ typedef struct {
     f32 x, y, z, w;
 } Vec4_001F2EC0;
 
-/* Whether model slot `index` has a model bound. */
-static inline s32 active_001F2EC0(s32 index) {
-    Obj_0031ABB0 *obj;
-
-    if (index < 0 || index >= 0x54) {
-        return 0;
-    }
-    obj = modelSlots[index];
-    if (obj == NULL) {
-        return 0;
-    }
-    if (*(s8 *)((u8 *)obj + 0x1F2) >= 0) {
-        return 1;
-    }
-    return 0;
-}
-
 /* Reference `ref` of model slot `index` (`which` picks the word). */
 s32 SzModel_GetRef(s32 index, s32 ref, s32 which) {
     Obj_0031ABB0 *obj;
@@ -5833,7 +5787,7 @@ s32 SzModel_GetRef(s32 index, s32 ref, s32 which) {
     if (obj == NULL) {
         return 0;
     }
-    if (!active_001F2EC0(index)) {
+    if (!lSzModel_IsModelStandby(index)) {
         return 0;
     }
     if (!((Flags_001F2EC0 *)((u8 *)obj + 0x20C))->available) {

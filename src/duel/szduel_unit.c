@@ -1030,7 +1030,8 @@ void SzDuel_CalcUnitPos(s32 x, s32 z, s32 height, void *outPos) {
     out[3] = 1.0f;
 }
 
-/* SzDuel_CalcUnitPos written out. */
+/* SzDuel_CalcUnitPos written out: as a call of it, or with SzDuel_CalcUnitPos on a shared inline, the bytes
+   differ. */
 static inline void place_001E11B0(s32 x, s32 z, s32 height, void *outPos) {
     f32 *out = outPos;
 
