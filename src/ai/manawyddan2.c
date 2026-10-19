@@ -1066,12 +1066,6 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, vo
     }
 }
 
-typedef struct Input_00169FE0 {
-    u16 position;
-    u8 pad2[6];
-    u32 destinations;
-} Input_00169FE0;
-
 typedef struct Output_00169FE0 {
     u16 position;
     u8 command;
@@ -1090,7 +1084,7 @@ typedef struct Point_00169FE0 {
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 destination_00169FE0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((Input_00169FE0 *)src)->destinations >> 16);
+        return (u16)(((UnitTask *)src)->dwGoal >> 16);
     }
     return *(u16 *)((u8 *)src + 8);
 }
@@ -1120,29 +1114,29 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_AtkMission(void *pTask, s32 nSide, u16 *p
         TaLogic_InitRogicControl(pTask, 1);
         return -1;
     }
-    state = TaLogic_Manawyddan2_IsOpenUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF, pTask);
-    current = SzDuel_GetUnitLoc(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF);
+    state = TaLogic_Manawyddan2_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
+    current = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     destinationX = destination_00169FE0(pTask, fFirst);
     destinationY = destination_00169FE0(pTask, fFirst);
     target = SzDuel_GetUnitLoc(destinationY >> 8, destinationX & 0xFF);
     for (i = 0; i < 12; i++) {
         points[i].x = points[i].y = 0xF;
     }
-    unit = SzDuel_GetUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF);
+    unit = SzDuel_GetUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     currentX = current & 0xFF;
     currentY = current >> 8;
     if (GetMoveRange(unit, currentX, currentY) == 0) {
         s32 cost;
-        ((Output_00169FE0 *)pInput)->position = ((Input_00169FE0 *)pTask)->position;
+        ((Output_00169FE0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
         ((Output_00169FE0 *)pInput)->command = 6;
         ((Output_00169FE0 *)pInput)->destination = current;
         cost = TaLogic_GetUnitWarning(currentX, currentY, nSide, 2, 0,
                             (u8)TaLogic_Manawyddan2_GetWarnHideLvl(nSide));
-        if (cost >= SzDuel_GetUnitAP(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF, 0)) {
-            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+        if (cost >= SzDuel_GetUnitAP(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 0)) {
+            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                        pInput[2], 1, 1);
         } else {
-            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                        pInput[2], 0, 1);
         }
         TaLogic_InitRogicControl(pTask, fFirst);
@@ -1153,7 +1147,7 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_AtkMission(void *pTask, s32 nSide, u16 *p
         s32 index;
         s32 bestCost;
         s32 selected;
-        s32 position = ((Input_00169FE0 *)pTask)->position;
+        s32 position = ((UnitTask *)pTask)->ownerId;
         TaLogic_GetInvadeRoot(position >> 8, position & 0xFF, points, currentX, currentY,
                       x = target & 0xFF, y = target >> 8,
                       destination_00169FE0(pTask, fFirst), 1, 30,
@@ -1164,7 +1158,7 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_AtkMission(void *pTask, s32 nSide, u16 *p
             forced = 0;
             bestCost = 0xFFFF;
             for (index = 0; index < count; index++) {
-                s32 hit = TaLogic021_IsOpenMoveUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+                s32 hit = TaLogic021_IsOpenMoveUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                   currentX, currentY, x, y);
                 if (hit == 1) {
                     Point_00169FE0 *forcedPoint = &points[index];
@@ -1197,28 +1191,28 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_AtkMission(void *pTask, s32 nSide, u16 *p
                 }
             }
         } else {
-            ((Output_00169FE0 *)pInput)->position = ((Input_00169FE0 *)pTask)->position;
+            ((Output_00169FE0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_00169FE0 *)pInput)->command = 6;
             ((Output_00169FE0 *)pInput)->destination = current;
             ((Output_00169FE0 *)pInput)->state = state;
-            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+            ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                        ((Output_00169FE0 *)pInput)->destination, 0, 1);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
             if (selected != 0xFF) {
-                ((Output_00169FE0 *)pInput)->position = ((Input_00169FE0 *)pTask)->position;
+                ((Output_00169FE0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00169FE0 *)pInput)->command = 6;
                 ((Output_00169FE0 *)pInput)->destination = (points[selected].y << 8) | points[selected].x;
                 ((Output_00169FE0 *)pInput)->state = forced;
-                ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+                ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                            ((Output_00169FE0 *)pInput)->destination, 0, 1);
             } else {
-                ((Output_00169FE0 *)pInput)->position = ((Input_00169FE0 *)pTask)->position;
+                ((Output_00169FE0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00169FE0 *)pInput)->command = 6;
                 ((Output_00169FE0 *)pInput)->destination = current;
                 ((Output_00169FE0 *)pInput)->state = forced;
-                ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((Input_00169FE0 *)pTask)->position >> 8, ((Input_00169FE0 *)pTask)->position & 0xFF,
+                ((Output_00169FE0 *)pInput)->result = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                                            ((Output_00169FE0 *)pInput)->destination, 0, 1);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;

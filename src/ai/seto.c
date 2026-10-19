@@ -1025,17 +1025,6 @@ s32 TaLogic_Seto_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput, void *nMode
     return -1;
 }
 
-typedef struct Event_00113760 {
-    u16 id;
-    u16 pad2;
-    u16 state;
-    u16 pad6;
-    union {
-        u32 word;
-        u16 low;
-    } data;
-} Event_00113760;
-
 typedef struct Entry_00113760 {
     u16 id;
     u8 state;
@@ -1055,8 +1044,8 @@ void TaLogic001_CommandBtlUnit(void *pTask, s32 fGoalFirst, s32 bActive) {
     s16 countA;
     s16 countB;
 
-    if (SzDuel_GetUnit(((Event_00113760 *)pTask)->id >> 8,
-                       ((Event_00113760 *)pTask)->id & 0xFF) != 0) {
+    if (SzDuel_GetUnit(((UnitTask *)pTask)->ownerId >> 8,
+                       ((UnitTask *)pTask)->ownerId & 0xFF) != 0) {
         s32 player;
         s32 other;
         s32 step;
@@ -1064,14 +1053,14 @@ void TaLogic001_CommandBtlUnit(void *pTask, s32 fGoalFirst, s32 bActive) {
         s32 i;
         Entry_00113760 *p;
 
-        player = Ta_GetCurrentSide(((Event_00113760 *)pTask)->id >> 8,
-                              ((Event_00113760 *)pTask)->id & 0xFF);
+        player = Ta_GetCurrentSide(((UnitTask *)pTask)->ownerId >> 8,
+                              ((UnitTask *)pTask)->ownerId & 0xFF);
         other = (player == 0 ? 1 : 0) << 8;
-        position = SzDuel_GetUnitLoc(((Event_00113760 *)pTask)->id >> 8,
-                                ((Event_00113760 *)pTask)->id & 0xFF);
+        position = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8,
+                                ((UnitTask *)pTask)->ownerId & 0xFF);
         step = SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
-        unitInfo = SzDuel_GetUnit(((Event_00113760 *)pTask)->id >> 8,
-                            ((Event_00113760 *)pTask)->id & 0xFF);
+        unitInfo = SzDuel_GetUnit(((UnitTask *)pTask)->ownerId >> 8,
+                            ((UnitTask *)pTask)->ownerId & 0xFF);
         p = entries;
         i = 0;
         do {
@@ -1082,14 +1071,14 @@ void TaLogic001_CommandBtlUnit(void *pTask, s32 fGoalFirst, s32 bActive) {
         } while (i < 22);
         TaLogic_InitIgnoreLst(buffer);
         if (fGoalFirst != 0) {
-            if (TaLogic_IsRootOpen(((Event_00113760 *)pTask)->id >> 8,
-                             ((Event_00113760 *)pTask)->id & 0xFF,
+            if (TaLogic_IsRootOpen(((UnitTask *)pTask)->ownerId >> 8,
+                             ((UnitTask *)pTask)->ownerId & 0xFF,
                              position & 0xFF, position >> 8,
                              other >> 8, other & 0xFF,
                              step & 0xFF, step >> 8, 2) > 0) {
-                ((Event_00113760 *)pTask)->state = 0x2FF;
-                ((Event_00113760 *)pTask)->data.word = (other << 16) |
-                    ((Event_00113760 *)pTask)->data.low;
+                ((UnitTask *)pTask)->mission = 0x2FF;
+                ((UnitTask *)pTask)->dwGoal = (other << 16) |
+                    *(u16 *)&((UnitTask *)pTask)->dwGoal;
                 return;
             }
         }
@@ -1101,26 +1090,26 @@ void TaLogic001_CommandBtlUnit(void *pTask, s32 fGoalFirst, s32 bActive) {
             s32 side;
             s32 result;
 
-            side = Ta_GetCurrentSide(((Event_00113760 *)pTask)->id >> 8,
-                                ((Event_00113760 *)pTask)->id & 0xFF) == 0 ? 1 : 0;
+            side = Ta_GetCurrentSide(((UnitTask *)pTask)->ownerId >> 8,
+                                ((UnitTask *)pTask)->ownerId & 0xFF) == 0 ? 1 : 0;
             result = TaLogic001_GetNearUnit(pTask, 0, unitInfo, position & 0xFF, position >> 8,
                                   side, step & 0xFF, TaLogic_Seto_GetWarnHideLvl(player),
                                   entries, 0, &countA, &countB, limit & 0xFF, buffer);
             switch (result) {
                 case 3:
-                    ((Event_00113760 *)pTask)->state = 0x6FF;
-                    ((Event_00113760 *)pTask)->data.word = (position << 16) |
-                        ((Event_00113760 *)pTask)->data.low;
+                    ((UnitTask *)pTask)->mission = 0x6FF;
+                    ((UnitTask *)pTask)->dwGoal = (position << 16) |
+                        *(u16 *)&((UnitTask *)pTask)->dwGoal;
                     return;
                 case 2:
-                    ((Event_00113760 *)pTask)->state = 0x3FF;
-                    ((Event_00113760 *)pTask)->data.word = (position << 16) |
-                        ((Event_00113760 *)pTask)->data.low;
+                    ((UnitTask *)pTask)->mission = 0x3FF;
+                    ((UnitTask *)pTask)->dwGoal = (position << 16) |
+                        *(u16 *)&((UnitTask *)pTask)->dwGoal;
                     return;
                 case 1:
                     return;
                 case 0:
-                    ((Event_00113760 *)pTask)->state = 0x5FF;
+                    ((UnitTask *)pTask)->mission = 0x5FF;
                     return;
             }
         }

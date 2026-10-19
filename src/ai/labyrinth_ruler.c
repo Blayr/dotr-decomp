@@ -140,41 +140,34 @@ s32 TaLogic_LabyrinthRuler_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorP
     return 0;
 }
 
-typedef struct {
-    u16 card;
-    u8 pad2[2];
-    u16 result;
-    u8 pad6[2];
-    s32 flags;
-} Data_00131540;
 #pragma conditional_move reset
 
 /* Gives a unit of this duelist its order for this turn (attack, run, move, summon, guard). */
 s32 TaLogic_LabyrinthRuler_CommandUnit(void *pCtl) {
-    Data_00131540 *data = (Data_00131540 *)pCtl;
-    s32 temp = Ta_IsUnitControl((s32)data->card >> 8, data->card & 0xFF);
-    u16 value = data->card;
+    UnitTask *data = (UnitTask *)pCtl;
+    s32 temp = Ta_IsUnitControl((s32)data->ownerId >> 8, data->ownerId & 0xFF);
+    u16 value = data->ownerId;
 
     if (SzDuel_GetUnit((s32)value >> 8, value & 0xFF) != 0) {
-        value = data->card;
+        value = data->ownerId;
         if (SzDuel_GetUnitStatus((s32)value >> 8, value & 0xFF, 0) == 0) {
-            value = data->card;
+            value = data->ownerId;
             if (value != 0xFFFF) {
                 if ((value & 0xFF) == 0) {
-                    if (data->flags == -1) {
+                    if (*(s32 *)&data->dwGoal == -1) {
                         if (TaLogic_IsAttackedNow((s32)value >> 8, value & 0xFF, 0) == 1) {
-                            if (SzDuel_InqHandPhase((s32)data->card >> 8) == 1) {
-                                data->result = 0x50A;
+                            if (SzDuel_InqHandPhase((s32)data->ownerId >> 8) == 1) {
+                                data->mission = 0x50A;
                             } else {
-                                data->result = 0x5FF;
+                                data->mission = 0x5FF;
                             }
-                        } else if (SzDuel_InqHandPhase((s32)data->card >> 8) == 1) {
-                            data->result = 0xA06;
-                            data->flags = (data->flags & 0xFFFF0000) |
+                        } else if (SzDuel_InqHandPhase((s32)data->ownerId >> 8) == 1) {
+                            data->mission = 0xA06;
+                            data->dwGoal = (*(s32 *)&data->dwGoal & 0xFFFF0000) |
                                 (SzDuel_GetUnitLoc(temp == 0 ? 1 : 0, 0) & 0xFF);
                         } else {
-                            data->result = 0x6FF;
-                            data->flags = *(u16 *)&data->flags |
+                            data->mission = 0x6FF;
+                            data->dwGoal = *(u16 *)&*(s32 *)&data->dwGoal |
                                 ((SzDuel_GetUnitLoc(temp == 0 ? 1 : 0, 0) & 0xFF) << 16);
                         }
                     }
@@ -193,7 +186,7 @@ s32 TaLogic_LabyrinthRuler_CommandUnit(void *pCtl) {
                         TaLogic008_CommandSpellUnit(pCtl);
                         break;
                     default:
-                        data->result = 0x5FF;
+                        data->mission = 0x5FF;
                         break;
                     }
                 }

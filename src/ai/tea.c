@@ -148,13 +148,6 @@ s32 TaLogic_Tea_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
     return 0;
 }
 
-typedef struct {
-    u16 id;
-    u16 pad2;
-    u16 value;
-    u16 pad6;
-    s32 status;
-} Record_0013E1D0;
 #pragma conditional_move reset
 
 /* Gives a unit of this duelist its order for this turn (attack, run, move, summon, guard). */
@@ -162,31 +155,31 @@ s32 TaLogic_Tea_CommandUnit(u8 *pCtl) {
     s32 category;
     s32 controllingSide;
 
-    controllingSide = Ta_IsUnitControl(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF);
-    if (SzDuel_GetUnit(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF) != 0) {
-        if (SzDuel_GetUnitStatus(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF, 0) == 0) {
-            if (((Record_0013E1D0 *)pCtl)->id != 0xFFFF) {
-                if ((((Record_0013E1D0 *)pCtl)->id & 0xFF) == 0) {
-                    if (((Record_0013E1D0 *)pCtl)->status == -1) {
-                        if (TaLogic_IsAttackedNow(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF, 0) == 1) {
-                            if (SzDuel_InqHandPhase(((Record_0013E1D0 *)pCtl)->id >> 8) == 1) {
-                                ((Record_0013E1D0 *)pCtl)->value = 0x50A;
+    controllingSide = Ta_IsUnitControl(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF);
+    if (SzDuel_GetUnit(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF) != 0) {
+        if (SzDuel_GetUnitStatus(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF, 0) == 0) {
+            if (((UnitTask *)pCtl)->ownerId != 0xFFFF) {
+                if ((((UnitTask *)pCtl)->ownerId & 0xFF) == 0) {
+                    if (*(s32 *)&((UnitTask *)pCtl)->dwGoal == -1) {
+                        if (TaLogic_IsAttackedNow(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF, 0) == 1) {
+                            if (SzDuel_InqHandPhase(((UnitTask *)pCtl)->ownerId >> 8) == 1) {
+                                ((UnitTask *)pCtl)->mission = 0x50A;
                             } else {
-                                ((Record_0013E1D0 *)pCtl)->value = 0x5FF;
+                                ((UnitTask *)pCtl)->mission = 0x5FF;
                             }
                         } else {
-                            if (SzDuel_InqHandPhase(((Record_0013E1D0 *)pCtl)->id >> 8) == 1) {
-                                ((Record_0013E1D0 *)pCtl)->value = 0xA05;
+                            if (SzDuel_InqHandPhase(((UnitTask *)pCtl)->ownerId >> 8) == 1) {
+                                ((UnitTask *)pCtl)->mission = 0xA05;
                             } else {
-                                ((Record_0013E1D0 *)pCtl)->value = 0x5FF;
+                                ((UnitTask *)pCtl)->mission = 0x5FF;
                             }
                         }
                     }
                 } else {
-                    category = SzDuel_GetUnitKind(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF) >> 5;
+                    category = SzDuel_GetUnitKind(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF) >> 5;
                     switch (category) {
                     case 0:
-                        if (TaUtil_IsExMonster(((Record_0013E1D0 *)pCtl)->id >> 8, ((Record_0013E1D0 *)pCtl)->id & 0xFF) == 1) {
+                        if (TaUtil_IsExMonster(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF) == 1) {
                             TaLogic011_CommandEfcMonster(pCtl);
                         } else {
                             TaLogic011_CommandBtlUnit(pCtl, 1);
@@ -197,13 +190,13 @@ s32 TaLogic_Tea_CommandUnit(u8 *pCtl) {
                         break;
                     case 3:
                         if (TaLogic_CommandGunnerUnit(pCtl, 0) == 1) {
-                            ((Record_0013E1D0 *)pCtl)->value = 0xBFF;
+                            ((UnitTask *)pCtl)->mission = 0xBFF;
                         } else {
-                            ((Record_0013E1D0 *)pCtl)->value = 0x5FF;
+                            ((UnitTask *)pCtl)->mission = 0x5FF;
                         }
                         break;
                     default:
-                        ((Record_0013E1D0 *)pCtl)->value = 0x5FF;
+                        ((UnitTask *)pCtl)->mission = 0x5FF;
                         break;
                     }
                 }

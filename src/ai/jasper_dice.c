@@ -1298,12 +1298,6 @@ s32 TaLogic017_GetEmptyTrapPiece(void) {
 
 typedef struct {
     u16 id;
-    u8 pad2[6];
-    u32 position;
-} Record_00156FC0;
-
-typedef struct {
-    u16 id;
     u8 kind;
     u8 pad3;
     u16 position;
@@ -1320,9 +1314,9 @@ typedef struct {
 /* The task's target square: the second half-word when `mode` is 1, else the first. */
 static inline u32 position_00156FC0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((Record_00156FC0 *)src)->position >> 16);
+        return (u16)(((UnitTask *)src)->dwGoal >> 16);
     }
-    return (u16)((Record_00156FC0 *)src)->position;
+    return (u16)((UnitTask *)src)->dwGoal;
 }
 
 /* Whether the first square is nearer to (x, y) than the second. */
@@ -1363,7 +1357,7 @@ s32 TaLogic_JasperDice_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *p
         TaLogic_InitRogicControl(pTask, 1);
         return -1;
     }
-    sourcePosition = SzDuel_GetUnitLoc(((Record_00156FC0 *)pTask)->id >> 8, ((Record_00156FC0 *)pTask)->id & 0xFF);
+    sourcePosition = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     lowPosition = position_00156FC0(pTask, fFirst);
     highPosition = position_00156FC0(pTask, fFirst);
     targetPosition = SzDuel_GetUnitLoc(highPosition >> 8, lowPosition & 0xFF);
@@ -1376,17 +1370,17 @@ s32 TaLogic_JasperDice_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *p
         p++;
     } while (i < 12);
 
-    unitInfo = SzDuel_GetUnit(((Record_00156FC0 *)pTask)->id >> 8, ((Record_00156FC0 *)pTask)->id & 0xFF);
+    unitInfo = SzDuel_GetUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     sourceX = sourcePosition & 0xFF;
     sourceY = sourcePosition >> 8;
     if (GetMoveRange(unitInfo, sourceX, sourceY) == 0) {
         s32 value;
-        ((Result_00156FC0 *)pInput)->id = ((Record_00156FC0 *)pTask)->id;
+        ((Result_00156FC0 *)pInput)->id = ((UnitTask *)pTask)->ownerId;
         ((Result_00156FC0 *)pInput)->kind = 6;
         ((Result_00156FC0 *)pInput)->position = sourcePosition;
         value = TaLogic_GetUnitWarning(sourceX, sourceY, nSide, 3, 1,
                              (u8)TaLogic_JasperDice_GetWarnHideLvl(nSide));
-        if (value >= SzDuel_GetUnitAP(((Record_00156FC0 *)pTask)->id >> 8, ((Record_00156FC0 *)pTask)->id & 0xFF, 0)) {
+        if (value >= SzDuel_GetUnitAP(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 0)) {
             ((Result_00156FC0 *)pInput)->status = 1;
         } else {
             ((Result_00156FC0 *)pInput)->status = 0;
@@ -1402,7 +1396,7 @@ s32 TaLogic_JasperDice_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *p
         s32 index;
         s32 bestValue;
 
-        id = ((Record_00156FC0 *)pTask)->id;
+        id = ((UnitTask *)pTask)->ownerId;
         flags = (u16)TaLogic_JasperDice_GetWarnHideLvl(nSide);
         TaLogic_GetInvadeRoot(id >> 8, id & 0xFF, positions, sourceX, sourceY,
                      targetX = targetPosition & 0xFF, targetY = targetPosition >> 8,
@@ -1432,7 +1426,7 @@ s32 TaLogic_JasperDice_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *p
             } while (index < count);
             }
         } else {
-            ((Result_00156FC0 *)pInput)->id = ((Record_00156FC0 *)pTask)->id;
+            ((Result_00156FC0 *)pInput)->id = ((UnitTask *)pTask)->ownerId;
             ((Result_00156FC0 *)pInput)->kind = 6;
             ((Result_00156FC0 *)pInput)->position = sourcePosition;
             ((Result_00156FC0 *)pInput)->action = 2;
@@ -1441,13 +1435,13 @@ s32 TaLogic_JasperDice_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *p
             return -1;
         }
         if (bestIndex != 0xFF) {
-            ((Result_00156FC0 *)pInput)->id = ((Record_00156FC0 *)pTask)->id;
+            ((Result_00156FC0 *)pInput)->id = ((UnitTask *)pTask)->ownerId;
             ((Result_00156FC0 *)pInput)->kind = 6;
             ((Result_00156FC0 *)pInput)->position = (positions[bestIndex].y << 8) | positions[bestIndex].x;
             ((Result_00156FC0 *)pInput)->action = 2;
             ((Result_00156FC0 *)pInput)->status = 2;
         } else {
-            ((Result_00156FC0 *)pInput)->id = ((Record_00156FC0 *)pTask)->id;
+            ((Result_00156FC0 *)pInput)->id = ((UnitTask *)pTask)->ownerId;
             ((Result_00156FC0 *)pInput)->kind = 6;
             ((Result_00156FC0 *)pInput)->position = sourcePosition;
             ((Result_00156FC0 *)pInput)->action = 2;
