@@ -307,75 +307,45 @@ s32 SzDuel_DelUnit(s32 side, s32 unit) {
     return 1;
 }
 
-typedef struct Vec4_001DFD50 {
-    f32 x, y, z, w;
-} Vec4_001DFD50;
-
-typedef struct Object_001DFD50 {
-    Vec4_001DFD50 position;
-    u8 pad10[0x80];
-    s32 active;
-} Object_001DFD50;
-
-typedef struct Piece_001DFD50 {
-    u8 pad00[4];
-    Object_001DFD50 *object;
-    u8 pad08[0x2C];
-    s16 field34;
-    s16 field36;
-    u8 pad38[8];
-    u8 x;
-    u8 y;
-    u8 pad42[2];
-    u8 player;
-    u8 index;
-    u8 handle;
-} Piece_001DFD50;
-
-typedef struct Cell_001DFD50 {
-    Piece_001DFD50 *piece;
-    u8 pad04[0x18];
-} Cell_001DFD50;
-
 typedef struct Entry_001DFD50 {
-    Object_001DFD50 *object;
+    CardRequest *object;
     u8 pad04[0x9C];
 } Entry_001DFD50;
 
 /* Frees a board object. */
-static inline void remove_object_001DFD50(Object_001DFD50 *object) {
+static inline void remove_object_001DFD50(CardRequest *object) {
     extern void SzDuel_ClearDrawCard();
 
     if (object != NULL) {
         SzDuel_ClearDrawCard(object);
-        object->active = 0;
+        object->unit = NULL;
     }
 }
 
 /* Moves unit (side, unit) to board square (x, y). */
 void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
     extern void *SzDuel_GetCardInfo();
-    Piece_001DFD50 *piece;
-    Cell_001DFD50 *destination;
-    Piece_001DFD50 *occupied;
+    Unit *piece;
+    MapInfo *destination;
+    Unit *occupied;
     s32 index;
     s32 player;
-    Cell_001DFD50 *source;
-    Object_001DFD50 *object;
+    MapInfo *source;
+    CardRequest *object;
     Entry_001DFD50 *entry;
-    Object_001DFD50 *entryObject;
-    Piece_001DFD50 *found;
-    Cell_001DFD50 *removed;
+    CardRequest *entryObject;
+    Unit *found;
+    MapInfo *removed;
     s32 oldX;
     s32 oldY;
     s32 removedX;
     s32 removedY;
-    Vec4_001DFD50 position;
+    Vec4f position;
 
     found = SzDuel_GetCardInfo(side, unit);
     if (found == NULL) {
         piece = NULL;
-    } else if (found->index >= 11) {
+    } else if (found->slot >= 11) {
         piece = NULL;
     } else {
         piece = found;
@@ -383,54 +353,54 @@ void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
     if (piece == NULL) {
         return NULL;
     }
-    oldX = piece->x;
-    if (oldX == x && piece->y == y) {
+    oldX = piece->locCol;
+    if (oldX == x && piece->locRow == y) {
         return NULL;
     }
     destination = NULL;
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         destination = NULL;
     } else {
-        destination = (Cell_001DFD50 *)&boardSquares[y][x];
+        destination = &boardSquares[y][x];
     }
-    oldY = piece->y;
+    oldY = piece->locRow;
     source = NULL;
     if (oldX < 0 || oldX >= 7 || oldY < 0 || oldY >= 7) {
         source = NULL;
     } else {
-        source = (Cell_001DFD50 *)&boardSquares[oldY][oldX];
+        source = &boardSquares[oldY][oldX];
     }
     if (destination == NULL || source == NULL) {
         return NULL;
     }
-    if (destination->piece != NULL) {
-        index = destination->piece->index;
-        player = destination->piece->player;
+    if (destination->unit != NULL) {
+        index = destination->unit->slot;
+        player = destination->unit->team;
         found = SzDuel_GetCardInfo(player, index);
         if (found == NULL) {
             occupied = NULL;
-        } else if (found->index >= 11) {
+        } else if (found->slot >= 11) {
             occupied = NULL;
         } else {
             occupied = found;
         }
         if (occupied != NULL) {
             if (player < 2) {
-                if (occupied->index < 6) {
-                    SzModel_Preset(occupied->handle, -1, 999);
+                if (occupied->slot < 6) {
+                    SzModel_Preset(occupied->modelId, -1, 999);
                 }
-                object = occupied->object;
+                object = occupied->cardModel;
                 if (object != NULL) {
                     remove_object_001DFD50(object);
                 }
-                removedX = occupied->x;
-                removedY = occupied->y;
+                removedX = occupied->locCol;
+                removedY = occupied->locRow;
                 if (removedX < 0 || removedX >= 7 || removedY < 0 || removedY >= 7) {
                     removed = NULL;
                 } else {
-                    removed = (Cell_001DFD50 *)&boardSquares[removedY][removedX];
+                    removed = &boardSquares[removedY][removedX];
                 }
-                removed->piece = NULL;
+                removed->unit = NULL;
             } else if (index > 0) {
                 if (index < 0 || index >= 6) {
                     entry = NULL;
@@ -450,19 +420,19 @@ void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
             SzDuel_InitCardInfo(occupied, -1);
         }
     }
-    piece->x = x;
-    piece->y = y;
-    piece->field34 = 0;
-    piece->field36 = 0;
-    source->piece = NULL;
-    destination->piece = piece;
-    SzModel_GetPos(piece->handle, &position);
+    piece->locCol = x;
+    piece->locRow = y;
+    piece->xOffsetTerrain = 0;
+    piece->yOffsetTerrain = 0;
+    source->unit = NULL;
+    destination->unit = piece;
+    SzModel_GetPos(piece->modelId, &position);
     position.x = (f32)((x - 3) * 50);
     position.z = (f32)((y - 3) * 50);
-    SzModel_SetPos(piece->handle, &position);
-    if (piece->object != NULL) {
+    SzModel_SetPos(piece->modelId, &position);
+    if (piece->cardModel != NULL) {
         position.y = 0.0f;
-        piece->object->position = position;
+        piece->cardModel->pos = position;
     }
     return piece;
 }
@@ -1836,30 +1806,16 @@ s32 SzDuel_SetUnitCtlRate(s32 side, s32 unit, s32 direction, s32 speed) {
     return ok;
 }
 
-typedef struct {
-    s8 value : 2;
-    s8 unused : 6;
-} Flags_001E1B70;
-
-typedef struct {
-    u8 pad0[0x45];
-    u8 kind;
-    u8 pad46[0xC];
-    s8 value52;
-    u8 pad53[3];
-    Flags_001E1B70 flags;
-} Object_001E1B70;
-
 /* The unit record SzDuel_SetUnitCtlRateC writes, or NULL. */
 static inline void *check_001E1B70(void) {
     extern void *SzDuel_GetCardInfo();
-    Object_001E1B70 *object;
+    Unit *object;
 
-    object = (Object_001E1B70 *) SzDuel_GetCardInfo();
+    object = (Unit *) SzDuel_GetCardInfo();
     if (object == NULL) {
         return NULL;
     }
-    if (object->kind >= 0xB) {
+    if (object->slot >= 0xB) {
         return NULL;
     }
     return object;
@@ -1867,15 +1823,15 @@ static inline void *check_001E1B70(void) {
 
 /* Sets unit (side, unit)'s card control direction and speed (speed < 0 keeps it). */
 s32 SzDuel_SetUnitCtlRateC(s32 side, s32 unit, s32 direction, s32 speed) {
-    Object_001E1B70 *object;
+    Unit *object;
 
-    object = (Object_001E1B70 *) check_001E1B70();
+    object = (Unit *) check_001E1B70();
     if (object == NULL) {
         return 0;
     }
-    object->flags.value = (s8) (direction & 3);
+    object->SomeStatusBitfield.nCtlFlipC = (s8) (direction & 3);
     if (speed >= 0) {
-        object->value52 = speed;
+        object->ctlRateC = speed;
     }
     return 1;
 }

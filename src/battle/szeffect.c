@@ -2070,18 +2070,6 @@ s32 SzEffect_InqDuelResult(void) {
     return 0;
 }
 
-typedef struct {
-    u8 pad00[0x40];
-    u8 x;
-    u8 y;
-    u8 alternateX;
-    u8 alternateY;
-    u8 pad44[0x13];
-    s8 : 6;
-    s8 alternate : 1;
-    s8 : 1;
-} Card_001F6F50;
-
 /* Which battle animation the monster in the 3D battle plays against its opponent (SzDuel_GetPlayMotion). */
 s32 SzEffect_GetPlayMotion(s32 flag) {
     s32 attackerSide;
@@ -2089,12 +2077,12 @@ s32 SzEffect_GetPlayMotion(s32 flag) {
     s32 defenderSide;
     s32 defenderUnit;
     s32 entry;
-    Card_001F6F50 *card;
+    Unit *card;
     u8 x;
     u8 y;
 
     entry = SzBattle_InqEntry(1);
-    card = (Card_001F6F50 *)SzDuel_GetUnit(entry >> 8, entry & 0xFF);
+    card = (Unit *)SzDuel_GetUnit(entry >> 8, entry & 0xFF);
     defenderSide = (s32) effectTarget >> 8;
     defenderUnit = effectTarget & 0xFF;
     attackerSide = (s32) effectSource >> 8;
@@ -2105,8 +2093,8 @@ s32 SzEffect_GetPlayMotion(s32 flag) {
     if ((attackerSide < 0) || (attackerSide >= 3) || (attackerUnit < 0) || (attackerUnit >= 0xB) || (defenderSide < 0) || (defenderSide >= 3) || (defenderUnit < 0) || (defenderUnit >= 0xB)) {
         return -1;
     }
-    x = card->alternate ? card->alternateX : card->x;
-    y = card->alternate ? card->alternateY : card->y;
+    x = card->status.fPickup ? card->toMoveCol : card->locCol;
+    y = card->status.fPickup ? card->toMoveRow : card->locRow;
     return SzDuel_GetPlayMotion(attackerSide, attackerUnit, defenderSide, defenderUnit, x, y, flag);
 }
 

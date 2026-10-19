@@ -3423,14 +3423,6 @@ typedef struct State_0026C170 {
     u16 timer;
 } State_0026C170;
 
-typedef struct Card_0026C170 {
-    u8 pad00[4];
-    u8 *model;
-    u8 pad08[0x38];
-    u8 x;
-    u8 y;
-} Card_0026C170;
-
 typedef struct Rot_0026C170 {
     s32 x;
     s32 y;
@@ -3452,7 +3444,7 @@ s32 Ta_Eff_109(u32 *src, void *Temp, s32 ID) {
     u8 done = 0;
     Request_0026C170 *req = &data;
     State_0026C170 *state = Temp;
-    Card_0026C170 *card;
+    Unit *card;
     Vec4_0026C170 color;
     Vec4_0026C170 pos;
     Rot_0026C170 rot;
@@ -3470,7 +3462,7 @@ s32 Ta_Eff_109(u32 *src, void *Temp, s32 ID) {
     color.y = 0.0f;
     color.x = 0.0f;
     busy = 0;
-    card = (Card_0026C170 *)SzDuel_GetUnit(src[1], 0);
+    card = (Unit *)SzDuel_GetUnit(src[1], 0);
     if (ID >= 0) {
         InitEffectTemp(state);
         SzSound_PlayBGM(0x2B, 0);
@@ -3499,12 +3491,12 @@ s32 Ta_Eff_109(u32 *src, void *Temp, s32 ID) {
         if (SzSound_IsLoadingBGM() == 0) {
             TaView_ReqFocusCamera(0, (src[1] << 8) | (src[2] & 7), 0x32, 0xB4);
             SzSound_PlayBGM(0x2B, 1);
-            if (card->model == NULL) {
-                card->model = SzDuel_GetCardRequest();
+            if (card->cardModel == NULL) {
+                card->cardModel = SzDuel_GetCardRequest();
             }
-            if (card->model != NULL) {
-                *(Card_0026C170 **)(card->model + 0x90) = card;
-                SzDuel_CalcUnitPos(card->x, card->y, 0, card->model);
+            if (card->cardModel != NULL) {
+                card->cardModel->unit = card;
+                SzDuel_CalcUnitPos(card->locCol, card->locRow, 0, card->cardModel);
                 pos.x = 0.0f;
                 pos.y = 0.0f;
                 pos.z = (src[1] == 0) ? 350.0f : -350.0f;
@@ -3719,10 +3711,10 @@ s32 Ta_Eff_109(u32 *src, void *Temp, s32 ID) {
                     SzDuel_DelUnit(src[1], (src[2] >> 6) & 7);
                     SzDuel_DelUnit(src[1], (src[2] >> 9) & 7);
                     SzModel_Preset(0x20, -1, 999);
-                    if (card->model) {
-                        SzDuel_FreeCardRequest(card->model);
+                    if (card->cardModel) {
+                        SzDuel_FreeCardRequest(card->cardModel);
                     }
-                    card->model = NULL;
+                    card->cardModel = NULL;
                 }
                 busy++;
             }

@@ -433,14 +433,6 @@ typedef struct {
     s32 v[4];
 } Rot_001E53C0 __attribute__((aligned(16)));
 
-typedef struct {
-    u8 pad0[0x40];
-    u8 f40;
-    u8 f41;
-    u8 pad42[4];
-    u8 model;
-} Card_001E53C0;
-
 extern Rot_001E53C0 D_002921D0;
 
 /* Sends side `side`'s monster back from the 3D battle to the board (`restore` puts its model back as it was). */
@@ -450,7 +442,7 @@ void SzBattle_Return(s32 side, s32 restore) {
     s32 pos;
     s32 hi;
     s32 lo;
-    Card_001E53C0 *card;
+    Unit *card;
     s32 model;
     Rot_001E53C0 rot;
     f32 vecA[4];
@@ -459,17 +451,17 @@ void SzBattle_Return(s32 side, s32 restore) {
     pos = ((Slots_001E53C0 *)&battleState)->entries[side];
     hi = pos >> 8;
     lo = pos & 0xFF;
-    card = (Card_001E53C0 *)SzDuel_GetUnit(hi, lo);
+    card = (Unit *)SzDuel_GetUnit(hi, lo);
     rot = D_002921D0;
     rot.v[1] = (hi != 0) ? 0 : 0x8000;
     if (card != NULL) {
-        model = card->model;
+        model = card->modelId;
         SzEffect_ClearRefID2(pos, 1, &rot);
         SzDuel_SetBusyFlag(hi, lo, 0);
         SzModel_SetScale(model, NULL);
         SzModel_SetRot(model, &rot);
         SzModel_GetPos(model, vecA);
-        SzDuel_CalcUnitPos(card->f40, card->f41, 0, vecB);
+        SzDuel_CalcUnitPos(card->locCol, card->locRow, 0, vecB);
         vecA[0] = vecB[0];
         vecA[2] = vecB[2];
         SzModel_SetPos(model, vecA);
