@@ -138,6 +138,7 @@ s32 TaLogic_Weevil_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
     return 0;
 }
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Entry_0010CE20 {
     u16 unitId; /* (side << 8) | unit */
     u16 pad2;
@@ -146,6 +147,7 @@ typedef struct Entry_0010CE20 {
     s32 target;
 } Entry_0010CE20;
 
+/* A view of a task (UnitTask) kept as it is: the control block's view (its bit fields), not a task. */
 typedef struct State_0010CE20 {
     u8 pad0[0x1A1];
     u8 level : 4;
@@ -420,7 +422,7 @@ typedef struct Entry_0010D880 {
 
 /* Orders an effect monster (task `pTask`): where its effect does most (`fGoalFirst`, `bActive` as for fighting
    units). */
-void TaLogic_Weevil_CommandEfcMonster(void *pTask, s32 fGoalFirst, u8 bActive) {
+void TaLogic_Weevil_CommandEfcMonster(UnitTask *pTask, s32 fGoalFirst, u8 bActive) {
     extern s32 SzDuel_GetUnitCardNo();
     extern void TaLogic_InitIgnoreLst();
     extern s32 TaLogic_GetNearUnit();
@@ -440,11 +442,11 @@ void TaLogic_Weevil_CommandEfcMonster(void *pTask, s32 fGoalFirst, u8 bActive) {
     s32 result;
     u16 id;
 
-    id = *(u16 *)pTask;
+    id = pTask->ownerId;
     if ((data = SzDuel_GetUnit(id >> 8, id & 0xFF)) != 0) {
-        id = *(u16 *)pTask;
+        id = pTask->ownerId;
         owner = Ta_GetCurrentSide(id >> 8, id & 0xFF);
-        id = *(u16 *)pTask;
+        id = pTask->ownerId;
         location = SzDuel_GetUnitLoc(id >> 8, id & 0xFF);
         otherCount = 0;
         count = 0;
@@ -457,7 +459,7 @@ void TaLogic_Weevil_CommandEfcMonster(void *pTask, s32 fGoalFirst, u8 bActive) {
             entry++;
         } while (i < 22);
         TaLogic_InitIgnoreLst(context);
-        id = *(u16 *)pTask;
+        id = pTask->ownerId;
         type = SzDuel_GetUnitCardNo(id >> 8, id & 0xFF);
         switch (type) {
         case 0x192:
@@ -472,14 +474,14 @@ void TaLogic_Weevil_CommandEfcMonster(void *pTask, s32 fGoalFirst, u8 bActive) {
                 switch (result) {
                 case 3:
                 case 2:
-                    *(u16 *)((u8 *)pTask + 4) = 0x3FF;
-                    *(u32 *)((u8 *)pTask + 8) = (location << 16) | *(u16 *)((u8 *)pTask + 8);
+                    pTask->mission = 0x3FF;
+                    pTask->goal.dwGoal = (location << 16) | pTask->goal.wGoal[0];
                     return;
                 case 1:
                     return;
                 case 0:
-                    *(u16 *)((u8 *)pTask + 4) = 0x3FF;
-                    *(u32 *)((u8 *)pTask + 8) = (location << 16) | *(u16 *)((u8 *)pTask + 8);
+                    pTask->mission = 0x3FF;
+                    pTask->goal.dwGoal = (location << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 attempt++;
@@ -487,8 +489,8 @@ void TaLogic_Weevil_CommandEfcMonster(void *pTask, s32 fGoalFirst, u8 bActive) {
                     break;
                 }
             }
-            *(u16 *)((u8 *)pTask + 4) = 0x3FF;
-            *(u32 *)((u8 *)pTask + 8) = (location << 16) | *(u16 *)((u8 *)pTask + 8);
+            pTask->mission = 0x3FF;
+            pTask->goal.dwGoal = (location << 16) | pTask->goal.wGoal[0];
             break;
         case 0x1A1:
             if (TaLogic_CommandGunnerUnit(pTask, 0) != 1) {
@@ -1806,6 +1808,7 @@ typedef struct Position_001106F0 {
     u8 y : 4;
 } Position_001106F0;
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Source_001106F0 {
     u16 id;
     u8 pad2[6];

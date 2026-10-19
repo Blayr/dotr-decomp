@@ -432,7 +432,7 @@ struct InitEntry_0013ECF0 {
 };
 
 /* Orders an effect monster (task `pTask`): where its effect does most. */
-void TaLogic011_CommandEfcMonster(void *pTask) {
+void TaLogic011_CommandEfcMonster(UnitTask *pTask) {
     extern s32 SzDuel_GetUnitCardNo();
     extern void TaLogic_InitIgnoreLst();
     u8 scratch[112];
@@ -444,12 +444,12 @@ void TaLogic011_CommandEfcMonster(void *pTask) {
     s32 code;
     s32 value;
 
-    if (SzDuel_GetUnit((s32)*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF) == 0) {
+    if (SzDuel_GetUnit((s32)pTask->ownerId >> 8, pTask->ownerId & 0xFF) == 0) {
         return;
     }
 
-    card = Ta_GetCurrentSide((s32)*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
-    color = SzDuel_GetUnitLoc((s32)*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
+    card = Ta_GetCurrentSide((s32)pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    color = SzDuel_GetUnitLoc((s32)pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     entry = entries;
     i = 0;
     do {
@@ -460,32 +460,32 @@ void TaLogic011_CommandEfcMonster(void *pTask) {
     } while (i < 22);
 
     TaLogic_InitIgnoreLst(scratch);
-    code = SzDuel_GetUnitCardNo((s32)*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
+    code = SzDuel_GetUnitCardNo((s32)pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     switch (code) {
     case 0x182:
         if (TaLogic011_IsUseBindChain(card) == 1) {
-            *(u16 *)((u8 *)pTask + 4) = 0x6FF;
-            *(u32 *)((u8 *)pTask + 8) = (color << 16) | *(u16 *)((u8 *)pTask + 8);
+            pTask->mission = 0x6FF;
+            pTask->goal.dwGoal = (color << 16) | pTask->goal.wGoal[0];
             return;
         }
         break;
     case 0x184:
         value = SzDuel_GetLP(card);
         if (value < SzDuel_GetLP(card == 0 ? 1 : 0)) {
-            *(u16 *)((u8 *)pTask + 4) = 0x6FF;
-            *(u32 *)((u8 *)pTask + 8) = (color << 16) | *(u16 *)((u8 *)pTask + 8);
+            pTask->mission = 0x6FF;
+            pTask->goal.dwGoal = (color << 16) | pTask->goal.wGoal[0];
             return;
         }
         break;
     case 0x179:
         if ((TaLogic011_IsUseLifeHourGlass(card) == 1) && (TaLogic_CommandGunnerUnit(pTask, 0) == 1)) {
-            *(u16 *)((u8 *)pTask + 4) = 0xBFF;
+            pTask->mission = 0xBFF;
             return;
         }
         break;
     case 0x186:
         if ((TaLogic011_IsUseBraveHourGlass(card) == 1) && (TaLogic_CommandGunnerUnit(pTask, 0) == 1)) {
-            *(u16 *)((u8 *)pTask + 4) = 0xBFF;
+            pTask->mission = 0xBFF;
             return;
         }
         break;
@@ -1419,6 +1419,7 @@ typedef struct Coord_00140E10 {
     u8 y : 4;
 } Coord_00140E10;
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Unit_00140E10 {
     u16 pos;
     u8 pad2[6];

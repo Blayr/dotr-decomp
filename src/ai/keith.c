@@ -1863,6 +1863,7 @@ s32 TaLogic_Keith_GetMinimumTask_TrapMission(void *pTask, s32 nSide, void *pInpu
     return 0;
 }
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Input_001206F0 {
     u16 position;
     u16 unk2;

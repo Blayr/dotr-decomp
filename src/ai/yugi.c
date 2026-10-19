@@ -645,7 +645,7 @@ typedef struct Entry_0015E950 {
 } Entry_0015E950;
 
 /* Orders an effect monster (task `pTask`): where its effect does most. */
-void TaLogic019_CommandEfcMonster(void *pTask) {
+void TaLogic019_CommandEfcMonster(UnitTask *pTask) {
     extern s32 SzDuel_GetUnitCardNo();
     extern s32 TaLogic_GetNearUnitL2();
     extern void TaLogic_InitIgnoreLst();
@@ -674,13 +674,13 @@ void TaLogic019_CommandEfcMonster(void *pTask) {
     Entry_0015E950 *entry;
     u16 location;
 
-    location = *(u16 *)pTask;
+    location = pTask->ownerId;
     owner = Ta_IsUnitControl(location >> 8, location & 0xFF);
-    location = *(u16 *)pTask;
+    location = pTask->ownerId;
     value = SzDuel_GetUnitCardNo(location >> 8, location & 0xFF);
-    location = *(u16 *)pTask;
+    location = pTask->ownerId;
     unitInfo = SzDuel_GetUnit(location >> 8, location & 0xFF);
-    location = *(u16 *)pTask;
+    location = pTask->ownerId;
     destination = SzDuel_GetUnitLoc(location >> 8, location & 0xFF);
     entry = entries;
     count = 0;
@@ -697,18 +697,18 @@ void TaLogic019_CommandEfcMonster(void *pTask) {
     cursor = 0;
     switch (value) {
     case 0x2B:
-        location = *(u16 *)pTask;
+        location = pTask->ownerId;
         if (SzDuel_GetUnitStatus(location >> 8, location & 0xFF, 4) != 0) {
             break;
         }
-        *(u16 *)((u8 *)pTask + 4) = 0xCFF;
-        *(u32 *)((u8 *)pTask + 8) = (destination << 16) | *(u16 *)((u8 *)pTask + 8);
+        pTask->mission = 0xCFF;
+        pTask->goal.dwGoal = (destination << 16) | pTask->goal.wGoal[0];
         return;
     case 0x57:
         TaLogic019_CommandAtkUnit(pTask);
         return;
     case 0x129:
-        location = *(u16 *)pTask;
+        location = pTask->ownerId;
         index = 1;
         y = location & 0xFF;
         x = location >> 8;
@@ -746,8 +746,8 @@ void TaLogic019_CommandEfcMonster(void *pTask) {
             result = TaLogic_GetNearUnitL3((void *)unitInfo, retryY, retryX, entries, 2, 0x34, 0, 2, 0,
                                   TaLogic_Yugi_GetWarnHideLvl(owner), count);
             if (result >= 0) {
-                *(u16 *)((u8 *)pTask + 4) = 0x2FF;
-                *(u32 *)((u8 *)pTask + 8) = (result << 16) | *(u16 *)((u8 *)pTask + 8);
+                pTask->mission = 0x2FF;
+                pTask->goal.dwGoal = (result << 16) | pTask->goal.wGoal[0];
                 return;
             }
             attempt++;
@@ -755,7 +755,7 @@ void TaLogic019_CommandEfcMonster(void *pTask) {
                 break;
             }
         }
-        location = *(u16 *)pTask;
+        location = pTask->ownerId;
         TaLogic019_CommandLDGuardUnit(location >> 8, location & 0xFF, pTask);
         return;
     }
@@ -1621,7 +1621,8 @@ typedef struct Output_001607D0 {
 } Output_001607D0;
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
-   for the unit's first-choice task). */
+   for the unit's first-choice task). It reads its task through casts: as UnitTask fields the
+   bytes differ. */
 s32 TaLogic_Yugi_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
     Output_001607D0 *output = pInput;
     s32 target;

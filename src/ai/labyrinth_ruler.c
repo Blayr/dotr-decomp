@@ -1380,6 +1380,7 @@ typedef struct Position_001341C0 {
     u8 y : 4;
 } Position_001341C0;
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Source_001341C0 {
     u16 id;
     u8 pad2[6];

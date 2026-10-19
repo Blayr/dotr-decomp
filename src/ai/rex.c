@@ -1615,6 +1615,7 @@ s32 TaLogic_Rex_GetMinimumTask_TrapMission(void *pTask, s32 nSide, void *pInput,
     return 0;
 }
 
+/* A view of a task (UnitTask) kept as it is: the macros below read its members through a generic parameter. */
 typedef struct Input_0011B680 {
     u16 position;
     u16 unk2;

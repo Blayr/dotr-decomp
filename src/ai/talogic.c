@@ -175,6 +175,7 @@ s32 TaLogic_DoUnitAssign(u16 uID, void *pCtl) {
     return 0;
 }
 
+/* A view of a task (UnitTask) kept as it is: its layout does not follow the task's member by member. */
 typedef struct {
     u16 id;
     s16 field_02;

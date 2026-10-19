@@ -961,7 +961,7 @@ s32 TaLogic_Default_CommandUnit(void *pCtl) {
     s32 result1;
 
     extern s32 SzDuel_GetUnitCardNo();
-    extern s32 TaLogic022_CommandEfcMonster(void *pCtl);
+    extern s32 TaLogic022_CommandEfcMonster(UnitTask *pCtl);
 
     result0 = SzDuel_GetUnitCardNo(*(u16 *)pCtl >> 8, *(u16 *)pCtl & 0xFF);
     SzDuel_GetUnitLoc(*(u16 *)pCtl >> 8, *(u16 *)pCtl & 0xFF);
@@ -1379,7 +1379,7 @@ static inline s32 ready_0016E510(s32 player) {
 }
 
 /* Orders an effect monster (task `pTask`): where its effect does most. */
-void TaLogic022_CommandEfcMonster(u16 *pTask) {
+void TaLogic022_CommandEfcMonster(UnitTask *pTask) {
     u8 work[112];
     Candidate_0016E510 list[22];
     s16 first;
@@ -1433,11 +1433,11 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
     extern void TaLogic_InitIgnoreLst();
 
     count = 0;
-    player = Ta_IsUnitControl(pTask[0] >> 8, pTask[0] & 0xFF);
-    type = SzDuel_GetUnitCardNo(pTask[0] >> 8, pTask[0] & 0xFF);
-    SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF);
-    position = SzDuel_GetUnitLoc(pTask[0] >> 8, pTask[0] & 0xFF);
-    if ((unitInfo = SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF)) != 0) {
+    player = Ta_IsUnitControl(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    type = SzDuel_GetUnitCardNo(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    if ((unitInfo = SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF)) != 0) {
         p = list;
         length = 0;
         second = 0;
@@ -1457,17 +1457,17 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
             if (ready == 1) {
                 do {
                     if (position == TaLogic_Default_GetSommonPiecePreference(player, i)) {
-                        pTask[2] = 0x6FF;
-                        *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                        pTask->mission = 0x6FF;
+                        *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     }
                     i++;
                 } while (i < 9);
-                pTask[2] = 0x6FF;
-                *(u32 *)&pTask[4] = pTask[4] | (SzDuel_GetUnitLoc(player, 0) << 16);
+                pTask->mission = 0x6FF;
+                *(u32 *)&pTask->goal.wGoal[0] = pTask->goal.wGoal[0] | (SzDuel_GetUnitLoc(player, 0) << 16);
                 return;
             }
         }
-        effect = Ta_GetUnitEffect(pTask[0] >> 8, pTask[0] & 0xFF, 2);
+        effect = Ta_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 2);
         if (effect != NULL) {
             switch (effect[0] >> 8) {
             case 0xC:
@@ -1479,8 +1479,8 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
             case 0x56:
             case 0x43:
             case 0xF:
-                pTask[2] = 0x3FF;
-                *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                pTask->mission = 0x3FF;
+                *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                 return;
             case 0xB:
             case 0x4E:
@@ -1488,22 +1488,22 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
             case 0x4D:
             case 0x6:
                 if ((u32)SearchUnitByRange(0, 0, player, 1, effect[0] & 0x3F, 14) > 1U) {
-                    pTask[2] = 0x3FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                    pTask->mission = 0x3FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 break;
             case 0x13:
             case 0x17:
                 if (((effect[0] >> 6) & 1) && SearchUnitByRange(0, 0, player, 1, effect[0] & 0x3F, 14) != 0) {
-                    if (SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF) != 0) {
-                        other = (Ta_GetCurrentSide(pTask[0] >> 8, pTask[0] & 0xFF) == 0 ? 1 : 0) << 8;
-                        SzDuel_GetUnitLoc(pTask[0] >> 8, pTask[0] & 0xFF);
+                    if (SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF) != 0) {
+                        other = (Ta_GetCurrentSide(pTask->ownerId >> 8, pTask->ownerId & 0xFF) == 0 ? 1 : 0) << 8;
+                        SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
                         SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
-                        SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF);
-                        if (SzDuel_GetUnitAP(pTask[0] >> 8, pTask[0] & 0xFF, 0) >= 2500) {
+                        SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+                        if (SzDuel_GetUnitAP(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0) >= 2500) {
                             TaLogic022_CommandAtkUnit(pTask);
-                        } else if (TaLogic022_IsEmptyCntrGuard(pTask[0] >> 8, pTask[0] & 0xFF, 1) == 1) {
+                        } else if (TaLogic022_IsEmptyCntrGuard(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 1) == 1) {
                             TaLogic022_CommandLineUnit(pTask, 1);
                         } else {
                             TaLogic022_CommandAtkUnit(pTask);
@@ -1512,8 +1512,8 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                     return;
                 }
                 if ((u32)TaLogic_RemoveHideUnit(SearchUnitByRange(0, 0, player, 2, effect[0] & 0x3F, 14)) > 2U) {
-                    pTask[2] = 0x3FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                    pTask->mission = 0x3FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 break;
@@ -1526,8 +1526,8 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                         y = result >> 8;
                         x = result & 0xFF;
                         if (SzDuel_GetUnitCurseRest(y, x) > 0 && SzDuel_GetUnitCurseRest(y, x) != 0xFF) {
-                            pTask[2] = 0x3FF;
-                            *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                            pTask->mission = 0x3FF;
+                            *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                             return;
                         }
                         i++;
@@ -1552,16 +1552,16 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                     i++;
                 }
                 if (count > 5) {
-                    pTask[2] = 0x3FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                    pTask->mission = 0x3FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 break;
             case 0x54:
                 result = Ta_GetUnitOwnerIDFromLstCount(SearchUnitByRange(0, 0, player, 3, 0x21, 14), 0);
-                if (player == Ta_IsUnitControl(result >> 8, result & 0xFF) && result != pTask[0]) {
-                    pTask[2] = 0x3FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                if (player == Ta_IsUnitControl(result >> 8, result & 0xFF) && result != pTask->ownerId) {
+                    pTask->mission = 0x3FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 break;
@@ -1574,8 +1574,8 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                         y55 = result55 >> 8;
                         x55 = result55 & 0xFF;
                         if (SzDuel_GetUnitCurseRest(y55, x55) > 0 && SzDuel_GetUnitCurseRest(y55, x55) != 0xFF) {
-                            pTask[2] = 0x3FF;
-                            *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                            pTask->mission = 0x3FF;
+                            *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                             return;
                         }
                         i55++;
@@ -1584,32 +1584,32 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                 break;
             case 0x58:
                 if (SzData_GetRank((player == 0 ? 1 : 0), SzDuel_GetUnitCardNo((player == 0 ? 1 : 0), 0)) >= 6) {
-                    pTask[2] = 0x3FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                    pTask->mission = 0x3FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                     return;
                 }
                 break;
             }
         }
-        action = Ta_GetUnitEffect(pTask[0] >> 8, pTask[0] & 0xFF, 3);
-        if (SzDuel_GetUnitStatus(pTask[0] >> 8, pTask[0] & 0xFF, 4) == 0 && action != NULL) {
+        action = Ta_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 3);
+        if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) == 0 && action != NULL) {
             switch (action[0] >> 8) {
             case 0x17:
                 if ((action[0] & 0x3F) == 0x1A && TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                     return;
                 }
                 break;
             case 0x14:
-                pTask[2] = 0xCFF;
+                pTask->mission = 0xCFF;
                 return;
             case 0x4:
                 if ((action[0] & 0x3F) == 0x1A && TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                     if ((action[1] >> 16) != 2) {
                         return;
                     }
-                    result = (u16)SzDuel_GetUnitKind((u32)(u16)(*(u32 *)&pTask[4] >> 16) >> 8, (*(u32 *)&pTask[4] >> 16) & 0xFF);
+                    result = (u16)SzDuel_GetUnitKind((u32)(u16)(*(u32 *)&pTask->goal.wGoal[0] >> 16) >> 8, (*(u32 *)&pTask->goal.wGoal[0] >> 16) & 0xFF);
                     if ((result >> 5) == 0 && (result & 0x1F) == 2) {
                         return;
                     }
@@ -1617,23 +1617,23 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                 break;
             case 0x16:
                 if (TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                     return;
                 }
                 break;
             case 0x24:
                 if (((action[0] & 0x3F) == 0x1A || (action[0] & 0x3F) == 0x1B) && TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                     return;
                 }
                 break;
             case 0x1F:
                 if (Ta_SearchUncTypeNaturalEffectUserNum(0x39) <= 0 && (action[0] & 0x3F) == 0x1A && TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                     if ((action[1] >> 16) != 14) {
                         return;
                     }
-                    result = (u16)SzDuel_GetUnitKind((u32)(u16)(*(u32 *)&pTask[4] >> 16) >> 8, (*(u32 *)&pTask[4] >> 16) & 0xFF);
+                    result = (u16)SzDuel_GetUnitKind((u32)(u16)(*(u32 *)&pTask->goal.wGoal[0] >> 16) >> 8, (*(u32 *)&pTask->goal.wGoal[0] >> 16) & 0xFF);
                     if ((result >> 5) == 0 && (result & 0x1F) == 14) {
                         return;
                     }
@@ -1647,8 +1647,8 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                     cursor = TaLogic_GetNearUnitL2(cursor, unitInfo, retry_x, retry_y, (player == 0 ? 1 : 0), (u8)attempt, 0, TaLogic_Default_GetWarnHideLvl(player), list, &length, &first, &second, work);
                     result = TaLogic_GetNearUnitL3(unitInfo, retry_x, retry_y, list, 5, 0x34, 0, 2, 0, TaLogic_Default_GetWarnHideLvl(player), length);
                     if (result >= 0) {
-                        pTask[2] = 0x2FF;
-                        *(u32 *)&pTask[4] = (result << 16) | pTask[4];
+                        pTask->mission = 0x2FF;
+                        *(u32 *)&pTask->goal.wGoal[0] = (result << 16) | pTask->goal.wGoal[0];
                         return;
                     }
                     attempt++;
@@ -1683,19 +1683,19 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                         } while (nearest_i < Ta_GetUnitNumFrom22bitFlagList(nearest_mask));
                     }
                     if (nearest >= 0) {
-                        pTask[2] = 0xBFF;
-                        *(u32 *)&pTask[4] = (nearest << 16) | pTask[4];
+                        pTask->mission = 0xBFF;
+                        *(u32 *)&pTask->goal.wGoal[0] = (nearest << 16) | pTask->goal.wGoal[0];
                         return;
                     }
                 }
                 break;
             case 0xC:
-                pTask[2] = 0x3FF;
-                *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                pTask->mission = 0x3FF;
+                *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                 return;
             case 0x46:
                 if (TaLogic_CommandGunnerUnit(pTask, 0) == 1) {
-                    pTask[2] = 0xBFF;
+                    pTask->mission = 0xBFF;
                 }
                 return;
             case 0x51:
@@ -1705,25 +1705,25 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                 break;
             }
         }
-        action = Ta_GetUnitEffect(pTask[0] >> 8, pTask[0] & 0xFF, 1);
+        action = Ta_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 1);
         if (action != NULL) {
             switch (action[0] >> 8) {
             case 0x42:
                 if (((action[0] >> 6) & 3) == 1) {
-                    pTask[2] = 0x6FF;
-                    *(u32 *)&pTask[4] = (position << 16) | pTask[4];
+                    pTask->mission = 0x6FF;
+                    *(u32 *)&pTask->goal.wGoal[0] = (position << 16) | pTask->goal.wGoal[0];
                 }
                 break;
             }
         }
-        if (SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF) != 0) {
-            other = (Ta_GetCurrentSide(pTask[0] >> 8, pTask[0] & 0xFF) == 0 ? 1 : 0) << 8;
-            SzDuel_GetUnitLoc(pTask[0] >> 8, pTask[0] & 0xFF);
+        if (SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF) != 0) {
+            other = (Ta_GetCurrentSide(pTask->ownerId >> 8, pTask->ownerId & 0xFF) == 0 ? 1 : 0) << 8;
+            SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
             SzDuel_GetUnitLoc(other >> 8, other & 0xFF);
-            SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF);
-            if (SzDuel_GetUnitAP(pTask[0] >> 8, pTask[0] & 0xFF, 0) >= 2500) {
+            SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+            if (SzDuel_GetUnitAP(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0) >= 2500) {
                 TaLogic022_CommandAtkUnit(pTask);
-            } else if (TaLogic022_IsEmptyCntrGuard(pTask[0] >> 8, pTask[0] & 0xFF, 1) == 1) {
+            } else if (TaLogic022_IsEmptyCntrGuard(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 1) == 1) {
                 TaLogic022_CommandLineUnit(pTask, 1);
             } else {
                 TaLogic022_CommandAtkUnit(pTask);
@@ -1733,7 +1733,7 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
 }
 
 /* Orders a face-down magic card (task `pTask`): whether and where to open it. */
-void TaLogic022_CommandSpellUnit(u16 *pTask) {
+void TaLogic022_CommandSpellUnit(UnitTask *pTask) {
     extern s32 SzDuel_GetUnitCardNo();
     extern s32 SzView_SetCamera();
     s32 id;
@@ -1743,48 +1743,48 @@ void TaLogic022_CommandSpellUnit(u16 *pTask) {
     s32 result;
     u32 action;
 
-    SzDuel_GetUnitKind(pTask[0] >> 8, pTask[0] & 0xFF);
-    id = SzDuel_GetUnitCardNo(pTask[0] >> 8, pTask[0] & 0xFF);
-    value = Ta_IsUnitControl(pTask[0] >> 8, pTask[0] & 0xFF);
-    effect = Ta_GetUnitEffect(pTask[0] >> 8, pTask[0] & 0xFF, 0);
-    position = SzDuel_GetUnitLoc(pTask[0] >> 8, pTask[0] & 0xFF);
+    SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    id = SzDuel_GetUnitCardNo(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    value = Ta_IsUnitControl(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+    effect = Ta_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     action = *(u32 *)effect;
     switch (action >> 8) {
     case 0x14:
-        pTask[2] = 0xCFF;
+        pTask->mission = 0xCFF;
         return;
     case 4:
         result = TaLogicCom_Default_GetUseXYRangeSpell(value, effect);
         if (result >= 0) {
-            pTask[2] = 0x6FF;
+            pTask->mission = 0x6FF;
             if (!(effect[0] & 0x3F)) {
-                *(u32 *)&pTask[4] = pTask[4] | ((((position >> 8) << 8) | (result & 0xFF)) << 16);
+                *(u32 *)&pTask->goal.wGoal[0] = pTask->goal.wGoal[0] | ((((position >> 8) << 8) | (result & 0xFF)) << 16);
             } else {
-                *(u32 *)&pTask[4] = (result << 16) | pTask[4];
+                *(u32 *)&pTask->goal.wGoal[0] = (result << 16) | pTask->goal.wGoal[0];
             }
             return;
         }
         break;
     case 2:
-        result = TaLogic_GetLandChange(SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF),
+        result = TaLogic_GetLandChange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF),
             position & 0xFF, position >> 8, *((u8 *)effect + 4), 8, 2);
         if (result >= 0) {
-            pTask[2] = 0x6FF;
-            *(u32 *)&pTask[4] = (result << 16) | pTask[4];
+            pTask->mission = 0x6FF;
+            *(u32 *)&pTask->goal.wGoal[0] = (result << 16) | pTask->goal.wGoal[0];
             return;
         }
         break;
     case 0x25:
         if ((action & 0x3F) == 0x21) {
-            if (SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF) != 0) {
-                id = ((Ta_GetCurrentSide(pTask[0] >> 8, pTask[0] & 0xFF) == 0) ? 1 : 0) << 8;
-                SzDuel_GetUnitLoc(pTask[0] >> 8, pTask[0] & 0xFF);
+            if (SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF) != 0) {
+                id = ((Ta_GetCurrentSide(pTask->ownerId >> 8, pTask->ownerId & 0xFF) == 0) ? 1 : 0) << 8;
+                SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
                 SzDuel_GetUnitLoc(id >> 8, id & 0xFF);
-                SzDuel_GetUnit(pTask[0] >> 8, pTask[0] & 0xFF);
-                if (SzDuel_GetUnitAP(pTask[0] >> 8, pTask[0] & 0xFF, 0) >= 0x9C4) {
+                SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+                if (SzDuel_GetUnitAP(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0) >= 0x9C4) {
                     TaLogic022_CommandAtkUnit(pTask);
                 } else {
-                    if (TaLogic022_IsEmptyCntrGuard(pTask[0] >> 8, pTask[0] & 0xFF, 1) == 1) {
+                    if (TaLogic022_IsEmptyCntrGuard(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 1) == 1) {
                         TaLogic022_CommandLineUnit(pTask, 1);
                     } else {
                         TaLogic022_CommandAtkUnit(pTask);
@@ -1796,14 +1796,14 @@ void TaLogic022_CommandSpellUnit(u16 *pTask) {
         break;
     case 0x1F:
         if (id == 0x2DC) {
-            pTask[2] = 0xDFF;
+            pTask->mission = 0xDFF;
             return;
         }
         break;
     default:
         break;
     }
-    pTask[2] = 0x5FF;
+    pTask->mission = 0x5FF;
 }
 
 typedef struct {
@@ -2423,7 +2423,8 @@ static inline s32 moveFlags_00170940(u16 *unit, u16 *move, s32 exact) {
 }
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
-   for the unit's first-choice task). */
+   for the unit's first-choice task). It reads its task through casts: as UnitTask fields the
+   bytes differ. */
 s32 TaLogic_Default_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     s32 destination;
@@ -2905,7 +2906,8 @@ typedef struct {
 } Output_00171D60;
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
-   first-choice task). */
+   first-choice task). It reads its task through casts: as UnitTask fields the
+   bytes differ. */
 s32 TaLogic_Default_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInput, s32 fFirst) {
     extern void TaLogic_InitRogicControl();
     extern s32 TaLogic_Default_GetMinimumTask_RunMission();

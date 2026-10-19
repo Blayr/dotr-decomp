@@ -381,16 +381,16 @@ s32 TaLogic009_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s
 }
 
 /* Orders a unit (task `pTask`) to guard its leader. */
-void TaLogic009_CommandDefenseUnit(void *pTask) {
+void TaLogic009_CommandDefenseUnit(UnitTask *pTask) {
     s32 emptyDefensePoint;
 
     emptyDefensePoint = TaLogic009_GetEmptyDefensePoint(pTask);
     if (emptyDefensePoint >= 0) {
-        *(s16 *)((u8 *)pTask + 4) = 0x3FF;
-        *(u32 *)((u8 *)pTask + 8) = (emptyDefensePoint << 16) | *(u16 *)((u8 *)pTask + 8);
+        *(s16 *)&pTask->mission = 0x3FF;
+        pTask->goal.dwGoal = (emptyDefensePoint << 16) | pTask->goal.wGoal[0];
         return;
     }
-    *(s16 *)((u8 *)pTask + 4) = 0x5FF;
+    *(s16 *)&pTask->mission = 0x5FF;
 }
 
 /* The free defence square (2, 2) or (5, 2), or -1. */
