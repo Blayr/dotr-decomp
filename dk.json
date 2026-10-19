@@ -22,162 +22,222 @@
     [
       1048576,
       "c",
-      "main_000"
+      "core/crt0"
     ],
     [
-      1061312,
+      1048784,
       "c",
-      "main_001"
+      "core/main"
     ],
     [
-      1076704,
+      1051392,
       "c",
-      "main_002"
+      "effect_lib/g"
     ],
     [
-      1088672,
+      1054208,
       "c",
-      "main_003"
+      "effect_lib/shfx"
+    ],
+    [
+      1061472,
+      "c",
+      "effect_lib/lk"
+    ],
+    [
+      1072384,
+      "c",
+      "effect_lib/objlib"
+    ],
+    [
+      1088144,
+      "c",
+      "sound/sd"
+    ],
+    [
+      1091456,
+      "c",
+      "sound/sd_stream"
+    ],
+    [
+      1095360,
+      "c",
+      "sound/sd_queue"
+    ],
+    [
+      1098432,
+      "c",
+      "sound/sdfs"
+    ],
+    [
+      1099776,
+      "c",
+      "sound/sdrpc"
     ],
     [
       1100096,
       "c",
-      "main_004"
+      "ai/weevil"
     ],
     [
-      1133888,
+      1118416,
       "c",
-      "main_005"
+      "ai/seto"
     ],
     [
-      1167632,
+      1146464,
       "c",
-      "main_006"
+      "ai/rex"
     ],
     [
-      1197584,
+      1164800,
       "c",
-      "main_007"
+      "ai/keith"
     ],
     [
-      1232464,
+      1185792,
       "c",
-      "main_008"
+      "ai/ishtar"
     ],
     [
-      1267600,
+      1207424,
       "c",
-      "main_009"
+      "ai/necromancer"
     ],
     [
-      1299408,
+      1227632,
       "c",
-      "main_010"
+      "ai/darkness_ruler"
     ],
     [
-      1328688,
+      1249376,
       "c",
-      "main_011"
+      "ai/labyrinth_ruler"
     ],
     [
-      1359824,
+      1266224,
       "c",
-      "main_012"
+      "ai/pegasus"
     ],
     [
-      1392336,
+      1284240,
       "c",
-      "main_013"
+      "ai/richard"
     ],
     [
-      1418080,
+      1301664,
       "c",
-      "main_014"
+      "ai/tea"
     ],
     [
-      1451392,
+      1320112,
       "c",
-      "main_015"
+      "ai/tristan"
     ],
     [
-      1479712,
+      1337696,
       "c",
-      "main_016"
+      "ai/mai"
+    ],
+    [
+      1358080,
+      "c",
+      "ai/mako"
+    ],
+    [
+      1375552,
+      "c",
+      "ai/joey"
+    ],
+    [
+      1393184,
+      "c",
+      "ai/jasper_dice"
+    ],
+    [
+      1412224,
+      "c",
+      "ai/bakura"
+    ],
+    [
+      1430352,
+      "c",
+      "ai/yugi"
+    ],
+    [
+      1454384,
+      "c",
+      "ai/manawyddan"
+    ],
+    [
+      1472688,
+      "c",
+      "ai/manawyddan2"
+    ],
+    [
+      1487808,
+      "c",
+      "ai/default"
     ],
     [
       1517728,
       "c",
-      "big_func_001728A0"
+      "tutorial/lessons_1_2"
     ],
     [
-      1525232,
+      1530784,
       "c",
-      "main_017"
-    ],
-    [
-      1531872,
-      "c",
-      "big_func_00175FE0"
-    ],
-    [
-      1540896,
-      "c",
-      "main_018"
-    ],
-    [
-      1541520,
-      "c",
-      "big_func_00178590"
+      "tutorial/lessons_3_5"
     ],
     [
       1553216,
       "c",
-      "main_019"
+      "sdk/kernel_syscalls_1"
     ],
     [
       1554320,
       "c",
-      "main_020"
+      "sdk/kernel_syscalls_2"
     ],
     [
       1555120,
       "c",
-      "main_021"
+      "sdk/kernel_syscalls_3"
     ],
     [
       1556432,
       "c",
-      "main_022"
+      "sdk/kernel_glue"
     ],
     [
       1560768,
       "c",
-      "main_023"
+      "sdk/kernel_sif"
     ],
     [
       1569416,
       "c",
-      "main_024"
+      "sdk/sif_fileio"
     ],
     [
       1585568,
       "c",
-      "main_025"
+      "sdk/libgraph"
     ],
     [
       1590864,
       "c",
-      "main_026"
+      "sdk/libdev"
     ],
     [
       1600888,
       "c",
-      "main_027"
+      "sdk/libvu0_1"
     ],
     [
       1604584,
       "c",
-      "main_028"
+      "sdk/libvu0_2"
     ],
     [
       1614616,
@@ -187,367 +247,452 @@
     [
       1614712,
       "c",
-      "main_029"
+      "sdk/libmpeg_1"
     ],
     [
       1628840,
       "c",
-      "main_030"
+      "sdk/libmpeg_2"
     ],
     [
       1635912,
       "c",
-      "main_031"
+      "sdk/libcdvd_1"
     ],
     [
       1645648,
       "c",
-      "main_032"
+      "sdk/libcdvd_2"
     ],
     [
       1654040,
       "c",
-      "main_033"
+      "sdk/libmc"
     ],
     [
       1658992,
       "c",
-      "main_033b"
+      "sdk/newlib_1"
     ],
     [
       1668464,
       "c",
-      "main_033c"
+      "sdk/newlib_findenv_r"
     ],
     [
       1668792,
       "c",
-      "main_034"
+      "sdk/newlib_2"
     ],
     [
       1683064,
       "c",
-      "main_035"
+      "sdk/newlib_3"
     ],
     [
       1688776,
       "c",
-      "main_035b"
+      "sdk/newlib_4"
     ],
     [
       1692720,
       "c",
-      "main_035c"
+      "sdk/newlib_5"
     ],
     [
       1694832,
       "c",
-      "main_035d"
+      "sdk/newlib_6"
     ],
     [
       1695208,
       "c",
-      "main_035d2"
+      "sdk/newlib_7"
     ],
     [
       1701608,
       "c",
-      "main_035e"
+      "sdk/newlib_8"
     ],
     [
       1705568,
       "c",
-      "main_036"
+      "sdk/lgcc"
     ],
     [
       1731712,
       "c",
-      "main_037"
+      "game/szgame"
     ],
     [
-      1760512,
+      1759584,
       "c",
-      "main_038"
+      "duel/szduel_main"
     ],
     [
-      1787776,
+      1765312,
       "c",
-      "big_func_001B4780"
+      "duel/szduel_window"
     ],
     [
-      1794800,
+      1803552,
       "c",
-      "main_039"
+      "duel/szduel_builddeck"
     ],
     [
-      1804352,
+      1843616,
       "c",
-      "big_func_001B8840"
+      "duel/szduel_trade"
     ],
     [
-      1811376,
+      1858928,
       "c",
-      "main_040"
-    ],
-    [
-      1844528,
-      "c",
-      "main_041"
+      "duel/szduel_customduel"
     ],
     [
       1881776,
       "c",
-      "main_042"
+      "duel/szduel_act"
     ],
     [
       1932560,
       "c",
-      "main_043"
+      "duel/szduel_cards"
     ],
     [
-      1958064,
+      1952912,
       "c",
-      "main_044"
+      "duel/szduel_board"
+    ],
+    [
+      1957920,
+      "c",
+      "duel/szduel_state"
     ],
     [
       1963328,
       "c",
-      "main_045"
+      "duel/szduel_unit"
     ],
     [
-      1972688,
+      1974816,
       "c",
-      "main_046"
+      "duel/szduel_map"
+    ],
+    [
+      1980496,
+      "c",
+      "duel/szduel_ui"
     ],
     [
       1983856,
       "c",
-      "main_047"
+      "battle/szbattle"
     ],
     [
-      2009696,
+      1996768,
       "c",
-      "big_func_001EAA60"
+      "battle/szevent"
     ],
     [
-      2020448,
+      1997408,
       "c",
-      "main_048"
+      "battle/szmodel"
     ],
     [
-      2038400,
+      2045696,
       "c",
-      "main_049"
+      "battle/szeffect"
     ],
     [
-      2045840,
+      2061504,
       "c",
-      "main_050"
-    ],
-    [
-      2055936,
-      "c",
-      "main_051"
-    ],
-    [
-      2060112,
-      "c",
-      "main_052"
+      "game/szview"
     ],
     [
       2077952,
       "c",
-      "main_053"
+      "game/szview_look"
     ],
     [
-      2093648,
+      2083872,
       "c",
-      "main_054"
+      "game/szfade"
     ],
     [
-      2099680,
+      2085552,
       "c",
-      "big_func_002009E0"
+      "game/szmsg"
     ],
     [
-      2105888,
+      2091904,
       "c",
-      "main_055"
+      "system/szfile"
     ],
     [
-      2122800,
+      2099152,
       "c",
-      "main_056"
+      "system/sztext"
     ],
     [
-      2137376,
+      2109936,
       "c",
-      "main_057"
+      "system/szpad"
     ],
     [
-      2149152,
+      2112720,
       "c",
-      "main_058"
+      "system/szdebug"
     ],
     [
-      2160512,
+      2118720,
       "c",
-      "main_059"
+      "render/ex3d"
     ],
     [
-      2183120,
+      2121328,
       "c",
-      "main_060"
+      "render/ex3d_clip"
     ],
     [
-      2193936,
+      2126688,
       "c",
-      "main_061"
+      "render/exprim"
     ],
     [
-      2201056,
+      2133312,
       "c",
-      "big_func_002195E0"
+      "render/rhvu1mac"
     ],
     [
-      2210528,
+      2135312,
       "c",
-      "main_062"
+      "render/rhbase"
     ],
     [
-      2220848,
+      2142976,
       "c",
-      "big_func_0021E330"
+      "render/rhmem"
     ],
     [
-      2241264,
+      2143360,
       "c",
-      "main_063"
+      "render/rhmath"
+    ],
+    [
+      2144880,
+      "c",
+      "render/rhgeom"
+    ],
+    [
+      2152944,
+      "c",
+      "render/rhgeomex"
+    ],
+    [
+      2153904,
+      "c",
+      "render/rhview"
+    ],
+    [
+      2159184,
+      "c",
+      "render/rhtext"
+    ],
+    [
+      2159472,
+      "c",
+      "render/rhmodel"
+    ],
+    [
+      2174928,
+      "c",
+      "render/rhmodelcpu"
+    ],
+    [
+      2179216,
+      "c",
+      "render/njareloc"
+    ],
+    [
+      2179728,
+      "c",
+      "system/szdata"
+    ],
+    [
+      2192336,
+      "c",
+      "system/rhmemcard"
+    ],
+    [
+      2192400,
+      "c",
+      "sound/szsound"
+    ],
+    [
+      2194176,
+      "c",
+      "system/szmem"
+    ],
+    [
+      2194384,
+      "c",
+      "campaign/taku_ui"
+    ],
+    [
+      2213136,
+      "c",
+      "campaign/tkcamp"
     ],
     [
       2254336,
       "c",
-      "big_func_00226600"
-    ],
-    [
-      2261328,
-      "c",
-      "main_064"
-    ],
-    [
-      2281792,
-      "c",
-      "big_func_0022D140"
-    ],
-    [
-      2290112,
-      "c",
-      "main_065"
-    ],
-    [
-      2290624,
-      "c",
-      "big_func_0022F3C0"
-    ],
-    [
-      2298320,
-      "c",
-      "big_func_002311D0"
+      "campaign/taku_camp"
     ],
     [
       2307824,
       "c",
-      "main_066"
+      "campaign/taku_camp_cinema"
     ],
     [
       2315424,
       "c",
-      "big_func_002354A0"
+      "campaign/taku_camp_act"
     ],
     [
-      2321488,
+      2343920,
       "c",
-      "main_067"
+      "campaign/tkmc"
     ],
     [
-      2324272,
+      2363904,
       "c",
-      "big_func_00237730"
+      "system/szcolor"
     ],
     [
-      2339312,
+      2366096,
       "c",
-      "main_068"
+      "movie/readbuf"
     ],
     [
-      2368896,
+      2366496,
       "c",
-      "main_069"
+      "movie/disp"
     ],
     [
-      2380112,
+      2368624,
       "c",
-      "main_070"
+      "movie/main"
     ],
     [
-      2397392,
+      2370832,
       "c",
-      "main_071"
+      "movie/callbacks"
+    ],
+    [
+      2371680,
+      "c",
+      "movie/audiodec"
+    ],
+    [
+      2374288,
+      "c",
+      "movie/strfile"
+    ],
+    [
+      2375392,
+      "c",
+      "movie/vibuf"
+    ],
+    [
+      2379696,
+      "c",
+      "movie/videodec"
+    ],
+    [
+      2381680,
+      "c",
+      "movie/vobuf"
+    ],
+    [
+      2382208,
+      "c",
+      "game/shanime"
+    ],
+    [
+      2382816,
+      "c",
+      "game/shface"
+    ],
+    [
+      2385136,
+      "c",
+      "rules/ta_battle"
+    ],
+    [
+      2395696,
+      "c",
+      "rules/ta_enchant"
     ],
     [
       2397824,
       "c",
-      "big_func_00249680"
+      "rules/ta_finishmove"
     ],
     [
       2405136,
       "c",
-      "main_072"
+      "rules/ta_util"
     ],
     [
-      2426400,
+      2434112,
       "c",
-      "main_073"
+      "rules/ta_effects_1"
     ],
     [
-      2436800,
+      2472192,
       "c",
-      "big_func_00252EC0"
+      "rules/ta_effects_2"
     ],
     [
-      2443408,
+      2511936,
       "c",
-      "main_074"
+      "rules/ta_effects_3"
     ],
     [
-      2485536,
+      2563216,
       "c",
-      "main_075"
+      "rules/ta_leader"
     ],
     [
-      2513040,
+      2565360,
       "c",
-      "main_076"
+      "rules/ta_endphase"
     ],
     [
-      2550400,
+      2579712,
       "c",
-      "main_077"
+      "ai/talogic"
     ],
     [
-      2580768,
+      2615360,
       "c",
-      "main_078"
+      "rules/ta_misc"
     ],
     [
-      2600736,
+      2618336,
       "c",
-      "main_079"
+      "tutorial/tatuto"
     ],
     [
-      2619136,
+      2621536,
       "c",
-      "main_080"
+      "game/shslot"
+    ],
+    [
+      2648336,
+      "c",
+      "core/mw_cpp_rts"
     ]
   ],
   "functions": 3442,
