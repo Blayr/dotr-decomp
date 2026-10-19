@@ -186,19 +186,16 @@ typedef struct MapInfo {
     u8 field23_0x1b;                /* 0x1B */
 } MapInfo;
 
-/* The computer opponent's plan for one of its units (DuelPlayer.taskList; 0x10 bytes). */
+/* The computer opponent's plan for one of its units (DuelPlayer.taskList; 0x10 bytes). Layout and the names in
+   brackets: the developers' debug information; the first three names are batzpup's. */
 typedef struct UnitTask {
-    u16 ownerId;                    /* 0x00: (side << 8) | unit */
-    u16 summonOrder;                /* 0x02 */
-    u16 mission;                    /* 0x04: the task (TaskType) in its upper byte (batzpup: mission1,
-                                       mission2Main) */
-    u8 field4_0x6;                  /* 0x06 */
-    u8 field5_0x7;                  /* 0x07 */
-    u16 goalLoc1[2];                /* 0x08 */
-    u8 field7_0xc;                  /* 0x0C */
-    u8 field8_0xd;                  /* 0x0D */
-    u8 field9_0xe;                  /* 0x0E */
-    u8 field10_0xf;                 /* 0x0F */
+    u16 ownerId;                    /* 0x00: the unit, (side << 8) | unit (wUnit) */
+    u16 summonOrder;                /* 0x02 (wOrder) */
+    u16 mission;                    /* 0x04: the task (TaskType) in its upper byte (wPurpose) */
+    u8 pad06[2];
+    u32 dwGoal;                     /* 0x08: where to: (target << 16) | square, the halves as each task uses them */
+    u8 bCond : 2;                   /* 0x0C */
+    u8 pad0D[3];
 } UnitTask;
 
 /* What the computer opponent does next (a TaLogic_*_GetMinimumTask result; 0x14 bytes). */
@@ -217,12 +214,17 @@ typedef struct MinimumTask {
 /* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
    Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
 typedef struct DuelPlayer {
-    UnitTask taskList[22];         /* 0x000: the computer opponent's plan, one task per unit */
-    u16 inputQue[32];              /* 0x160: the pad inputs it queued (Input) */
-    u8 inputQueueSize;             /* 0x1A0: bits 0-4: how many tasks have been turned into inputs */
-    u8 AiActiveRelated;            /* 0x1A1 */
-    u16 inputCount;                /* 0x1A2 */
-    u8 pad1A4[0x1D0 - 0x1A4];
+    UnitTask taskList[22];         /* 0x000: the computer opponent's plan, one task per unit (nTask) */
+    u16 inputQue[32];              /* 0x160: the pad inputs it queued (Input; wPadQue) */
+    u8 inputQueueSize;             /* 0x1A0: bits 0-4: how many tasks have been turned into inputs (bCount) */
+    u8 AiActiveRelated;            /* 0x1A1: the unit acting now (bActionUnit) */
+    u16 inputCount;                /* 0x1A2 (wPhase) */
+    u16 wTime;                     /* 0x1A4 */
+    u8 pad1A6[0x1B0 - 0x1A6];
+    struct {
+        Vec4f pntCP;               /* the camera's position */
+        Vec4f vecSP;
+    } camDat;                      /* 0x1B0: the computer opponent's camera */
     s32 cameraOrbit[4];            /* 0x1D0: the camera around this side's cursor: distance, heading, pitch
                                       (SzDuel_Init: 200, 0x4000 or 0xC000, 0x2000; SzView_IV2V reads it) */
     DuelDeck deck;                 /* 0x1E0 */
@@ -1426,13 +1428,9 @@ DOTR_LAYOUT(UnitTask, sizeof(UnitTask) == 0x10);
 DOTR_LAYOUT(UnitTask_ownerId, DOTR_OFFSETOF(UnitTask, ownerId) == 0x0);
 DOTR_LAYOUT(UnitTask_summonOrder, DOTR_OFFSETOF(UnitTask, summonOrder) == 0x2);
 DOTR_LAYOUT(UnitTask_mission, DOTR_OFFSETOF(UnitTask, mission) == 0x4);
-DOTR_LAYOUT(UnitTask_field4_0x6, DOTR_OFFSETOF(UnitTask, field4_0x6) == 0x6);
-DOTR_LAYOUT(UnitTask_field5_0x7, DOTR_OFFSETOF(UnitTask, field5_0x7) == 0x7);
-DOTR_LAYOUT(UnitTask_goalLoc1, DOTR_OFFSETOF(UnitTask, goalLoc1) == 0x8);
-DOTR_LAYOUT(UnitTask_field7_0xc, DOTR_OFFSETOF(UnitTask, field7_0xc) == 0xC);
-DOTR_LAYOUT(UnitTask_field8_0xd, DOTR_OFFSETOF(UnitTask, field8_0xd) == 0xD);
-DOTR_LAYOUT(UnitTask_field9_0xe, DOTR_OFFSETOF(UnitTask, field9_0xe) == 0xE);
-DOTR_LAYOUT(UnitTask_field10_0xf, DOTR_OFFSETOF(UnitTask, field10_0xf) == 0xF);
+DOTR_LAYOUT(UnitTask_pad06, DOTR_OFFSETOF(UnitTask, pad06) == 0x6);
+DOTR_LAYOUT(UnitTask_dwGoal, DOTR_OFFSETOF(UnitTask, dwGoal) == 0x8);
+DOTR_LAYOUT(UnitTask_pad0D, DOTR_OFFSETOF(UnitTask, pad0D) == 0xD);
 DOTR_LAYOUT(MinimumTask, sizeof(MinimumTask) == 0x14);
 DOTR_LAYOUT(MinimumTask_unitOwnerId, DOTR_OFFSETOF(MinimumTask, unitOwnerId) == 0x0);
 DOTR_LAYOUT(MinimumTask_taskType, DOTR_OFFSETOF(MinimumTask, taskType) == 0x2);
@@ -1449,7 +1447,9 @@ DOTR_LAYOUT(DuelPlayer_inputQue, DOTR_OFFSETOF(DuelPlayer, inputQue) == 0x160);
 DOTR_LAYOUT(DuelPlayer_inputQueueSize, DOTR_OFFSETOF(DuelPlayer, inputQueueSize) == 0x1A0);
 DOTR_LAYOUT(DuelPlayer_AiActiveRelated, DOTR_OFFSETOF(DuelPlayer, AiActiveRelated) == 0x1A1);
 DOTR_LAYOUT(DuelPlayer_inputCount, DOTR_OFFSETOF(DuelPlayer, inputCount) == 0x1A2);
-DOTR_LAYOUT(DuelPlayer_pad1A4, DOTR_OFFSETOF(DuelPlayer, pad1A4) == 0x1A4);
+DOTR_LAYOUT(DuelPlayer_wTime, DOTR_OFFSETOF(DuelPlayer, wTime) == 0x1A4);
+DOTR_LAYOUT(DuelPlayer_pad1A6, DOTR_OFFSETOF(DuelPlayer, pad1A6) == 0x1A6);
+DOTR_LAYOUT(DuelPlayer_camDat, DOTR_OFFSETOF(DuelPlayer, camDat) == 0x1B0);
 DOTR_LAYOUT(DuelPlayer_cameraOrbit, DOTR_OFFSETOF(DuelPlayer, cameraOrbit) == 0x1D0);
 DOTR_LAYOUT(DuelPlayer_deck, DOTR_OFFSETOF(DuelPlayer, deck) == 0x1E0);
 DOTR_LAYOUT(DuelPlayer_grave, DOTR_OFFSETOF(DuelPlayer, grave) == 0x232);
