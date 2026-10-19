@@ -197,7 +197,7 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
 
 /* Closes the hand cursor. */
 void SzDuel_CloseHandCursor(void) {
-    D_00318144 = 0x18;
+    HandCursorState = 0x18;
 }
 
 typedef struct {
@@ -206,11 +206,11 @@ typedef struct {
     s8 pad1 : 2;
 } Flags;
 
-extern Flags D_003181F7;
+extern Flags DisplayUIBitfield;
 
 /* Turns the end-of-duel judgement off or on (the tutorial uses it). */
 void SzDuel_SetIgnoreJudge(s64 on) {
-    D_003181F7.flag = on;
+    DisplayUIBitfield.flag = on;
 }
 
 typedef struct {

@@ -4,7 +4,7 @@
 
 /* Starts the matrix stack. */
 s32 RhGeom_Init(void) {
-    D_0032A220 = 0;
+    RhGeom_Related = 0;
     return 1;
 }
 
@@ -47,7 +47,7 @@ asm void RhGeom_GetMatrix(void *p) {
 /* Pushes matrix `matrix` on the matrix stack (VU0). */
 asm void RhGeom_PushMatrix(s32 matrix) {
     .set noreorder
-    lw a2, D_0032A220
+    lw a2, RhGeom_Related
     la v1, matrixStack
     sll a1, a2, 3
     subu a1, a1, a2
@@ -64,21 +64,21 @@ asm void RhGeom_PushMatrix(s32 matrix) {
     lqc2 vf31, 0x30(a0)
     nop
 L_0020BB38:
-    lw v1, D_0032A220
+    lw v1, RhGeom_Related
     addiu v1, v1, 0x1
     .set reorder
-    sw v1, D_0032A220
+    sw v1, RhGeom_Related
     jr ra
 }
 
 /* Pops the matrix stack. */
 asm void RhGeom_PopMatrix(void) {
     .set noreorder
-    lw a0, D_0032A220
+    lw a0, RhGeom_Related
     la v1, matrixStack
     addiu a0, a0, -0x1
-    sw a0, D_0032A220
-    lw a1, D_0032A220
+    sw a0, RhGeom_Related
+    lw a1, RhGeom_Related
     sll a0, a1, 3
     subu a0, a0, a1
     sll a0, a0, 4
@@ -92,7 +92,7 @@ asm void RhGeom_PopMatrix(void) {
 
 /* Empties the matrix stack. */
 s32 RhGeom_ResetMatrixStack(void) {
-    D_0032A220 = 0;
+    RhGeom_Related = 0;
     return 1;
 }
 

@@ -1204,7 +1204,7 @@ s32 lSzDuel_DrawWindow_Level_Pipe(s32 packet, s32 left, s32 top) {
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
-    if (SzDuel_GetPlayer(D_003181CC) < 0x20) {
+    if (SzDuel_GetPlayer(WhoGoesFirst) < 0x20) {
         if (SzDuel_GetPlayer(global[0xD3C] ^ 1) >= 0x64) {
             flag = 1;
         }
@@ -1256,7 +1256,7 @@ s32 lSzDuel_DrawWindow_SummonCost_Pipe(s32 packet, s32 left, s32 top) {
     areaX = x + 0x6C0;
     areaY = y + 0x720;
     flag = 0;
-    if (SzDuel_GetPlayer(D_003181CC) < 0x20) {
+    if (SzDuel_GetPlayer(WhoGoesFirst) < 0x20) {
         if (SzDuel_GetPlayer(global[0xD3C] ^ 1) >= 0x64) {
             flag = 1;
         }
@@ -1638,7 +1638,7 @@ typedef struct {
     s32 width;
 } Text_001B3100;
 extern Entry_001B3100 D_00291180[];
-extern u8 D_003181E7;
+extern u8 Player_GameState;
 #pragma opt_propagation reset
 
 /* Draws the button guide for side `side` at (left, top): which commands the square under the cursor allows. */
@@ -1666,12 +1666,12 @@ s32 lSzDuel_DrawWindow_CommandGuide_Pipe(s32 packet, s32 side, s64 left, s64 top
     f32 scale;
 
     state = (State_001B3100 *)duelState.b;
-    player = (State_001B3100 *)(duelState.b + D_003181CC * 0x350);
+    player = (State_001B3100 *)(duelState.b + WhoGoesFirst * 0x350);
     x = (s32)left + 4;
     y = (s32)top + 4;
     choice = -1;
     packet = lSzDuel_DrawWindow_Frame_Pipe(packet, side, 2, 3, left, top, 9, 0x12, 1);
-    switch (D_003181E7) {
+    switch (Player_GameState) {
     case 0x18:
         if (state->card != NULL) {
             value = Ta_IsUnitControl(state->card->x, state->card->y);
@@ -1928,7 +1928,7 @@ static inline void set_uv_001B3790(UV_001B3790 *p, s32 u, s32 v) {
 s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 start, s32 colorIndex, s32 card, s32 x, s32 y, f32 scale) {
     extern Source_001B3790 sideColors[];
     extern Params_001B3790 D_002912D0;
-    extern s32 D_0031AB80;
+    extern s32 RotY;
     extern s32 RhBase_AssignRenderFrame(s32, s32, s32);
     u8 *state = duelState.b;
     Source_001B3790 *color = &sideColors[colorIndex];
@@ -1990,7 +1990,7 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 start, s32 colorIndex, s32 card, s32 
     RhView_GetCurView(&view);
     if (RhView_PushStack() != 0) {
         params = D_002912D0;
-        params.w[1] = D_0031AB80;
+        params.w[1] = RotY;
         RhBase_AssignRenderFrame(0, 0xA, 0x31);
         packet = (s32)RhBase_EnableRenderFrame((void *)id);
         packet = (s32)RhBase_ClearRenderFrame((u8 *)packet, 0);
@@ -2023,7 +2023,7 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 start, s32 colorIndex, s32 card, s32 
         RhView_Modify(&view);
         id = ExSortPrim_Pipe(RhView_SendViewParameters(id), (s32)&sprite, 0, 0);
         RhBase_FreeRenderFrame();
-        D_0031AB80 += 0x200;
+        RotY += 0x200;
     }
     return id;
 }
@@ -3553,14 +3553,14 @@ s32 lSzDuel_DrawWindow_DualShock2_Pipe(s32 packet, s32 x, s32 y, s32 alpha) {
     Packet_001B7820 sprite __attribute__((aligned(8)));
 
     state = (State_001B7820 *)duelState.b;
-    player = duelState.b + D_003181CC * 0x350;
+    player = duelState.b + WhoGoesFirst * 0x350;
     texture = (Texture_001B7820 *)D_0029080A;
     originX = x + 0x6C0;
     originY = y + 0x720;
     halfWidth = (texture->right - texture->left) >> 1;
     halfHeight = (texture->bottom - texture->top) >> 1;
     corners = D_002912E0;
-    base = D_003181CC ? 0xC000 : 0x4000;
+    base = WhoGoesFirst ? 0xC000 : 0x4000;
     corners.v[0][0] = -(f32)halfWidth;
     corners.v[0][1] = -(f32)halfHeight;
     corners.v[1][0] = (f32)halfWidth;
@@ -3807,7 +3807,7 @@ void SzDuel_DrawJoinFade(void) {
 s32 SzDuel_DrawJoinFade_Pipe(s32 packet) {
     u8 *state = duelState.b;
 
-    if (D_003181CA == 0) {
+    if (ScreenFadeAmount == 0) {
         return packet;
     }
     lSzDuel_Draw_Fade_Pipe(packet, 0, 0, 0x280, 0x1C0, state[0xD3A]);
@@ -3893,11 +3893,11 @@ typedef struct Draw_001B83F0 {
 /* Draws the two cards being joined, on top of the fade. */
 s32 SzDuel_DrawJoinCard_Pipe(s32 packet) {
     extern void SzDuel_ClearDrawCard();
-    extern s32 D_00317B58;
+    extern s32 CurrentlySelectedUnit;
     u8 *state = duelState.b;
     Draw_001B83F0 draw;
 
-    if (D_00317B58 == 0) {
+    if (CurrentlySelectedUnit == 0) {
         return packet;
     }
     if (*(s32 *)(state + 0x6CC) == 0) {

@@ -1017,7 +1017,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
     extern s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 lSzDuel_DrawWindow_Frame_Pipe();
-    extern u8 D_002BEAC0[2][10];
+    extern u8 SzDuel_CustomDuelMenu[2][10];
     extern char D_002BF05B[];
     extern char D_002BF03A[];
     extern s32 D_00290A58;
@@ -1043,7 +1043,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_Top_Pipe(s32 packet, u8 *side, s32 x, s32 y) {
     s32 py;
 
     width = (*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? width : 0x12A;
-    list = D_002BEAC0[(*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? 1 : 0];
+    list = SzDuel_CustomDuelMenu[(*(u8 *)(CUSTOM_DUEL_ADDR + 0x88) != 0) ? 1 : 0];
     packet = SzMsg_LoadFont_Pipe(packet, 1, 0x81, 0, 0x16);
     packet = SzMsg_LoadFont_Pipe(packet, 2, 0x82, 0, 0x2C);
     packet = SzMsg_LoadFont_Pipe(packet, 3, 0x83, 0, 0x42);
@@ -1648,7 +1648,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
     extern s32 func_001B3CC0(s32, void *, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern u8 duelIcons[];
     extern u8 fieldColors[];
-    extern u8 D_002CEE5C[][7][7];
+    extern u8 gSzDuel_MapData[][7][7];
     extern char D_002BF06E[];
     extern char D_002BEF93[];
     extern s32 D_00290828;
@@ -1750,7 +1750,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMap_Pipe(s32 id, s32 player, s32 x, s32 y)
             board = &maps->maps[*(u8 *)p][0][0];
             break;
         case 2:
-            board = &D_002CEE5C[sel + 0x16][0][0];
+            board = &gSzDuel_MapData[sel + 0x16][0][0];
             break;
     }
     px = x + 0x81C;

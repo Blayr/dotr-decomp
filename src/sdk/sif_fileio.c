@@ -1603,11 +1603,11 @@ s32 sceSifAllocIopHeap(s32 size) {
     if (_bind < 0) {
         return 0;
     }
-    D_00313CC0 = size;
-    if (sceSifCallRpc(&D_00313C40, 1, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
+    __fih_data = size;
+    if (sceSifCallRpc(&D_00313C40, 1, 0, &__fih_data, 4, &_rdata, 4, 0, 0) < 0) {
         return 0;
     }
-    return D_00313C80;
+    return _rdata;
 }
 
 /* IOP heap call 4 (`arg0`, `arg1`, `arg2`); returns its result, 0 if not bound. */
@@ -1617,14 +1617,14 @@ s32 func_00182930(s32 arg0, s32 arg1, s32 arg2) {
     if (_bind < 0) {
         return 0;
     }
-    p = &D_00313CC0;
+    p = &__fih_data;
     p[0] = arg1;
     p[1] = arg0;
     p[2] = arg2;
-    if (sceSifCallRpc(&D_00313C40, 4, 0, p, 0xC, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 4, 0, p, 0xC, &_rdata, 4, 0, 0) < 0) {
         return 0;
     }
-    return D_00313C80;
+    return _rdata;
 }
 
 /* Frees IOP memory at `addr`. */
@@ -1632,11 +1632,11 @@ s32 sceSifFreeIopHeap(s32 addr) {
     if (_bind < 0) {
         return 0;
     }
-    D_00313CC0 = addr;
-    if (sceSifCallRpc(&D_00313C40, 2, 0, &D_00313CC0, 4, &D_00313C80, 4, 0, 0) < 0) {
+    __fih_data = addr;
+    if (sceSifCallRpc(&D_00313C40, 2, 0, &__fih_data, 4, &_rdata, 4, 0, 0) < 0) {
         return -1;
     }
-    return D_00313C80;
+    return _rdata;
 }
 
 /* Frees IOP memory at `arg0` (sceSifFreeIopHeap). */
@@ -1669,10 +1669,10 @@ s32 sceSifLoadIopHeap(const char *name, void *addr) {
     }
     D_00313D00.addr = addr;
     D_00313D00.name[251] = 0;
-    if (sceSifCallRpc(&D_00313C40, 3, 0, &D_00313D00, i + 5, &D_00313C80, 4, 0, 0) < 0) {
+    if (sceSifCallRpc(&D_00313C40, 3, 0, &D_00313D00, i + 5, &_rdata, 4, 0, 0) < 0) {
         return -1;
     }
-    return D_00313C80;
+    return _rdata;
 }
 
 extern s32 _bind_check;

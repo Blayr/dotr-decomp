@@ -143,7 +143,7 @@ void RhBase_ResetGsEnv(s32 field) {
                     *(s16 *)(D_00293F14 + field * 0x28),
                     *(s16 *)(D_00293F18 + field * 0x28));
     D_0032618C = *(s32 *)(D_00293F1C + field * 0x28);
-    D_00326190 = *(s32 *)(D_00293F20 + field * 0x28);
+    currentTimingModeValue = *(s32 *)(D_00293F20 + field * 0x28);
     packet = (s32 *)lRhBase_InitGsAndVif(*(s32 *)0x003261CC);
     packet[0] = 0x70000000;
     packet[1] = 0;
@@ -182,8 +182,8 @@ s32 RhBase_FlipBuffer(void) {
     extern s32 sceGsSyncPath();
     extern s32 lRhBase_SetRandomDither();
     extern u8 D_00293F14[];
-    extern s32 D_00325E30;
-    extern s32 D_00326188;
+    extern s32 frameSkipCounter;
+    extern s32 currentVideoModeIndex;
     State_002099D0 *state = (State_002099D0 *)screenState;
     s32 result;
     s32 width;
@@ -195,20 +195,20 @@ s32 RhBase_FlipBuffer(void) {
     RhZSort_Finish();
     RhFile_VSyncProcess();
     RhMemCard_Act();
-    packet = (s32 *)D_003261D0;
+    packet = (s32 *)VifPacketArea;
     packet[0] = 0x70000000;
     packet[1] = 0;
     packet[2] = 0;
     packet[3] = 0;
     (void)*(volatile u32 *)T1_COUNT_ADDR;
     if (sceGsSyncPath(0, 0) < 0) {
-        RhBase_ResetGsEnv(D_00326188);
+        RhBase_ResetGsEnv(currentVideoModeIndex);
     }
     if (state->beforeWait != NULL) {
         state->beforeWait();
     }
-    remaining = D_00325E30;
-    if (*(s32 *)(D_00293F14 + D_00326188 * 0x28) == 2) {
+    remaining = frameSkipCounter;
+    if (*(s32 *)(D_00293F14 + currentVideoModeIndex * 0x28) == 2) {
         width = 0x1C0;
         period = 0x208;
     } else {
@@ -222,11 +222,11 @@ s32 RhBase_FlipBuffer(void) {
                 result = sceGsSyncV(0);
             }
         }
-        if (*(volatile u32 *)T1_COUNT_ADDR > (u32)(period * (D_00325E30 + 1))) {
+        if (*(volatile u32 *)T1_COUNT_ADDR > (u32)(period * (frameSkipCounter + 1))) {
             break;
         }
     }
-    D_00325E30 = 0;
+    frameSkipCounter = 0;
     if (state->beforeDisplay != NULL) {
         state->beforeDisplay();
     }
@@ -260,7 +260,7 @@ s32 RhBase_FlipBuffer(void) {
     }
     state->frame++;
     result = 1;
-    if (*(s32 *)(D_00293F14 + D_00326188 * 0x28) == 2) {
+    if (*(s32 *)(D_00293F14 + currentVideoModeIndex * 0x28) == 2) {
         if (state->width == 0x1C0) {
             if (*(volatile u32 *)T1_COUNT_ADDR > 0x21C) {
                 result = 2;
@@ -279,12 +279,12 @@ s32 RhBase_FlipBuffer(void) {
 
 /* The current end of the VIF packet being built (where the next primitive goes). */
 s32 RhBase_GetVifPacketArea(void) {
-    return D_003261D0;
+    return VifPacketArea;
 }
 
 /* Sets the end of the VIF packet being built. */
 void RhBase_SetVifPacketArea(s32 cursor) {
-    D_003261D0 = cursor;
+    VifPacketArea = cursor;
 }
 
 typedef struct {
@@ -306,7 +306,7 @@ f32 RhBase_GetAspectY(s32 *out) {
 /* The screen's width and height. */
 s32 RhBase_GetScreenSize(s32 *outW, s32 *outH) {
     *outW = D_0032618C;
-    *outH = D_00326190;
+    *outH = currentTimingModeValue;
     return 1;
 }
 
@@ -325,7 +325,7 @@ s32 RhBase_GetZMinMax(s32 *outMin, s32 *outMax) {
     } State_00209D80;
 
     extern State_00209D80 renderFrameState;
-    extern Flags_00209D80 D_00325F40;
+    extern Flags_00209D80 renderFrameData;
     extern s32 D_003261A8;
 
     State_00209D80 *state;
@@ -333,7 +333,7 @@ s32 RhBase_GetZMinMax(s32 *outMin, s32 *outMax) {
 
     value = D_003261A8;
     state = &renderFrameState;
-    if (D_00325F40.active) {
+    if (renderFrameData.active) {
         if (state->flags.useSaved) {
             value = state->value;
         }
@@ -356,8 +356,8 @@ s32 RhBase_GetZMinMax(s32 *outMin, s32 *outMax) {
 
 /* The screen centre in GS coordinates. */
 s32 RhBase_GetScreenCenter(s32 *outX, s32 *outY) {
-    *outX = D_003261B0;
-    *outY = D_003261B4;
+    *outX = screenCenterX;
+    *outY = ScreenCenterY;
     return 1;
 }
 
@@ -372,7 +372,7 @@ typedef struct {
 } Flags_00209E50;
 
 extern State_00209E50 renderFrameState; /* original: gRhBase_rl */
-extern Flags_00209E50 D_00325F40;
+extern Flags_00209E50 renderFrameData;
 
 /* The GS memory free for textures after the frame and z buffers (and any render frame). */
 s32 RhBase_GetUserGsAddress(void) {
@@ -380,7 +380,7 @@ s32 RhBase_GetUserGsAddress(void) {
     State_00209E50 *state = &renderFrameState;
     s32 address;
 
-    if (D_00325F40.enabled != 0) {
+    if (renderFrameData.enabled != 0) {
         address = state->index;
     } else {
         address = 0;
@@ -451,9 +451,9 @@ s32 RhBase_GetBufferFormatEx(s32 back, s32 *outAddress, s32 *outPsm, s32 *outWid
 
 /* Sets the function called at every vertical blank. */
 s32 RhBase_SetVSyncCallback(void (*callback)(void)) {
-    extern void (*D_003261E4)(void);
+    extern void (*vSyncCallback)(void);
 
-    D_003261E4 = callback;
+    vSyncCallback = callback;
     return 1;
 }
 
@@ -489,7 +489,7 @@ void *RhBase_MaskFBuffer(void *packetIn, u32 mask) {
     Texture_00209F70 *texture;
     u64 *packet = packetIn;
 
-    if (D_003261BC & 1) {
+    if (frameBufferIndex & 1) {
         texture = (Texture_00209F70 *)(textureBase + 0x150);
     } else {
         texture = (Texture_00209F70 *)(textureBase + 0x60);
@@ -559,7 +559,7 @@ s32 RhBase_SetZBufferMode(s32 cursor, s32 write) {
     ((u64 *)&gowGif)[0] = ((u64)0x10000000 << 32) | 0x8000;
     ((u64 *)&gowGif)[1] = 0xE;
     sceVif1PkOpenGifTag(gSceVif1, gowGif);
-    if (D_00325F40.enabled && state->flags.apply) {
+    if (renderFrameData.enabled && state->flags.apply) {
         SceZBuf.f.value = state->base + state->offset;
         SceZBuf.f.mode = state->mode;
     } else {
@@ -600,7 +600,7 @@ void RhBase_GetZBufInfo(void *out) {
     State_0020A280 *state = (State_0020A280 *)&renderFrameState;
     Packet_0020A280 *packet = out;
 
-    if (D_00325F40.enabled && state->flags.apply) {
+    if (renderFrameData.enabled && state->flags.apply) {
         packet->value = state->base + state->offset;
         packet->mode = state->mode;
     } else {
@@ -629,7 +629,7 @@ void RhBase_CopyFrameBuffer(u32 address) {
     u16 *p;
 
     sceGsSyncPath(0, 0);
-    if (D_003261BC & 1) {
+    if (frameBufferIndex & 1) {
         p = (u16 *)(base + 0x60);
     } else {
         p = (u16 *)(base + 0x150);
@@ -670,7 +670,7 @@ s32 RhBase_AssignRenderFrame(s32 size, s32 psm, s32 zpsm) {
     s32 a = 0;
     s32 b = 0;
 
-    if (D_00325F40.enabled != 0) {
+    if (renderFrameData.enabled != 0) {
         return 0;
     }
     state->id = size;
@@ -743,7 +743,7 @@ void *RhBase_EnableRenderFrame(void *packetIn) {
     State_0020A610 *state = (State_0020A610 *)&renderFrameState;
     Packet_0020A610 *packet = packetIn;
 
-    if (!D_00325F40.enabled) {
+    if (!renderFrameData.enabled) {
         return packetIn;
     }
     packet->tag[0] = 0x10000005;
@@ -810,7 +810,7 @@ void *RhBase_DisableRenderFrame(void *packetIn) {
     s64 *environment;
     Packet_0020A760 *packet = packetIn;
 
-    if (D_003261BC & 1) {
+    if (frameBufferIndex & 1) {
         environment = context->environment1;
     } else {
         environment = context->environment0;
@@ -889,7 +889,7 @@ void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
     s32 green;
 
     default_color_0020A870(&defaultColor, &D_00293F00);
-    if (!D_00325F40.enabled) {
+    if (!renderFrameData.enabled) {
         return packet;
     }
     if (!draw_0020A870(state)) {
@@ -919,8 +919,8 @@ void *RhBase_ClearRenderFrame(u8 *packet, u8 *color) {
 
 /* Frees the render frame. */
 void RhBase_FreeRenderFrame(void) {
-    D_00325F40.enabled = 0;
-    D_00325F40.flag1 = 0;
+    renderFrameData.enabled = 0;
+    renderFrameData.flag1 = 0;
 }
 
 /* The texture registers that read the render frame, into `tex0` and `tex1`. */
@@ -972,7 +972,7 @@ s32 RhBase_GetTextureInfoForRender(void *tex0, void *tex1) {
     Record_0020AA30 *record = tex0;
     Extra_0020AA30 *extra = tex1;
 
-    if (D_00325F40.enabled == 0) {
+    if (renderFrameData.enabled == 0) {
         return 0;
     }
     if (record != NULL) {
@@ -1164,7 +1164,7 @@ s32 lRhBase_InitGsAndVif(s32 mode) {
     *((u64 *)&D_00325EF0 + 1) = 0xE;
     sceVif1PkOpenGifTag(D_00325F00, D_00325EF0);
     sceVif1PkAddGsAD(D_00325F00, 0x46, 1);
-    sceVif1PkAddGsAD(D_00325F00, 0x40, ((u64)(D_0032618C - 1) << 16) | ((u64)(D_00326190 - 1) << 48));
+    sceVif1PkAddGsAD(D_00325F00, 0x40, ((u64)(D_0032618C - 1) << 16) | ((u64)(currentTimingModeValue - 1) << 48));
     sceVif1PkAddGsAD(D_00325F00, 0x1A, 1);
     sceVif1PkAddGsAD(D_00325F00, 0x3B, (u64)0x80 << 32);
     sceVif1PkAddGsAD(D_00325F00, 0x3D, 0xC0C0C0);

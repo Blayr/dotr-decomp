@@ -688,7 +688,7 @@ typedef struct Dispatch_001F4900 {
     s32 count;
 } Dispatch_001F4900;
 
-extern s32 D_0031BE90;
+extern s32 effectRelated1;
 extern Dispatch_001F4900 effectKindTable_2[]; /* original: gSzEffect_aEffFuncTbl */
 extern s32 D_00292FF8[];
 
@@ -737,7 +737,7 @@ s32 SzEffect_EntryCallback(s32 kind, s32 card, s32 mode, s32 from, s32 target, s
         destination = (void *)CAMPAIGN_WORK_ADDR;
         if (slot->state == 0) {
             Cache_001F4900 *cache = &effectState_2;
-            if (D_0031BE90 != kind || cache->entry != card) {
+            if (effectRelated1 != kind || cache->entry != card) {
                 RhMem_CopyMemory16((void *)OVERLAY_ADDR, (void *)source, 0x800);
                 iFlushCache(0);
                 mwOverlayInit(OVERLAY_ADDR, *(s32 *)(OVERLAY_ADDR + 0x1C) + 0xFE200000);
@@ -1113,27 +1113,27 @@ s32 SzEffect_GetCount(s32 slot) {
 
 /* Sets the unit the running effect script targets. */
 void SzEffect_SetTarget(s32 unit) {
-    D_0031BE98 = unit;
+    effectTarget = unit;
 }
 
 /* The target unit of effect slot `slot`. */
 s32 SzEffect_GetTarget(u8 slot) {
-    return D_0031BE98;
+    return effectTarget;
 }
 
 /* Sets the unit the running effect script starts from. */
 void SzEffect_SetFrom(s32 unit) {
-    D_0031BE9C = unit;
+    effectSource = unit;
 }
 
 /* The starting unit of effect slot `slot`. */
 s32 SzEffect_GetFrom(u8 slot) {
-    return D_0031BE9C;
+    return effectSource;
 }
 
 /* The position an effect uses for one of its units. */
 void SzEffect_GetPos(s32 what, s32 unit) {
-    SzEffect_GetPos2(what, D_0031BE98, unit);
+    SzEffect_GetPos2(what, effectTarget, unit);
 }
 
 /* The position of unit `unit` ((side << 8) | unit) for an effect into `out`: its card (`what` 0), its model's
@@ -1262,7 +1262,7 @@ s32 SzEffect_ClearRefID2(s32 unit, s32 id) {
 
 /* Sets the effects' deepest draw-order level. */
 void SzEffect_SetMaxOT(s32 level) {
-    SzEffect_SetMaxOT2(D_0031BE9C, level);
+    SzEffect_SetMaxOT2(effectSource, level);
 }
 
 /* Sets the deepest draw-order level of unit `unit`'s model. */
@@ -1286,7 +1286,7 @@ s32 SzEffect_SetMaxOT2(s32 unit, s32 level) {
 
 /* An effect target's bounding radius. */
 void SzEffect_GetRadius(void) {
-    SzEffect_GetRadius2(D_0031BE98);
+    SzEffect_GetRadius2(effectTarget);
 }
 
 /* The bounding radius of unit `unit`'s model. */
@@ -1533,7 +1533,7 @@ s32 SzEffect_GetCardRgba2(s32 unit, u8 *out) {
 
 /* Whether an effect target's model is idle. */
 s32 SzEffect_IsModelStandby(void) {
-    return SzEffect_IsModelStandby2(D_0031BE98);
+    return SzEffect_IsModelStandby2(effectTarget);
 }
 
 /* Whether unit `unit`'s model is idle. */
@@ -1605,7 +1605,7 @@ s32 SzEffect_SetModelRot2(s32 id, void *rot) {
 
 /* Sets the rotation centre of the effect target's model. */
 void SzEffect_SetModelRotC(s32 arg0) {
-    SzEffect_SetModelRotC2(D_0031BE98, arg0);
+    SzEffect_SetModelRotC2(effectTarget, arg0);
 }
 
 /* Sets the rotation centre of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
@@ -1648,7 +1648,7 @@ s32 SzEffect_GetModelRot2(s32 id, void *out) {
 
 /* The rotation centre of the effect target's model. */
 void SzEffect_GetModelRotC(s32 arg0) {
-    SzEffect_GetModelRotC2(D_0031BE98, arg0);
+    SzEffect_GetModelRotC2(effectTarget, arg0);
 }
 
 /* The rotation centre of unit `id`'s model ((side << 8) | unit) into `out`. */
@@ -1736,7 +1736,7 @@ s32 SzEffect_SetModelRgbaX(s32 id, s32 mode, s32 value) {
 void SzEffect_GetModelRgba(s32 arg0) {
     extern s32 SzEffect_GetModelRgba2();
 
-    SzEffect_GetModelRgba2(D_0031BE98, arg0);
+    SzEffect_GetModelRgba2(effectTarget, arg0);
 }
 
 /* The colour of unit `id`'s model ((side << 8) | unit) into `out`. */
@@ -1769,7 +1769,7 @@ s32 SzEffect_GetModelRgbaX(s32 id, u8 *out) {
 
 /* Sets the colour filter of the effect target's model. */
 void SzEffect_SetModelFilter(s32 arg0) {
-    SzEffect_SetModelFilterX(D_0031BE98, -1, arg0);
+    SzEffect_SetModelFilterX(effectTarget, -1, arg0);
 }
 
 /* Sets the colour filter of unit `id`'s model ((side << 8) | unit; `id` then holds the model slot). */
@@ -1982,32 +1982,32 @@ void SzEffect_SetPointLightForBattle(s32 value) {
 
 /* Sets the black-out level for the monster view. */
 void SzEffect_SetBlackOutForMonster(s32 value) {
-    D_0031BEA0 = value;
+    MonsterBlackOutEffect = value;
 }
 
 /* Sets the black-out level for the duel board. */
 void SzEffect_SetBlackOutForDuel(s32 value) {
-    D_0031BEA1 = value;
+    blackOutForDuel = value;
 }
 
 /* Sets the black-out level for 3D battles. */
 void SzEffect_SetBlackOutForBattle(s32 value) {
-    D_0031BEA2 = (s8) value;
+    blackOutForBattle = (s8) value;
 }
 
 /* The black-out level for the monster view. */
 u8 SzEffect_GetBlackOutForMonster(void) {
-    return D_0031BEA0;
+    return MonsterBlackOutEffect;
 }
 
 /* The black-out level for the duel board. */
 u8 SzEffect_GetBlackOutForDuel(void) {
-    return (u8)D_0031BEA1;
+    return (u8)blackOutForDuel;
 }
 
 /* The black-out level for 3D battles. */
 u8 SzEffect_GetBlackOutForBattle(void) {
-    return D_0031BEA2;
+    return blackOutForBattle;
 }
 
 /* Sets the light intensity for the monster view. */
@@ -2059,7 +2059,7 @@ void SzEffect_SetIntensityOnly(s32 index, f32 fparg0) {
 
 /* The side the duel result is read for. */
 static inline s32 player_001F6EF0(void) {
-    return D_0031BE9C;
+    return effectSource;
 }
 
 /* Whether the side being watched won the 3D battle (play motion 4). */
@@ -2095,10 +2095,10 @@ s32 SzEffect_GetPlayMotion(s32 flag) {
 
     entry = SzBattle_InqEntry(1);
     card = (Card_001F6F50 *)SzDuel_GetUnit(entry >> 8, entry & 0xFF);
-    defenderSide = (s32) D_0031BE98 >> 8;
-    defenderUnit = D_0031BE98 & 0xFF;
-    attackerSide = (s32) D_0031BE9C >> 8;
-    attackerUnit = D_0031BE9C & 0xFF;
+    defenderSide = (s32) effectTarget >> 8;
+    defenderUnit = effectTarget & 0xFF;
+    attackerSide = (s32) effectSource >> 8;
+    attackerUnit = effectSource & 0xFF;
     if (card == 0) {
         return -1;
     }
@@ -2117,7 +2117,7 @@ s32 SzEffect_ModelShotTexture2(s32 id, s32 arg1, s32 arg2, s32 arg3) {
 
 /* Renders the effect target's model into a texture with a draw callback. */
 void SzEffect_ModelShotTextureWithFunc(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    SzEffect_ModelShotTextureWithFunc2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
+    SzEffect_ModelShotTextureWithFunc2(effectSource, arg0, arg1, arg2, arg3, arg4);
 }
 
 /* Renders unit `id`'s model into a texture with a draw callback. */
@@ -2141,7 +2141,7 @@ s32 SzEffect_ModelShotTextureWithFunc2(s32 id, s32 arg1, s32 arg2, s32 arg3, s32
 
 /* Starts a motion blur on the effect target's model. */
 void SzEffect_ReqMotionBlur(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    SzEffect_ReqMotionBlur2(D_0031BE9C, arg0, arg1, arg2, arg3, arg4);
+    SzEffect_ReqMotionBlur2(effectSource, arg0, arg1, arg2, arg3, arg4);
 }
 
 /* Starts a motion blur trail on unit `id`'s model. */

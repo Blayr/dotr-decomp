@@ -26,9 +26,9 @@ void SzDuel_InitBuildDeck(s32 side) {
     sortOption = SzData_GetOption(0, 0);
     duelState.s.depth = 0xFFFFF8;
     if (sortOption != 0) {
-        names = D_002CD1F4;
+        names = gSzDuel_NameIndex1;
     } else {
-        names = D_002CCB48;
+        names = gSzDuel_NameIndex0;
     }
     *(u8 **)(state + 0x6D4) = names;
     *(s32 *)(state + 0x6D8) = CAMPAIGN_WORK_ADDR;
@@ -872,11 +872,11 @@ typedef struct Data_001BA420 {
     u8 bytes[8];
 } Data_001BA420;
 
-extern s8 D_002BEF79[];
+extern s8 passwordKeyHannibal[];
 
 /* Looks up the 8-digit card password `code`; returns the card it unlocks, or -1. */
 s32 lSzDuel_HitPassword(u8 *code) {
-    s8 *offsets = D_002BEF79;
+    s8 *offsets = passwordKeyHannibal;
     s32 index;
     u8 decoded[8];
     s32 byte;
@@ -1020,7 +1020,7 @@ s32 lSzDuel_NewComerCmp(u16 *a, u16 *b) {
     s32 ret;
 
     cardA = *a;
-    side = D_003181EC;
+    side = DeckBuildingSide;
     cardB = *b;
     if (cardA == 0x3E7) {
         keyA = 2;
@@ -1254,7 +1254,7 @@ s32 lSzDuel_RankCmp(u16 *a, u16 *b) {
     s32 cardA;
 
     cardA = *a;
-    side = D_003181EC;
+    side = DeckBuildingSide;
     cardB = *b;
     if ((s32) cardA >= 0x2AB) {
         keyA = 0x7FFFFFFF;
@@ -1349,7 +1349,7 @@ s32 SzDuel_DrawBuildDeck_Pipe(s32 packet) {
     s32 position;
     s32 result;
 
-    player = D_003181EC;
+    player = DeckBuildingSide;
     state = duelState.b;
     RhBase_AssignRenderFrame(5, 2, 0x32);
     packet = (s32)RhBase_EnableRenderFrame((void *)packet);
@@ -1636,8 +1636,8 @@ extern Color_001BB940 D_00291360;
 extern u8 D_002BE8A4[];
 extern char D_002BEF8D[];
 extern char D_002BEF93[];
-extern u8 D_003181EC;
-extern u8 D_003181ED;
+extern u8 DeckBuildingSide;
+extern u8 BuildDeckHorizontalCursorIndex;
 extern u16 D_00318118;
 
 /* Draws `text` in the window font. */
@@ -1732,8 +1732,8 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 out, s32 left, s32 top) {
     s32 pageY;
 
     data = duelState.b;
-    player = D_003181EC;
-    special = ((D_003181ED == 3) || (data[0xD5D] == 2)) ? 1 : 0;
+    player = DeckBuildingSide;
+    special = ((BuildDeckHorizontalCursorIndex == 3) || (data[0xD5D] == 2)) ? 1 : 0;
     enabled = 0;
     if (special != 0) {
         if (SzPad_Check(0, 1, 0x100) != 0) {
@@ -1964,9 +1964,9 @@ void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
     s32 sortX;
     s32 style;
 
-    leader = D_003181EC;
+    leader = DeckBuildingSide;
     data = duelState.b;
-    special = ((D_003181ED == 4) || (data[0xD5D] == 5)) ? 1 : 0;
+    special = ((BuildDeckHorizontalCursorIndex == 4) || (data[0xD5D] == 5)) ? 1 : 0;
     enabled = 0;
     if (special != 0) {
         if (SzPad_Check(0, 1, 0x100) != 0) {
@@ -2207,7 +2207,7 @@ void *lSzDuel_DrawBuildDeck_Card_Pipe(void *packet, s32 card, s32 x, s32 y, s32 
     extern u8 duelIcons[];
     extern u8 duelAttrIcons[];
     extern char D_002BEFB7[];
-    extern char D_002BE940[];
+    extern char gSzDuel_aicolMsg[];
     extern char D_002BE948[];
     extern s32 D_00290A12;
     extern s32 D_002908E6;
@@ -2219,7 +2219,7 @@ void *lSzDuel_DrawBuildDeck_Card_Pipe(void *packet, s32 card, s32 x, s32 y, s32 
     extern s32 D_0029097C;
     extern s32 D_00290986;
     extern s32 D_00290990;
-    s32 player = D_003181EC;
+    s32 player = DeckBuildingSide;
     u8 *state = duelState.b;
     s32 id = (s32)packet;
     Card_001BCE20 *data;
@@ -2318,7 +2318,7 @@ void *lSzDuel_DrawBuildDeck_Card_Pipe(void *packet, s32 card, s32 x, s32 y, s32 
     if (w > 0xA8) {
         scale = 168.0f / (f32)w;
     }
-    id = SzMsg_DrawRatioX_Pipe(id, 1, x + 0x4E, y + 9, scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    id = SzMsg_DrawRatioX_Pipe(id, 1, x + 0x4E, y + 9, scale, 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     id = SzMsg_DrawRatioX_Pipe(id, 1, x + 0x4D, y + 8, scale, 1.0f, (s32)D_002BE944, SzMsg_DrawRect_Pipe);
     id = SzMsg_DrawRatioX_Pipe(id, 1, x + 0x4C, y + 7, scale, 1.0f, (s32)D_002BE948, SzMsg_DrawRect_Pipe);
     SzMsg_Free(1);
@@ -2456,7 +2456,7 @@ s32 func_001BDAF0(s32 packet, s32 cardId, s32 left, s32 top, s32 rightSide, s32 
     extern s32 func_001BF2A0(s32, s32, s32, s32, s32, s32);
     extern s32 func_001BF470(s32, s32, s32, s32, s32, s32);
     extern char D_002BEFC3[];
-    extern char D_002BE940[];
+    extern char gSzDuel_aicolMsg[];
     extern char D_002BE944[];
     extern char D_002BE948[];
     extern char D_002BE94C[];
@@ -2503,7 +2503,7 @@ s32 func_001BDAF0(s32 packet, s32 cardId, s32 left, s32 top, s32 rightSide, s32 
             scale = 230.0f / (f32)info[3];
         }
         id = func_001FE660(id, 1, bx + 0xA1 - (s32)((f32)(info[3] >> 1) * scale), top + 0x15, scale, 1.0f,
-                           (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                           (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         id = func_001FE660(id, 1, bx + 0xA0 - (s32)((f32)(info[3] >> 1) * scale), top + 0x14, scale, 1.0f,
                            (s32)D_002BE944, SzMsg_DrawRect_Pipe);
         packet = func_001FE660(id, 1, bx + 0x9F - (s32)((f32)(info[3] >> 1) * scale), top + 0x13, scale, 1.0f,
@@ -2524,7 +2524,7 @@ s32 func_001BDAF0(s32 packet, s32 cardId, s32 left, s32 top, s32 rightSide, s32 
             scale = 230.0f / (f32)info[3];
         }
         id = func_001FE660(id, 1, bx + 0xA1 - (s32)((f32)(info[3] >> 1) * scale), top + 0x15, scale, 1.0f,
-                           (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                           (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         id = func_001FE660(id, 1, bx + 0xA0 - (s32)((f32)(info[3] >> 1) * scale), top + 0x14, scale, 1.0f,
                            (s32)D_002BE944, SzMsg_DrawRect_Pipe);
         packet = func_001FE660(id, 1, bx + 0x9F - (s32)((f32)(info[3] >> 1) * scale), top + 0x13, scale, 1.0f,
@@ -2664,7 +2664,7 @@ typedef union Card_001BE5F0 {
 } Card_001BE5F0;
 
 extern u8 duelAttrIcons[]; /* original: gSzDuel_Attr */
-extern u8 D_0029008A[];
+extern u8 AttributeIconID[];
 extern Color_001BE5F0 D_00291368;
 extern u8 D_002BE94C[];
 extern char D_002BEFCB[];
@@ -2728,7 +2728,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
     extern s32 SzData_GetRank();
     extern s32 SzDuel_Type2Attr();
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
-    extern char D_002BE940[];
+    extern char gSzDuel_aicolMsg[];
     extern u8 D_002901B6[];
     extern u8 D_002908F0[];
     s32 pictureX;
@@ -2769,12 +2769,12 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
     s32 stars;
 
     data = duelState.b;
-    player = D_003181EC;
+    player = DeckBuildingSide;
     card = (Card_001BE5F0 *)SzDuel_GetCardConstInfo(cardNo);
     slide = rightSide ? 0x280 : -0x140;
     deckIndex = -1;
     if (cardNo == 0x29F) {
-        name = D_0029008A;
+        name = AttributeIconID;
         message = 0x26;
         cardType = 0;
         deckIndex = 0;
@@ -2834,7 +2834,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
     func_0019B648(text, D_002BEFDB, cardNo);
     cursor = text_001BE5F0(cursor, textX, textY, 1, 2, text, NULL);
     labelX = baseX + 0x1D;
-    cursor = SzMsg_DrawX_Pipe(cursor, 1, labelX, top + 0x35, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    cursor = SzMsg_DrawX_Pipe(cursor, 1, labelX, top + 0x35, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     x = boxX = baseX + 0x4E;
     y = top + 0x30;
     cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, x, y, -0xD4, -0x20, -1, 0);
@@ -2851,12 +2851,12 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
     }
     cursor = SzMsg_DrawRatioX_Pipe(nameCtx, 2, nameX, labelY, scale, 1.0f, (s32)D_002BE94C, SzMsg_DrawRect_Pipe);
     if (cardType == 0) {
-        cursor = SzMsg_DrawX_Pipe(cursor, 3, labelX, top + 0x56, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        cursor = SzMsg_DrawX_Pipe(cursor, 3, labelX, top + 0x56, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         y = top + 0x51;
         cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, boxX, y, -0x48, -0x20, -1, 0);
         cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, duelAttrIcons + subtype * 10, pos_001BE5F0(left + 0x726, slide),
                            top + 0x775, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
-        cursor = SzMsg_DrawX_Pipe(cursor, 5, labelX, top + 0x77, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        cursor = SzMsg_DrawX_Pipe(cursor, 5, labelX, top + 0x77, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         y = top + 0x72;
         cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, boxX, y, -0x48, -0x20, -1, 0);
         x = numberX = baseX + 0x4F;
@@ -2864,7 +2864,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
         if (card != NULL) {
             cursor = SzDuel_DrawWindow_ExDigit_Pipe(cursor, x, y, 4, card->data.attack & 0x1FFF, 1, 0, 0);
         }
-        cursor = SzMsg_DrawX_Pipe(cursor, 6, labelX, top + 0x98, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        cursor = SzMsg_DrawX_Pipe(cursor, 6, labelX, top + 0x98, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         y = top + 0x93;
         cursor = c = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, boxX, y, -0x48, -0x20, -1, 0);
         y = top + 0x98;
@@ -2872,7 +2872,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
             cursor = SzDuel_DrawWindow_ExDigit_Pipe(c, numberX, y, 4, card->data.defense & 0x1FFF, 1, 0, 0);
         }
         labelY = top + 0xB3;
-        cursor = SzMsg_DrawRatioX_Pipe(cursor, 7, labelX, labelY, fit_001BE5F0(7, 116), 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        cursor = SzMsg_DrawRatioX_Pipe(cursor, 7, labelX, labelY, fit_001BE5F0(7, 116), 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         x = baseX + 0x1A;
         y = top + 0xC9;
         stars = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, x, y, -0x7C, -0x26, -1, 0);
@@ -2890,7 +2890,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
             stars = SzDuel_DrawWindow_FontDigit_Pipe(stars, x, y, 1, 2, 2, card->bits.level);
         }
         labelY = top + 0xF4;
-        cursor = SzMsg_DrawRatioX_Pipe(stars, 8, labelX, labelY, fit_001BE5F0(8, 116), 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+        cursor = SzMsg_DrawRatioX_Pipe(stars, 8, labelX, labelY, fit_001BE5F0(8, 116), 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
         cursor = lSzDuel_DrawWindow_Emblem_Pipe(cursor, baseX + 0x93, top + 0xEF, deckIndex, 0, 0);
         x = baseX + 0xB4;
         y = top + 0xEF;
@@ -2902,7 +2902,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
         }
     }
     labelY = top + 0x115;
-    cursor = SzMsg_DrawRatioX_Pipe(cursor, 10, labelX, labelY, fit_001BE5F0(10, 116), 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    cursor = SzMsg_DrawRatioX_Pipe(cursor, 10, labelX, labelY, fit_001BE5F0(10, 116), 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, palette + 7, baseX + 0xB4, top + 0x110, -0x6E, -0x20, -1, 0);
     cursor = c = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_002908F0, pos_001BE5F0(left + 0x77B, slide), top + 0x838,
                        0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
@@ -2928,7 +2928,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
 /* Draws the special-effect page of the card-detail window. */
 s32 lSzDuel_DrawBuildDeck_Detail_Special_Pipe(s32 packet, s32 text, s32 left, s32 top, s32 rightSide) {
     extern s32 SzMsg_DrawRatioX_Pipe(s32, s32, s32, s32, f32, f32, s32, void (*)(void));
-    extern char D_002BE940[];
+    extern char gSzDuel_aicolMsg[];
     s32 offset;
     s32 id;
     s32 *size;
@@ -2955,7 +2955,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Special_Pipe(s32 packet, s32 text, s32 left, s3
     if (size[4] > 0x100) {
         scaleY = 256.0f / size[4];
     }
-    result = SzMsg_DrawRatioX_Pipe(id, 1, x, y, scaleX, scaleY, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    result = SzMsg_DrawRatioX_Pipe(id, 1, x, y, scaleX, scaleY, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     SzMsg_Free(1);
     return result;
 }
@@ -3000,7 +3000,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Enchant_Pipe(s32 packet, s32 card, s32 left, s3
                 if (size[3] > 0xFE) {
                     scale = 254.0f / size[3];
                 }
-                packet = SzMsg_DrawRatioX_Pipe(id, i + 1, x + 5, y + 2, scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                packet = SzMsg_DrawRatioX_Pipe(id, i + 1, x + 5, y + 2, scale, 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
                 SzMsg_Free(i + 1);
                 i++;
                 y += 0x1A;
@@ -3023,7 +3023,7 @@ typedef struct State_001BF470 {
     u8 tail[0x1B];
 } State_001BF470;
 extern Point_001BF470 D_002C3338[][5];
-extern char D_002BE940[];
+extern char gSzDuel_aicolMsg[];
 
 /* Draws the leader-ability page of the card-detail window. */
 s32 lSzDuel_DrawBuildDeck_Detail_Ability_Pipe(s32 packet, s32 card, s32 left, s32 top, s32 rightSide, s32 color) {
@@ -3044,7 +3044,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Ability_Pipe(s32 packet, s32 card, s32 left, s3
     s32 ty;
     s32 tx;
 
-    flag = D_003181EC;
+    flag = DeckBuildingSide;
     offset = rightSide != 0 ? 0x280 : -0x140;
     if (card >= 0x2AB) {
         return packet;
@@ -3081,7 +3081,7 @@ s32 lSzDuel_DrawBuildDeck_Detail_Ability_Pipe(s32 packet, s32 card, s32 left, s3
                     scale = 1.0f;
                 }
                 pipe = SzMsg_DrawRatioX_Pipe(packet, n + 1, tx + 5, ty + 2,
-                                    scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+                                    scale, 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
                 y += 0x1A;
                 ty += 0x1A;
                 count++;
@@ -3255,9 +3255,9 @@ s32 lSzDuel_DrawBuildDeck_BagCursor_Pipe(s32 id, s32 left, s32 top, s32 row) {
     extern s32 D_00290A4E;
     extern s32 D_00290A76;
     extern s32 D_00290864;
-    extern u8 D_003181ED;
+    extern u8 BuildDeckHorizontalCursorIndex;
     u8 *state = duelState.b;
-    s32 flag = (D_003181ED == 3) ? 1 : 0;
+    s32 flag = (BuildDeckHorizontalCursorIndex == 3) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
     s8 *text3 = D_002BEFF3;
@@ -3316,9 +3316,9 @@ s32 lSzDuel_DrawBuildDeck_DeckCursor_Pipe(s32 id, s32 left, s32 top, s32 row) {
     extern s32 D_00290A62;
     extern s32 D_00290A58;
     extern s32 D_00290A4E;
-    extern u8 D_003181ED;
+    extern u8 BuildDeckHorizontalCursorIndex;
     u8 *state = duelState.b;
-    s32 flag = (D_003181ED == 4) ? 1 : 0;
+    s32 flag = (BuildDeckHorizontalCursorIndex == 4) ? 1 : 0;
     s8 *text1 = D_002BEFE7;
     s8 *text2 = D_002BEFEC;
     s8 *text3 = D_002BEFF3;
@@ -3369,7 +3369,7 @@ void lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 SzMsg_DrawX_Pipe();
     extern char D_002BEF9D[];
     extern u16 D_0031811A;
-    extern u8 D_003181EE;
+    extern u8 BuildDeckVerticalCursorIndex;
     s32 text0;
     char *text1;
     char *text2;
@@ -3383,7 +3383,7 @@ void lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 packet, s32 left, s32 top) {
     text0 = (s32)D_002BEF9D;
     text1 = D_002BEF6F;
     text2 = D_002BEF73;
-    table = *(u16 *)((u8 *)D_00317B68 + (D_0031811A + D_003181EE) * 2);
+    table = *(u16 *)((u8 *)D_00317B68 + (D_0031811A + BuildDeckVerticalCursorIndex) * 2);
     icon = SzDuel_GetMsgName(table);
     packet = lSzDuel_DrawDialog_Window_Pipe(packet, 2, table, icon, left + 0x140, top + 0x48, -0x1CC, 0x130,
                          func_0019BEF0((char *)text0), text0, 0);
@@ -3714,7 +3714,7 @@ static inline f32 clamp_001C12B0(f32 value, f32 minimum, f32 maximum) {
 void SzDuel_Act3DView(void) {
     extern u32 SzPad_GetPressInfo();
     extern s32 SzModel_GetModelNo();
-    extern Vec4_001C12B0 D_00291440;
+    extern Vec4_001C12B0 cameraSPX;
     extern f32 cardViewerLight[];
     f32 yaw = 0.0f;
     f32 pitch = 0.0f;
@@ -3775,7 +3775,7 @@ void SzDuel_Act3DView(void) {
         camera.y = func_001A6C30(6.2831855f + (camera.y + yaw), 6.2831855f);
         camera.z = clamp_001C12B0(camera.z + pitch, -0.3926991f, 1.3744469f);
         SzView_SetLookSP(0, (f32 *)&camera);
-        D_00291440 = *(Vec4_001C12B0 *)SzView_GetSP(0);
+        cameraSPX = *(Vec4_001C12B0 *)SzView_GetSP(0);
         SzView_SetPointLight(0, 4, (s32)cardViewerLight);
     }
 }

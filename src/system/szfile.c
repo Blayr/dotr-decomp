@@ -27,8 +27,8 @@ typedef struct Entry8_001FEB80 {
 } Entry8_001FEB80;
 
 extern State_001FEB80 fileQueue; /* original: gSzFile_fl */
-extern Entry36_001FEB80 D_00320370[];
-extern Entry8_001FEB80 D_00322770[];
+extern Entry36_001FEB80 ReadRequestQueueArray[];
+extern Entry8_001FEB80 FileGroupEntryArray[];
 
 /* Clears the file read queue. */
 void SzFile_Init(void) {
@@ -38,8 +38,8 @@ void SzFile_Init(void) {
     s32 count;
 
     state = &fileQueue;
-    large = D_00320370;
-    small = D_00322770;
+    large = ReadRequestQueueArray;
+    small = FileGroupEntryArray;
     count = 0x100;
     RhMem_FillMemory((s8 *)&fileQueue, 0, 0x66A0);
     while (count--) {

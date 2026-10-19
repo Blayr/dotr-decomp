@@ -176,7 +176,7 @@ typedef struct {
 extern Object_00280670 slotFlares[]; /* original: gSh_Flear */
 extern Flags_00280670 slotReels[]; /* original: gSh_SlotInfo */
 extern u8 D_00351241;
-extern u8 D_00351242;
+extern u8 CanStillGet3InARow;
 extern u16 D_00351246;
 
 /* Starts the slot machine's three reels spinning, with their flares and sound. */
@@ -202,7 +202,7 @@ void ShSlot_Start(void) {
         slotFlares[i].x = (f32) (i * 0x70 + 0x78E);
         slotFlares[i].y = 2249.0f;
     }
-    D_00351242 = D_00351241;
+    CanStillGet3InARow = D_00351241;
     D_00351246 = 0;
 }
 
@@ -222,38 +222,38 @@ void ShSlot_HitCardRequest(void) {
     extern Board_00280920 slotFlash;
     extern Reel_00280920 *slotReelCards;
     extern s32 D_002B8780[];
-    extern s16 D_00351252;
-    extern u16 D_00351258;
+    extern s16 SquareSlotReelImageOffset;
+    extern u16 SquareSlotCardID;
     extern u16 D_00351292;
     extern s32 TaSlot_GetFeverGain(u16, u8);
-    extern u8 D_0035117A;
-    extern u16 D_0035117C;
+    extern u8 nextSlotDropNumber;
+    extern u16 nextSlotDrop;
     u16 id;
     s32 slot;
     s32 base;
 
-    D_0035117C = 0xFFFF;
-    while (D_0035117A < 8) {
-        id = slotReels[D_0035117A].center;
-        switch (D_0035117A) {
+    nextSlotDrop = 0xFFFF;
+    while (nextSlotDropNumber < 8) {
+        id = slotReels[nextSlotDropNumber].center;
+        switch (nextSlotDropNumber) {
         case 0:
             if (id != 0xFFFF) {
-                D_0035117C = slotReels[D_0035117A].center;
-                D_0035117A++;
+                nextSlotDrop = slotReels[nextSlotDropNumber].center;
+                nextSlotDropNumber++;
                 return;
             }
             break;
         case 1:
-            if (id != 0xFFFF && id != D_00351258) {
-                D_0035117C = slotReels[D_0035117A].center;
-                D_0035117A++;
+            if (id != 0xFFFF && id != SquareSlotCardID) {
+                nextSlotDrop = slotReels[nextSlotDropNumber].center;
+                nextSlotDropNumber++;
                 return;
             }
             break;
         case 2:
-            if (id != 0xFFFF && id != D_00351258 && id != D_00351292) {
-                D_0035117C = slotReels[D_0035117A].center;
-                D_0035117A++;
+            if (id != 0xFFFF && id != SquareSlotCardID && id != D_00351292) {
+                nextSlotDrop = slotReels[nextSlotDropNumber].center;
+                nextSlotDropNumber++;
                 return;
             }
             break;
@@ -262,20 +262,20 @@ void ShSlot_HitCardRequest(void) {
         case 5:
         case 6:
         case 7:
-            slot = D_0035117A - 3;
+            slot = nextSlotDropNumber - 3;
             if (slotFlash.slots[slot]) {
                 if (slotReelCards->stops[slot] == 0xFFFE) {
-                    base = D_00351252 / 0x70;
-                    D_0035117C = TaSlot_GetFeverGain(slotReels[0].symbols[(base + D_002B8780[slot]) % slotReelCards->count], slot);
+                    base = SquareSlotReelImageOffset / 0x70;
+                    nextSlotDrop = TaSlot_GetFeverGain(slotReels[0].symbols[(base + D_002B8780[slot]) % slotReelCards->count], slot);
                 } else {
-                    D_0035117C = slotReelCards->stops[D_0035117A - 3];
+                    nextSlotDrop = slotReelCards->stops[nextSlotDropNumber - 3];
                 }
-                D_0035117A++;
+                nextSlotDropNumber++;
                 return;
             }
             break;
         }
-        D_0035117A++;
+        nextSlotDropNumber++;
     }
 }
 
@@ -299,7 +299,7 @@ void ShSlot_CheckLine(s32 line) {
         }
     }
     for (column = 0; column < 5; column++) {
-        if (D_00351242 & (1 << column)) {
+        if (CanStillGet3InARow & (1 << column)) {
             clear = 0;
             switch (column) {
             case 0:
@@ -459,7 +459,7 @@ void ShSlot_CheckLine(s32 line) {
                 break;
             }
             if (clear != 0) {
-                D_00351242 &= (u8)~(1 << column);
+                CanStillGet3InARow &= (u8)~(1 << column);
             }
         }
     }
@@ -635,7 +635,7 @@ void ShSlot_DrawParts(s32 layer) {
         case 8:
             if (slotReels[0].state == 1) {
                 bit = items.items[i].kind - 4;
-                if (D_00351242 & (1 << bit)) {
+                if (CanStillGet3InARow & (1 << bit)) {
                     packet.color.r = packet.color.g = packet.color.b = pulse.values[(D_00351246 >> 1) & 0xF] + 0x40;
                     packet.color.a = pulse.values[(D_00351246 >> 1) & 0xF] + 4;
                     break;
@@ -1285,9 +1285,9 @@ typedef struct Timers_00284D30 {
 } Timers_00284D30;
 
 extern u8 gSh_DlgInfo;
-extern u8 D_00351179;
-extern u8 D_0035117A;
-extern u16 D_0035117C;
+extern u8 VisualDelayTimer;
+extern u8 nextSlotDropNumber;
+extern u16 nextSlotDrop;
 extern s16 D_00351248;
 
 /* Draws the slot machine: frame, reels, eye, flash and flares. */
@@ -1393,22 +1393,22 @@ s32 ShSlot_Draw_Pipe(s32 packet) {
             switch (gSh_DlgInfo) {
             case 1:
                 ShSlot_HitCardRequest();
-                if (D_0035117C != 0xFFFF) {
-                    if (D_0035117A > 3) {
+                if (nextSlotDrop != 0xFFFF) {
+                    if (nextSlotDropNumber > 3) {
                         SzSound_PlaySE(0, 25);
-                        SzDuel_OpenMsgPopup(3, 0, 0, D_0035117C);
+                        SzDuel_OpenMsgPopup(3, 0, 0, nextSlotDrop);
                         gSh_DlgInfo = 2;
-                        D_00351179 = 0;
+                        VisualDelayTimer = 0;
                     } else {
                         SzSound_PlaySE(0, 7);
-                        SzDuel_OpenMsgPopup(2, 0, 0, D_0035117C);
+                        SzDuel_OpenMsgPopup(2, 0, 0, nextSlotDrop);
                         gSh_DlgInfo = 2;
-                        D_00351179 = 0;
+                        VisualDelayTimer = 0;
                     }
                 } else {
                     SzDuel_CloseMsgPopup();
                     gSh_DlgInfo = 6;
-                    D_00351179 = 8;
+                    VisualDelayTimer = 8;
                 }
                 break;
             }
@@ -1443,13 +1443,13 @@ typedef struct Counters_00285880 {
 } Counters_00285880;
 
 extern Counters_00285880 slotFlash; /* original: gSh_Flash */
-extern u8 D_00351214;
-extern u8 D_00351215;
-extern u8 D_00351216;
-extern u8 D_00351217;
-extern u8 D_00351218;
+extern u8 MiddleStraightLineHighlight;
+extern u8 TopStraightLineHighlight;
+extern u8 BottomStraightLineHighlight;
+extern u8 TopLeftDiagonalHighlight;
+extern u8 BottomLeftDiagonalLineHighlight;
 extern Deck_00285880 *slotReelCards; /* original: gSh_SlotOrderPT */
-extern u8 D_00351244;
+extern u8 DeveloperMode;
 
 /* Starts the slot machine on the reel cards at CAMPAIGN_WORK_ADDR (or, with `useTestReels`, a built-in set of 16 without
    starting the spin). */
@@ -1464,9 +1464,9 @@ void ShSlot_Init(s32 useTestReels) {
     extern Flags_00280670 slotReels[];
     extern s32 ShSlot_Start();
 
-    D_00351244 = useTestReels;
+    DeveloperMode = useTestReels;
     slotReelCards = (Deck_00285880 *)CAMPAIGN_WORK_ADDR;
-    if (D_00351244) {
+    if (DeveloperMode) {
         deck = slotReelCards;
         deck->count = 0x10;
         deck->extra[0] = deck->extra[1] = deck->extra[2] = deck->extra[3] = deck->extra[4] = 0xFFFE;
@@ -1477,7 +1477,7 @@ void ShSlot_Init(s32 useTestReels) {
         deck->flags = 2;
     }
     slotReelCards->extra[0] = 0xFFFE;
-    D_00351241 = D_00351242 = 0;
+    D_00351241 = CanStillGet3InARow = 0;
     for (i = 0; i < 5; i++) {
         if (slotReelCards->extra[i] != 0xFFFF) {
             D_00351241 |= (u8)(1 << i);
@@ -1490,7 +1490,7 @@ void ShSlot_Init(s32 useTestReels) {
     for (j = 0; j < 3; j++) {
         slotFlash.rows[j][0] = slotFlash.rows[j][1] = slotFlash.rows[j][2] = 0;
     }
-    D_00351214 = D_00351215 = D_00351216 = D_00351217 = D_00351218 = 0;
+    MiddleStraightLineHighlight = TopStraightLineHighlight = BottomStraightLineHighlight = TopLeftDiagonalHighlight = BottomLeftDiagonalLineHighlight = 0;
     for (j = 0; j < 3; j++) {
         ((Row_00285880 *)&slotReels[j])->field12 = 0;
         ((Row_00285880 *)&slotReels[j])->field16 = 0;
@@ -1523,7 +1523,7 @@ void ShSlot_Init(s32 useTestReels) {
             break;
         }
     }
-    if (!D_00351244) {
+    if (!DeveloperMode) {
         ShSlot_Start();
     }
 }
@@ -1560,7 +1560,7 @@ void ShSlot_Act(void) {
     s32 remainder2;
     s32 remainder3;
 
-    if (D_00351244) {
+    if (DeveloperMode) {
         if (SzPad_Check(0, 0, 0x800) != 0) {
             SzDuel_CloseMsgPopup();
             ShSlot_Init(1);
@@ -1624,36 +1624,36 @@ void ShSlot_Act(void) {
         break;
     case 2:
         if (ShSlot_IsFlashStop() != 0) {
-            if ((D_00351242 & 0x1F) == 0) {
+            if ((CanStillGet3InARow & 0x1F) == 0) {
                 slotReels[0].state = 3;
                 gSh_DlgInfo = 0;
-                D_00351179 = 0x10;
+                VisualDelayTimer = 0x10;
             } else {
                 for (i = 0; i < 5; i++) {
-                    if (D_00351242 & (1 << i)) {
+                    if (CanStillGet3InARow & (1 << i)) {
                         switch (i) {
                         case 0:
                             slotFlash.state = 1;
-                            D_00351214 = slotFlash.rows[0][1] = slotFlash.rows[1][1] = slotFlash.rows[2][1] = 0x10;
+                            MiddleStraightLineHighlight = slotFlash.rows[0][1] = slotFlash.rows[1][1] = slotFlash.rows[2][1] = 0x10;
                             break;
                         case 1:
                             slotFlash.state = 1;
-                            D_00351215 = slotFlash.rows[0][2] = slotFlash.rows[1][2] = slotFlash.rows[2][2] = 0x10;
+                            TopStraightLineHighlight = slotFlash.rows[0][2] = slotFlash.rows[1][2] = slotFlash.rows[2][2] = 0x10;
                             break;
                         case 2:
                             slotFlash.state = 1;
-                            D_00351216 = slotFlash.rows[0][0] = slotFlash.rows[1][0] = slotFlash.rows[2][0] = 0x10;
+                            BottomStraightLineHighlight = slotFlash.rows[0][0] = slotFlash.rows[1][0] = slotFlash.rows[2][0] = 0x10;
                             break;
                         case 3:
                             slotFlash.state = 1;
-                            D_00351217 = slotFlash.rows[0][2] = slotFlash.rows[1][1] = slotFlash.rows[2][0] = 0x10;
+                            TopLeftDiagonalHighlight = slotFlash.rows[0][2] = slotFlash.rows[1][1] = slotFlash.rows[2][0] = 0x10;
                             break;
                         case 4:
                             slotFlash.state = 1;
-                            D_00351218 = slotFlash.rows[0][0] = slotFlash.rows[1][1] = slotFlash.rows[2][2] = 0x10;
+                            BottomLeftDiagonalLineHighlight = slotFlash.rows[0][0] = slotFlash.rows[1][1] = slotFlash.rows[2][2] = 0x10;
                             break;
                         }
-                        D_00351242 &= (u8)~(1 << i);
+                        CanStillGet3InARow &= (u8)~(1 << i);
                         i = 5;
                     }
                 }
@@ -1663,12 +1663,12 @@ void ShSlot_Act(void) {
     case 3:
         switch (gSh_DlgInfo) {
         case 0:
-            if (D_00351179) {
-                D_00351179--;
+            if (VisualDelayTimer) {
+                VisualDelayTimer--;
             } else {
                 gSh_DlgInfo = 1;
-                D_0035117A = 0;
-                D_00351179 = 8;
+                nextSlotDropNumber = 0;
+                VisualDelayTimer = 8;
             }
             break;
         case 1:
@@ -1676,12 +1676,12 @@ void ShSlot_Act(void) {
         case 2:
             if (SzPad_Check(0, 0, 0xF0) != 0) {
                 gSh_DlgInfo = 1;
-                D_00351179 = 8;
+                VisualDelayTimer = 8;
             }
             break;
         case 6:
-            if (D_00351179) {
-                D_00351179--;
+            if (VisualDelayTimer) {
+                VisualDelayTimer--;
             } else {
                 slotReels[0].state = 4;
             }
@@ -1689,7 +1689,7 @@ void ShSlot_Act(void) {
         }
         break;
     case 4:
-        if (!D_00351244) {
+        if (!DeveloperMode) {
             SzGame_Pop();
         }
         break;

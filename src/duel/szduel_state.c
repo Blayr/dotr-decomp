@@ -40,7 +40,7 @@ s32 SzDuel_Xax2New(s32 number) {
     if (number < 0 || number >= 0x356) {
         return 0x3E7;
     }
-    number = D_002CD8A0[number];
+    number = AlternateCardIds[number];
     if (number == 0x29F) {
         number = 0x3E7;
     }
@@ -55,7 +55,7 @@ s32 SzDuel_New2Xax(s32 card) {
     s32 i;
     u16 *p;
 
-    p = D_002CD8A0;
+    p = AlternateCardIds;
     if (card == 0x29F) {
         card = 0x3E7;
     }
@@ -87,7 +87,7 @@ s32 SzDuel_GetCamDist(s32 card) {
     if (card < 0 || card >= 0x356) {
         return -1;
     }
-    return D_002CE4A4[card];
+    return gSzDuel_CardDefaultCamDist[card];
 }
 
 /* Reads the 3D-battle option. */

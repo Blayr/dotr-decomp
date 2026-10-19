@@ -254,11 +254,11 @@ s32 SzModel_LoadMerge(s32 group, s32 set, s32 force) {
     extern Table_001E7F70 D_00292C10;
     extern Table_001E7F70 D_00292C40;
     extern Table_001E7F70 D_00292C70;
-    extern u8 D_002CEBBC[];
-    extern s16 D_002CEBC6[];
-    extern u8 D_002CEBC8[];
-    extern u8 D_002CECB8[];
-    extern u8 D_002CEE48[];
+    extern u8 gSzDuel_DuelData[];
+    extern s16 gSzDuel_RingData[];
+    extern u8 gSzDuel_StageData[];
+    extern u8 gSzDuel_EventData[];
+    extern u8 gSzDuel_FieldData[];
     extern u16 gSzModel_awIgnore[];
     extern u8 D_002CF9DD[];
     extern u8 D_002CF9F0[];
@@ -280,14 +280,14 @@ s32 SzModel_LoadMerge(s32 group, s32 set, s32 force) {
     }
 
     sources = D_00292BE0;
-    sources.values[0] = (s16 *)&D_002CEBBC[set * 10];
-    sources.values[1] = &D_002CEBC6[set];
-    sources.values[2] = (s16 *)&D_002CEBC8[24 * set];
-    commonSource = (s16 *)&D_002CECB8[set * 80];
+    sources.values[0] = (s16 *)&gSzDuel_DuelData[set * 10];
+    sources.values[1] = &gSzDuel_RingData[set];
+    sources.values[2] = (s16 *)&gSzDuel_StageData[24 * set];
+    commonSource = (s16 *)&gSzDuel_EventData[set * 80];
     sources.values[3] = commonSource;
     sources.values[4] = commonSource;
     sources.values[5] = commonSource;
-    sources.values[6] = (s16 *)&D_002CEE48[set * 20];
+    sources.values[6] = (s16 *)&gSzDuel_FieldData[set * 20];
     types = D_00292C10;
     counts = D_00292C40;
     starts = D_00292C70;
@@ -682,7 +682,7 @@ struct DotrModelLoadObject {
     signed char loading : 1;
 };
 extern struct DotrModelLoadObject *D_0031ABB0_1e8bf0[84];
-extern unsigned short D_002CDF4C[];
+extern unsigned short gSzDuel_Camera[];
 extern char D_002CFA17_1e8bf0[];
 extern char D_002CFA2A[];
 extern char *func_001FFF90_b(const char *label);
@@ -706,7 +706,7 @@ void lSzModel_LoadCB(int index)
     if (obj->kind != 4) if (obj->kind != 5) if (obj->kind != 6) goto skip;
     {
         obj->loaded_id = obj->id;
-        obj->look = D_002CDF4C[D_002CD8A0[obj->id]] & 0x3fff;
+        obj->look = gSzDuel_Camera[AlternateCardIds[obj->id]] & 0x3fff;
     }
 skip:
     node = (struct DotrModelLoadNode *)(obj->base + obj->desc->node_offset);

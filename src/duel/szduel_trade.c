@@ -2,8 +2,8 @@
 
 #include "common.h"
 
-extern u8 D_002CCB48[];
-extern u8 D_002CD1F4[];
+extern u8 gSzDuel_NameIndex0[];
+extern u8 gSzDuel_NameIndex1[];
 #pragma opt_propagation off
 
 /* Opens the card trade screen: empties both sides' lists and fills them from the trunks. */
@@ -26,9 +26,9 @@ void SzDuel_InitTrade(void) {
     result = SzData_GetOption(0, 0);
     duelState.s.depth = 0xFFFFF8;
     if (result != 0) {
-        names = D_002CD1F4;
+        names = gSzDuel_NameIndex1;
     } else {
-        names = D_002CCB48;
+        names = gSzDuel_NameIndex0;
     }
     *(u8 **)(state + 0x6D4) = names;
     *(s32 *)(state + 0x6D8) = CAMPAIGN_WORK_ADDR;
@@ -1265,7 +1265,7 @@ extern u8 D_002908F0[];
 extern u8 D_00290A12[];
 extern s8 D_002BF02D;
 extern char D_002BF030[];
-extern char D_002BE940[];
+extern char gSzDuel_aicolMsg[];
 extern char D_002BE948[];
 #pragma opt_propagation reset
 #pragma opt_dead_assignments off
@@ -1404,7 +1404,7 @@ s32 lSzDuel_DrawTrade_Card_Pipe(s32 packet, s32 side, s32 card, s32 left, s32 to
     if (width > 168) {
         scale = 168.0f / (f32)width;
     }
-    id3 = func_001FE660(id3, 1, left + offset_001C4B00(side, 0x48, 0x38) + 6, top + 9, scale, 1.0f, (s32)D_002BE940, SzMsg_DrawRect_Pipe);
+    id3 = func_001FE660(id3, 1, left + offset_001C4B00(side, 0x48, 0x38) + 6, top + 9, scale, 1.0f, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     id3 = func_001FE660(id3, 1, left + offset_001C4B00(side, 0x48, 0x38) + 5, top + 8, scale, 1.0f, (s32)D_002BE944, SzMsg_DrawRect_Pipe);
     id3 = func_001FE660(id3, 1, left + offset_001C4B00(side, 0x48, 0x38) + 4, top + 7, scale, 1.0f, (s32)D_002BE948, SzMsg_DrawRect_Pipe);
     func_001FEAF0(1);

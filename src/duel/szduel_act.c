@@ -1517,11 +1517,11 @@ typedef struct UFlags8_001CEE60 {
 extern Vec4_001CEE60 D_00291510;
 extern Vec4_001CEE60 D_00291520;
 extern Vec4_001CEE60 D_00291530;
-extern u16 D_002CDF4C[];
+extern u16 gSzDuel_Camera[];
 
 s32 func_001E7F70(s32, s32, s32);
 
-extern u8 D_003181E7;
+extern u8 Player_GameState;
 
 #define DUEL duel
 #define DUEL_S16(off) (*(s16 *)(duel + (off)))
@@ -1744,7 +1744,7 @@ s32 SzDuel_Act(void) {
     cam = func_001F9AD0(0);
     hand0 = func_001DF470(0);
     hand1 = func_001DF470(1);
-    prev = D_003181E7;
+    prev = Player_GameState;
     hpA = func_001DE4E0(0);
     hpB = func_001DE4E0(1);
     lifeA = hpA;
@@ -2193,7 +2193,7 @@ s32 SzDuel_Act(void) {
                 if (high >= 2) {
                     break;
                 }
-                if (D_002CDF4C[DUEL_DUO(0x6C8)->id] & 0x8000) {
+                if (gSzDuel_Camera[DUEL_DUO(0x6C8)->id] & 0x8000) {
                     flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
                 }
                 func_001F6C10(0);
@@ -2246,7 +2246,7 @@ s32 SzDuel_Act(void) {
                 if (high >= 2) {
                     break;
                 }
-                if (D_002CDF4C[DUEL_DUO(0x6CC)->id] & 0x8000) {
+                if (gSzDuel_Camera[DUEL_DUO(0x6CC)->id] & 0x8000) {
                     flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
                 }
                 func_001F6C10(0);
@@ -2389,7 +2389,7 @@ s32 SzDuel_Act(void) {
             }
             case 16:
                 flip = 0;
-                if (D_002CDF4C[DUEL_DUO(0x6C8)->id] & 0x4000) {
+                if (gSzDuel_Camera[DUEL_DUO(0x6C8)->id] & 0x4000) {
                     flip = (s32)(2.0f * ((f32)func_0019A5C8() / 2147483648.0f)) ? 1 : 0;
                 }
                 func_001F1830(DUEL_DUO(0x6C8)->model, 0);

@@ -13,7 +13,7 @@ typedef struct {
     u8 pad[0x5A];
 } Port_002031F0;
 
-extern u8 D_00325AC0;
+extern u8 controllerTwoBuffer;
 extern Port_002031F0 D_00325C75[];
 
 /* Starts the two pads. */
@@ -25,7 +25,7 @@ void SzPad_Init(void) {
     D_00325C75[0].mode.low = 4;
     scePadInit(0);
     scePadPortOpen(0, 0, padStates);
-    scePadPortOpen(1, 0, &D_00325AC0);
+    scePadPortOpen(1, 0, &controllerTwoBuffer);
 }
 
 /* Ends the pads. */

@@ -30,12 +30,12 @@ s32 *_localeconv_r(void) {
 
 /* Sets the locale (only "C" here). */
 void setlocale(s32 category, s32 locale) {
-    _setlocale_r(D_0028FA98, category, locale);
+    _setlocale_r(globals, category, locale);
 }
 
 /* The locale settings. */
 s32 *localeconv(void) {
-    return ((s32 *(*)(s32))_localeconv_r)(D_0028FA98);
+    return ((s32 *(*)(s32))_localeconv_r)(globals);
 }
 
 /* Moves file `fd`'s position (re-entrant; sets errno). */
@@ -117,9 +117,9 @@ void __smakebuf(void *fpIn) {
 void *func_00197990(s32 arg0, s32 arg1) {
     void *temp_s1;
 
-    func_00198A08(D_0028FA98);
-    temp_s1 = _memalign_r(D_0028FA98, arg0, arg1);
-    func_00198A88(D_0028FA98);
+    func_00198A08(globals);
+    temp_s1 = _memalign_r(globals, arg0, arg1);
+    func_00198A88(globals);
     return temp_s1;
 }
 
@@ -206,17 +206,17 @@ void *_memalign_r(s32 reent_ptr, s32 alignmentIn, s32 bytesIn) {
 s32 func_00197BC0(s32 arg0) {
     s32 temp_s1;
 
-    func_00198A08(D_0028FA98);
-    temp_s1 = _malloc_r(D_0028FA98, arg0);
-    func_00198A88(D_0028FA98);
+    func_00198A08(globals);
+    temp_s1 = _malloc_r(globals, arg0);
+    func_00198A88(globals);
     return temp_s1;
 }
 
 /* newlib free: returns block `arg0` to the heap, under the heap lock. */
 s32 func_00197C18(s32 arg0) {
-    func_00198A08(D_0028FA98);
-    _free_r(D_0028FA98, arg0);
-    return func_00198A88(D_0028FA98);
+    func_00198A08(globals);
+    _free_r(globals, arg0);
+    return func_00198A88(globals);
 }
 
 #define malloc_unlock(r) ((void (*)(s32))func_00198A88)(r)
@@ -1576,8 +1576,8 @@ void func_00199B50(const char *fmt, ...) {
     va_list ap;
 
     va_start(ap, fmt);
-    (*(vf_FILE **)(D_0028FA98 + 8))->_data = (vf_reent *)D_0028FA98;
-    ret = func_0019DD70(*(vf_FILE **)(D_0028FA98 + 8), fmt, ap);
+    (*(vf_FILE **)(globals + 8))->_data = (vf_reent *)globals;
+    ret = func_0019DD70(*(vf_FILE **)(globals + 8), fmt, ap);
     va_end(ap);
 }
 
@@ -1711,12 +1711,12 @@ loop:
 
 /* newlib srand: seeds the random numbers with `arg0`. */
 void func_0019A5B0(s64 arg0) {
-    (*(u64 *)((u8 *)D_0028FA98 + 0xA8)) = (u64) ((u64) (arg0 << 0x20) >> 0x20);
+    (*(u64 *)((u8 *)globals + 0xA8)) = (u64) ((u64) (arg0 << 0x20) >> 0x20);
 }
 
 /* newlib rand: the next random number (0..0x7FFFFFFF). */
 s32 func_0019A5C8(void) {
-    u8 *r = (u8 *)D_0028FA98;
+    u8 *r = (u8 *)globals;
 
     *(u64 *)(r + 0xA8) = *(u64 *)(r + 0xA8) * 6364136223846793005ULL + 1;
     return (s32)((*(u64 *)(r + 0xA8) >> 32) & 0x7fffffff);
@@ -2015,7 +2015,7 @@ s32 func_0019AC68(void *arg0) {
 
     do {
         if (fp->_data == 0)
-            fp->_data = (sr_reent *)D_0028FA98;
+            fp->_data = (sr_reent *)globals;
         if (!fp->_data->__sdidinit)
             __sinit(fp->_data);
     } while (0);

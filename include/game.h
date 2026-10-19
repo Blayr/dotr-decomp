@@ -208,7 +208,7 @@ extern u8 D_003506C8[];
 
 extern u8 GSI[];
 extern u8 screenState[]; /* original: gRhBase_dl */
-extern s32 D_003261BC;
+extern s32 frameBufferIndex;
 
 
 extern char D_002B90DA[];
@@ -226,15 +226,15 @@ extern s32 D_00317B68;
 extern s32 D_00317B6C;
 
 
-extern s32 D_0031BE98;
+extern s32 effectTarget;
 
 extern u8 padStates[]; /* original: gSzPad_pl */
 
 extern s32 D_0032618C;
-extern s32 D_00326190;
+extern s32 currentTimingModeValue;
 
-extern s32 D_003261B0;
-extern s32 D_003261B4;
+extern s32 screenCenterX;
+extern s32 ScreenCenterY;
 
 
 extern s32 isCountVblank;
@@ -243,7 +243,7 @@ extern s32 frd;
 
 
 
-extern s32 D_0031BE9C;
+extern s32 effectSource;
 
 
 extern u8 D_002D0655[];
@@ -275,7 +275,7 @@ extern u8 D_0029D586[];
 
 
 extern u8 cardControls[]; /* original: gSzDuel_aCardControl */
-extern u16 D_002CE4A4[];
+extern u16 gSzDuel_CardDefaultCamDist[];
 
 
 
@@ -321,7 +321,7 @@ extern u8 voBuf[];
 extern volatile s32 D_0035060C;
 
 
-extern u16 D_002CD8A0[];
+extern u16 AlternateCardIds[];
 extern u8 boardSquares[]; /* original: gSzDuel_aaMapInfo */
 
 
@@ -346,10 +346,10 @@ extern u8 videoDec[];
 extern u8 infile[];
 extern s32 readBuf;
 
-extern u16 D_0029CF32[];
+extern u16 AnmPat_Bakura_used_for_EnchantScore[];
 
 
-extern u16 D_002D0970[51][41];
+extern u16 gSzData_ConstDeck[51][41];
 
 extern u8 D_00299F90[];
 
@@ -379,10 +379,10 @@ extern u64 ditherMatrices[]; /* original: g_aqwExDitherMatrix */
 
 extern s32 eventLoadedScene; /* original: gSzEvent_nSave */
 
-extern u8 D_003181EC;
+extern u8 DeckBuildingSide;
 
 extern s8 campaignState; /* original: save_data */
-extern s16 D_00299ED4;
+extern s16 SelectedBattleArena;
 
 
 
@@ -443,43 +443,43 @@ extern s8 practiceDuelEnd; /* original: Rensyu_END */
 
 
 
-extern u8 D_0031747A;
+extern u8 FrameSpeed;
 extern s32 D_003180E4;
-extern s32 D_0031810C;
-extern s8 D_0031747B;
+extern s32 GSUserAddress;
+extern s8 AutoBlur;
 
 
 
-extern s8 D_00318144; /* duelState.s.popupState[2] as a symbol of its own (the close functions read it so) */
-extern s8 D_00318145; /* duelState.s.popupState[3] */
+extern s8 HandCursorState; /* duelState.s.popupState[2] as a symbol of its own (the close functions read it so) */
+extern s8 MsgPopUpID; /* duelState.s.popupState[3] */
 extern s32 D_0031AB90;
-extern s8 D_00318142; /* duelState.s.popupState[0] */
+extern s8 MenuVisualToDisplay; /* duelState.s.popupState[0] */
 
 extern s32 modelDrawCache; /* original: gSzModel_pfhCache */
 
 
 
 
-extern s8 D_0031BEA2;
+extern s8 blackOutForBattle;
 
-extern u8 D_0031BEA0;
-extern s32 D_0031C2E4;
-extern s32 D_003261D0;
+extern u8 MonsterBlackOutEffect;
+extern s32 Msg_DefPrioZ;
+extern s32 VifPacketArea;
 
 
-extern s8 D_0031BEA1;
-extern s32 D_0032A220;
+extern s8 blackOutForDuel;
+extern s32 RhGeom_Related;
 
 extern s8 D_00299EDA;
 
-extern s16 D_00299E4E;
+extern s16 winCount;
 extern char D_0030F3AE[];
 
 
 extern s32 gSzView_pCamera;
 
 
-extern u8 D_003181CA;
+extern u8 ScreenFadeAmount;
 
 
 extern char D_002BF00B;
@@ -544,11 +544,11 @@ extern f32 D_002910B8;
 
 extern s32 (*sortCompareFuncs[])(s32, s32); /* original: gSzDuel_pfnSort */
 
-extern u8 D_002CCB48[];
-extern u8 D_002CD1F4[];
+extern u8 gSzDuel_NameIndex0[];
+extern u8 gSzDuel_NameIndex1[];
 
 extern u8 D_002909B8[];
-extern u8 D_003181CC;
+extern u8 WhoGoesFirst;
 
 
 
@@ -585,7 +585,7 @@ extern f32 D_00325DB8;
 extern s16 campaignSystemIcons[]; /* original: camp_sys_icon */
 extern s16 D_002982F8[];
 extern s16 campaignButtonIcons[]; /* original: camp_sys_icon_botan */
-extern s16 D_00298B76[];
+extern s16 camp_sys_icon_button[];
 extern s8 D_0030F102[];
 extern s8 D_0030F107[];
 extern s8 D_0030F10C[];
@@ -599,7 +599,7 @@ extern char s_szReadPCMListAtFirst[];
 
 
 
-extern s32 D_0028FA98;
+extern s32 globals;
 
 extern s32 sceDmaDebugMode;
 
@@ -966,8 +966,8 @@ extern s32 D_0028D118;
 
 extern s32 _bind;
 extern s32 D_00313C40;
-extern s32 D_00313C80;
-extern s32 D_00313CC0;
+extern s32 _rdata;
+extern s32 __fih_data;
 
 extern s32 D_00313500;
 extern s32 D_00313B80;
@@ -1147,7 +1147,7 @@ extern s32 D_0028DCB0;
 extern s32 D_0028DCB4;
 extern s32 D_0028DCB8;
 
-extern char D_002BE940[];
+extern char gSzDuel_aicolMsg[];
 
 
 #endif

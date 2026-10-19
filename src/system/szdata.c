@@ -343,7 +343,7 @@ s32 SzData_GetConstDeck(s32 deck, s32 slot) {
     if (slot < 0 || slot >= 41) {
         return -1;
     }
-    return D_002D0970[deck][slot] & 0xFFF;
+    return gSzData_ConstDeck[deck][slot] & 0xFFF;
 }
 
 typedef struct {
@@ -355,8 +355,8 @@ typedef struct {
     u8 pad_ff9d[3];
 } State_00214990;
 
-extern s32 D_002D19D8;
-extern u16 D_002D49D4[];
+extern s32 playerNameOffset;
+extern u16 StringBlob[];
 
 /* Gives side `side` built-in deck `deck`: a fresh trunk with its 41 cards, the leader and the deck set up, a new
    profile id. */
@@ -371,14 +371,14 @@ void SzData_SetupFromConstDeck(s32 side, s32 deckNo) {
     State_00214990 *state;
 
     state = &saveProfiles[profileZeroSide == side ? 0 : 1];
-    deck = D_002D0970[deckNo];
+    deck = gSzData_ConstDeck[deckNo];
     if (!(deckNo >= 0 && deckNo < 51)) {
         return;
     }
     SzData_ClearData(side);
     if (deckNo < 17) {
         sum = 0;
-        src = &D_002D49D4[D_002D19D8] + 2;
+        src = &StringBlob[playerNameOffset] + 2;
         while (1) {
             value = *src;
             sum += value & 0x1FFF;

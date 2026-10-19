@@ -85,7 +85,7 @@ asm void RhGeomEx_GetMatrix(void *out) {
 /* Pushes the second VU0 matrix on its stack. */
 asm void RhGeomEx_PushMatrix(void) {
     .set noreorder
-    lw a1, D_0032A220
+    lw a1, RhGeom_Related
     la v1, matrixStack
     sll a0, a1, 3
     subu a0, a0, a1
@@ -99,21 +99,21 @@ asm void RhGeomEx_PushMatrix(void) {
     sqc2 vf25, 0x50(v1)
     sqc2 vf26, 0x60(v1)
     sqc2 vf27, 0x70(v1)
-    lw v1, D_0032A220
+    lw v1, RhGeom_Related
     addiu v1, v1, 0x1
     .set reorder
-    sw v1, D_0032A220
+    sw v1, RhGeom_Related
     jr ra
 }
 
 /* Pops the second VU0 matrix stack. */
 asm void RhGeomEx_PopMatrix(void) {
     .set noreorder
-    lw a0, D_0032A220
+    lw a0, RhGeom_Related
     la v1, matrixStack
     addiu a0, a0, -0x1
-    sw a0, D_0032A220
-    lw a1, D_0032A220
+    sw a0, RhGeom_Related
+    lw a1, RhGeom_Related
     sll a0, a1, 3
     subu a0, a0, a1
     sll a0, a0, 4

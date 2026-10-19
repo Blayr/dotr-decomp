@@ -13,7 +13,7 @@ extern const char D_002BD500[];
 extern const char D_002BD518[];
 extern const char D_002BD538[];
 extern const char D_002BD540[];
-extern s32 D_0028FAA0; /* __mb_cur_max */
+extern s32 __mb_cur_max; /* __mb_cur_max */
 
 #define va_list char *
 #define va_arg(ap, type) __builtin_va_arg(ap, type)
@@ -146,7 +146,7 @@ s32 func_0019DDE8(vf_reent *data, vf_FILE *fp_0019DDE8, const char *fmt0, void *
      */
     for (;;) {
         cp = fmt;
-        while ((n = _mbtowc_r((void *)D_0028FA98, (s32 *)&wc, fmt, D_0028FAA0, &state)) > 0) {
+        while ((n = _mbtowc_r((void *)globals, (s32 *)&wc, fmt, __mb_cur_max, &state)) > 0) {
             fmt += n;
             if (wc == '%') {
                 fmt--;

@@ -48,7 +48,7 @@ s32 func_0019DCB8(void *arg0, const char *fmt, void *ap) {
 s32 func_0019DD70(vf_FILE *fp, const char *fmt0, void *ap) {
     do {
         if ((fp)->_data == 0)
-            (fp)->_data = (vf_reent *)D_0028FA98;
+            (fp)->_data = (vf_reent *)globals;
         if (!(fp)->_data->__sdidinit)
             __sinit((fp)->_data);
     } while (0);

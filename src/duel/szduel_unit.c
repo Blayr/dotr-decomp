@@ -240,7 +240,7 @@ static inline struct DotrReleaseObject *free_object(void)
 /* A card's number in the old card order. */
 static inline int card_index(int id)
 {
-    unsigned short *p = D_002CD8A0;
+    unsigned short *p = AlternateCardIds;
     int i;
 
     if (id == 671) {

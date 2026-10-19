@@ -7,7 +7,7 @@
 void Taku_Camp_Set_Go_Duel(void) {
     s16 place;
 
-    place = D_00299ED4;
+    place = SelectedBattleArena;
     SzGame_SetMenuNum(1, (s32) place);
     SzGame_SetMenuNum(2, (s32) campaignState);
     if (campaignState == 0) {
@@ -708,7 +708,7 @@ void *Taku_Camp_SYS_ICON(void *packet) {
     if (campaignWork.unk007E == 0) {
         packet = Taku_Obj_Set(packet, campaignButtonIcons, 0, alpha);
     } else {
-        packet = Taku_Obj_Set(packet, D_00298B76, 0, alpha);
+        packet = Taku_Obj_Set(packet, camp_sys_icon_button, 0, alpha);
     }
     if (campaignWork.unk007E == 0) {
         packet = SzDuel_DrawWindow_Font_Pipe(packet, 0x232, y, 1, 1, 6, D_0030F118, 0);

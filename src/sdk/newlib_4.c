@@ -507,7 +507,7 @@ ret:
 
 /* newlib strtod: string `arg0` as a double (the end into `arg1`). */
 void func_0019D3E0(s32 arg0, s32 arg1) {
-    func_0019C4C8(D_0028FA98, arg0, arg1);
+    func_0019C4C8(globals, arg0, arg1);
 }
 
 /* A newlib string-to-double helper (`s`, `ptr`). */

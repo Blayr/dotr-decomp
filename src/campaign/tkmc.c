@@ -1530,7 +1530,7 @@ s32 card_icon_make(void) {
     extern char D_0030F321[];
     extern char D_0030F32B[];
     extern char D_0030F330[];
-    extern u8 D_0029B200[];
+    extern u8 bgColour[];
     extern u8 lightdir[];
     extern u8 lightcol[];
     extern u8 D_0029B2A0[];
@@ -1607,7 +1607,7 @@ s32 card_icon_make(void) {
         func_0019BDD8(D_0034F7E0, D_0030F330);
         D_0034F726 = 0x1E;
         D_0034F72C = 0x60;
-        func_00198790(D_0034F730, D_0029B200, 0x40);
+        func_00198790(D_0034F730, bgColour, 0x40);
         func_00198790(D_0034F770, lightdir, 0x30);
         func_00198790(D_0034F7A0, lightcol, 0x30);
         func_00198790(D_0034F7D0, D_0029B2A0, 0x10);
@@ -2291,9 +2291,9 @@ s32 TakuLoad_card_file_open(void) {
 
 /* Copies the loaded player name into side `side`'s profile. */
 void TakuLoad_Name_Set(s32 side) {
-    extern volatile s32 D_002D19D8;
+    extern volatile s32 playerNameOffset;
     extern s32 D_002D19E0;
-    extern u16 D_002D49D4[];
+    extern u16 StringBlob[];
     s16 i;
     u16 *dest;
     s32 offset;
@@ -2307,11 +2307,11 @@ void TakuLoad_Name_Set(s32 side) {
         offset = 0;
         while (i < 12) {
             if (i == 0) {
-                dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset);
+                dest = (u16 *)((u8 *)&StringBlob[playerNameOffset] + offset);
                 *dest = *(u16 *)(src + 0x24);
             }
             v = *(u16 *)(src + 0x24);
-            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset + 4);
+            dest = (u16 *)((u8 *)&StringBlob[playerNameOffset] + offset + 4);
             offset += 2;
             *dest = v;
             src += 2;
@@ -2322,7 +2322,7 @@ void TakuLoad_Name_Set(s32 side) {
         off2 = 0;
         while (i < 12) {
             v = *(u16 *)(src + 0x24);
-            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19E0] + off2);
+            dest = (u16 *)((u8 *)&StringBlob[D_002D19E0] + off2);
             off2 += 2;
             *dest = v;
             src += 2;
@@ -2462,7 +2462,7 @@ typedef struct State_0023FF30 {
 /* Reads the custom-duel opponent's save from the memory card. */
 s32 TakuCustom_card_file_open(void) {
     extern struct State_0023E610 D_0034FB00;
-    extern void *D_0034FAEC;
+    extern void *WhiteSaveData;
     State_0023FF30 *state;
     s32 *destination;
 
@@ -2639,7 +2639,7 @@ s32 TakuCustom_card_file_open(void) {
                         s32 *dst;
                         s32 *src;
 
-                        dst = (s32 *)D_0034FAEC;
+                        dst = (s32 *)WhiteSaveData;
                         src = (s32 *)((u8 *)0x01E10004 + state->port * 0x100F0);
                         count = 0x1FF4;
                         do {

@@ -734,7 +734,7 @@ void __env_unlock(void) {
 
 /* newlib __errno: the address of errno. */
 s32 __errno(void) {
-    return D_0028FA98;
+    return globals;
 }
 
 typedef struct ff_reent { u8 pad0[0x38]; s32 __sdidinit; } ff_reent;
@@ -761,11 +761,11 @@ s32 fflush(nl_FILE *arg0) {
     s32 n, t;
 
     if (fp == NULL)
-        return _fwalk((u8 *)D_0028FA98, fflush);
+        return _fwalk((u8 *)globals, fflush);
 
     do {
         if (fp->_data == 0)
-            fp->_data = (ff_reent *)D_0028FA98;
+            fp->_data = (ff_reent *)globals;
         if (!fp->_data->__sdidinit)
             __sinit(fp->_data);
     } while (0);
@@ -886,7 +886,7 @@ s32 func_001969F0(s32 ptr) {
 
 /* newlib _cleanup: flushes every stream (not the file library's _cleanup at 0x0017F738). */
 void func_00196A10(void) {
-    func_001969F0(D_0028FA98);
+    func_001969F0(globals);
 }
 
 /* newlib stdio: sets up stdin, stdout and stderr once. */
@@ -1318,11 +1318,11 @@ s32 _fwalk(u8 *ptr, s32 (*function)(nl_FILE *)) {
 
 /* newlib _findenv: finds environment setting `arg0` (its index into `arg1`). */
 void _findenv(s32 arg0, s32 arg1) {
-    _findenv_r(D_0028FA98, arg0, arg1);
+    _findenv_r(globals, arg0, arg1);
 }
 
 /* newlib getenv: the value of environment setting `arg0`, or NULL. */
 u8 *getenv(s32 arg0) {
     s32 sp0[4];
-    return _findenv_r(D_0028FA98, arg0, (s32) sp0);
+    return _findenv_r(globals, arg0, (s32) sp0);
 }

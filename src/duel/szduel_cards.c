@@ -87,7 +87,7 @@ void lSzDuel_InitHandUp(s32 side, s32 draw) {
     }
 }
 
-extern s32 D_00317B5C;
+extern s32 CRC_CardConstInfo;
 
 typedef struct {
     s8 bit0 : 1;
@@ -138,7 +138,7 @@ s32 lSzDuel_InitHandCancel(s32 side) {
     u8 *candidate;
 
     base = duelState.b;
-    if (D_00317B5C != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
+    if (CRC_CardConstInfo != 0 && *(void **)(*(u8 **)(base + 0x6CC) + 4) != NULL) {
         if ((slot = cardControls) != NULL && *(u8 **)slot != NULL) {
             freeSlot_001D8080(slot);
         }
@@ -1127,7 +1127,7 @@ void SzDuel_SetWindowDefPrioZ(s32 z) {
 
 /* The GS memory free after the card textures. */
 s32 SzDuel_GetUserGsAddress(void) {
-    return D_0031810C;
+    return GSUserAddress;
 }
 
 typedef union {
@@ -1627,7 +1627,7 @@ extern u16 D_002BED60[][16];
 extern u16 D_002BED62[][16];
 extern u16 D_002BED68[][16];
 extern u16 D_002BED6A[][16];
-extern char D_002BE940[];
+extern char gSzDuel_aicolMsg[];
 
 /* Fills a card sprite from its texture entry at (x, y), w x h. */
 static inline void SetSprite_001DA7F0(Sprite_001DA7F0 *p, Entry_001DA7F0 *e, s32 x, s32 y, s32 w, s32 h) {
@@ -1867,7 +1867,7 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
             } else {
                 scale = 1.0f;
             }
-            out = SzMsg_DrawRatioX_Pipe(out, 9, D_002BED50[large].name.x, D_002BED52[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            out = SzMsg_DrawRatioX_Pipe(out, 9, D_002BED50[large].name.x, D_002BED52[large][0], scale, 1.0f, (s32)gSzDuel_aicolMsg, (void (*)(void))SzMsg_DrawRect_Pipe);
             SzMsg_Free(9);
         }
         if (kind == 0) {
@@ -1879,14 +1879,14 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
             } else {
                 scale = 1.0f;
             }
-            out = SzMsg_DrawRatioX_Pipe(out, 1, D_002BED60[large][0], D_002BED62[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            out = SzMsg_DrawRatioX_Pipe(out, 1, D_002BED60[large][0], D_002BED62[large][0], scale, 1.0f, (s32)gSzDuel_aicolMsg, (void (*)(void))SzMsg_DrawRect_Pipe);
             digits = SzMsg_GetInfo(0);
             div = 1;
             lay = &D_002BED50[large];
             i = 0;
             do {
                 digits[1] = (atk / div % 10) * 22;
-                out = SzMsg_DrawX_Pipe(out, 0, lay->atk.x + digitW * (4 - i), lay->atk.y, (s32)D_002BE940, (s32)SzMsg_DrawRect_Pipe);
+                out = SzMsg_DrawX_Pipe(out, 0, lay->atk.x + digitW * (4 - i), lay->atk.y, (s32)gSzDuel_aicolMsg, (s32)SzMsg_DrawRect_Pipe);
                 div *= 10;
                 if (atk < div) {
                     break;
@@ -1899,13 +1899,13 @@ s32 SzDuel_SetupCard_Pipe(s32 arg0, s32 arg1, Draw_001DA7F0 *arg2) {
             } else {
                 scale = 1.0f;
             }
-            out = SzMsg_DrawRatioX_Pipe(out, 2, D_002BED68[large][0], D_002BED6A[large][0], scale, 1.0f, (s32)D_002BE940, (void (*)(void))SzMsg_DrawRect_Pipe);
+            out = SzMsg_DrawRatioX_Pipe(out, 2, D_002BED68[large][0], D_002BED6A[large][0], scale, 1.0f, (s32)gSzDuel_aicolMsg, (void (*)(void))SzMsg_DrawRect_Pipe);
             digits = SzMsg_GetInfo(0);
             div = 1;
             i = 0;
             do {
                 digits[1] = (def / div % 10) * 22;
-                out = SzMsg_DrawX_Pipe(out, 0, lay->def.x + digitW * (4 - i), lay->def.y, (s32)D_002BE940, (s32)SzMsg_DrawRect_Pipe);
+                out = SzMsg_DrawX_Pipe(out, 0, lay->def.x + digitW * (4 - i), lay->def.y, (s32)gSzDuel_aicolMsg, (s32)SzMsg_DrawRect_Pipe);
                 div *= 10;
                 if (def < div) {
                     break;
@@ -2328,7 +2328,7 @@ typedef struct {
 
 extern Points_001DC790 D_00291590;
 extern u8 leaderBaseIcons[]; /* original: gSzDuel_Base */
-extern u8 D_003181C4;
+extern u8 DeckLeaderRoseSize;
 
 /* Draws the base under side `side`'s leader at `position`, with alpha `alpha` and an outline if `outline`. */
 s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, s32 outline) {
@@ -2350,7 +2350,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
 
     card = (Card_001DC790 *)SzDuel_GetUnit(side, 0);
     scale = 16.666666f;
-    scale = (scale * D_003181C4) / 128.0f;
+    scale = (scale * DeckLeaderRoseSize) / 128.0f;
     points = D_00291590;
     points.v[0][0] = scale;
     points.v[0][2] = scale;

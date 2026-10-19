@@ -75,7 +75,7 @@ s32 Ta_GetHandEnchant2(s32 nSide, s32 nID, s32 cNo2) {
 s32 Ta_GetHandEnchant3(s32 cNo1, s32 cNo2) {
     s32 result;
 
-    switch (D_0029CF32[cNo2]) {
+    switch (AnmPat_Bakura_used_for_EnchantScore[cNo2]) {
     case 6:
         result = 0x111;
         break;
@@ -132,7 +132,7 @@ s32 Ta_GetEncEffect(s32 eNO) {
     temp_v1 = D_0029D1F0[eNO];
     switch (temp_v1) {
     case 0:
-        switch (D_0029CF32[eNO]) {
+        switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
         case 0:
             result = 0x219;
             break;
@@ -148,7 +148,7 @@ s32 Ta_GetEncEffect(s32 eNO) {
         result = 0x21E;
         break;
     case 1:
-        switch (D_0029CF32[eNO]) {
+        switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
         case 5:
             result = 0x21C;
             break;
@@ -179,7 +179,7 @@ s32 TaEnc_IsEncDo(s32 eNO) {
     case 3:
         return -1;
     case 4:
-        if (D_0029CF32[eNO] == 9) {
+        if (AnmPat_Bakura_used_for_EnchantScore[eNO] == 9) {
             return -1;
         }
     default:
@@ -191,7 +191,7 @@ s32 TaEnc_IsEncDo(s32 eNO) {
 s64 TaEnc_GetEncScore(s32 nCardNo) {
     switch (D_0029D1F0[nCardNo]) {
     case 0:
-        return D_0029CF32[nCardNo];
+        return AnmPat_Bakura_used_for_EnchantScore[nCardNo];
     case 1:
     case 4:
         return 0x3E8;

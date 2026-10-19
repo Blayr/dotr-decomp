@@ -48,10 +48,10 @@ struct State_00217410;
 /* Ends the sound system. */
 void SzSound_Term(void) {
     extern struct State_00217410 soundState;
-    extern Flags_002174D0 D_0034F6E8;
+    extern Flags_002174D0 soundOutRelated;
     State_002174D0 *state = (State_002174D0 *)&soundState;
 
-    if (D_0034F6E8.active) {
+    if (soundOutRelated.active) {
         SD_Term();
         state->flags.active = 0;
     }
@@ -61,11 +61,11 @@ typedef struct {
     s8 active : 1;
 } Flags_00217530;
 
-extern Flags_00217530 D_0034F6E8;
+extern Flags_00217530 soundOutRelated;
 
 /* Whether the sound system is ready. */
 s32 SzSound_IsStandby(void) {
-    return D_0034F6E8.active != 0 ? 1 : 0;
+    return soundOutRelated.active != 0 ? 1 : 0;
 }
 
 #ifndef GAME_H
@@ -74,12 +74,12 @@ typedef struct {
     signed char active : 1;
 } Flags_00217530;
 
-extern Flags_00217530 D_0034F6E8;
+extern Flags_00217530 soundOutRelated;
 #endif
 
 /* The sound system's per-vertical-blank work. */
 void SzSound_VSync(void) {
-    if (D_0034F6E8.active) {
+    if (soundOutRelated.active) {
         SD_CallEveryVSync();
     }
 }
@@ -92,7 +92,7 @@ s32 SzSound_TransferSEGrp(s32 channel, s32 group, s32 force) {
     State_00217410 *state = &soundState;
     char text[0x80];
 
-    if (!D_0034F6E8.active) {
+    if (!soundOutRelated.active) {
         return 0;
     }
     if (channel < 0 || channel >= 4) {
@@ -119,14 +119,14 @@ s32 SzSound_TransferSEGrp(s32 channel, s32 group, s32 force) {
 typedef struct {
     signed char active : 1;
 } Flags_002176B0;
-extern Flags_002176B0 D_0034F6E8;
+extern Flags_002176B0 soundOutRelated;
 #endif
 
 /* Whether a sound effect is playing. */
 s32 SzSound_IsPlaySE(void) {
     extern s64 SD_iGetSDStatus();
 
-    if (!D_0034F6E8.active) {
+    if (!soundOutRelated.active) {
         return 0;
     }
     return !((s32)SD_iGetSDStatus() & 0x4000) ? 1 : 0;
@@ -137,7 +137,7 @@ s32 SzSound_PlaySE(s32 channel, s32 se) {
     extern s64 SD_iGetSDStatus();
     State_00217410 *state = &soundState;
 
-    if (!D_0034F6E8.active) {
+    if (!soundOutRelated.active) {
         return 0;
     }
     if (channel < 0 || channel >= 4) {
@@ -158,7 +158,7 @@ s32 SzSound_StereoPlaySE(s32 channel, s32 se, s32 pan) {
     extern s64 SD_iGetSDStatus();
     State_00217410 *state = &soundState;
 
-    if (!D_0034F6E8.active) {
+    if (!soundOutRelated.active) {
         return 0;
     }
     if (channel < 0 || channel >= 4) {
@@ -180,7 +180,7 @@ s32 SzSound_StereoPlaySE(s32 channel, s32 se, s32 pan) {
 s32 SzSound_StopSE(s32 channel, s32 se) {
     State_00217410 *state = &soundState;
 
-    if (!D_0034F6E8.active) {
+    if (!soundOutRelated.active) {
         return 0;
     }
     if (channel < 0 || channel >= 4) {
@@ -198,7 +198,7 @@ s32 SzSound_StopSE(s32 channel, s32 se) {
 
 /* Starts music `bgm` (preloading it), with `mode`. */
 s32 SzSound_PlayBGM(s32 bgm, s32 mode) {
-    if (D_0034F6E8.active == 0) {
+    if (soundOutRelated.active == 0) {
         return 0;
     }
     SD_BGMPreLoad(bgm, mode);
@@ -207,7 +207,7 @@ s32 SzSound_PlayBGM(s32 bgm, s32 mode) {
 
 /* Whether music is still loading. */
 s32 SzSound_IsLoadingBGM(void) {
-    if (D_0034F6E8.active == 0) {
+    if (soundOutRelated.active == 0) {
         return 0;
     }
     return (SD_IsLoadingNow() != 0) ? 1 : 0;

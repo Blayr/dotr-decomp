@@ -742,7 +742,7 @@ s32 func_001A04D8(void *arg0) {
 
     do {
         if (fp->_data == 0)
-            fp->_data = (sw_reent *)D_0028FA98;
+            fp->_data = (sw_reent *)globals;
         if (!fp->_data->__sdidinit)
             __sinit(fp->_data);
     } while (0);

@@ -697,7 +697,7 @@ static inline int apply_kind_00248460(int a, int b, int c, int d, int total, int
     unsigned *p;
 
     {
-        val = D_0029CF32[id];
+        val = AnmPat_Bakura_used_for_EnchantScore[id];
         switch (D_0029D1F0[id]) {
         case 0:
             if (val == 0) {
@@ -799,7 +799,7 @@ s32 Do_Chk_Enc(s32 cNO, s32 eNO) {
     if ((equipMatchTable[cNO * 7 + (bit >> 3)] >> (bit % 8)) & 1) {
         switch (D_0029D1F0[eNO]) {
         case 4:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 6:
                 return eNO | 0x40444000;
             case 7:
@@ -829,7 +829,7 @@ s32 Do_Chk_Enc(s32 cNO, s32 eNO) {
             }
             break;
         case 0:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 0:
                 return eNO | 0x864000;
             default:
@@ -840,7 +840,7 @@ s32 Do_Chk_Enc(s32 cNO, s32 eNO) {
         case 2:
             return eNO | 0x878000;
         case 1:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 5:
                 return eNO | 0x870000;
             default:
@@ -864,7 +864,7 @@ s32 Chk_Enc(s32 nSide, s32 cID, s32 eNO) {
     if (Do_ChkEncMatch(nSide, cID, eNO) != 0) {
         switch (D_0029D1F0[eNO]) {
         case 4:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 6:
                 return eNO | 0x40444000;
             case 7:
@@ -894,7 +894,7 @@ s32 Chk_Enc(s32 nSide, s32 cID, s32 eNO) {
             }
             break;
         case 0:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 0:
                 return eNO | 0x864000;
             default:
@@ -905,7 +905,7 @@ s32 Chk_Enc(s32 nSide, s32 cID, s32 eNO) {
         case 2:
             return eNO | 0x878000;
         case 1:
-            switch (D_0029CF32[eNO]) {
+            switch (AnmPat_Bakura_used_for_EnchantScore[eNO]) {
             case 5:
                 return eNO | 0x870000;
             default:

@@ -33,7 +33,7 @@ void SzGame_Init(void) {
     RhMem_FillMemory((s8 *) &gameState, 0, 0x230);
     gameState = 0;
     D_00317254 = 0;
-    D_0031747A = 1;
+    FrameSpeed = 1;
     i = 0;
     p = (s32 *)data;
     do {
@@ -285,8 +285,8 @@ typedef struct File_001A7380 {
 extern u8 debugMenuItems[]; /* original: gSzGame_abMenu */
 extern char D_002BE7D0[];
 extern char D_002BE7D5[];
-extern u8 D_00317473;
-extern u8 D_0031747D;
+extern u8 debugMenuIndex;
+extern u8 debugMenupage;
 
 /* Runs the debug menu: moves the cursor and page, changes the selected item's value, and starts what it names. (original: SzGame_ActMenu) */
 void SzGame_DEBUGMENU(void) {
@@ -304,7 +304,7 @@ void SzGame_DEBUGMENU(void) {
     char filename[128];
 
     menu = (Menu_001A7380 *) &gameState;
-    selectionIndex = D_00317473 + (D_0031747D & 7) * 20;
+    selectionIndex = debugMenuIndex + (debugMenupage & 7) * 20;
     if (SzGame_ActMemCardProc() >= 0) {
         return;
     }
@@ -788,7 +788,7 @@ void SzGame_ClearGsMem(s64 psm, s32 red, s32 green, s64 blue, s64 width, s64 hei
 
 /* The auto-blur level. */
 s8 SzGame_InqAutoBlur(void) {
-    return D_0031747B;
+    return AutoBlur;
 }
 
 typedef struct {
@@ -814,11 +814,11 @@ typedef struct Flags_001A86D0 {
     s8 reserved1 : 1;
 } Flags_001A86D0;
 
-extern Flags_001A86D0 D_0031747E;
+extern Flags_001A86D0 displayControlFlags;
 
 /* Whether soft focus is on. */
 s32 SzGame_InqSoftFocus(void) {
-    return D_0031747E.enabled != 0 ? 1 : 0;
+    return displayControlFlags.enabled != 0 ? 1 : 0;
 }
 
 /* Counts one vertical blank. */
@@ -844,22 +844,22 @@ s32 SzGame_AddFrameCount(void) {
 
 /* Sets how many vertical blanks one game frame lasts. */
 void SzGame_SetFrameSpeed(s32 speed) {
-    D_0031747A = (s8) speed;
+    FrameSpeed = (s8) speed;
 }
 
 /* How many vertical blanks one game frame lasts. */
 u8 SzGame_GetFrameSpeed(void) {
-    return D_0031747A;
+    return FrameSpeed;
 }
 
 /* Turns the frame-rate stabilizer on or off. */
 void SzGame_SetStabilizer(s64 on) {
-    D_0031747E.flag6 = on;
+    displayControlFlags.flag6 = on;
 }
 
 /* Whether the frame-rate stabilizer is on. */
 s32 SzGame_GetStabilizer(void) {
-    return D_0031747E.flag6 != 0 ? 1 : 0;
+    return displayControlFlags.flag6 != 0 ? 1 : 0;
 }
 
 typedef struct {
@@ -875,16 +875,16 @@ typedef struct {
     s8 c;
 } Tail_001A87C0;
 
-extern Tail_001A87C0 D_0031746F;
+extern Tail_001A87C0 CurrentInputMenu;
 
 /* Fades out and switches to game mode `mode`, replacing the current one; `param` is passed to the new mode. */
 void SzGame_Goto(s32 mode, s32 param) {
     State_001A87C0 *state = (State_001A87C0 *)&gameState;
 
     SzFade_Entry(0, 1, 1, 0, 60, 0);
-    D_0031746F.a = -2;
-    D_0031746F.b = mode;
-    D_0031746F.c = 0;
+    CurrentInputMenu.a = -2;
+    CurrentInputMenu.b = mode;
+    CurrentInputMenu.c = 0;
     if (param >= 0) {
         *((s8 *)(state->index + (state->base + (s32)state)) + 0x1F9) = param;
     }
@@ -893,7 +893,7 @@ void SzGame_Goto(s32 mode, s32 param) {
     }
 }
 
-extern u8 D_00317472;
+extern u8 modeIndex;
 
 typedef struct State_001A8870 {
     u8 pad_000[0x1F9];
@@ -909,7 +909,7 @@ void SzGame_Push(s32 mode, s32 param) {
     State_001A8870 *state = (State_001A8870 *)&gameState;
     s8 *entry;
 
-    if ((D_00317472 + 1) < 8) {
+    if ((modeIndex + 1) < 8) {
         SzFade_Entry(0, 1, 1, 0, 60, 0);
         state->field_21F = -2;
         state->field_220 = mode;
@@ -935,7 +935,7 @@ typedef struct {
 void SzGame_Pop(void) {
     State_001A8920 *state = (State_001A8920 *)&gameState;
 
-    if ((D_00317472 - 1) >= 0) {
+    if ((modeIndex - 1) >= 0) {
         SzFade_Entry(0, 1, 1, 0, 60, 0);
         state->state = -2;
         state->selected = state->entries[state->index];
@@ -1302,7 +1302,7 @@ typedef struct Flags_001A9800 {
     u8 unused2:2;
 } Flags_001A9800;
 
-extern Flags_001A9800 D_0031747C;
+extern Flags_001A9800 CurrentMode;
 
 typedef struct Xyzf_001A9590 {
     u64 x:16;
@@ -1334,7 +1334,7 @@ void SzGame_ModeDraw(void) {
     Sprite_001A9590 *s;
 
     mode = SzGame_GetMode(1);
-    if (D_0031747C.state < 3) {
+    if (CurrentMode.state < 3) {
         switch (data[0x228]) {
         case 0:
         switch (mode) {
@@ -1420,7 +1420,7 @@ void SzGame_ModeDrawAfter(void) {
     s64 mode;
 
     mode = SzGame_GetMode(1);
-    if (D_0031747C.state < 3) {
+    if (CurrentMode.state < 3) {
         switch (data[0x228]) {
         default:
             return;
@@ -1762,7 +1762,7 @@ void SzGame_ModeAct(void) {
 
     state = (State_001AA260 *)&gameState;
     event = SzGame_GetMode(0);
-    switch (D_0031747C.state) {
+    switch (CurrentMode.state) {
     case 3:
         if (SzFile_InqRequestEx() != 0) {
             return;
@@ -1776,7 +1776,7 @@ void SzGame_ModeAct(void) {
         state->mode.mode--;
         return;
     case 2:
-        if (((D_0031747E.enabled != 0 ? 1 : 0) != 0) && (SzSound_IsLoadingBGM() != 0)) {
+        if (((displayControlFlags.enabled != 0 ? 1 : 0) != 0) && (SzSound_IsLoadingBGM() != 0)) {
             return;
         }
         switch (event) {
@@ -1973,7 +1973,7 @@ void SzGame_ModeAct(void) {
         }
         if (SzPad_Check(0, 0, 0x20) != 0) {
             state = (State_001AA260 *)&gameState;
-            if ((D_00317472 - 1) >= 0) {
+            if ((modeIndex - 1) >= 0) {
                 SzFade_Entry(0, 1, 1, 0, 0x3C, 0);
                 state->selection = -2;
                 state->entry = state->entries[state->index];
@@ -2294,7 +2294,7 @@ s32 SzGame_ActMemCardProc(void) {
     s32 old;
     s32 mode;
 
-    if (((&D_0031747D)[1] & 7)) {
+    if (((&debugMenupage)[1] & 7)) {
         cmd = 5;
         cancel = 0;
         res = 0;
@@ -2767,17 +2767,17 @@ typedef struct Block_001AC560 {
 } Block_001AC560;
 
 extern s32 D_003173B0;
-extern Block_001AC560 D_00317449;
+extern Block_001AC560 setModeIndex;
 
 /* Runs the boot memory-card check, then goes to the title screen. */
 void lSzGame_ActMemCheck(void) {
     if (SzGame_ActMemCardProc() < 0) {
         D_003173B0 = 0;
         SzFade_Entry(0, 1, 1, 0, 60, 0);
-        D_00317449.mode = -2;
-        D_00317449.selected = 10;
-        D_00317449.previous = 0;
-        D_00317449.entries[D_00317449.index + D_00317449.previous] = 0;
+        setModeIndex.mode = -2;
+        setModeIndex.selected = 10;
+        setModeIndex.previous = 0;
+        setModeIndex.entries[setModeIndex.index + setModeIndex.previous] = 0;
         SzGame_ReqBGM(-2, 1);
     }
 }

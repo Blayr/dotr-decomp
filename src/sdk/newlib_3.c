@@ -66,12 +66,12 @@ void *func_0019B0A0(s32 *ptr, s32 incr) {
 
 /* newlib setenv: sets environment setting `arg0` to `arg1` (`arg2`: replace). */
 void func_0019B0F8(s32 arg0, s32 arg1, s32 arg2) {
-    func_0019B148(D_0028FA98, arg0, arg1, arg2);
+    func_0019B148(globals, arg0, arg1, arg2);
 }
 
 /* newlib unsetenv: removes environment setting `arg0`. */
 void func_0019B128(s32 arg0) {
-    func_0019B418(D_0028FA98, arg0);
+    func_0019B418(globals, arg0);
 }
 
 /* newlib _setenv_r: sets environment setting `name` (re-entrant). */
@@ -222,7 +222,7 @@ s32 func_0019B648(char *str, const char *fmt, ...) {
     f._flags = 0x0008 | 0x0200;
     f._bf_base = f._p = (u8 *)str;
     f._bf_size = f._w = 0x7fffffff;
-    f._data = (void *)D_0028FA98;
+    f._data = (void *)globals;
     __builtin_stdarg_start(ap, fmt);
     ret = func_0019DD70((vf_FILE *)&f, fmt, ap);
     __builtin_va_end(ap);
@@ -247,7 +247,7 @@ s32 sscanf(const char *str, const char *fmt, ...) {
     f._read = (void *)eofread;
     f._ub_base = NULL;
     f._lb_base = NULL;
-    f._data = (void *)D_0028FA98;
+    f._data = (void *)globals;
     __builtin_stdarg_start(ap, fmt);
     ret = func_0019F6E8(&f, fmt, ap);
     __builtin_va_end(ap);

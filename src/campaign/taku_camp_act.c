@@ -53,12 +53,12 @@ extern struct DotrTekiWindowWindow campaignEnemyWindow[]; /* original: camp_wind
 extern struct DotrTekiWindowWindow D_00297BCA;
 extern struct DotrTekiWindowItem roseSprites2[]; /* original: tex_bara_data2 */
 extern struct DotrTekiWindowItem campaignEnemyWindowItems[]; /* original: camp_window_teki3 */
-extern struct DotrTekiWindowItem D_00298320[];
-extern struct DotrTekiWindowItemU D_002980A0;
-extern struct DotrTekiWindowItem D_00297D00[];
-extern struct DotrTekiWindowItem D_00297DA0[];
+extern struct DotrTekiWindowItem camp_window_Enemy[];
+extern struct DotrTekiWindowItemU teki_syurui_data;
+extern struct DotrTekiWindowItem tex_batti_data2[];
+extern struct DotrTekiWindowItem tex_hosi_data2[];
 extern struct DotrTekiWindowItem D_00298B1C;
-extern unsigned short D_00297EA0;
+extern unsigned short teki_syurui_tex_no;
 extern unsigned char D_002999CC[][4];
 extern char D_0030F1E8[];
 extern char D_0030F1EF[];
@@ -296,7 +296,7 @@ int Taku_Camp_ENEMY_WINDOW(int cursor)
                 SzData_SetupFromConstDeck(1, b->h196 + 26);
             }
             cost = campaignWork.opponentDeckCost = SzData_GetDeckCost(1, 0);
-            cursor = func_00217BD0_b(cursor, &D_00298320[0], 0, y);
+            cursor = func_00217BD0_b(cursor, &camp_window_Enemy[0], 0, y);
             cursor = func_001B6EA0_b(cursor, 410, y + 26, 0, 0, 4, cost);
             cursor = SzMsg_LoadFont_Pipe(cursor, 1, name, 0, 22);
             cursor = RhText_SetTextureFlush(cursor);
@@ -339,51 +339,51 @@ int Taku_Camp_ENEMY_WINDOW(int cursor)
             cursor = func_001B6F70_b(cursor, xs + 152, y + 63, 1, 1, 4, D_0030F102, 0);
             cursor = func_001B6F70_b(cursor, xs + 192, y + 63, 1, 1, 6, D_0030F1E8, 0);
             switch ((func_001DD0E0_b(id)->b0 & 0x1f) + 1) {
-            case 1: D_002980A0.code = 78; break;
-            case 2: D_002980A0.code = 88; break;
-            case 3: D_002980A0.code = 93; break;
-            case 4: D_002980A0.code = 79; break;
-            case 5: D_002980A0.code = 83; break;
-            case 6: D_002980A0.code = 85; break;
-            case 7: D_002980A0.code = 86; break;
-            case 8: D_002980A0.code = 87; break;
-            case 9: D_002980A0.code = 81; break;
-            case 10: D_002980A0.code = 82; break;
-            case 11: D_002980A0.code = 89; break;
-            case 12: D_002980A0.code = 84; break;
-            case 13: D_002980A0.code = 90; break;
-            case 14: D_002980A0.code = 91; break;
-            case 15: D_002980A0.code = 92; break;
-            case 16: D_002980A0.code = 80; break;
-            case 17: D_002980A0.code = 94; break;
-            case 18: D_002980A0.code = 95; break;
-            case 19: D_002980A0.code = 96; break;
-            case 20: D_002980A0.code = 97; break;
-            case 21: D_002980A0.code = 101; break;
-            default: D_002980A0.code = D_00297EA0; break;
+            case 1: teki_syurui_data.code = 78; break;
+            case 2: teki_syurui_data.code = 88; break;
+            case 3: teki_syurui_data.code = 93; break;
+            case 4: teki_syurui_data.code = 79; break;
+            case 5: teki_syurui_data.code = 83; break;
+            case 6: teki_syurui_data.code = 85; break;
+            case 7: teki_syurui_data.code = 86; break;
+            case 8: teki_syurui_data.code = 87; break;
+            case 9: teki_syurui_data.code = 81; break;
+            case 10: teki_syurui_data.code = 82; break;
+            case 11: teki_syurui_data.code = 89; break;
+            case 12: teki_syurui_data.code = 84; break;
+            case 13: teki_syurui_data.code = 90; break;
+            case 14: teki_syurui_data.code = 91; break;
+            case 15: teki_syurui_data.code = 92; break;
+            case 16: teki_syurui_data.code = 80; break;
+            case 17: teki_syurui_data.code = 94; break;
+            case 18: teki_syurui_data.code = 95; break;
+            case 19: teki_syurui_data.code = 96; break;
+            case 20: teki_syurui_data.code = 97; break;
+            case 21: teki_syurui_data.code = 101; break;
+            default: teki_syurui_data.code = teki_syurui_tex_no; break;
             }
-            cursor = func_00217BD0_b(cursor, (struct DotrTekiWindowItem *)&D_002980A0, x, y);
+            cursor = func_00217BD0_b(cursor, (struct DotrTekiWindowItem *)&teki_syurui_data, x, y);
             rank = func_00215D30_b(1, id);
             if (rank != 0) {
                 r = rank - 1;
-                cursor = func_00217BD0_b(cursor, &D_00297D00[(short)(r / 3)], x, y);
+                cursor = func_00217BD0_b(cursor, &tex_batti_data2[(short)(r / 3)], x, y);
                 switch ((short)(r % 3 + 1)) {
                 case 1:
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[2], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[2], x, y);
                     break;
                 case 2:
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[0], x, y);
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[1], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[0], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[1], x, y);
                     break;
                 case 3:
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[0], x, y);
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[1], x, y);
-                    cursor = func_00217BD0_b(cursor, &D_00297DA0[2], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[0], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[1], x, y);
+                    cursor = func_00217BD0_b(cursor, &tex_hosi_data2[2], x, y);
                     break;
                 }
             }
-            cursor = func_00217BD0_b(cursor, &D_00298320[1], x, y);
-            cursor = func_00217BD0_b(cursor, &D_00298320[2], x, y);
+            cursor = func_00217BD0_b(cursor, &camp_window_Enemy[1], x, y);
+            cursor = func_00217BD0_b(cursor, &camp_window_Enemy[2], x, y);
             cursor = func_001B6EA0_b(cursor, xs + 324, y + 73, 1, 0, 4, b->h66[b->h196]);
             cursor = func_001B6EA0_b(cursor, xs + 421, y + 73, 1, 0, 4, b->h130[b->h196]);
             cursor = SzMsg_LoadFont_Pipe(cursor, 1, SzDuel_GetMsgName(id), 0, 22);
@@ -509,7 +509,7 @@ s32 Taku_Camp_TERRAIN_WINDOW(s32 packet) {
     u8 *q;
     s16 fade;
 
-    baseX = D_00299ED4;
+    baseX = SelectedBattleArena;
     state = &campaignState;
     if (campaignWork.terrainWindowOn != 0) {
         campaignWork.terrainWindowOpen += 2;
@@ -583,12 +583,12 @@ s32 Taku_Camp_TERRAIN_Map_Show(s32 gp, u16 deck, u16 x, u16 y) {
     extern s32 SzDuel_DrawWindow_FontDigit_Pipe(s32, s32, s32, s32, s32, s32, s32);
     extern Sprite_00236F90 D_0029AFA0;
     extern Sprite_00236F90 D_0029AFD0;
-    extern u8 D_002CEE5C[];
+    extern u8 gSzDuel_MapData[];
     extern Sprite_00236F90 campaignTerrainGauge[][2];
-    extern s16 D_00297BAE;
-    extern s16 D_00297BB0;
-    extern s16 D_00297BB2;
-    extern s16 D_00297BB4;
+    extern s16 NumOfTilesBoxDistanceFromRightSide;
+    extern s16 NumOfTilesBlackBackgroundBox;
+    extern s16 NumOfTilesBoxDistanceFromLeftSide;
+    extern s16 NumOfTilesBlackBackgroundBox2;
     CampaignWork *work;
     s8 *mode;
     s32 row;
@@ -613,7 +613,7 @@ s32 Taku_Camp_TERRAIN_Map_Show(s32 gp, u16 deck, u16 x, u16 y) {
     for (i = 0; i < 10; i++) {
         work->terrainCounts[i] = 0;
     }
-    for (row = 0, grid = &D_002CEE5C[deck * 49]; row < 7; row++) {
+    for (row = 0, grid = &gSzDuel_MapData[deck * 49]; row < 7; row++) {
         cell = grid;
         for (col = 0; col < 7; col++) {
             switch ((s16)*cell) {
@@ -675,14 +675,14 @@ s32 Taku_Camp_TERRAIN_Map_Show(s32 gp, u16 deck, u16 x, u16 y) {
         grid += 7;
     }
     for (i = 0, dy = 0; i < 10; i++) {
-        bar.xy[0] = D_00297BAE;
-        bar.xy[1] = D_00297BB0;
-        bar.xy[2] = D_00297BB2;
-        bar.xy[3] = D_00297BB0;
-        bar.xy[4] = D_00297BAE;
-        bar.xy[5] = D_00297BB4;
-        bar.xy[6] = D_00297BB2;
-        bar.xy[7] = D_00297BB4;
+        bar.xy[0] = NumOfTilesBoxDistanceFromRightSide;
+        bar.xy[1] = NumOfTilesBlackBackgroundBox;
+        bar.xy[2] = NumOfTilesBoxDistanceFromLeftSide;
+        bar.xy[3] = NumOfTilesBlackBackgroundBox;
+        bar.xy[4] = NumOfTilesBoxDistanceFromRightSide;
+        bar.xy[5] = NumOfTilesBlackBackgroundBox2;
+        bar.xy[6] = NumOfTilesBoxDistanceFromLeftSide;
+        bar.xy[7] = NumOfTilesBlackBackgroundBox2;
         gp = Taku_G4_Set(gp, &bar, x, y + dy);
         dy += 16;
     }
@@ -700,7 +700,7 @@ s32 Taku_Camp_TERRAIN_Map_Show(s32 gp, u16 deck, u16 x, u16 y) {
             }
             gp = Taku_G4_Set2(gp, &campaignTerrainGauge[i][k], x, y + dy, scale, 0);
         }
-        gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((D_00297BAE + D_00297BB2) >> 1),
+        gp = SzDuel_DrawWindow_FontDigit_Pipe(gp, x + ((NumOfTilesBoxDistanceFromRightSide + NumOfTilesBoxDistanceFromLeftSide) >> 1),
                                               y + (dy + campaignTerrainGauge[i][0].xy[1]), 1, 2,
                                               (u16)((work->terrainCounts[i] < 10) ? 1 : 2), work->terrainCounts[i]);
     }
@@ -805,7 +805,7 @@ void Taku_Camp_3D_Poly_Init(void) {
 #include "game.h"
 #include "m2c_macros.h"
 
-extern s16 D_00299ED2;
+extern s16 CutSceneNumber;
 typedef struct {
     __int128 q;
 } TkQ;
@@ -909,7 +909,7 @@ void TkCamp_Act(void) {
     campaignWork.unk5481 = 1;
     campaignWork.placesReached = 0;
     var_s3 = 0;
-    if (D_00299ED2 < 0x2710) {
+    if (CutSceneNumber < 0x2710) {
         temp_v0 = campaignWork.unk006E;
         if (temp_v0 != 0) {
             campaignWork.iconSlide = (s16) (campaignWork.iconSlide + 0x14);
@@ -2750,7 +2750,7 @@ void Taku_Set_Duel5_flg(void) {
 
 /* How many campaign duels the player has won. */
 s32 Taku_Get_WinCount(void) {
-    return (s32) D_00299E4E;
+    return (s32) winCount;
 }
 
 typedef struct State_0023C170 {
@@ -2815,7 +2815,7 @@ typedef struct State_0023C170 {
 /* Resets the memory-card job state (`mode` picks the job). (original: TakuCard_inti) */
 s32 TakuCard_init(s32 mode) {
     extern void *memCardTrunkData;
-    extern void *D_0034FAEC;
+    extern void *WhiteSaveData;
     extern s8 saveFileHeader;
     extern State_0023C170 D_0034FB00;
     extern s32 func_00194248(s32, s32 *, s32 *);
@@ -2826,7 +2826,7 @@ s32 TakuCard_init(s32 mode) {
     s32 *out;
 
     memCardTrunkData = SzData_GetData(0);
-    D_0034FAEC = SzData_GetData(1);
+    WhiteSaveData = SzData_GetData(1);
     saveFileHeader = 1;
     func_00195108((s32)&D_0034FB00, 0x840);
     D_0034FB00.field30 = 0;

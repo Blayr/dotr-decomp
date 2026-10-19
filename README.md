@@ -116,7 +116,8 @@ structs and enums too, and many of those names are used here. Each computer duel
 duelist's name (`TaLogic_Weevil_GetMinimumTask`; a developers' name that was already unique, such as
 `TaLogic002_GetNearUnit`, stays). Where his reading of a function says more than ours and the code agrees, his name
 is the function's name (`SzGame_DEBUGMENU`, `Ta_Eff_001_Revive`), the developers' name kept as an alias and a note.
-Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
+Globals our code still called by address (`D_0029008A`) carry his labels (`AttributeIconID`), 110 of
+them. Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
 in `build/main.map`. Thanks to batzpup for them.
 
 ## License

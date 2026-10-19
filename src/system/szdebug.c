@@ -29,7 +29,7 @@ extern State_00203CD0 debugState; /* original: gSzDebug_dl */
 /* Starts the debug menus. */
 void SzDebug_Init(void) {
     extern s32 func_0019B648();
-    extern u8 D_002D078C;
+    extern u8 gBaseOfs;
     extern u8 D_002D07F4[];
     extern u8 D_002D07FA[];
     extern u8 D_002D07FF[];
@@ -38,7 +38,7 @@ void SzDebug_Init(void) {
 
     RhMem_FillMemory((s8 *)&debugState, 0, 0x30);
     debugState.f00 = 0;
-    debugState.f04 = D_002D078C;
+    debugState.f04 = gBaseOfs;
     debugState.f08 = 0;
     debugState.f0C = 0;
     debugState.f10 = 0;
@@ -540,10 +540,10 @@ typedef struct State_00205170 {
 
 /* Whether the debug display is hidden. */
 s32 SzDebug_IsHide(void) {
-    extern Flags_00205170 D_00325CAC;
+    extern Flags_00205170 debugFlags;
     State_00205170 *state = (State_00205170 *)&debugState;
 
-    if (D_00325CAC.flag2 != 0) {
+    if (debugFlags.flag2 != 0) {
         return 1;
     }
     return state->flags.flag0 != 0 ? 1 : 0;
@@ -555,9 +555,9 @@ typedef struct {
 
 /* Hides or shows the debug display. */
 void SzDebug_SetHideFlag(s64 on) {
-    extern Flags_002051C0 D_00325CAC;
+    extern Flags_002051C0 debugFlags;
 
-    D_00325CAC.enabled = (s8)on;
+    debugFlags.enabled = (s8)on;
 }
 
 typedef struct {
@@ -565,11 +565,11 @@ typedef struct {
     s8 flag : 1;
 } Flags_002051F0;
 
-extern Flags_002051F0 D_00325CAC;
+extern Flags_002051F0 debugFlags;
 
 /* Whether the debug effect player is running. */
 s32 SzDebug_IsEffect(void) {
-    return D_00325CAC.flag ? 1 : 0;
+    return debugFlags.flag ? 1 : 0;
 }
 
 #pragma pack(2)

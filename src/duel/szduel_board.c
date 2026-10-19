@@ -200,7 +200,7 @@ void SzDuel_InitCardInfo(void *info, s32 card) {
 
 /* The constant data (20 bytes) of card `card`, or NULL for a bad id. */
 u8 *SzDuel_GetCardConstInfo(s32 card) {
-    extern u8 D_002BF080[];
+    extern u8 gSzDuel_CardConstInfo[];
     u8 *ret;
 
     if (card == 0x29F) {
@@ -209,7 +209,7 @@ u8 *SzDuel_GetCardConstInfo(s32 card) {
     if (card < 0 || card >= 0x356) {
         ret = NULL;
     } else {
-        ret = &D_002BF080[card * 0x14];
+        ret = &gSzDuel_CardConstInfo[card * 0x14];
     }
     return ret;
 }
@@ -697,14 +697,14 @@ s32 SzDuel_TrimUnitDir2(s32 sx, s32 sz, s32 targetX, s32 targetZ) {
     return result;
 }
 
-extern u8 D_002BF080[];
+extern u8 gSzDuel_CardConstInfo[];
 
 /* The constant data of card `index`, or NULL. */
 static inline u8 *lookup_001DDD80(s32 index) {
     if (index < 0 || index >= 0x356) {
         return NULL;
     }
-    return D_002BF080 + index * 0x14;
+    return gSzDuel_CardConstInfo + index * 0x14;
 }
 
 /* Loads what a duel needs: the effects module, both leaders' models and the map's models. */
@@ -733,7 +733,7 @@ void SzDuel_SetupDuel(s32 arg0, s32 arg1, s32 arg2, void *arg3) {
     } while (side < 2);
 }
 
-extern u8 D_002CEE5C[][7][7];
+extern u8 gSzDuel_MapData[][7][7];
 
 typedef struct {
     u8 pad[0xFEA3];
@@ -750,7 +750,7 @@ void SzDuel_SetupMap(s32 map) {
     if (map >= 0 && map < 0x2E) {
         for (y = 0; y < 7; y++) {
             for (x = 0; x < 7; x++) {
-                SzDuel_SetField(x, y, D_002CEE5C[map][y][x]);
+                SzDuel_SetField(x, y, gSzDuel_MapData[map][y][x]);
             }
         }
     } else if (map < 0x33) {

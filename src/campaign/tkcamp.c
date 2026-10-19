@@ -537,8 +537,8 @@ typedef struct Coord_0021D850 {
 
 extern u8 campaignPlaces[]; /* original: model_data */
 extern u8 D_00298BA8[];
-extern s8 D_00299ED6;
-extern s8 D_00299ED7;
+extern s8 HighlightedArena;
+extern s8 LastPlayedArena;
 extern u8 campaignCoord; /* original: prim_data */
 
 /* Points the camera at the current place and works out every place's screen position. */
@@ -549,12 +549,12 @@ void Taku_Screen_Init(void) {
     Coord_0021D850 pos;
 
     Taku_Coord_Set(&campaignCoord);
-    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + D_00299ED6 * 0x34);
+    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + HighlightedArena * 0x34);
     campaignWork.cameraTarget[1] = 0.0f;
-    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + D_00299ED6 * 0x34);
-    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + D_00299ED7 * 0x34);
+    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + HighlightedArena * 0x34);
+    campaignWork.cameraTarget[0] = *(f32 *)(campaignPlaces + LastPlayedArena * 0x34);
     campaignWork.cameraTarget[1] = 0.0f;
-    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + D_00299ED7 * 0x34);
+    campaignWork.cameraTarget[2] = *(f32 *)(D_00298BA8 + LastPlayedArena * 0x34);
     campaignWork.cameraEye[0] = campaignWork.cameraTarget[0];
     campaignWork.cameraEye[1] = 96.0f + campaignWork.cameraTarget[1];
     campaignWork.cameraEye[2] = 96.0f + campaignWork.cameraTarget[2];
@@ -588,8 +588,8 @@ typedef struct {
 } Vec4_0021DAA0;
 
 extern s16 teki_a_seru;
-extern s16 D_00298AD2;
-extern s16 D_00298AD4;
+extern s16 enemyDuelistDeckLeaderCameraContainerRotY;
+extern s16 enemyDuelistDeckLeaderCameraContainerRotZ;
 extern s16 D_00298ADA;
 extern Vec4_0021DAA0 D_0029A7B0;
 extern Vec4_0021DAA0 D_0029A7C0;
@@ -648,11 +648,11 @@ void TkCamp_Draw_After(void) {
                 if (campaignWork.unk543A >= 0x80) {
                     campaignWork.unk543A = 0x80;
                 }
-                temp_s4 = D_00298AD2;
+                temp_s4 = enemyDuelistDeckLeaderCameraContainerRotY;
                 temp_s5 = teki_a_seru;
                 var_s6 = Taku_Camp_EnemyModel_Disp(var_s6, 0x1F, temp_s5 + x_offset,
                     temp_s4 + y_offset, (f32)SzDuel_GetCamDist(campaignWork.leaderCard),
-                    D_00298AD4 - temp_s5, D_00298ADA - temp_s4, campaignWork.unk543A);
+                    enemyDuelistDeckLeaderCameraContainerRotZ - temp_s5, D_00298ADA - temp_s4, campaignWork.unk543A);
             }
         }
         if (campaignWork.unk5472 != 0) {
@@ -665,14 +665,14 @@ void TkCamp_Draw_After(void) {
 
 /* Draws the campaign map into the packet. */
 s32 TkCamp_Draw_Pipe(s32 packet) {
-    extern s16 D_00299ED2;
+    extern s16 CutSceneNumber;
     extern s32 Taku_Camp_3D();
     extern s32 Taku_Camp_Clouds();
     u8 *rec;
     s32 v;
 
     rec = (u8 *)&campaignState;
-    if (D_00299ED2 >= 0x2710) {
+    if (CutSceneNumber >= 0x2710) {
         v = *(s16 *)(rec + 0xC2);
         switch (v) {
         case 0x2B98:
@@ -877,7 +877,7 @@ extern f32 D_00298D14;
 extern s16 D_00298D6A;
 extern f32 D_00298DDC;
 extern f32 D_00298DE4;
-extern s16 D_00299ED2;
+extern s16 CutSceneNumber;
 
 /* Runs the campaign's events (ivent): the script of each place's story, the duels it starts and what they unlock. (original: Taku_Camp_Ivent) */
 void Taku_Camp_Event(void) {
@@ -921,7 +921,7 @@ void Taku_Camp_Event(void) {
     s16 temp_v1_8;
     s16 temp_v1_9;
 
-    switch (D_00299ED2) {
+    switch (CutSceneNumber) {
         case 0x2724:                                /* switch 2 */
             temp_v1 = campaignWork.eventStep;
             switch (temp_v1) {                      /* switch 3 */
@@ -3407,7 +3407,7 @@ extern SixSprites_00223600 D_0029A840;
 extern Sprite_00223600 D_0029A930;
 extern ThreeSprites_00223600 D_0029A960;
 extern Sprite_00223600 D_0029A9E0;
-extern s16 D_002999A0[][3];
+extern s16 Name_Screen_data[][3];
 extern s8 D_0030F0B0[];
 #pragma conditional_move off
 #pragma opt_dead_assignments off
@@ -3586,7 +3586,7 @@ s32 Taku_Camp_Event_Name(s32 packet) {
             sprite++;
         }
         dx = left;
-        entry = D_002999A0;
+        entry = Name_Screen_data;
         for (i = 0; i < 3; i++) {
             font = (*entry)[2];
             packet = Taku_Text_Set(packet, 1, font, (s16)dx + (*entry)[0], (*entry)[1], 1.0f, 1.0f, 0, rgba);
@@ -3911,8 +3911,8 @@ void Taku_Camp_Event_Name_Set(void) {
     extern u16 campaignDeckChoiceSets[];
     extern u16 campaignDeckChoices_2[][6];
     extern Tables_00224A40 D_002D19D0;
-    extern s32 D_002D19D8;
-    extern u16 D_002D49D4[];
+    extern s32 playerNameOffset;
+    extern u16 StringBlob[];
     CampaignWork *state;
     s16 i;
     s16 group;
@@ -3936,29 +3936,29 @@ void Taku_Camp_Event_Name_Set(void) {
         group = state->nameLetterColumn[i] / 5;
         slot = (s16)(state->nameLetterColumn[i] % 5) + state->nameLetterRow[i] * 6;
         if (i == 0) {
-            dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset);
+            dest = (u16 *)((u8 *)&StringBlob[playerNameOffset] + offset);
             switch (state->nameLetterTable[i]) {
             case 0:
-                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
+                *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
                 break;
             case 1:
-                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
+                *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
                 break;
             default:
-                *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
+                *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
                 break;
             }
         }
-        dest = (u16 *)((u8 *)&D_002D49D4[D_002D19D8] + offset + 4);
+        dest = (u16 *)((u8 *)&StringBlob[playerNameOffset] + offset + 4);
         switch (state->nameLetterTable[i]) {
         case 0:
-            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
+            *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.type0[group] * 2 + slot * 2) & 0x1FFF;
             break;
         case 1:
-            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
+            *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.type1[group] * 2 + slot * 2) & 0x1FFF;
             break;
         default:
-            *dest = *(u16 *)((u8 *)D_002D49D4 + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
+            *dest = *(u16 *)((u8 *)StringBlob + D_002D19D0.normal[group] * 2 + slot * 2) & 0x3FFF;
             break;
         }
         if (i == 12 || i == state->nameCursor) {
@@ -4108,7 +4108,7 @@ s32 Taku_Camp_Event_Window(s32 arg0) {
     s200 = D_0029AB20;
     color.r = color.g = color.b = 0x80;
     color.a = 0x80;
-    if (D_00299ED2 == 0x2738 && campaignWork.eventWindowState != 0) {
+    if (CutSceneNumber == 0x2738 && campaignWork.eventWindowState != 0) {
         arg0 = Taku_Camp_Event_Name(arg0);
     } else if (campaignWork.eventWindowState != 0) {
         switch (*(s16 *)(0xC2 + ctx)) {
@@ -4474,7 +4474,7 @@ void *Taku_Camp_Clouds(void *packetIn) {
     s16 state;
     s16 i;
 
-    if (D_00299ED2 == 0x2724 && campaignWork.eventStep < 6) {
+    if (CutSceneNumber == 0x2724 && campaignWork.eventStep < 6) {
         packet.depth = -10;
     } else if (*(s16 *)(context + 0xC2) == 0x2BB0) {
         packet.depth = -10;

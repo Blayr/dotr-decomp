@@ -471,7 +471,7 @@ void SzDuel_OpenHandPopup(s32 slot, s32 x, s32 y) {
 
 /* Closes the hand pop-up. */
 void SzDuel_CloseHandPopup(void) {
-    D_00318144 = 0x18;
+    HandCursorState = 0x18;
 }
 
 /* Opens the options pop-up at (x, y) for side `side` (< 0 keeps the current state), loaded with the three options. */
@@ -552,7 +552,7 @@ s32 SzDuel_ActOptionPopup(s32 pad) {
 
 /* Closes the options pop-up. */
 void SzDuel_CloseOptionPopup(void) {
-    D_00318142 = 0x18;
+    MenuVisualToDisplay = 0x18;
 }
 
 /* Opens message pop-up `kind` at (x, y); `card` is the card it names (a won card is added to the trunk). */
@@ -636,7 +636,7 @@ s32 SzDuel_ActMsgPopup(s32 pad) {
 
 /* Closes the message pop-up. */
 void SzDuel_CloseMsgPopup(void) {
-    D_00318145 = 0x18;
+    MsgPopUpID = 0x18;
 }
 
 /* Opens the hand cursor on hand card `slot` at (x, y). */

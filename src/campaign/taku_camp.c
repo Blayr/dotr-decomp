@@ -626,8 +626,8 @@ typedef struct {
 } Side_00228660;
 
 extern Card_00228660 campaignRoutes_2[][16]; /* original: root_no */
-extern s8 D_00299E13[];
-extern s8 D_00299ED7;
+extern s8 YugiArenaMapFlags[];
+extern s8 LastPlayedArena;
 #pragma optimization_level reset
 
 /* Sets up the route marks (dodai) between campaign places for `player` on `side`. (original: Taku_Dodai_Root_init) */
@@ -645,12 +645,12 @@ void Taku_RouteMarks_init(s16 player, s16 side, s8 state, s16 *items, s16 count)
     campaignWork.talkStep = 0;
     campaignWork.unk53A0 = 0;
     campaignWork.unk5375 = 1;
-    D_00299ED7 = side;
+    LastPlayedArena = side;
     campaignWork.leaderT = 0;
     campaignWork.leaderPoint = 0;
     campaignWork.leaderMoveState = 0;
     campaignWork.unk546C = 0;
-    D_00299E13[side] = state;
+    YugiArenaMapFlags[side] = state;
 
     for (i = 0; i < count; i++) {
         item = items[i];
@@ -1053,12 +1053,12 @@ s32 Taku_Focus_move_winlose(s32 won, s16 place) {
 
 /* Draws the campaign map's 2D parts: place marks, routes, the cursor, the ship and the windows. */
 void *Taku_Camp_2D(s32 packet) {
-    extern u8 D_002964A0[];
+    extern u8 te_data[];
     extern u8 D_002964C6[];
     extern u8 D_002964EC[];
     extern s32 campaignTextures[];
-    extern s32 D_00299DD4;
-    extern s16 D_00299ED2;
+    extern s32 window_TextureAddr_UIElements;
+    extern s16 CutSceneNumber;
     extern s32 func_00202BF0();
     extern s32 func_00202E00();
     extern s32 func_00217CB0();
@@ -1078,8 +1078,8 @@ void *Taku_Camp_2D(s32 packet) {
     var_s3 = 0;
     temp_s4 = func_001AEFC0(packet);
     campaignTextures[0] = func_001AF140(7);
-    D_00299DD4 = func_001AF140(6);
-    switch (D_00299ED2) {                           /* irregular */
+    window_TextureAddr_UIElements = func_001AF140(6);
+    switch (CutSceneNumber) {                           /* irregular */
     case 0x2B0C:
         cards[2] = func_00202BF0(8, 0);
         cards[3] = func_00202BF0(8, 1);
@@ -1212,7 +1212,7 @@ void *Taku_Camp_2D(s32 packet) {
         (campaignWork.placesReached == 0)) {
         temp_v1 = campaignWork.unk0004;
         if (temp_v1 == 0) {
-            result = func_00217CB0(result, D_002964A0, campaignWork.cursorX, campaignWork.cursorY);
+            result = func_00217CB0(result, te_data, campaignWork.cursorX, campaignWork.cursorY);
         } else if (temp_v1 == 1) {
             result = func_00217CB0(result, D_002964C6, campaignWork.cursorX, campaignWork.cursorY);
         } else {
@@ -1268,7 +1268,7 @@ s32 Taku_Camp_STONE(s32 packet) {
     return packet;
 }
 
-extern s16 D_00299ED2;
+extern s16 CutSceneNumber;
 
 /* Draws the campaign's deck-card display. */
 s32 Taku_DECK_CARD_DISP(s32 packetIn) {
@@ -1287,7 +1287,7 @@ s32 Taku_DECK_CARD_DISP(s32 packetIn) {
     extern s32 SzDuel_StartCardSession_Pipe();
     extern void SzDuel_ClearDrawCard();
 
-    if (D_00299ED2 >= 0x2756 &&
+    if (CutSceneNumber >= 0x2756 &&
         *(s16 *)(context + 0xC2) < 0x2761 &&
         state->deckShowPhase < 4) {
         packet = SzDuel_StartCardSession_Pipe();
@@ -2337,7 +2337,7 @@ s32 Taku_Camp_3D_SHIP(s32 packet, s16 arg1, s16 arg2, s16 arg3) {
 
 /* Works out which campaign text (bun) to show next and when it ends (hantei: judgement). (original: Taku_Camp_BUN_HANTEI) */
 s32 Taku_Camp_TEXT_PICK(void) {
-    extern s16 D_00299ED2;
+    extern s16 CutSceneNumber;
     s32 player;
     s32 ret;
     s8 *context;
@@ -2356,7 +2356,7 @@ s32 Taku_Camp_TEXT_PICK(void) {
 
     player = campaignState;
     context = &campaignState;
-    if (D_00299ED2 < 0xC8) {
+    if (CutSceneNumber < 0xC8) {
         campaignWork.talkSpeaker = 0;
         if ((s16)player == 0) {
             switch (context[0xC6]) {
@@ -3436,7 +3436,7 @@ s32 Taku_Camp_Event_Picture(s32 cursor) {
     off = 0;
     w = 0;
     h = 0;
-    switch (D_00299ED2) {
+    switch (CutSceneNumber) {
     case 0x2B0C:
         w = 0x280;
         h = 0x1C0;
@@ -4006,7 +4006,7 @@ extern s32 func_00218970_b(s32, void *, s16, s16);
 extern s32 SzMsg_DrawRatioX_Pipe_b(s32, s32, s32, s32, f32, f32, void *, void *);
 extern void SzMsg_DrawRect_Pipe_b(void);
 extern s32 func_001FE7D0_b(s32, s32, s32, s32, void *, void *);
-extern BunRect D_0029AEB0;
+extern BunRect worldMapDialogueTextXOffset;
 extern BunG4 D_00298AF6 __attribute__((aligned(2)));
 extern BunWin D_00297B72 __attribute__((aligned(2)));
 
@@ -4033,7 +4033,7 @@ s32 Taku_Camp_TEXT_SHOW(s32 p) {
     flagB = 0;
     flagA = 0;
     ctx = &campaignState;
-    rect = D_0029AEB0;
+    rect = worldMapDialogueTextXOffset;
     for (i = 0; i < 4; i++) {
         col[i][0] = col[i][1] = col[i][2] = 0x80;
         col[i][3] = 0x80;

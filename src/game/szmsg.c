@@ -35,7 +35,7 @@ typedef struct State_001FD320 {
 s32 SzMsg_Init_Pipe(s32 packet, s32 palette, s32 address, s32 *outSize) {
     extern State_001FD320 textState;
     extern s32 D_002D19D0;
-    extern u16 D_002D49D4[];
+    extern u16 StringBlob[];
     extern s32 SzText_InitClutManage();
     extern s32 SzMsg_LoadClut_Pipe();
     State_001FD320 *state = &textState;
@@ -68,13 +68,13 @@ s32 SzMsg_Init_Pipe(s32 packet, s32 palette, s32 address, s32 *outSize) {
     }
     state->cbpOffset = palette;
     state->unk274 = 0xFFFFFB;
-    state->unk278 = D_002D49D4[D_002D19D0] & 0x1FFF;
+    state->unk278 = StringBlob[D_002D19D0] & 0x1FFF;
     return packet;
 }
 
 /* Sets the depth messages are drawn at. */
 void SzMsg_SetDefPrioZ(s32 z) {
-    D_0031C2E4 = z;
+    Msg_DefPrioZ = z;
 }
 
 typedef union Packet_001FD4C0 {
@@ -153,8 +153,8 @@ typedef struct {
 /* Renders message `msg` (the game's text) into text slot `slot` at (x, y) of the text texture, glyph by glyph. */
 s32 SzMsg_LoadFont_Pipe(s32 cursorIn, s32 slot, s32 msg, s32 x, s32 y) {
     extern s32 D_002D19D0[];
-    extern u16 D_002D49D4[];
-    extern u8 D_002F8DEC[];
+    extern u16 StringBlob[];
+    extern u8 gSzMsgImage[];
     extern Context_001FD680 textState;
     Context_001FD680 *context = &textState;
     u8 *glyphs[17][53];
@@ -204,7 +204,7 @@ s32 SzMsg_LoadFont_Pipe(s32 cursorIn, s32 slot, s32 msg, s32 x, s32 y) {
     s32 length;
 
     texture = (Texture_001FD680 *)SzMsg_GetInfo(slot);
-    stream = &D_002D49D4[D_002D19D0[msg]];
+    stream = &StringBlob[D_002D19D0[msg]];
     width = 16;
     height = 16;
     lineCount = 0;
@@ -248,7 +248,7 @@ s32 SzMsg_LoadFont_Pipe(s32 cursorIn, s32 slot, s32 msg, s32 x, s32 y) {
         next = nextGlyph;
         goto glyph_test;
     glyph_loop:
-        *next = D_002F8DEC + *nextId * 242;
+        *next = gSzMsgImage + *nextId * 242;
         glyphIndex++;
         nextId++;
         next++;
@@ -929,14 +929,14 @@ typedef struct {
     s8 pad4[16];
 } Entry_001FEB40;
 
-extern Entry_001FEB40 D_0031C08C[30];
+extern Entry_001FEB40 MessageArray[30];
 
 /* Frees every text slot. */
 void SzMsg_FreeAll(void) {
     Entry_001FEB40 *entry;
     s32 i;
 
-    entry = D_0031C08C;
+    entry = MessageArray;
     i = 0;
     do {
         i += 1;

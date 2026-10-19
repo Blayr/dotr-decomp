@@ -3,7 +3,7 @@
 
 /* newlib strtok: the next token of `s` split by `delim`. */
 char *func_0019D430(char *s, const char *delim) {
-    return func_0019D450(s, delim, (char **)(D_0028FA98 + 0x5C));
+    return func_0019D450(s, delim, (char **)(globals + 0x5C));
 }
 
 /* newlib strtok_r: the next token of `s` split by `delim` (position kept in `lasts`). */
@@ -99,7 +99,7 @@ long func_0019D518(s32 rptr, const char *nptr, char **endptr, s32 base) {
 
 /* newlib strtol: string `arg0` as a long in base `arg2` (the end into `arg1`). */
 long func_0019D750(const char *arg0, char **arg1, s32 arg2) {
-    return func_0019D518(D_0028FA98, arg0, arg1, arg2);
+    return func_0019D518(globals, arg0, arg1, arg2);
 }
 
 /* newlib _strtoul_r: string `nptr` as an unsigned long in base `base` (the end into `endptr`). */
@@ -156,7 +156,7 @@ u64 func_0019D780(s32 rptr, const char *nptr, char **endptr, s32 base) {
 
 /* newlib strtoul: string `arg0` as an unsigned long in base `arg2` (the end into `arg1`). */
 void func_0019D9B0(s32 arg0, s32 arg1, s32 arg2) {
-    func_0019D780(D_0028FA98, arg0, arg1, arg2);
+    func_0019D780(globals, arg0, arg1, arg2);
 }
 
 /* A newlib character helper (`c`). */
@@ -238,7 +238,7 @@ s32 func_0019DAE8(s32 c, void *arg1) {
 
     do {
         if (fp->_data == 0)
-            fp->_data = (ug_reent *)D_0028FA98;
+            fp->_data = (ug_reent *)globals;
         if (!fp->_data->__sdidinit)
             __sinit(fp->_data);
     } while (0);
