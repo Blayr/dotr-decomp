@@ -79,7 +79,7 @@ struct DotrCustomDuelFlags {
 extern unsigned char *RhMem_CopyMemory_b(unsigned char *destination, unsigned char *source, int count);
 
 /* Sets up the custom duel from its saved settings: decks, leaders and the message text. */
-void func_001C5D70(int mode)
+void SzDuel_InitCustomDuel(int mode)
 {
     struct DotrCustomDuelControl *c = (struct DotrCustomDuelControl *)&D_00317490_1c5d70;
     unsigned short *p = DOTR_CUSTOM_DUEL->list;

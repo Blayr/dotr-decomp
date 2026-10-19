@@ -39,6 +39,11 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
 - A JP name written in romanized Japanese (`Taku_Camp_Kumo`, "clouds") is translated into English with the
   module prefix kept (`Taku_Camp_Clouds`); the JP name stays a linker alias in `config/old_names.txt` and a
   note in the comment above the function (`(original: Taku_Camp_Kumo)`), so JP tools still line up.
+- **batzpup's names** (his Ghidra project): the developers' prefix stays, as it is the system tag anyone can
+  check against the JP table; inside it his words and duelist names win when the code agrees
+  (`TaLogic_Weevil_GetMinimumTask`, `Ta_IsInLeaderRange` for `Ta_IsLDRange`). Where he only changed a spelling
+  (`Exodia` for the developers' `Exzodia`), replaced the prefix (`Home_` for `Taku_`) or read the code
+  differently, his name is a linker alias in `config/ghidra_names.txt`.
 - A function the JP table does not name keeps `func_XXXXXXXX` until the code says what it does; then it gets a
   name in the style of its neighbours (`SzDuel_` + verb + object for a duel function).
 - Renames go through `config/symbol_addrs.txt`, with the old name kept as an alias in `config/old_names.txt`

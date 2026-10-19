@@ -180,8 +180,8 @@ typedef struct Obj_0025BE50 {
     u16 timer;
 } Obj_0025BE50;
 
-/* Effect script 021, step `ID`: its camera, fades and effect module. */
-s32 Ta_Eff_021(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 021, step `ID`: its camera, fades and effect module. (original: Ta_Eff_021) */
+s32 Ta_Eff_021_Destroy(void *eInfo, void *Temp, s32 ID) {
     extern s32 Ta_IsFinishDestEfc();
     s32 work[4];
     s32 *workp;
@@ -845,8 +845,8 @@ typedef struct Command_0025D230 {
     s32 z;
 } Command_0025D230;
 
-/* Effect script 029_CNG, step `ID`: its camera, fades and effect module; it changes attack or defence. */
-s32 Ta_Eff_029_CNG(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 029_CNG, step `ID`: its camera, fades and effect module; it changes attack or defence. (original: Ta_Eff_029_CNG) */
+s32 Ta_Eff_029_CNG_BuffStats(void *eInfo, void *Temp, s32 ID) {
     s32 i = 0;
     Command_0025D230 data;
     Command_0025D230 *command = &data;
@@ -958,8 +958,8 @@ typedef struct State_0025D640 {
     u16 timer;
 } State_0025D640;
 
-/* Effect script 029, step `ID`: its camera, fades and effect module; it changes attack or defence. */
-s32 Ta_Eff_029(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 029, step `ID`: its camera, fades and effect module; it changes attack or defence. (original: Ta_Eff_029) */
+s32 Ta_Eff_029_BuffStats(void *eInfo, void *Temp, s32 ID) {
     s32 data[4];
     s32 completed;
     s32 *params = data;
@@ -3932,8 +3932,8 @@ typedef struct State_00263790 {
     u8 handle;
 } State_00263790;
 
-/* Effect script 065, step `ID`: its camera, fades and effect module; it turns cards face up, changes summon power. */
-s32 Ta_Eff_065(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 065, step `ID`: its camera, fades and effect module; it turns cards face up, changes summon power. (original: Ta_Eff_065) */
+s32 Ta_Eff_065_Gain_Summon_power(void *eInfo, void *Temp, s32 ID) {
     s32 request[4];
     s32 *p = request;
     State_00263790 *state = Temp;
@@ -4104,7 +4104,7 @@ s32 Ta_Manage_ActEfc(ActEfcInfo_00263930 *eInfo, s32 nSide, s32 nID, s32 eSide, 
     case 0xD:
         Effect->eNO = 8;
         Effect->dwFrom = 0;
-        Effect->dwTo = Ta_GetEOwnerSide(Ta_GetCurrentSide(nSide, nID), (eInfo->dwID >> 6) & 3);
+        Effect->dwTo = Ta_GetEffectOwnerSide(Ta_GetCurrentSide(nSide, nID), (eInfo->dwID >> 6) & 3);
         Effect->dwPar = ((eInfo->dwParam >> 16) << 16) | (eInfo->dwParam & 0xFFFF);
         return 1;
     case 0x14:

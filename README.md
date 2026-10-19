@@ -111,6 +111,14 @@ that say what they are (the duel state `gSzDuel_dl` is now `duelState`, describe
 map, how a duel runs, where the data and the save live) are in `docs/README.md`, and how to propose a change is
 in `CONTRIBUTING.md`.
 
+**batzpup's names.** batzpup's Ghidra project of this game (his export of 18 October 2026) names functions, data,
+structs and enums too, and many of those names are used here. Each computer duelist's AI functions carry the
+duelist's name (`TaLogic_Weevil_GetMinimumTask`; a developers' name that was already unique, such as
+`TaLogic002_GetNearUnit`, stays). Where his reading of a function says more than ours and the code agrees, his name
+is the function's name (`SzGame_DEBUGMENU`, `Ta_Eff_001_Revive`), the developers' name kept as an alias and a note.
+Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
+in `build/main.map`. Thanks to batzpup for them.
+
 ## License
 
 Our own work in this repository is released under **CC0 1.0** (see `LICENSE`). Code taken from other projects

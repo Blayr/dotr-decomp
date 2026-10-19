@@ -26,8 +26,8 @@ typedef struct Card_002464F0 {
 } Card_002464F0;
 
 /* How far a unit (record `vInfo`) on square (nX, nZ) may move: its base moves, the field, leader abilities and
-   effects. */
-s32 GetMoveRev(s32 vInfo, s32 nX, s32 nZ) {
+   effects. (original: GetMoveRev) */
+s32 GetMoveRange(s32 vInfo, s32 nX, s32 nZ) {
     s32 i;
     s32 temp_s1;
     s32 var_s2;
@@ -235,7 +235,7 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             atkEfc = Manage_AtkEfc(nSide_1, ID_1, nSide_2, ID_2, p);
             paramOfs = Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1);
             temp_s5_2 = p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0);
-            temp_s5_2 = GetParCap(temp_s5_2 + paramOfs);
+            temp_s5_2 = GetStatCap(temp_s5_2 + paramOfs);
             SzDuel_CalcUnitAP(nSide_2, ID_2, 0, p->value2);
             SzDuel_CalcUnitDP(nSide_2, ID_2, 0, p->value2);
             p->value2 = encode_00246810(p->value2);
@@ -306,9 +306,9 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             if (p->flags.bit3 == 1) {
                 SzDuel_CalcUnitAP(nSide_1, ID_1, 4, 0);
                 SzDuel_CalcUnitDP(nSide_1, ID_1, 4, 0);
-                sp13C = GetParCap(SzDuel_GetUnitDP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 0));
+                sp13C = GetStatCap(SzDuel_GetUnitDP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 0));
             } else {
-                sp13C = GetParCap(p->value1 + SzDuel_GetUnitDP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 0));
+                sp13C = GetStatCap(p->value1 + SzDuel_GetUnitDP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 0));
                 SzDuel_CalcUnitAP(nSide_1, ID_1, 0, p->value1);
                 SzDuel_CalcUnitDP(nSide_1, ID_1, 0, p->value1);
                 p->value1 = encode_00246810(p->value1);
@@ -316,9 +316,9 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             if (p->flags.bit4 == 1) {
                 SzDuel_CalcUnitAP(nSide_2, ID_2, 4, 0);
                 SzDuel_CalcUnitDP(nSide_2, ID_2, 4, 0);
-                sp138 = GetParCap(SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
+                sp138 = GetStatCap(SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
             } else {
-                sp138 = GetParCap(p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
+                sp138 = GetStatCap(p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
                 SzDuel_CalcUnitAP(nSide_2, ID_2, 0, p->value2);
                 SzDuel_CalcUnitDP(nSide_2, ID_2, 0, p->value2);
                 p->value2 = encode_00246810(p->value2);
@@ -356,9 +356,9 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             if (p->flags.bit3 == 1) {
                 SzDuel_CalcUnitAP(nSide_1, ID_1, 4, 0);
                 SzDuel_CalcUnitDP(nSide_1, ID_1, 4, 0);
-                sp140 = GetParCap(SzDuel_GetUnitAP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 1));
+                sp140 = GetStatCap(SzDuel_GetUnitAP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 1));
             } else {
-                sp140 = GetParCap(p->value1 + SzDuel_GetUnitAP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 1));
+                sp140 = GetStatCap(p->value1 + SzDuel_GetUnitAP(nSide_1, ID_1, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_1, ID_1), nX, nZ, 1));
                 SzDuel_CalcUnitAP(nSide_1, ID_1, 0, p->value1);
                 SzDuel_CalcUnitDP(nSide_1, ID_1, 0, p->value1);
                 p->value1 = encode_00246810(p->value1);
@@ -366,9 +366,9 @@ s32 Battle(s32 nSide_1, s32 ID_1, s32 nSide_2, s32 ID_2, s32 nX, s32 nZ, void *e
             if (p->flags.bit4 == 1) {
                 SzDuel_CalcUnitAP(nSide_2, ID_2, 4, 0);
                 SzDuel_CalcUnitDP(nSide_2, ID_2, 4, 0);
-                sp144 = GetParCap(SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
+                sp144 = GetStatCap(SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
             } else {
-                sp144 = GetParCap(p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
+                sp144 = GetStatCap(p->value2 + SzDuel_GetUnitAP(nSide_2, ID_2, 0) + Ta_GetParamOfs(SzDuel_GetUnit(nSide_2, ID_2), nX, nZ, 1));
                 SzDuel_CalcUnitAP(nSide_2, ID_2, 0, p->value2);
                 SzDuel_CalcUnitDP(nSide_2, ID_2, 0, p->value2);
                 p->value2 = encode_00246810(p->value2);

@@ -8,6 +8,8 @@ LD_SYMS   := config/linker_syms.txt
 OLD_NAMES := config/old_names.txt
 # The old D_ data names, aliases of the real ones (config/symbol_addrs.txt).
 OLD_DATA  := config/old_data_names.txt
+# batzpup's names for functions where ours differ (his Ghidra project), linker aliases too.
+GHIDRA_NAMES := config/ghidra_names.txt
 WARM_LIST := config/warm_files.txt
 # Words the shipped game overwrote after its build (tools/postpatch.py); applied to the linked ELF.
 POSTPATCH := config/postpatch.txt
@@ -100,9 +102,9 @@ $(BUILD)/%.c.o: %.c
 $(WARM_SRCS:%=$(BUILD)/%.o): $(WARM_LIST)
 $(GCC_SRCS:%=$(BUILD)/%.o): $(GCC_LIST)
 
-$(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS) $(OLD_NAMES) $(OLD_DATA) $(wildcard $(POSTPATCH))
+$(ELF): $(OBJS) $(LD_SCRIPT) $(LD_SYMS) $(OLD_NAMES) $(OLD_DATA) $(GHIDRA_NAMES) $(wildcard $(POSTPATCH))
 	@$(LD) -EL -T $(LD_SCRIPT) -T linker/undefined_syms_auto.txt -T linker/undefined_funcs_auto.txt \
-		-T $(LD_SYMS) -T $(OLD_NAMES) -T $(OLD_DATA) -Map $(BUILD)/main.map -o $@
+		-T $(LD_SYMS) -T $(OLD_NAMES) -T $(OLD_DATA) -T $(GHIDRA_NAMES) -Map $(BUILD)/main.map -o $@
 	@python3 tools/postpatch.py $@ $(POSTPATCH) || { rm -f $@; exit 1; }
 
 $(OUT_EXE): $(ELF)

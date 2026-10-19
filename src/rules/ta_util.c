@@ -46,7 +46,7 @@ s32 Chk_TrapA(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 *arg4, s32 PrNo) {
         return 0;
     }
     if (!(PrNo & 0xFFFF)) {
-        if (Ta_IsLDRange((side == 0) ? 1 : 0, arg2, arg3) != 0) {
+        if (Ta_IsInLeaderRange((side == 0) ? 1 : 0, arg2, arg3) != 0) {
             if ((SzDuel_GetUnitKind(arg0, arg1) >> 5) == 0) {
                 if ((Ta_IsLDAbl(0x10, (side == 0) ? 1 : 0) != 0) && (Ta_IsLD_DestObj((side == 0) ? 1 : 0, SzDuel_GetUnitKind(arg0, arg1) & 0x1F) != 0)) {
                     maskA = ConvUnitIDtoFlagList(0U, arg0, arg1);
@@ -872,8 +872,8 @@ s32 Ta_SideMatch(s32 rSide, s32 cSide, s32 sSide) {
     }
 }
 
-/* The side an effect owner `eOwner` means for side `nSide`. */
-s32 Ta_GetEOwnerSide(s32 nSide, s32 eOwner) {
+/* The side an effect owner `eOwner` means for side `nSide`. (original: Ta_GetEOwnerSide) */
+s32 Ta_GetEffectOwnerSide(s32 nSide, s32 eOwner) {
     switch (eOwner) {
     case 1:
         return nSide;
@@ -1773,7 +1773,7 @@ s32 TaUnit_AddUnitEfc(s32 nSide, s32 nID, s32 nX, s32 nZ, void *eInfo) {
             return 1;
         }
     }
-    if (Ta_IsLDRange((controller == 0) ? 1 : 0, nX, nZ) != 0) {
+    if (Ta_IsInLeaderRange((controller == 0) ? 1 : 0, nX, nZ) != 0) {
         if (Ta_IsLDAbl(0x10, (controller == 0) ? 1 : 0) != 0) {
             if ((Ta_IsLD_DestObj((controller == 0) ? 1 : 0, kind & 0x1F) != 0) && ((kind >> 5) == 0)) {
                 var_s2 = ConvUnitIDtoFlagList(var_s2, nSide, nID);
@@ -2191,8 +2191,8 @@ typedef struct {
 } Card_00250430;
 
 /* Reincarnation: the card side `nSide` gets for giving up card `cNo` (a random card of a rolled nearby level;
-   0x334 if none). */
-s32 Ta_GetRecycle(s32 nSide, s32 cNo) {
+   0x334 if none). (original: Ta_GetRecycle) */
+s32 Ta_GetReincarnation(s32 nSide, s32 cNo) {
     s32 list[0x356];
     Card_00250430 *card;
     s32 count;
@@ -2312,8 +2312,8 @@ s32 GetCap(s32 CapID, s32 Expr) {
     }
 }
 
-/* `Expr` kept within the attack/defence range (0..9999). */
-s32 GetParCap(s32 Expr) {
+/* `Expr` kept within the attack/defence range (0..9999). (original: GetParCap) */
+s32 GetStatCap(s32 Expr) {
     if (Expr < 0) {
         return 0;
     }
@@ -2321,8 +2321,8 @@ s32 GetParCap(s32 Expr) {
     return Expr;
 }
 
-/* Whether a unit (record `pVarInfo`) is a leader. */
-s32 TaUtil_IsVarInfoLeader(void *pVarInfo) {
+/* Whether a unit (record `pVarInfo`) is a leader. (original: TaUtil_IsVarInfoLeader) */
+s32 TaUtil_IsUnitLeader(void *pVarInfo) {
     u8 state;
 
     if (*((u8 *)pVarInfo + 0x45) == 0) {
@@ -2350,7 +2350,7 @@ s32 TaUtil_GetGraveCardNum(s32 nSide, s32 nType) {
 
 /* Unit (nSide, nID)'s attack on square (nX, nZ), with the field bonus, kept in range. */
 s32 TaUtil_GetUnitAP(s32 nSide, s32 nID, s32 nX, s32 nZ) {
-    return GetParCap(SzDuel_GetUnitAP(nSide, nID, 0) +
+    return GetStatCap(SzDuel_GetUnitAP(nSide, nID, 0) +
                          Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 1));
 }
 
@@ -2359,7 +2359,7 @@ s32 TaUtil_GetUnitAP2(s32 pVarInfo, s32 nX, s32 nZ) {
     s32 unitAP;
 
     unitAP = SzDuel_GetUnitAP2((void *)pVarInfo, 0);
-    return GetParCap(unitAP + Ta_GetParamOfs(pVarInfo, nX, nZ, 1));
+    return GetStatCap(unitAP + Ta_GetParamOfs(pVarInfo, nX, nZ, 1));
 }
 
 /* Unit (nSide, nID)'s attack on square (nX, nZ), with the field bonus. */
@@ -2380,7 +2380,7 @@ s32 TaUtil_GetUnitDP(s32 nSide, s32 nID, s32 nX, s32 nZ) {
 
     value = Ta_GetParamOfs(SzDuel_GetUnit(nSide, nID), nX, nZ, 0);
     base = SzDuel_GetUnitDP(nSide, nID, 0);
-    return GetParCap(base + value);
+    return GetStatCap(base + value);
 }
 
 /* A unit's (record `pVarInfo`) defence on square (nX, nZ), with the field bonus, kept in range. */
@@ -2388,7 +2388,7 @@ void TaUtil_GetUnitDP2(s32 pVarInfo, s32 nX, s32 nZ) {
     s32 unitDP;
 
     unitDP = SzDuel_GetUnitDP2((void *)pVarInfo, 0);
-    GetParCap(unitDP + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
+    GetStatCap(unitDP + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
 }
 
 /* Unit (nSide, nID)'s defence on square (nX, nZ), with the field bonus. */
@@ -2731,8 +2731,8 @@ typedef struct {
 } Script_002517D0;
 
 /* The effects set off when unit (nSide_2, nID_2) is destroyed by unit (nSide_1, nID_1) on (nX, nZ), into `out`
-   (`fRemove` takes the unit off). */
-s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s32 nZ, s32 *out, s32 fRemove) {
+   (`fRemove` takes the unit off). (original: Ta_Manage_DestEfc) */
+s32 Ta_Manage_DestructionEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s32 nZ, s32 *out, s32 fRemove) {
     Script_002517D0 *temp_v0;
     s32 spA8;
     s32 spAC;
@@ -2890,13 +2890,13 @@ s32 Ta_Manage_DestEfc(s32 nSide_1, s32 nID_1, s32 nSide_2, s32 nID_2, s32 nX, s3
         case 1:                                     /* switch 2 */
             out[0] = 8;
             out[1] = 0;
-            out[2] = Ta_GetEOwnerSide(Ta_GetCurrentSide(nSide_1, nID_1), ((u32) temp_v0->flags >> 6) & 3);
+            out[2] = Ta_GetEffectOwnerSide(Ta_GetCurrentSide(nSide_1, nID_1), ((u32) temp_v0->flags >> 6) & 3);
             out[3] = temp_s1_5;
             return 1;
         case 2:                                     /* switch 2 */
             out[0] = 9;
             out[1] = SzDuel_GetUnitLoc(nSide_1, nID_1);
-            out[2] = Ta_GetEOwnerSide(Ta_GetCurrentSide(nSide_1, nID_1), ((u32) temp_v0->flags >> 6) & 3);
+            out[2] = Ta_GetEffectOwnerSide(Ta_GetCurrentSide(nSide_1, nID_1), ((u32) temp_v0->flags >> 6) & 3);
             out[3] = temp_s1_5;
             return 1;
         default:                                    /* switch 2 */

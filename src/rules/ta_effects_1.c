@@ -661,14 +661,14 @@ s32 Ta_Do_Magic(s32 x, s32 y, void *arg2, u8 *tail, s32 phase, u32 *info) {
         case 1:
             res->kind = 8;
             res->value = 0;
-            res->pos = Ta_GetEOwnerSide(Ta_GetCurrentSide(x, y), (*info >> 6) & 3);
+            res->pos = Ta_GetEffectOwnerSide(Ta_GetCurrentSide(x, y), (*info >> 6) & 3);
             res->extra = amount;
             Ta_DelUnit(x, y);
             return 1;
         case 2:
             res->kind = 9;
             res->value = SzDuel_GetUnitLoc(x, y);
-            res->pos = Ta_GetEOwnerSide(Ta_GetCurrentSide(x, y), (*info >> 6) & 3);
+            res->pos = Ta_GetEffectOwnerSide(Ta_GetCurrentSide(x, y), (*info >> 6) & 3);
             res->extra = amount;
             Ta_DelUnit(x, y);
             return 1;
@@ -1252,17 +1252,17 @@ void Ta_GetCeremSacrifice(s32 *Buf, s32 Obj) {
 s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
     extern void SzDuel_SetUnitStatus(s32, s32, s32, s32);
     extern s32 Ta_Eff_002();
-    extern s32 Ta_Eff_009();
+    extern s32 Ta_Eff_009_DirectDamage();
     extern s32 Ta_Eff_032();
     extern s32 Ta_Eff_035();
     extern s32 Ta_Eff_017_BLESSING();
     extern s32 Ta_Eff_064();
     extern s32 Ta_Eff_044();
     extern s32 Ta_Eff_046();
-    extern s32 Ta_Eff_058();
+    extern s32 Ta_Eff_058_Hourglass_of_Life();
     extern s32 Ta_Eff_109();
     extern s32 Ta_Eff_066();
-    extern s32 Ta_Eff_BTL_000();
+    extern s32 Ta_Eff_BTL_000_Atk_Leader();
     extern s32 Ta_Eff_BTL_001();
     s32 temp_v0;
     s32 i;
@@ -1275,10 +1275,10 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
     var_s1 = 0;
     switch (temp_v0) {
     case 0x0:
-        var_s1 = Ta_Eff_000(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_000_SetSpellbind(eInfo, pTemp, ID);
         break;
     case 0x1:
-        var_s1 = Ta_Eff_001(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_001_Revive(eInfo, pTemp, ID);
         break;
     case 0x2:
         var_s1 = Ta_Eff_002(eInfo, pTemp, ID);
@@ -1299,16 +1299,16 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_007(eInfo, pTemp, ID);
         break;
     case 0x8:
-        var_s1 = Ta_Eff_008(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_008_Heal(eInfo, pTemp, ID);
         break;
     case 0x9:
-        var_s1 = Ta_Eff_009(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_009_DirectDamage(eInfo, pTemp, ID);
         break;
     case 0xC:
         var_s1 = Ta_Eff_012(eInfo, pTemp, ID);
         break;
     case 0xD:
-        var_s1 = Ta_Eff_013(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_013_FlipCards(eInfo, pTemp, ID);
         break;
     case 0xE:
         var_s1 = Ta_Eff_014(eInfo, pTemp, ID);
@@ -1332,7 +1332,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_020((s32) eInfo, pTemp, ID);
         break;
     case 0x15:
-        var_s1 = Ta_Eff_021(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_021_Destroy(eInfo, pTemp, ID);
         break;
     case 0x17:
         var_s1 = Ta_Eff_023(eInfo, pTemp, ID);
@@ -1347,10 +1347,10 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_028(eInfo, pTemp, ID);
         break;
     case 0x1D:
-        var_s1 = Ta_Eff_029(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_029_BuffStats(eInfo, pTemp, ID);
         break;
     case 0x5B:
-        var_s1 = Ta_Eff_029_CNG(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_029_CNG_BuffStats(eInfo, pTemp, ID);
         break;
     case 0x1E:
         var_s1 = Ta_Eff_030(eInfo, pTemp, ID);
@@ -1377,7 +1377,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_006_WIND(eInfo, pTemp, ID);
         break;
     case 0x5D:
-        var_s1 = Ta_Eff_BTL_000(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_BTL_000_Atk_Leader(eInfo, pTemp, ID);
         break;
     case 0x24:
         var_s1 = Ta_Eff_036(eInfo, pTemp, ID);
@@ -1407,19 +1407,19 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_051(eInfo, pTemp, ID);
         break;
     case 0x36:
-        var_s1 = Ta_Eff_054(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_054_MirrorWall(eInfo, pTemp, ID);
         break;
     case 0x38:
         var_s1 = Ta_Eff_056(eInfo, pTemp, ID);
         break;
     case 0x39:
-        var_s1 = Ta_Eff_057(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_057_ReduceAPDP(eInfo, pTemp, ID);
         break;
     case 0x3A:
-        var_s1 = Ta_Eff_058(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_058_Hourglass_of_Life(eInfo, pTemp, ID);
         break;
     case 0x3B:
-        var_s1 = Ta_Eff_059(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_059_Lose_own_Lp(eInfo, pTemp, ID);
         break;
     case 0x3C:
         var_s1 = Ta_Eff_060(eInfo, pTemp, ID);
@@ -1431,7 +1431,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_064(eInfo, pTemp, ID);
         break;
     case 0x41:
-        var_s1 = Ta_Eff_065(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_065_Gain_Summon_power(eInfo, pTemp, ID);
         break;
     case 0x42:
         var_s1 = Ta_Eff_066(eInfo, pTemp, ID);
@@ -1452,7 +1452,7 @@ s32 Ta_Manage_Effect(u32 *eInfo, u16 *pTemp, s32 ID) {
         var_s1 = Ta_Eff_100(eInfo, pTemp, ID);
         break;
     case 0x65:
-        var_s1 = Ta_Eff_101(eInfo, pTemp, ID);
+        var_s1 = Ta_Eff_101_ActivateSpell(eInfo, pTemp, ID);
         break;
     case 0x66:
         var_s1 = Ta_Eff_102(eInfo, pTemp, ID);
@@ -1865,8 +1865,8 @@ typedef struct State_002560C0 {
 } State_002560C0;
 
 /* Effect script 000, step `ID`: its camera, fades and effect module; it curses units, binds units with a spell,
-   turns cards face up. */
-s32 Ta_Eff_000(void *eInfo, void *Temp, s32 ID) {
+   turns cards face up. (original: Ta_Eff_000) */
+s32 Ta_Eff_000_SetSpellbind(void *eInfo, void *Temp, s32 ID) {
     extern s32 TaUtil_GetObjSideNum();
     extern s32 SzDuel_SetUnitSpellRest();
     s32 effect[4];
@@ -2337,8 +2337,8 @@ typedef struct Card_00256D80 {
 } Card_00256D80;
 
 /* Effect script 001, step `ID`: its camera, fades and effect module; it puts a card on the board, uses the
-   graveyard, turns cards face up. */
-s32 Ta_Eff_001(void *eInfo, void *Temp, s32 ID) {
+   graveyard, turns cards face up. (original: Ta_Eff_001) */
+s32 Ta_Eff_001_Revive(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetGraveCount();
     extern void *SzDuel_AddUnit();
     s32 packet[4];
@@ -3402,8 +3402,8 @@ typedef struct Command_00258E20 {
     s32 amount;
 } Command_00258E20;
 
-/* Effect script 008, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. */
-s32 Ta_Eff_008(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 008, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. (original: Ta_Eff_008) */
+s32 Ta_Eff_008_Heal(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
     Input_00258E20 *input = eInfo;
     State_00258E20 *state = Temp;
@@ -3616,8 +3616,8 @@ typedef struct EffTemp_002594D0 {
     u16 wCamTime;
 } EffTemp_002594D0;
 
-/* Effect script 009, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. */
-s32 Ta_Eff_009(void *eInfoIn, void *arg1, s32 ID) {
+/* Effect script 009, step `ID`: its camera, fades and effect module; it changes life points, turns cards face up. (original: Ta_Eff_009) */
+s32 Ta_Eff_009_DirectDamage(void *eInfoIn, void *arg1, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
     EffInfo_002594D0 *eInfo = eInfoIn;
     EffTemp_002594D0 *Temp = arg1;
@@ -3938,8 +3938,8 @@ typedef struct State_0025A060 {
     u16 timer;
 } State_0025A060;
 
-/* Effect script 013, step `ID`: its camera, fades and effect module; it turns cards face up. */
-s32 Ta_Eff_013(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 013, step `ID`: its camera, fades and effect module; it turns cards face up. (original: Ta_Eff_013) */
+s32 Ta_Eff_013_FlipCards(void *eInfo, void *Temp, s32 ID) {
     State_0025A060 *state = Temp;
     Request_0025A060 *request = eInfo;
     Request_0025A060 task;

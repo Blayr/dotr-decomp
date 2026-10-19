@@ -1798,7 +1798,7 @@ s32 SzDuel_CalcUnitMovable(void) {
         card = NULL;
     }
     if (card != NULL) {
-        return GetMoveRev((s32)card, card->x, card->y) & 0xF;
+        return GetMoveRange((s32)card, card->x, card->y) & 0xF;
     }
     return 0;
 }
@@ -1832,7 +1832,7 @@ s32 SzDuel_IsUnitMovableOnLabyrinth(void) {
     if (card == NULL) {
         return 0;
     }
-    return ((u32)GetMoveRev((s32)card, card->x, card->y) >> 4) != 0 ? 1 : 0;
+    return ((u32)GetMoveRange((s32)card, card->x, card->y) >> 4) != 0 ? 1 : 0;
 }
 
 /* Sets unit (side, unit)'s card control mode. */

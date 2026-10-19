@@ -679,8 +679,8 @@ s32 Ta_ManageNaturalEffectInStandbyPhase(s32 nSide, s32 nID, void *output) {
     return 0;
 }
 
-/* The standing effect a spell-bound unit (nSide, nID) runs at the start of its turn, into `eInfo`. */
-s32 Ta_ManageNaturalEffectInStandbyPhase2(s32 nSide, s32 nID, void *eInfo) {
+/* The standing effect a spell-bound unit (nSide, nID) runs at the start of its turn, into `eInfo`. (original: Ta_ManageNaturalEffectInStandbyPhase2) */
+s32 Ta_ManageNaturalEffectInStandbyPhase2Spellbind(s32 nSide, s32 nID, void *eInfo) {
     extern s32 SzDuel_GetUnitSpellRest();
     s32 i;
     u32 temp_s3;
@@ -943,7 +943,7 @@ s32 Ta_GetLPRevByNaturalEffect(s32 sMode, s32 bEfc) {
         }
         j += 1;
     } while (j < 0xB);
-    return GetParCap(var_s1);
+    return GetStatCap(var_s1);
 }
 
 typedef struct {
@@ -1277,7 +1277,7 @@ int Ta_Do_StandbyPhase(int PrNo, void *eInfo_v)
                     Unit = (TurnOwner == 0 ? 1 : 0) << 8 | (PrNo - 37);
                 }
                 if (Unit >= 0) {
-                    Ret = Ta_ManageNaturalEffectInStandbyPhase2(Unit >> 8, Unit & 0xff, eInfo);
+                    Ret = Ta_ManageNaturalEffectInStandbyPhase2Spellbind(Unit >> 8, Unit & 0xff, eInfo);
                     return (PrNo + 1) << 16 | Ret;
                 }
             }
@@ -1484,8 +1484,8 @@ typedef struct State_00268760 {
     u16 timer;
 } State_00268760;
 
-/* Effect script 057, step `ID`: its camera, fades and effect module; it changes attack or defence. */
-s32 Ta_Eff_057(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 057, step `ID`: its camera, fades and effect module; it changes attack or defence. (original: Ta_Eff_057) */
+s32 Ta_Eff_057_ReduceAPDP(void *eInfo, void *Temp, s32 ID) {
     s32 stackData[4];
     s32 count;
     s32 *data = stackData;
@@ -1645,8 +1645,8 @@ struct jp_6a917 {
 extern int func_001DEE50_b(int index);
 extern struct jp_6b127 *func_001DD0E0_b(int id);
 
-/* Effect script 058, step `ID`: its camera, fades and effect module; it changes life points, uses the graveyard. */
-int Ta_Eff_058(void *eInfo_v, void *Temp_v, int ID)
+/* Effect script 058, step `ID`: its camera, fades and effect module; it changes life points, uses the graveyard. (original: Ta_Eff_058) */
+int Ta_Eff_058_Hourglass_of_Life(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c * eInfo = eInfo_v;
     struct jp_69942 * Temp = Temp_v;
@@ -1810,8 +1810,8 @@ typedef struct {
 } Req_00268FA0;
 
 /* Effect script 059, step `ID`: its camera, fades and effect module; it changes attack or defence, changes life
-   points. */
-s32 Ta_Eff_059(void *eInfo, void *Temp, s32 ID) {
+   points. (original: Ta_Eff_059) */
+s32 Ta_Eff_059_Lose_own_Lp(void *eInfo, void *Temp, s32 ID) {
     Src_00268FA0 *src = (Src_00268FA0 *)eInfo;
     Work_00268FA0 *w = (Work_00268FA0 *)Temp;
     Req_00268FA0 req;
@@ -2950,8 +2950,8 @@ typedef struct State_0026B480 {
 } State_0026B480;
 
 /* Effect script 054, step `ID`: its camera, fades and effect module; it destroys units, changes attack or defence,
-   turns cards face up. */
-s32 Ta_Eff_054(void *eInfo, void *Temp, s32 ID) {
+   turns cards face up. (original: Ta_Eff_054) */
+s32 Ta_Eff_054_MirrorWall(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitCardNo();
     extern s32 SzDuel_GetUnitOpenRate();
     extern s32 Ta_IsFinishDestEfc();
@@ -3269,8 +3269,8 @@ typedef struct {
     s32 field_C;
 } Temp_0026BE20;
 
-/* Effect script 101, step `ID`: its camera, fades and effect module; it turns cards face up. */
-s32 Ta_Eff_101(void *eInfo, void *Temp, s32 ID) {
+/* Effect script 101, step `ID`: its camera, fades and effect module; it turns cards face up. (original: Ta_Eff_101) */
+s32 Ta_Eff_101_ActivateSpell(void *eInfo, void *Temp, s32 ID) {
     extern s32 SzDuel_GetUnitOpenRate();
     Temp_0026BE20 tempStorage;
     Temp_0026BE20 *temp = &tempStorage;
@@ -5241,8 +5241,8 @@ s32 TaHand_GetCardSummonCost2(s32 nCardNo, s32 nSide) {
     return value;
 }
 
-/* Whether side `nSide` has the summon power for card `nCardNo`. */
-s32 TaHand_IsCardSummon2(s32 nSide, s32 nCardNo) {
+/* Whether side `nSide` has the summon power for card `nCardNo`. (original: TaHand_IsCardSummon2) */
+s32 TaHand_CanAffordSummonCost(s32 nSide, s32 nCardNo) {
     s32 cardSummonCost;
 
     cardSummonCost = TaHand_GetCardSummonCost2(nCardNo, nSide);
@@ -6301,8 +6301,8 @@ s32 Ta_IsSquareRange(s32 nX, s32 nZ, s32 mX, s32 mZ, s32 R) {
     return 0;
 }
 
-/* Whether square (nX, nZ) is within side `LDSide`'s leader's range. */
-s32 Ta_IsLDRange(s32 LDSide, s32 nX, s32 nZ) {
+/* Whether square (nX, nZ) is within side `LDSide`'s leader's range. (original: Ta_IsLDRange) */
+s32 Ta_IsInLeaderRange(s32 LDSide, s32 nX, s32 nZ) {
     s32 loc;
 
     loc = SzDuel_GetUnitLoc(LDSide, 0);
@@ -6331,7 +6331,7 @@ s32 Ta_GetLDParamOfs2(void *vInfo, s32 nX, s32 nZ) {
     if (Ta_IsLDRangeAvilityFromLoc((nZ << 8) | nX, player, kind, 10)) {
         score += SzDuel_GetUnitLevel(player, 0, 0) * 100 >= 500 ? 500 : SzDuel_GetUnitLevel(player, 0, 0) * 100;
     }
-    if (Ta_IsLDRange(other, nX, nZ)) {
+    if (Ta_IsInLeaderRange(other, nX, nZ)) {
         if (Ta_IsLDAbl(14, other) && Ta_IsLD_PDownObj(other, kind)) {
             score -= SzDuel_GetUnitLevel(other, 0, 0) * 100 >= 500 ? 500 : SzDuel_GetUnitLevel(other, 0, 0) * 100;
         }

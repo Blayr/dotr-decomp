@@ -365,7 +365,7 @@ int Ta_FinishMove(int nSide, int nID, int nX, int nZ, void *eInfo_v, int PrNo)
         return ret;
     case 8:
         f8 = P8;
-        v = Ta_Manage_DestEfc(tSide, tID, nSide, nID, nX, nZ, eInfo, f8);
+        v = Ta_Manage_DestructionEfc(tSide, tID, nSide, nID, nX, nZ, eInfo, f8);
         if (((v >> 10) & 1) == 1) {
             FADE(tSide, tID)
             if (f8) {
@@ -400,7 +400,7 @@ int Ta_FinishMove(int nSide, int nID, int nX, int nZ, void *eInfo_v, int PrNo)
         return ret;
     case 9:
         f9 = P9;
-        v = Ta_Manage_DestEfc(nSide, nID, -1, -1, nX, nZ, eInfo, f9);
+        v = Ta_Manage_DestructionEfc(nSide, nID, -1, -1, nX, nZ, eInfo, f9);
         if (((v >> 8) & 1) != 1) {
             FADE(nSide, nID)
             return HI(v) | ((P11 << 11) | ((P10 << 10) | ((f9 << 9) | 0x10f)));
@@ -408,7 +408,7 @@ int Ta_FinishMove(int nSide, int nID, int nX, int nZ, void *eInfo_v, int PrNo)
         return HI(v) | ((P11 << 11) | ((P10 << 10) | ((f9 << 9) | 15)));
     case 10:
         f9 = P9;
-        v = Ta_Manage_DestEfc(nSide, nID, tSide, tID, nX, nZ, eInfo, f9);
+        v = Ta_Manage_DestructionEfc(nSide, nID, tSide, tID, nX, nZ, eInfo, f9);
         if (((v >> 8) & 1) == 1) {
             return HI(v) | ((P11 << 11) | ((P10 << 10) | ((f9 << 9) | 16)));
         }

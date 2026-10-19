@@ -702,9 +702,9 @@ void SzDuel_ActBuildDeck(void) {
             if (d->sel != 0) {
                 pickCard = d->trunkList[d->trunkTop + d->trunkRow];
                 ids = d->pick->ids;
-                ids[0] = Ta_GetRecycle((s32) player, (s32) pickCard);
-                ids[1] = Ta_GetRecycle((s32) player, (s32) pickCard);
-                ids[2] = Ta_GetRecycle((s32) player, (s32) pickCard);
+                ids[0] = Ta_GetReincarnation((s32) player, (s32) pickCard);
+                ids[1] = Ta_GetReincarnation((s32) player, (s32) pickCard);
+                ids[2] = Ta_GetReincarnation((s32) player, (s32) pickCard);
                 SzData_DelBag((s32) player, (s32) pickCard);
                 d->step = 0;
                 d->sel = 0;

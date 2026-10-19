@@ -1559,7 +1559,7 @@ s32 lSzDuel_DrawWindow_CardInfo_Pipe(s32 packet, void *cardData, s32 column, s32
                     cur = lSzDuel_DrawWindow_Icon_Pipe(cur, duelIcons + (effect + 0xED) * 10, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);
                 }
             }
-            if (hidden == 0 && (GetMoveRev((s32)card, column, row) & 0xF) > 1U) {
+            if (hidden == 0 && (GetMoveRange((s32)card, column, row) & 0xF) > 1U) {
                 iconX = labelX + 0x18B;
                 iconY = labelY + 2;
                 cur = lSzDuel_DrawWindow_Icon_Pipe(cur, D_002909E0, iconX, iconY, 0, 1, 0, 0, 1, 0, -1);

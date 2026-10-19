@@ -90,7 +90,7 @@ s32 Ta_IsLDRangeAvility(s32 nSide, s32 nID, s32 sKey) {
     loc = SzDuel_GetUnitLoc(nSide, nID);
     side = Ta_GetCurrentSide(nSide, nID);
     temp_s1 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
-    if (Ta_IsLDRange(side, loc & 0xFF, loc >> 8) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
+    if (Ta_IsInLeaderRange(side, loc & 0xFF, loc >> 8) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
         temp_s1 == (SzDuel_GetUnitConstKind(side, 0) & 0x1F)) {
         return 1;
     }
@@ -100,7 +100,7 @@ s32 Ta_IsLDRangeAvility(s32 nSide, s32 nID, s32 sKey) {
 /* Whether square `LOC` is in a leader's range with ability `sKey` for race `bRace` (`Self` picks the side). */
 s32 Ta_IsLDRangeAvilityFromLoc(s32 LOC, s32 Self, s32 bRace, s32 sKey) {
 
-    if (Ta_IsLDRange(Self, LOC & 0xFF, LOC >> 8) != 0 && Ta_IsLDAbl(sKey, Self) != 0 &&
+    if (Ta_IsInLeaderRange(Self, LOC & 0xFF, LOC >> 8) != 0 && Ta_IsLDAbl(sKey, Self) != 0 &&
         bRace == (SzDuel_GetUnitConstKind(Self, 0) & 0x1F)) {
         return 1;
     }
@@ -114,7 +114,7 @@ s32 Ta_IsLDRangeAvilityWithLocation(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 sKey
 
     side = Ta_GetCurrentSide(nSide, nID);
     temp_s0 = SzDuel_GetUnitKind(nSide, nID) & 0x1F;
-    if (Ta_IsLDRange(side, nX, nZ) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
+    if (Ta_IsInLeaderRange(side, nX, nZ) != 0 && Ta_IsLDAbl(sKey, side) != 0 &&
         temp_s0 == (SzDuel_GetUnitConstKind(side, 0) & 0x1F)) {
         return 1;
     }

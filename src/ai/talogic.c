@@ -756,7 +756,7 @@ u8 *TaLogic_GetNearUnitPickUpTree(u8 *node, s32 parent, s32 card, s32 x, s32 y,
     extern s32 TaLogic_IsUnitWin4();
     extern s32 TaLogic_RootTreeAloc();
 
-    reach = GetMoveRev(card, x, y);
+    reach = GetMoveRange(card, x, y);
     if (card == 0) {
         return NULL;
     }
@@ -905,9 +905,9 @@ s32 TaLogic_GetTrapNearCard(s32 tSide, s32 tID, s32 nX, s32 nZ, void *nUnitLst,
                 TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 2), fOpen) == 1 &&
                 TaLogic_IsStatusMatch(SzDuel_GetUnitStatus(p->id >> 8, p->id & 0xFF, 5), fDef) == 1 &&
                 TaLogic_IsUnitCategory(p->id >> 8, p->id & 0xFF, sKey) == 1 &&
-                ((TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1 &&
+                ((TaLogic_CanSeeUnit(p->id >> 8, p->id & 0xFF, mode) == 1 &&
                   TaTrapA_IsTrapAct(tSide, tID, p->id >> 8, p->id & 0xFF, (pos & 0xFF), (pos >> 8)) == 1) ||
-                 (TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1 && fTrap == 1))) {
+                 (TaLogic_CanSeeUnit(p->id >> 8, p->id & 0xFF, mode) == 1 && fTrap == 1))) {
                 cost = p->cost;
                 if (cost <= range && cost > 0) {
                     if (cost < bestDistance) {
@@ -926,12 +926,12 @@ s32 TaLogic_GetTrapNearCard(s32 tSide, s32 tID, s32 nX, s32 nZ, void *nUnitLst,
                         bestPos = (u16)pos;
                         range = (u8)cost;
                     } else if (cost == bestDistance) {
-                        if (TaLogic_IsJudgeUnitDanger(p->id >> 8, p->id & 0xFF, mode) == 1) {
+                        if (TaLogic_CanSeeUnit(p->id >> 8, p->id & 0xFF, mode) == 1) {
                             newScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(tSide, tID), p->id, (pos & 0xFF), (pos >> 8));
                         } else {
                             newScore = fallback;
                         }
-                        if (TaLogic_IsJudgeUnitDanger(best >> 8, best & 0xFF, mode) == 1) {
+                        if (TaLogic_CanSeeUnit(best >> 8, best & 0xFF, mode) == 1) {
                             oldScore = TaLogic_IsUnitWin2(SzDuel_GetUnit(tSide, tID), best, bestPos & 0xFF, bestPos >> 8);
                         } else {
                             oldScore = fallback;
@@ -982,8 +982,8 @@ s32 TaLogic_IsStatusMatch(s32 Status, s32 fOpen) {
     return 0;
 }
 
-/* Whether the computer opponent can judge unit (nSide, nID) (face up, or `fView` lets it look). */
-s32 TaLogic_IsJudgeUnitDanger(s32 nSide, s32 nID, s32 fView) {
+/* Whether the computer opponent can judge unit (nSide, nID) (face up, or `fView` lets it look). (original: TaLogic_IsJudgeUnitDanger) */
+s32 TaLogic_CanSeeUnit(s32 nSide, s32 nID, s32 fView) {
     if (fView != 0) {
         return 1;
     }
@@ -1023,7 +1023,7 @@ s32 TaLogic_IsUnitWin2(s32 pVarInfo, s32 Unit2, s32 nX, s32 nZ) {
     if (obj == NULL) {
         return 0;
     }
-    if (TaUtil_IsVarInfoLeader(obj) == 1) {
+    if (TaUtil_IsUnitLeader(obj) == 1) {
         mine = 0;
     } else if ((obj->unk3E >> 5) != 0) {
         mine = 0;
@@ -1033,7 +1033,7 @@ s32 TaLogic_IsUnitWin2(s32 pVarInfo, s32 Unit2, s32 nX, s32 nZ) {
         mine = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
     }
     mine += TaLogic_GetActOfs(obj, (void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF));
-    if (TaUtil_IsVarInfoLeader((void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF)) == 1) {
+    if (TaUtil_IsUnitLeader((void *)SzDuel_GetUnit(Unit2 >> 8, Unit2 & 0xFF)) == 1) {
         theirs = 0;
     } else if ((SzDuel_GetUnitKind(Unit2 >> 8, Unit2 & 0xFF) >> 5) != 0) {
         theirs = 0;
@@ -1055,7 +1055,7 @@ s32 TaLogic_IsUnitWin3(s32 pVarInfo, s32 bWarnLvl, s32 nX, s32 nZ) {
     if (obj == NULL) {
         return 0;
     }
-    if (TaUtil_IsVarInfoLeader(obj) == 1) {
+    if (TaUtil_IsUnitLeader(obj) == 1) {
         mine = 0;
     } else if (obj->unk40 == nX && obj->unk41 == nZ && obj->flag) {
         mine = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
@@ -1074,7 +1074,7 @@ void TaLogic_IsUnitWin4(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ
         TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
     }
-    if (TaLogic_IsJudgeUnitDanger(nEnemyID >> 8, nEnemyID & 0xFF, fView & 0xFF) == 0) {
+    if (TaLogic_CanSeeUnit(nEnemyID >> 8, nEnemyID & 0xFF, fView & 0xFF) == 0) {
         TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
     }
@@ -1100,11 +1100,11 @@ s32 TaLogic_IsUnitWin5(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ,
         return TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
     }
     item = nEnemyID & 0xFF;
-    if (TaLogic_IsJudgeUnitDanger(card, item, fView & 0xFF) == 0) {
+    if (TaLogic_CanSeeUnit(card, item, fView & 0xFF) == 0) {
         damage = TaUtil_GetUnitAP2(pVarInfo, nX, nZ);
         defense = TaUtil_GetUnitDP2(pVarInfo, nX, nZ);
     } else {
-        if (TaUtil_IsVarInfoLeader((void *)pVarInfo) == 1) {
+        if (TaUtil_IsUnitLeader((void *)pVarInfo) == 1) {
             defense = 0;
             damage = 0;
         } else if ((*(u8 *)((u8 *)pVarInfo + 0x3E) >> 5) != 0) {
@@ -1117,7 +1117,7 @@ s32 TaLogic_IsUnitWin5(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ,
             defense += TaLogic_GetActOfs((void *)pVarInfo, (void *)SzDuel_GetUnit(card, item));
         }
 
-        if (TaUtil_IsVarInfoLeader((void *)SzDuel_GetUnit(card, item)) == 1) {
+        if (TaUtil_IsUnitLeader((void *)SzDuel_GetUnit(card, item)) == 1) {
             bWarnLvl = 0;
         } else if ((SzDuel_GetUnitKind(card, item) >> 5) != 0) {
             bWarnLvl = 0;
@@ -1277,7 +1277,7 @@ void * TaLogic_GetFusionTree(int nSide, struct TreeTag *p_fTree, unsigned char n
     TaHand_GetNextHand(nSide, arNextHand);
     if (pCombo != 0) {
         nCardNo = arNextHand[nOrder];
-        if (TaHand_IsCardSummon2(nSide, nCardNo) == 0) {
+        if (TaHand_CanAffordSummonCost(nSide, nCardNo) == 0) {
             return 0;
         }
         Res = (unsigned short)TaLogic_GetHandFusion_b(pRoot, nCardNo);
@@ -1549,7 +1549,7 @@ s32 TaLogic_GetRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX, s32 g
     if (SzGame_GetHSyncCount() > 0x2EE0U) {
         return -1;
     }
-    if (GetMoveRev(pVarInfo, nX, nZ) == 0) {
+    if (GetMoveRange(pVarInfo, nX, nZ) == 0) {
         return 0;
     }
     if ((((gX < nX) ? nX : gX) - ((nX < gX) ? nX : gX)) + (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) > (s32)bAbort) {
@@ -1593,7 +1593,7 @@ u8 *TaLogic_GetRootTree2(u8 *node, s32 parent, s32 card, s32 x, s32 y,
     s32 ix;
     extern s32 TaLogic_IsPassRoot2();
 
-    range = GetMoveRev(card, x, y);
+    range = GetMoveRange(card, x, y);
     if (card == 0) {
         return NULL;
     }
@@ -1685,7 +1685,7 @@ s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitI
     s32 flags;
     s32 delta;
 
-    flags = GetMoveRev(pVarInfo, nX, nZ);
+    flags = GetMoveRange(pVarInfo, nX, nZ);
     if (pVarInfo == 0) {
         return 0;
     }
@@ -1755,7 +1755,7 @@ s32 TaLogic_IsRunPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUn
     s32 middle;
     u16 current;
 
-    flags = GetMoveRev(pVarInfo, nX, nZ);
+    flags = GetMoveRange(pVarInfo, nX, nZ);
     if (pVarInfo == 0) {
         return 0;
     }
@@ -1825,7 +1825,7 @@ void TaLogic_GetInvadeRoot(s32 nSide, s32 nID, s32 pMovePiece, s32 nX, s32 nZ,
 
 /* The attack path for a unit (record `pVarInfo`) from (nX, nZ) to (gX, gZ), into `pMovePiece`. */
 s32 TaLogic_GetInvadeRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitID, s32 fView, u8 bAbort, u16 bWarnLvl) {
-    extern s32 GetMoveRev(s32, s32, s32);
+    extern s32 GetMoveRange(s32, s32, s32);
     extern s32 TaLogic_GetInvadeRootTree2(s32, s32, s32, s32, s32, s32, s32, u8, u8 *, s32 *, s32, u16, s32, s16 *, s16 *, void *);
     extern void TaLogic_InitIgnoreLst();
     u8 scratch[0x6A];
@@ -1848,7 +1848,7 @@ s32 TaLogic_GetInvadeRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX,
     if (pVarInfo == 0) {
         return -1;
     }
-    if (GetMoveRev(pVarInfo, nX, nZ) == 0) {
+    if (GetMoveRange(pVarInfo, nX, nZ) == 0) {
         return 0;
     }
     if ((((gX < nX) ? nX : gX) - ((nX < gX) ? nX : gX)) + (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) > (s32)bAbort) {
@@ -1875,7 +1875,7 @@ s32 TaLogic_GetInvadeRoot2(s32 pVarInfo, s32 pMovePiece, s32 nX, s32 nZ, s32 gX,
 
 /* Grows the attack-path tree from node `pPrev`. */
 u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, u8 bDist, u8 *arg_sp0, s32 *arg_sp8, s32 arg_sp10, u16 arg_sp18, u8 arg_sp20, u16 *arg_sp28, u16 *arg_sp30, s32 arg_sp38) {
-    extern s32 GetMoveRev();
+    extern s32 GetMoveRange();
     s32 spE0;
     s32 spFC;
     u8 sp100;
@@ -1898,7 +1898,7 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
     sp16C = gX;
     sp168 = gZ;
     sp167 = bDist;
-    moveRev = GetMoveRev(pVarInfo, nX, nZ);
+    moveRev = GetMoveRange(pVarInfo, nX, nZ);
     if (pVarInfo == NULL) {
         return NULL;
     }
@@ -1968,7 +1968,7 @@ s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
     s32 dy;
     extern s32 TaLogic_IsUnitWin3();
 
-    flags = GetMoveRev((s32)pVarInfo, nX, nZ);
+    flags = GetMoveRange((s32)pVarInfo, nX, nZ);
     if (pVarInfo == NULL) {
         return 0;
     }
@@ -1996,7 +1996,7 @@ s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
         y = cell >> 8;
         x = cell & 0xFF;
         if (Ta_IsUnitControl(y, x) != Ta_IsUnitControl2(pVarInfo)) {
-            if (TaLogic_IsJudgeUnitDanger(y, x, fView) != 0) {
+            if (TaLogic_CanSeeUnit(y, x, fView) != 0) {
                 result = TaLogic_IsUnitWin2((s32)pVarInfo, cell, gX, gZ) > 0;
             } else {
                 result = TaLogic_IsUnitWin3((s32)pVarInfo, bWarnLvl, gX, gZ) > 0;
@@ -2393,7 +2393,7 @@ typedef struct {
 /* Whether a unit can reach and attack its goal this turn. */
 s32 TaLogic_IsAtkNowToGoal(void *pUnit, u8 Is1st) {
     extern s32 TaLogic_IsPassRoot();
-    extern s32 GetMoveRev(s32, s32, s32);
+    extern s32 GetMoveRange(s32, s32, s32);
     Entry_0027B520 *entry = pUnit;
     u16 target;
     s32 pos;
@@ -2402,7 +2402,7 @@ s32 TaLogic_IsAtkNowToGoal(void *pUnit, u8 Is1st) {
     target = TARGET_0027B520(entry, Is1st);
     pos = SzDuel_GetUnitLoc(entry->id >> 8, entry->id & 0xFF);
     other = SzDuel_GetUnitLoc(TARGET_0027B520(entry, Is1st) >> 8, TARGET_0027B520(entry, Is1st) & 0xFF);
-    GetMoveRev(SzDuel_GetUnit(entry->id >> 8, entry->id & 0xFF), pos & 0xFF, pos >> 8);
+    GetMoveRange(SzDuel_GetUnit(entry->id >> 8, entry->id & 0xFF), pos & 0xFF, pos >> 8);
     return (TaLogic_IsPassRoot(entry->id >> 8, entry->id & 0xFF, pos & 0xFF, pos >> 8,
                           other & 0xFF, other >> 8, &target) == 1) ? 1 : 0;
 }
@@ -2524,7 +2524,7 @@ s32 TaLogic_IsUnitReadyMove(s32 wUnit) {
     if (SzDuel_GetUnitStatus(y, x, 0) != 0) {
         return 0;
     }
-    flags = GetMoveRev(SzDuel_GetUnit(y, x), (pos & 0xFF), (pos >> 8));
+    flags = GetMoveRange(SzDuel_GetUnit(y, x), (pos & 0xFF), (pos >> 8));
     i = GetCap(0, (pos & 0xFF) - 1);
     yMin = (pos >> 8) - 1;
     yMax = (pos >> 8) + 1;
@@ -2591,7 +2591,7 @@ s32 TaLogic_IsAttackedNow(s32 nSide, s32 nID, s32 fView) {
             unit = SzDuel_GetUnit(*current >> 8, *current & 0xFF);
             x = coords & 0xFF;
             y = coords >> 8;
-            range = GetMoveRev(unit, x, y);
+            range = GetMoveRange(unit, x, y);
             distance = ((x < targetX ? targetX : x) - (targetX < x ? targetX : x)) +
                        ((y < targetY ? targetY : y) - (targetY < y ? targetY : y));
             if ((u32)distance <= (u32)(range & 0xF)) {
@@ -2658,7 +2658,7 @@ s32 TaLogic_IsAttackedNow2(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 fView) {
             unit = SzDuel_GetUnit(*current >> 8, *current & 0xFF);
             x = coords & 0xFF;
             y = coords >> 8;
-            range = GetMoveRev(unit, x, y);
+            range = GetMoveRange(unit, x, y);
             distance = ((x < targetX ? targetX : x) - (targetX < x ? targetX : x)) +
                        ((y < targetY ? targetY : y) - (targetY < y ? targetY : y));
             if ((u32)distance <= (u32)(range & 0xF)) {
@@ -2710,7 +2710,7 @@ void TaLogic_GetUnitCtlLst(s32 nSide, u16 *wUnitLst, s32 sKind, u8 fView) {
             return;
         }
         if ((card = (void *)SzDuel_GetUnit(nSide, i)) != 0 && nSide == Ta_IsUnitControl2(card)) {
-            if (TaLogic_IsJudgeUnitDanger(nSide, i, fView) != 0 || TaLogic_IsUnitCategory(nSide, i, sKind) == 1) {
+            if (TaLogic_CanSeeUnit(nSide, i, fView) != 0 || TaLogic_IsUnitCategory(nSide, i, sKind) == 1) {
                 wUnitLst[count] = (u16)(nSide << 8) | i;
                 count++;
             }
@@ -2721,7 +2721,7 @@ void TaLogic_GetUnitCtlLst(s32 nSide, u16 *wUnitLst, s32 sKind, u8 fView) {
             return;
         }
         if ((card = (void *)SzDuel_GetUnit((nSide == 0) ? 1 : 0, i)) != 0 && nSide == Ta_IsUnitControl2(card)) {
-            if (TaLogic_IsJudgeUnitDanger((nSide == 0) ? 1 : 0, i, fView) != 0 || TaLogic_IsUnitCategory((nSide == 0) ? 1 : 0, i, sKind) == 1) {
+            if (TaLogic_CanSeeUnit((nSide == 0) ? 1 : 0, i, fView) != 0 || TaLogic_IsUnitCategory((nSide == 0) ? 1 : 0, i, sKind) == 1) {
                 wUnitLst[count] = i | (((nSide == 0) ? 1 : 0) << 8);
                 count++;
             }
@@ -2765,7 +2765,7 @@ void TaLogic_GetUnitCtlLst2(s32 nSide, u16 *wUnitLst, s32 sKind, s32 sCondView, 
             return;
         }
         if ((card = (void *)SzDuel_GetUnit(nSide, i)) != 0 && nSide == Ta_IsUnitControl2(card)) {
-            if (TaLogic_IsJudgeUnitDanger(nSide, i, fView) != 0) {
+            if (TaLogic_CanSeeUnit(nSide, i, fView) != 0) {
                 if (TaLogic_IsUnitCategory(nSide, i, sKind) == 1) {
                     wUnitLst[count] = (u16)(nSide << 8) | i;
                     count++;
@@ -2781,7 +2781,7 @@ void TaLogic_GetUnitCtlLst2(s32 nSide, u16 *wUnitLst, s32 sKind, s32 sCondView, 
             return;
         }
         if ((card = (void *)SzDuel_GetUnit((nSide == 0) ? 1 : 0, start)) != 0 && nSide == Ta_IsUnitControl2(card)) {
-            if (TaLogic_IsJudgeUnitDanger((nSide == 0) ? 1 : 0, start, fView) != 0) {
+            if (TaLogic_CanSeeUnit((nSide == 0) ? 1 : 0, start, fView) != 0) {
                 if (TaLogic_IsUnitCategory((nSide == 0) ? 1 : 0, start, sKind) == 1) {
                     wUnitLst[count] = start | (((nSide == 0) ? 1 : 0) << 8);
                     count++;

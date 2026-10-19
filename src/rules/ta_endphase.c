@@ -641,8 +641,8 @@ extern void func_00260A70_273e60(struct jp_69942_273e60 *Temp, unsigned char b);
 extern int func_001E1CB0_b(int a, int b);
 
 /* Effect script BTL_000, step `ID`: its camera, fades and effect module; it changes attack or defence, changes
-   life points. */
-int Ta_Eff_BTL_000(void *eInfo_v, void *Temp_v, int ID)
+   life points. (original: Ta_Eff_BTL_000) */
+int Ta_Eff_BTL_000_Atk_Leader(void *eInfo_v, void *Temp_v, int ID)
 {
     struct jp_6989c_273e60 * eInfo = eInfo_v;
     struct jp_69942_273e60 * Temp = Temp_v;

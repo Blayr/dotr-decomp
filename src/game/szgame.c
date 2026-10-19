@@ -288,8 +288,8 @@ extern char D_002BE7D5[];
 extern u8 D_00317473;
 extern u8 D_0031747D;
 
-/* Runs the debug menu: moves the cursor and page, changes the selected item's value, and starts what it names. */
-void SzGame_ActMenu(void) {
+/* Runs the debug menu: moves the cursor and page, changes the selected item's value, and starts what it names. (original: SzGame_ActMenu) */
+void SzGame_DEBUGMENU(void) {
     extern void func_0019B648();
     extern s32 SzGame_ActMemCardProc();
     Menu_001A7380 *menu;
@@ -1826,7 +1826,7 @@ void SzGame_ModeAct(void) {
         break;
     case -2:
     case -1:
-        SzGame_ActMenu();
+        SzGame_DEBUGMENU();
         break;
     case 0:
         SzDebug_Act();
@@ -2122,14 +2122,14 @@ void SzGame_ReqBGM(int n, int b)
 
 /* Ends game mode `mode`. */
 void SzGame_ModeTerm(s32 mode) {
-    extern void func_001C5D70(s32);
+    extern void SzDuel_InitCustomDuel(s32);
     s8 *data = (s8 *)&gameState;
 
     switch (mode) {
     case 1:
         SzDuel_Term();
         if (data[0x21F] == 9) {
-            func_001C5D70(-1);
+            SzDuel_InitCustomDuel(-1);
         }
         break;
     case 5:
@@ -2138,7 +2138,7 @@ void SzGame_ModeTerm(s32 mode) {
     case 6:
         SzDuel_TermBuildDeck();
         if (data[0x21F] == 9) {
-            func_001C5D70(-1);
+            SzDuel_InitCustomDuel(-1);
         }
         break;
     case 7:
@@ -2172,7 +2172,7 @@ void SzGame_ModeTerm(s32 mode) {
     case 0xF:
         ShSlot_Term();
         if (data[0x21F] == 9) {
-            func_001C5D70(-1);
+            SzDuel_InitCustomDuel(-1);
         }
         break;
     case 0x13:
