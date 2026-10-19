@@ -55,5 +55,6 @@ typedef int dk_int128 __attribute__((mode(TI)));
 #include "structs.h"
 #include "game.h"
 #include "functions.h"
+#include "inlines.h"
 
 #endif

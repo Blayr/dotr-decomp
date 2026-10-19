@@ -2,23 +2,13 @@
 
 #include "common.h"
 
-/* Match note for this file: many unit getters below are written `(void)` or with parameters they never read,
-   and call SzDuel_GetCardInfo() without arguments. Their callers pass (side, unit); the values go straight
-   through in a0/a1 to SzDuel_GetCardInfo. Kept that way because it is what makes the bytes match. */
+/* Most unit getters below look their unit up with lSzDuel_GetUnit (include/inlines.h), the body of
+   SzDuel_GetUnit that the compiler wrote inline into each of them. A few still call SzDuel_GetCardInfo()
+   without arguments: their callers' (side, unit) go straight through in a0/a1. */
 
 /* Unit `unit` of side `side` (0 = the leader, 1..10 the cards on the board), or 0 if there is none. */
 s32 SzDuel_GetUnit(s32 side, s32 unit) {
-    extern void *SzDuel_GetCardInfo();
-    u8 *result;
-
-    result = SzDuel_GetCardInfo(side, unit);
-    if (result == NULL) {
-        return 0;
-    }
-    if (result[0x45] >= 11) {
-        result = NULL;
-    }
-    return (s32)result;
+    return (s32)lSzDuel_GetUnit(side, unit);
 }
 
 /* Puts card `card` on board square (x, z) as a new unit of side `side` (`leader` for the deck leader). */
@@ -197,20 +187,6 @@ int SzDuel_AddUnit2(int side, int x, int y, void *src_v, int leader)
     return 0;
 }
 
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001DFAF0(s32 a0, s32 a1) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Replaces unit (side, unit) with card `card` on the same square. */
 s32 SzDuel_PutUnit(s32 side, s32 unit, s32 card) {
     u8 buffer[0x60];
@@ -218,7 +194,7 @@ s32 SzDuel_PutUnit(s32 side, s32 unit, s32 card) {
     s32 x;
     s32 y;
 
-    record = check_001DFAF0(side, unit);
+    record = lSzDuel_GetUnit(side, unit);
     if (record == NULL) {
         return 0;
     }
@@ -229,18 +205,6 @@ s32 SzDuel_PutUnit(s32 side, s32 unit, s32 card) {
     SzDuel_DelUnit(side, unit);
     SzDuel_InitCardInfo(buffer, card);
     SzDuel_AddUnit2(side, x, y, buffer, unit == 0 ? 1 : 0);
-}
-
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001DFBB0(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
 }
 
 /* Frees a card draw record. */
@@ -266,7 +230,7 @@ s32 SzDuel_DelUnit(s32 side, s32 unit) {
     Unit *obj;
     u8 *slot;
 
-    obj = check_001DFBB0(side, unit);
+    obj = lSzDuel_GetUnit(side, unit);
     if (obj == NULL) {
         return 0;
     }
@@ -430,18 +394,6 @@ s32 SzDuel_GetUnitCount(s32 side) {
     return monsters + SzDuel_GetUnitSpellCount(side);
 }
 
-/* Unit record (a0, a1) if it is a monster, or NULL. */
-static inline Unit *check_001E0150(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* How many monsters side `side` has on the board. */
 s32 SzDuel_GetUnitMonsterCount(s32 side) {
     s32 count;
@@ -449,23 +401,11 @@ s32 SzDuel_GetUnitMonsterCount(s32 side) {
 
     count = 0;
     for (i = 1; i < 6; i++) {
-        if (check_001E0150(side, i) != NULL) {
+        if (lSzDuel_GetUnit(side, i) != NULL) {
             count++;
         }
     }
     return count;
-}
-
-/* Unit record (a0, a1) if it is a magic or trap card, or NULL. */
-static inline Unit *check_001E01F0(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
 }
 
 /* How many magic and trap cards side `side` has on the board. */
@@ -475,31 +415,17 @@ s32 SzDuel_GetUnitSpellCount(s32 side) {
 
     count = 0;
     for (i = 6; i < 0xB; i++) {
-        if (check_001E01F0(side, i) != NULL) {
+        if (lSzDuel_GetUnit(side, i) != NULL) {
             count++;
         }
     }
     return count;
 }
 
-/* Unit record (side, unit), or NULL. */
-static inline void *lookup_001E0290(s32 side, s32 unit)
-{
-    void *object = SzDuel_GetCardInfo(side, unit);
-
-    if (object == 0) {
-        return 0;
-    }
-    if (*((u8 *)object + 0x45) >= 11) {
-        return 0;
-    }
-    return object;
-}
-
 /* Unit (side, unit)'s attack (`baseOnly`: without its power-ups). */
 s32 SzDuel_GetUnitAP(s32 side, s32 unit, s32 baseOnly)
 {
-    return SzDuel_GetUnitAP2(lookup_001E0290(side, unit), baseOnly);
+    return SzDuel_GetUnitAP2(lSzDuel_GetUnit(side, unit), baseOnly);
 }
 
 #define MAX_001E02F0(a, b) ((a) > (b) ? (a) : (b))
@@ -524,23 +450,9 @@ s32 SzDuel_GetUnitAP2(void *unitInfo, s32 baseOnly) {
     return MIN_001E02F0(MAX_001E02F0(value, 0), 9999);
 }
 
-/* Unit record (side, unit), or NULL. */
-static inline void *lookup_001E0370(s32 side, s32 unit) {
-    void *ptr;
-
-    ptr = SzDuel_GetCardInfo(side, unit);
-    if (ptr == NULL) {
-        return NULL;
-    }
-    if (*((u8 *)ptr + 0x45) >= 11) {
-        return NULL;
-    }
-    return ptr;
-}
-
 /* Unit (side, unit)'s defence (`baseOnly`: without its power-ups). */
 s32 SzDuel_GetUnitDP(s32 side, s32 unit, s32 baseOnly) {
-    return SzDuel_GetUnitDP2(lookup_001E0370(side, unit), baseOnly);
+    return SzDuel_GetUnitDP2(lSzDuel_GetUnit(side, unit), baseOnly);
 }
 
 /* Clamps at 0. */
@@ -573,24 +485,9 @@ s32 SzDuel_GetUnitDP2(void *unitInfo, s32 baseOnly) {
     return 9999;
 }
 
-/* The unit record SzDuel_CalcUnitAP works on, or NULL. */
-static inline void *get_001E0450(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *info;
-
-    info = SzDuel_GetCardInfo();
-    if (info == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)info + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return info;
-}
-
 /* Applies `operation` (DUEL_CALC_*) with `value` to unit (side, unit)'s attack power-up. */
 void SzDuel_CalcUnitAP(s32 side, s32 unit, s32 operation, s32 value) {
-    SzDuel_CalcUnitAP2(get_001E0450(), operation, value);
+    SzDuel_CalcUnitAP2(lSzDuel_GetUnit(side, unit), operation, value);
 }
 
 #define MAX_001E04C0(a, b) ((a) > (b) ? (a) : (b))
@@ -702,23 +599,9 @@ typedef struct Entry_001E0690 {
     u8 slot; /* the unit's slot: 0 leader, 1..10 cards; 0xB and up = not on the board */
 } Entry_001E0690;
 
-/* The unit record SzDuel_GetUnitConstKind reads, or NULL. */
-static inline void *lookup_001E0690(void) {
-    extern void *SzDuel_GetCardInfo();
-    Entry_001E0690 *entry = SzDuel_GetCardInfo();
-
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (entry->slot >= 0xB) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Unit (side, unit)'s card kind from its constant card data, or -1 (side, unit pass through to SzDuel_GetCardInfo). */
 s32 SzDuel_GetUnitConstKind(s32 side, s32 unit) {
-    Entry_001E0690 *entry = lookup_001E0690();
+    Entry_001E0690 *entry = lSzDuel_GetUnit(side, unit);
 
     if (entry == NULL) {
         return -1;
@@ -729,49 +612,22 @@ s32 SzDuel_GetUnitConstKind(s32 side, s32 unit) {
     return -1;
 }
 
-/* The unit record SzDuel_GetUnitKind reads, or NULL. */
-static inline Unit *get_entry_bytes_001E0700(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *entry;
-
-    entry = SzDuel_GetCardInfo();
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (entry->slot >= 11) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Unit (side, unit)'s current card kind, or -1. */
 s32 SzDuel_GetUnitKind(s32 side, s32 unit) {
     Unit *entry;
 
-    entry = get_entry_bytes_001E0700();
+    entry = lSzDuel_GetUnit(side, unit);
     if (entry != NULL) {
         return entry->kind;
     }
     return -1;
 }
 
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001E0760(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Sets unit (a0, a1)'s card kind. */
 s32 SzDuel_SetUnitKind(s32 a0, s32 a1, s8 kind) {
     Unit *p;
 
-    p = check_001E0760(a0, a1);
+    p = lSzDuel_GetUnit(a0, a1);
     if (p == NULL) {
         return 0;
     }
@@ -807,48 +663,22 @@ s32 SzDuel_GetUnitKindOfs(void) {
     return -1;
 }
 
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001E0830(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Unit (side, unit)'s current attribute, or -1. */
 s32 SzDuel_GetUnitAttr(s32 side, s32 unit) {
     Unit *p;
 
-    p = check_001E0830(side, unit);
+    p = lSzDuel_GetUnit(side, unit);
     if (p != NULL) {
         return p->attr;
     }
     return -1;
 }
 
-/* Unit record (side, unit), or NULL. */
-static inline void *lookup_001E0890(s32 side, s32 unit) {
-    void *entry;
-
-    entry = SzDuel_GetCardInfo(side, unit);
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)entry + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Sets unit (side, unit)'s attribute. */
 s32 SzDuel_SetUnitAttr(s32 side, s32 unit, s8 attr) {
     void *entry;
 
-    entry = lookup_001E0890(side, unit);
+    entry = lSzDuel_GetUnit(side, unit);
     if (entry == NULL) {
         return 0;
     }
@@ -966,26 +796,11 @@ void *SzDuel_GetUnitConstEffect2(void *unitInfo, s32 index) {
     return D_002CC5F0[data_id];
 }
 
-/* The unit record SzDuel_GetUnitEffect reads, or NULL. */
-static inline void *check_001E0B70(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *record;
-
-    record = SzDuel_GetCardInfo();
-    if (record == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)record + 0x45) >= 11) {
-        return NULL;
-    }
-    return record;
-}
-
 /* Unit (side, unit)'s effect `index`. */
 void *SzDuel_GetUnitEffect(s32 side, s32 unit, s32 index) {
     void *record;
 
-    record = check_001E0B70();
+    record = lSzDuel_GetUnit(side, unit);
     if (record == NULL) {
         return NULL;
     }
@@ -997,22 +812,9 @@ void *SzDuel_GetUnitEffect(s32 side, s32 unit, s32 index) {
 
 s32 SzDuel_GetUnitLeaderAbility2(void *, s32, s32);                /* extern */
 
-/* The unit record SzDuel_GetUnitLeaderAbility reads, or NULL. */
-static inline void *check_001E0C00(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *ptr = SzDuel_GetCardInfo();
-    if (ptr == NULL) {
-        return NULL;
-    }
-    if (*((u8 *)ptr + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return ptr;
-}
-
 /* Whether unit (side, unit), a leader, has leader ability `ability` (its strength through `extra`). */
 s32 SzDuel_GetUnitLeaderAbility(s32 side, s32 unit, s32 ability, s32 extra) {
-    return SzDuel_GetUnitLeaderAbility2(check_001E0C00(), ability, extra);
+    return SzDuel_GetUnitLeaderAbility2(lSzDuel_GetUnit(side, unit), ability, extra);
 }
 
 /* Whether a leader unit has leader ability `ability` (its strength through `extra`). */
@@ -1209,26 +1011,11 @@ s32 SzDuel_GetUnitCardNo(void) {
     return -1;
 }
 
-/* The unit record SzDuel_GetUnitLoc reads, or NULL. */
-static inline Unit *get_001E1090(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *data;
-
-    data = SzDuel_GetCardInfo();
-    if (data == NULL) {
-        return NULL;
-    }
-    if (data->slot >= 0xB) {
-        return NULL;
-    }
-    return data;
-}
-
 /* Unit (side, unit)'s board square as (z << 8) | x, or -1. */
 s32 SzDuel_GetUnitLoc(s32 side, s32 unit) {
     Unit *data;
 
-    data = get_001E1090();
+    data = lSzDuel_GetUnit(side, unit);
     if (data != NULL) {
         return (data->locRow << 8) | data->locCol;
     }
@@ -1251,18 +1038,6 @@ void SzDuel_CalcUnitPos(s32 x, s32 z, s32 height, void *outPos) {
     out[3] = 1.0f;
 }
 
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001E11B0(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* SzDuel_CalcUnitPos written out. */
 static inline void place_001E11B0(s32 x, s32 z, s32 height, void *outPos) {
     f32 *out = outPos;
@@ -1283,7 +1058,7 @@ static inline void place_001E11B0(s32 x, s32 z, s32 height, void *outPos) {
 s32 SzDuel_GetUnitPos(s32 side, s32 unit, f32 *pos) {
     Unit *p;
 
-    p = check_001E11B0(side, unit);
+    p = lSzDuel_GetUnit(side, unit);
     if (p == NULL) {
         return 0;
     }
@@ -1348,23 +1123,9 @@ typedef struct Flags_001E1420 {
     s8 : 4;
 } Flags_001E1420;
 
-/* The unit record SzDuel_SetUnitCurseFlag writes, or NULL. */
-static inline void *check_001E1420(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *ptr = SzDuel_GetCardInfo();
-
-    if (ptr == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)ptr + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return ptr;
-}
-
 /* Marks unit (side, unit) as cursed or not. */
 s32 SzDuel_SetUnitCurseFlag(s32 side, s32 unit, s32 on) {
-    void *ptr = check_001E1420();
+    void *ptr = lSzDuel_GetUnit(side, unit);
 
     if (ptr == NULL) {
         return 0;
@@ -1409,23 +1170,9 @@ s32 SzDuel_GetUnitCurseFlag(void) {
     return ((Entry_001E14B0 *)entry)->flags.active != 0 ? 1 : 0;
 }
 
-/* The unit record SzDuel_SetUnitCurseRest writes, or NULL. */
-static inline void *lookup_001E1520(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *entry = SzDuel_GetCardInfo();
-
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)entry + 0x45) >= 11) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Sets how many turns unit (side, unit)'s curse lasts. */
 s32 SzDuel_SetUnitCurseRest(s32 side, s32 unit, s8 turns) {
-    void *entry = lookup_001E1520();
+    void *entry = lSzDuel_GetUnit(side, unit);
 
     if (entry == NULL) {
         return 0;
@@ -1504,23 +1251,11 @@ s32 SzDuel_GetUnitSpellRest(void) {
     return -1;
 }
 
-/* Unit record (a0, a1), or NULL. */
-static inline Unit *check_001E16A0(s32 a0, s32 a1) {
-    Unit *p = SzDuel_GetCardInfo(a0, a1);
-    if (p == NULL) {
-        return NULL;
-    }
-    if (p->slot >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Sets unit (a0, a1)'s delay counter. */
 s32 SzDuel_SetUnitDelayCount(s32 a0, s32 a1, s8 count) {
     Unit *p;
 
-    p = check_001E16A0(a0, a1);
+    p = lSzDuel_GetUnit(a0, a1);
     if (p == NULL) {
         return 0;
     }
@@ -1629,22 +1364,9 @@ s32 SzDuel_SetUnitCtlModeC(s32 side, s32 unit, s8 mode) {
     return 1;
 }
 
-/* The unit record SzDuel_SetUnitCtlModeM writes, or NULL. */
-static inline void *check_001E18A0(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *p = SzDuel_GetCardInfo();
-    if (p == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)p + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Sets unit (side, unit)'s model control mode. */
 s32 SzDuel_SetUnitCtlModeM(s32 side, s32 unit, s8 mode) {
-    void *p = check_001E18A0();
+    void *p = lSzDuel_GetUnit(side, unit);
     if (p == NULL) {
         return 0;
     }
@@ -1665,26 +1387,11 @@ s32 SzDuel_SetUnitCtlGoal(s32 side, s32 unit, s8 goal) {
     return ok;
 }
 
-/* The unit record SzDuel_SetUnitCtlGoalC writes, or NULL. */
-static inline void *get_001E1970(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *p;
-
-    p = SzDuel_GetCardInfo();
-    if (p == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)p + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return p;
-}
-
 /* Sets unit (side, unit)'s card control goal. */
 s32 SzDuel_SetUnitCtlGoalC(s32 side, s32 unit, s8 goal) {
     void *p;
 
-    p = get_001E1970();
+    p = lSzDuel_GetUnit(side, unit);
     if (p == NULL) {
         return 0;
     }
@@ -1692,23 +1399,9 @@ s32 SzDuel_SetUnitCtlGoalC(s32 side, s32 unit, s8 goal) {
     return 1;
 }
 
-/* The unit record SzDuel_SetUnitCtlGoalM writes, or NULL. */
-static inline Unit *lookup_001E19D0(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *entry = SzDuel_GetCardInfo();
-
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (entry->slot >= 11) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Sets unit (side, unit)'s model control goal. */
 s32 SzDuel_SetUnitCtlGoalM(s32 side, s32 unit, s8 goal) {
-    Unit *entry = lookup_001E19D0();
+    Unit *entry = lSzDuel_GetUnit(side, unit);
 
     if (entry == NULL) {
         return 0;
@@ -1779,26 +1472,11 @@ s32 SzDuel_SetUnitCtlRate(s32 side, s32 unit, s32 direction, s32 speed) {
     return ok;
 }
 
-/* The unit record SzDuel_SetUnitCtlRateC writes, or NULL. */
-static inline void *check_001E1B70(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *object;
-
-    object = (Unit *) SzDuel_GetCardInfo();
-    if (object == NULL) {
-        return NULL;
-    }
-    if (object->slot >= 0xB) {
-        return NULL;
-    }
-    return object;
-}
-
 /* Sets unit (side, unit)'s card control direction and speed (speed < 0 keeps it). */
 s32 SzDuel_SetUnitCtlRateC(s32 side, s32 unit, s32 direction, s32 speed) {
     Unit *object;
 
-    object = (Unit *) check_001E1B70();
+    object = (Unit *) lSzDuel_GetUnit(side, unit);
     if (object == NULL) {
         return 0;
     }
@@ -1961,22 +1639,9 @@ typedef struct Flags_001E1E70 {
     s8 unused57 : 2;
 } Flags_001E1E70;
 
-/* Unit record (side, unit)'s status flags, or NULL. */
-static inline void *get_001E1E70(s32 side, s32 unit) {
-    Unit *card = SzDuel_GetCardInfo(side, unit);
-
-    if (card == NULL) {
-        return NULL;
-    }
-    if (card->slot >= 0xB) {
-        return NULL;
-    }
-    return card;
-}
-
 /* Sets status flag `flag` (0..5) of unit (side, unit) to `on`; flags 2-5 also turn the card face up or down. */
 s32 SzDuel_SetUnitStatus(s32 side, s32 unit, s32 flag, s32 on) {
-    Flags_001E1E70 *card = get_001E1E70(side, unit);
+    Flags_001E1E70 *card = lSzDuel_GetUnit(side, unit);
 
     if (card == NULL) {
         return 0;
@@ -2023,22 +1688,9 @@ typedef struct Flags_001E2100 {
     s8 unused : 2;
 } Flags_001E2100;
 
-/* Unit record (side, unit)'s status flags, or NULL. */
-static inline void *get_001E2100(s32 side, s32 unit) {
-    Unit *card = SzDuel_GetCardInfo(side, unit);
-
-    if (card == NULL) {
-        return NULL;
-    }
-    if (card->slot >= 0xB) {
-        return NULL;
-    }
-    return card;
-}
-
 /* Status flag `flag` (0..5) of unit (side, unit). */
 s32 SzDuel_GetUnitStatus(s32 side, s32 unit, s32 flag) {
-    Flags_001E2100 *card = get_001E2100(side, unit);
+    Flags_001E2100 *card = lSzDuel_GetUnit(side, unit);
 
     if (card == NULL) {
         return 0;

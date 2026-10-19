@@ -10,23 +10,9 @@ typedef struct Flags_001E3850 {
     s8 reserved58 : 7;
 } Flags_001E3850;
 
-/* The unit record SzDuel_SetBusyFlag writes, or NULL. */
-static inline void *get_001E3850(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *card = SzDuel_GetCardInfo();
-
-    if (card == NULL) {
-        return NULL;
-    }
-    if (card->slot >= 0xB) {
-        return NULL;
-    }
-    return card;
-}
-
 /* Marks unit (side, unit) busy (its card and model are moving) or not. */
 s32 SzDuel_SetBusyFlag(s32 side, s32 unit, s32 on) {
-    u8 *card = get_001E3850();
+    u8 *card = lSzDuel_GetUnit(side, unit);
 
     if (card == NULL) {
         return 0;
@@ -135,26 +121,12 @@ typedef struct Vec4_001E3AB0 {
     f32 x, y, z, w;
 } Vec4_001E3AB0;
 
-/* The unit record SzDuel_SetCardPos writes, or NULL. */
-static inline void *get_001E3AB0(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *entry = SzDuel_GetCardInfo();
-
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)entry + 0x45) >= 11) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* Sets unit (side, unit)'s card position offset. */
 s32 SzDuel_SetCardPos(s32 side, s32 unit, s32 pos) {
     void *entry;
     Vec4_001E3AB0 *data;
 
-    entry = get_001E3AB0();
+    entry = lSzDuel_GetUnit(side, unit);
     if (entry == NULL) {
         return 0;
     }
@@ -219,27 +191,12 @@ typedef struct Vec4_001E3BF0 {
     f32 w;
 } Vec4_001E3BF0;
 
-/* The unit record SzDuel_SetCardRot writes, or NULL. */
-static inline void *lookup_001E3BF0(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *object;
-
-    object = SzDuel_GetCardInfo();
-    if (object == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)object + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return object;
-}
-
 /* Sets unit (side, unit)'s card rotation. */
 s32 SzDuel_SetCardRot(s32 side, s32 unit, s32 rot) {
     void *temp_v0;
     void *var_v0;
 
-    var_v0 = lookup_001E3BF0();
+    var_v0 = lSzDuel_GetUnit(side, unit);
     if (var_v0 == NULL) {
         return 0;
     }
@@ -349,23 +306,9 @@ typedef struct Vec4_001E3DD0 {
     f32 x, y, z, w;
 } Vec4_001E3DD0;
 
-/* The unit record SzDuel_GetCardScale reads, or NULL. */
-static inline void *get_001E3DD0(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *object = SzDuel_GetCardInfo();
-
-    if (object == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)object + 0x45) >= 11) {
-        return NULL;
-    }
-    return object;
-}
-
 /* Unit (side, unit)'s card scale into `out`. */
 s32 SzDuel_GetCardScale(s32 side, s32 unit, void *out) {
-    void *object = get_001E3DD0();
+    void *object = lSzDuel_GetUnit(side, unit);
     void *data;
 
     if (object == NULL) {
@@ -388,26 +331,12 @@ typedef struct {
     u8 a;
 } Color_001E3E70;
 
-/* The unit record SzDuel_SetCardRgba writes, or NULL. */
-static inline void *lookup_001E3E70(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *object = SzDuel_GetCardInfo();
-
-    if (object == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)object + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return object;
-}
-
 /* Sets unit (side, unit)'s card colour. */
 s32 SzDuel_SetCardRgba(s32 side, s32 unit, s32 rgba) {
     void *object;
     void *data;
 
-    object = lookup_001E3E70();
+    object = lSzDuel_GetUnit(side, unit);
     if (object == NULL) {
         return 0;
     }
@@ -428,26 +357,12 @@ typedef struct Color_001E3F10 {
     u8 a;
 } Color_001E3F10;
 
-/* The unit record SzDuel_GetCardRgba reads, or NULL. */
-static inline void *get_001E3F10(void) {
-    extern void *SzDuel_GetCardInfo();
-    void *object = SzDuel_GetCardInfo();
-
-    if (object == NULL) {
-        return NULL;
-    }
-    if (*(u8 *)((u8 *)object + 0x45) >= 0xB) {
-        return NULL;
-    }
-    return object;
-}
-
 /* Unit (side, unit)'s card colour into `out`. */
 s32 SzDuel_GetCardRgba(s32 side, s32 unit, void *out) {
     void *object;
     void *data;
 
-    object = get_001E3F10();
+    object = lSzDuel_GetUnit(side, unit);
     if (object == NULL) {
         return 0;
     }
