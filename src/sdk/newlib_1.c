@@ -158,7 +158,7 @@ s32 func_00195250(i2b_Bigint *b, i2b_Bigint *S) {
 }
 
 /* _dtoa_r: newlib 1.9.0's stdlib/dtoa.c (David M. Gay, AT&T notice: see THIRD_PARTY_NOTICES.md) as cpp leaves it for this
-   little-endian target, with main_034's mprec helpers, quorem (func_00195250 above), and the game's own
+   little-endian target, with newlib_2.c's mprec helpers, quorem (func_00195250 above), and the game's own
    strings and tens/bigtens tables. */
 typedef struct dtoa_Bigint {
     struct dtoa_Bigint *_next;

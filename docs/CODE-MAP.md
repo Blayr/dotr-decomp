@@ -5,31 +5,34 @@ executable byte for byte; the code modules (`DATA/*MODULE.MRG`) are a separate p
 
 ## Where things are
 
-| Files | System | Prefixes |
+One folder per area, one file per system. Where the Japanese release's symbol table shows where one of Konami's
+source files ended, a file ends there too; the README's *How the files are split* says how the cuts were found and
+which files are parts of one bigger original file.
+
+| Files (`src/`) | System | Prefixes |
 |---|---|---|
-| `src/main_000.c` | start-up, main loop, frame drawing; small geometry helpers; effect helpers | `main`, `Main_*`, `G*`, `ShFx_*` |
-| `src/main_001.c`, `main_002.c` | the effect scripts' object helpers (fades, colours, vectors, quads) | `Lk*`, `OBJ_*`, `MODEL_*`, `CARD_*`, `PAINT_*` |
-| `src/main_003.c` | the sound driver's EE side | `SD_*` |
-| `src/main_004.c`-`main_016.c` | how the computer opponent chooses its moves: each computer duelist has its own copy of the same routines (its controller is an entry of `duelistControllers`) | `TaLogic*` |
-| `src/main_017.c`, `main_080.c` (part) | the tutorial | `TaTuto_*` |
-| `src/main_018.c`-`main_036.c` (with `main_033b`..`main_035e`) | Sony's libraries and the C library (newlib, libgcc) | `sce*`, kernel calls, libc names |
-| `src/main_037.c` | game modes (the state machine above everything), title screen, debug menu, memory-card jobs | `SzGame_*` |
-| `src/main_038.c`-`main_046.c` | the duel screen and the duel-side menus: windows, hand, cards on the board, units, the board itself, deck building, trade, custom duel, map editor, pop-ups | `SzDuel_*` |
-| `src/main_042.c` | `SzDuel_Act`, the duel's state machine (one frame of a duel) | |
-| `src/main_047.c`-`main_049.c` | 3D battles, events, the model system (84 model slots) | `SzBattle_*`, `SzEvent_*`, `SzModel_*` |
-| `src/main_050.c`-`main_052.c` | effects (24 slots) and their scene settings | `SzEffect_*` |
-| `src/main_052.c`, `main_053.c` | the camera | `SzView_*` |
-| `src/main_053.c` | fades, message text, file reads | `SzFade_*`, `SzMsg_*`, `SzFile_*` |
-| `src/main_054.c`, `main_055.c` | files, textures, pads, debug tools, screen projection | `SzFile_*`, `RhFile_*`, `SzText_*`, `SzPad_*`, `SzDebug_*`, `Ex3d_*` |
-| `src/main_056.c`-`main_059.c` | the renderer: draw lists, VU1, frame buffers, matrices, views, model drawing and motions | `Ex*`, `RhVu1Mac_*`, `RhBase_*`, `RhMem_*`, `RhMath_*`, `RhGeom*`, `RhView_*`, `RhModel*`, `RhZSort_*` |
-| `src/main_059.c`, `main_060.c` | the save profiles: trunk, decks, ranks, options, treasures | `SzData_*` |
-| `src/main_060.c` | sound | `SzSound_*` |
-| `src/main_061.c`-`main_068.c`, several `big_func_002*` | the campaign map and its events | `Taku_*`, `TkCamp_*` |
-| `src/main_068.c` | memory card save/load, colours, the movie player's buffers | `TkMc_*`, `TakuSave_*`, `TakuLoad_*`, `SzColor_*` |
-| `src/main_069.c`, `main_070.c` | the movie player (Sony's ezmpeg sample), duelist faces | `audioDec*`, `viBuf*`, `videoDec*`, `ShFace_*` |
-| `src/main_070.c`-`main_079.c` | card rules and the AI's tools: battles, fusions, equips, traps, effects | `Ta_*`, `TaEnc_*`, `TaUtil_*`, `TaEffect_*`, `TaHand_*`, `TaView_*` |
-| `src/main_080.c` | the slot machine | `ShSlot_*` |
-| `src/big_func_*.c` | very large functions kept in a file of their own (one function each, named by address) | |
+| `core/crt0.c`, `core/main.c` | Sony's start-up code; `main()` and the main loop (start every system, run and draw each frame) | `main`, `Main_*` |
+| `core/mw_cpp_rts.c` | Metrowerks' C++ run-time start-up | |
+| `effect_lib/g.c`, `shfx.c`, `lk.c`, `objlib.c` | the effect helpers (one original file in four parts): small geometry, clipping, timers, texture UVs, splines, vibration, counters, and the object helpers the effect scripts call | `G*`, `ShFx_*`, `Lk*`, `OBJ_*`, `MODEL_*`, `CARD_*`, `PAINT_*` |
+| `sound/sd*.c` | the sound driver's EE side: start-up, BGM and sound effects, PCM streaming, request queues, file reads, calls to the IOP | `SD_*`, `SDFS_*`, `SDRPC_*` |
+| `sound/szsound.c` | the game's sound calls | `SzSound_*` |
+| `ai/<duelist>.c` | how the computer opponent chooses its moves: each computer duelist has its own file with its own copy of the same routines (its controller is an entry of `duelistControllers`); `ai/default.c` serves every duelist without its own | `TaLogic*` |
+| `ai/talogic.c` | the AI logic every duelist shares | `TaLogic_*` |
+| `tutorial/` | the tutorial: the scripted opponent of lessons 1 to 5, the tutorial driver | `TaTuto_*` |
+| `game/szgame.c` | game modes (the state machine above everything), title screen, debug menu, memory-card jobs | `SzGame_*` |
+| `duel/szduel_*.c` | the duel screen and the duel-side menus (one original file in 12 parts): start-up and stage, windows and hand cards, deck building, trade, custom duel, the map editor, cards and card sessions, the board squares, players and life points, units, terrain, pop-ups | `SzDuel_*` |
+| `duel/szduel_act.c` | `SzDuel_Act`, the duel's state machine (one frame of a duel) | |
+| `battle/` | 3D battles, events, the model system (84 model slots), effects (24 slots) and their scene settings | `SzBattle_*`, `SzEvent_*`, `SzModel_*`, `SzEffect_*` |
+| `game/szview.c`, `szview_look.c` | the camera | `SzView_*` |
+| `game/szfade.c`, `szmsg.c` | screen fades; message boxes and their font | `SzFade_*`, `SzMsg_*` |
+| `game/shanime.c`, `shface.c`, `shslot.c` | 2D animation data, duelist faces, the slot-machine reels | `ShAnime_*`, `ShFace_*`, `ShSlot_*` |
+| `system/` | file reads, text and texture files, the pad, debug tools, the save profiles (trunk, decks, ranks, options, treasures), memory helpers, colours | `SzFile_*`, `RhFile_*`, `SzText_*`, `SzPad_*`, `SzDebug_*`, `SzData_*`, `RhMemCard_*`, `SzMem_*`, `SzColor_*` |
+| `render/` | the renderer: screen projection, draw lists, VU1, frame buffers, matrices, views, textures, model drawing and motions, model file relocation | `Ex3d_*`, `Ex*`, `RhVu1Mac_*`, `RhBase_*`, `RhMem_*`, `RhMath_*`, `RhGeom*`, `RhView_*`, `RhText_*`, `RhModel*`, `RhZSort_*`, `NjaReloc_*` |
+| `campaign/taku_*.c`, `tkcamp.c` | the campaign map and its events, windows, cut scenes | `Taku_*`, `TkCamp_*` |
+| `campaign/tkmc.c` | memory card save / load / trade | `TkMc_*`, `TakuSave_*`, `TakuLoad_*`, `TakuTrade_*` |
+| `movie/` | the movie player (Sony's ezmpeg sample code, one file per sample file) | `readBuf*`, `audioDec*`, `viBuf*`, `videoDec*`, `voBuf*` |
+| `rules/` | card rules and the AI's tools: battles, enchantments and fusions, traps, card effects, leader abilities, the end phase | `Ta_*`, `TaEnc_*`, `TaUtil_*`, `TaEffect_*`, `TaHand_*`, `TaView_*` |
+| `sdk/` | Sony's libraries and the C library (newlib, libgcc), still cut by address: see `src/sdk/README.md` | `sce*`, kernel calls, libc names |
 
 ## Conventions you will meet
 

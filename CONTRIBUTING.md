@@ -32,8 +32,10 @@ A change that makes either line fail is not accepted, however good the name.
 
 ## Things to watch
 
-- **Four files are sensitive** to the compiler's carried state: `src/main_042.c`, `main_043.c`, `main_047.c`,
-  `main_063.c`. Even a rename there can change the bytes of a later function; check after every small step.
+- **Some files are sensitive** to the compiler's carried state: `src/duel/szduel_act.c`, `duel/szduel_cards.c`,
+  `battle/szbattle.c`, `campaign/tkcamp.c`, `game/szview_look.c`, `campaign/taku_camp_cinema.c`,
+  `campaign/taku_camp_act.c`. Even a rename there can change the bytes of a later function; check after every
+  small step, and never move a function to another file without a `make check`.
 - **Struct fields:** describing raw offsets as struct fields usually keeps the bytes, but not always (an array
   index can fold an offset differently). Where the readable form changes the build, keep the matching form
   and add a note.

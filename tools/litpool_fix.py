@@ -4,7 +4,7 @@
 GCC writes a double constant as the macro `li.d $5,1.00000000000000005551e-1`. Today's assembler builds every
 one in registers (lui/ori/dsll); the one Sony used put the costly ones in the object's .rodata, one entry per
 use, and loaded them with `ld $5,sym` ($at: lui $at,%hi(sym); ld $5,%lo(sym)($at)). The game's printfloat
-(main_023) has three: 0.1 twice and 1e6.
+(sdk/kernel_sif.c) has three: 0.1 twice and 1e6.
 So for each function in GCC's assembly: its asm file (asm/**/<name>.s) lists the original's pool loads in
 order (`ld $X, %lo(D_XXXXXXXX)($at)`) and the original executable gives each entry's 8 bytes. A `li.d` whose
 value equals the next unused entry becomes `ld $R,D_XXXXXXXX`; every other li.d stays as it is (the cheap

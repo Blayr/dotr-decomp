@@ -179,7 +179,7 @@ static s32 func_01E00120_c610(s32 ot, Frame_c610_01E00120 *o, Cam_c610_01E00120 
 
 INCLUDE_ASM("asm/nonmatchings/mod/c610", func_01E00700_c610);
 
-/* shape c536:01E00330: module copy of main-program func_0027F180 (main_079.c): reset every vertex colour to white with the given alpha, then refresh the model. */
+/* shape c536:01E00330: module copy of main-program func_0027F180 (rules/ta_misc.c): reset every vertex colour to white with the given alpha, then refresh the model. */
 
 typedef struct Vertex_c536_01E00330 {
     u8 pad0[0x10];

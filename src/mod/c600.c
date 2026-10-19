@@ -96,7 +96,7 @@ static void func_01E00100_c600(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c600", func_01E001A0_c600);
 
-/* shape c536:01E00330: module copy of main-program func_0027F180 (main_079.c): reset every vertex colour to white with the given alpha, then refresh the model. */
+/* shape c536:01E00330: module copy of main-program func_0027F180 (rules/ta_misc.c): reset every vertex colour to white with the given alpha, then refresh the model. */
 
 typedef struct Vertex_c536_01E00330 {
     u8 pad0[0x10];

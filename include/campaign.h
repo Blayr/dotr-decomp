@@ -116,7 +116,7 @@ typedef struct CampaignWork {
     s16 eventCutScene;                       /* 0x536E: the cut-scene number the step belongs to (campaignState's cut-scene number last frame) */
     s16 savedCutScene;                       /* 0x5370: the cut-scene number put aside while a route event plays (Taku_RouteMarks_init) */
     s8 unk5372;                              /* 0x5372 */
-    s8 leaderShow;                           /* 0x5373: the leader model is on the map (>0); while set, the cursor stays on the selected place (main_068) */
+    s8 leaderShow;                           /* 0x5373: the leader model is on the map (>0); while set, the cursor stays on the selected place (campaign/taku_camp_act) */
     s8 unk5374;                              /* 0x5374 */
     s8 unk5375;                              /* 0x5375 */
     s8 routesIdle;                           /* 0x5376: 1 when no route is being drawn (Taku_Camp_3D_POLE); the map takes input only then */
@@ -199,7 +199,7 @@ typedef struct CampaignWork {
     s8 unk5447;                              /* 0x5447 */
     s8 placeSound[32];                       /* 0x5448: per place: its arrival sound has played */
     s8 opponentLook;                         /* 0x5468: the opponent's pose in the enemy window */
-    s8 duelist1Look;                         /* 0x5469: the pose of the second duelist shown before a duel (main_066's DOTR_DARE_LOOK1; Taku_Camp_TEXT_PICK sets both) */
+    s8 duelist1Look;                         /* 0x5469: the pose of the second duelist shown before a duel (campaign/taku_camp_cinema's DOTR_DARE_LOOK1; Taku_Camp_TEXT_PICK sets both) */
     s8 duelist0Look;                         /* 0x546A: the pose of duelist 0 */
     s8 helpPick;                             /* 0x546B: the help page chosen */
     s8 unk546C;                              /* 0x546C */

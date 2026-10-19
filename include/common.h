@@ -36,7 +36,7 @@ typedef int dk_int128 __attribute__((mode(TI)));
  * slot machine. */
 #define CAMPAIGN_WORK_ADDR 0x01ED0000
 
-/* The custom-duel settings, fixed memory past the program (main_041, main_042). Per side (+ 0 or 1): +0x2 the
+/* The custom-duel settings, fixed memory past the program (duel/szduel_customduel, duel/szduel_act). Per side (+ 0 or 1): +0x2 the
  * side's menu state (high nibble) and an index (low nibble; + 0x81 it picks the side's message and colour), +0x6 a number shown in digits, +0x8, +0xA, +0xC,
  * +0xE on/off options; +0x10 the two sides' life points (s16 each); +0x18 a list of u16 entries. +0x88: 0 when
  * side 1 has a menu of its own (two players); +0x89/+0x8A and +0x8C/+0x8D the top and length of two lists;
@@ -46,8 +46,8 @@ typedef int dk_int128 __attribute__((mode(TI)));
 /* Where the duel effects' code overlays are copied and linked (mwOverlayInit); +0x1C holds the overlay's end. */
 #define OVERLAY_ADDR 0x01E00000
 
-/* A copy of the game data (SzData_GetData(0)): the save file is read into it (main_037), and the campaign's
- * help screen keeps the data there while it runs (main_068, main_062). */
+/* A copy of the game data (SzData_GetData(0)): the save file is read into it (game/szgame), and the campaign's
+ * help screen keeps the data there while it runs (campaign/taku_camp_act, campaign/tkcamp). */
 #define GAME_DATA_COPY_ADDR 0x01E301E0
 
 #include "ee_regs.h"

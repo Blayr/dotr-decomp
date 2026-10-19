@@ -716,7 +716,7 @@ extern s32 D_0028DA50;
 
 typedef union { f32 value; u32 word; } fshape;
 
-/* libgcc fp-bit.c (main_036): Cygnus built it for the r5900 with US_SOFTWARE_GOFAST and
+/* libgcc fp-bit.c (sdk/lgcc): Cygnus built it for the r5900 with US_SOFTWARE_GOFAST and
    FLOAT_BIT_ORDER_MISMATCH, once for float (NO_NANS) and once for double. */
 typedef enum { CLASS_SNAN, CLASS_QNAN, CLASS_ZERO, CLASS_NUMBER, CLASS_INFINITY } fp_class_type;
 typedef struct { fp_class_type class; u32 sign; s32 normal_exp; u32 fraction; } fp_number_f;

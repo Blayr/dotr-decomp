@@ -58,11 +58,42 @@ Neither project is affiliated with or endorsed by Konami.
 
 ## Layout
 
-- `src/main_*.c`: the main executable, one file per original object where known.
+- `src/<area>/<system>.c`: the main executable, one file per system in a folder per area (`src/duel`, `src/ai`,
+  `src/render`, ...); `docs/CODE-MAP.md` says which file holds what, and the next section how the files are cut.
 - `src/mod/<module>.c`: the code modules; functions not yet in C are included as assembly.
 - `include/functions.h`: prototypes of every main-program function.
 - `config/`: splat configuration, linker names, the module list.
 - `tools/`: compile wrapper, jump-table fixer, module split/pack/check, post-build patch step.
+
+## How the files are split
+
+The US executable has no symbols, so the project first cut the code by address (`main_000.c` .. `main_080.c` and
+a file per very large function). The files are now cut by system, at Konami's own file boundaries wherever the
+evidence shows them, one folder per area (`docs/CODE-MAP.md` is the map):
+
+- **The evidence.** The Japanese release (`SLPM_650.50`) kept its symbol table, including each source file's local
+  symbols: the string pool (`@stringBase0`), numbered literals (`@NNN`), statics (`name$NNN`) and static
+  functions. A function that uses a local symbol of the function before it was in the same original file;
+  Metrowerks numbers literals upwards within a file, so a function that starts again at a lower number, or a
+  second string pool, starts a new one. Our functions are matched to the Japanese ones by name.
+- **Names.** A file is named for what it holds (`ai/weevil.c`, `render/rhgeom.c`). Where the table gives no
+  boundary, the developers' function prefix (`SzView_`, `RhGeom_`, `Taku_`) decides.
+- **Large files in parts.** Two original files are cut into parts by feature: the duel screen (one file of 361
+  functions, `duel/szduel_*.c`, 12 parts) and the effect helpers (`effect_lib/`, 4 parts). Each file's first line
+  says which part it is.
+- **The computer AI.** Every computer duelist's AI is its own original file, named after the duelist its
+  controller in `duelistControllers` serves; Joey's file also holds the controller of duelist 16 (Shadi).
+- **Sony's libraries** and the C library (`src/sdk/`) keep their address cuts, renamed: see `src/sdk/README.md`.
+- **Rules of the build.** A file is one address range and the files link in address order (the data is one
+  block, so only code moves). Where two old files declared the same global with different C types, the later
+  file names it `<name>_2`, a linker alias (`config/linker_syms.txt`).
+- **Compiler state.** Metrowerks carries memory from one function to the next inside a file: some functions match
+  only behind the functions that were compiled before them in the old cut. So six files start where they do for
+  the compiler, not at a feature boundary: `duel/szduel_act.c` (for `SzDuel_Act`), `duel/szduel_cards.c`
+  (`SzDuel_SetupCard_Pipe`), `battle/szbattle.c` (`lSzBattle_DrawGrass_Pipe` and `lSzBattle_DrawFakeShadow`;
+  it opens with the duel screen's last three functions), `game/szview_look.c` (`SzView_RollCamera`),
+  `campaign/taku_camp_cinema.c` (`Taku_Camp_TEXT_WHO`) and `campaign/taku_camp_act.c`
+  (`Taku_Camp_ENEMY_WINDOW`, which matches only first in its file). Each says so in its first line.
 
 ## Names
 

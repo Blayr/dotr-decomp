@@ -2,8 +2,8 @@
 # the way the original build (many files per run) left the compiler. Once it has called a
 # runtime helper with arguments in a0/a1 (double maths or compare, 64-bit divide), every
 # later `(s32)` float cast (`jal fptosi`) comes out differently. dk try follows this list.
-# One path from the project root per line (src/main_0XX.c). Add a file only together with
-# a `make check` that stays OK. main_002.c calls fptodp/_dpfgt itself: leave it cold.
+# One path from the project root per line (src/duel/szduel_act.c). Add a file only together with
+# a `make check` that stays OK.
 src/core/crt0.c
 src/core/main.c
 src/effect_lib/g.c

@@ -27,9 +27,9 @@ __fixunsdfdi = 0x001A2000; /* double to unsigned 64-bit (func_001A2000) */
 __fixdfdi = 0x001A2118; /* double to 64-bit (func_001A2118) */
 __pack_d = 0x001A2430; /* fp-bit pack, called by name from dpmul (func_001A2430) */
 __kernel_sinf = 0x001A61F0; /* fdlibm kernel sin, called by name from sinf/cosf (func_001A61F0) */
-__kernel_cosf = 0x001A57D8; /* fdlibm, called by name from the main_036 libm callers (func_001A57D8) */
-__kernel_tanf = 0x001A6318; /* fdlibm, called by name from the main_036 libm callers (func_001A6318) */
-__ieee754_rem_pio2f = 0x001A5338; /* fdlibm, called by name from the main_036 libm callers (func_001A5338) */
+__kernel_cosf = 0x001A57D8; /* fdlibm, called by name from the sdk/lgcc libm callers (func_001A57D8) */
+__kernel_tanf = 0x001A6318; /* fdlibm, called by name from the sdk/lgcc libm callers (func_001A6318) */
+__ieee754_rem_pio2f = 0x001A5338; /* fdlibm, called by name from the sdk/lgcc libm callers (func_001A5338) */
 /* <name>_b: the dotr-decomp CC0 bundle's view of one of our symbols, with its own C type
    (chatC/imp/conv.py); same address as <name>. */
 D_00299E10_b = 0x00299E10;

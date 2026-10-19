@@ -31,7 +31,7 @@ if [ -z "${DK_GCC:-}" ]; then
 fi
 # Files in config/gcc_files.txt (Sony's SDK libraries) were built with an EE GCC, not the
 # game's compiler. Each line gives the file, the GCC version, -G and the flags:
-# `src/main_022.c 2.9-991111 0 -O2`. DK_GCC_LIST=0 (dk try --gcc) ignores the list.
+# `src/sdk/kernel_glue.c 2.9-991111 0 -O2`. DK_GCC_LIST=0 (dk try --gcc) ignores the list.
 GCC_LIST="$ROOT/config/gcc_files.txt"
 if [ "${DK_GCC_LIST:-1}" = 1 ] && [ -f "$GCC_LIST" ]; then
     IN_ABS="$(cd "$(dirname "$IN")" && pwd)/$(basename "$IN")"
@@ -246,7 +246,7 @@ if [ "$DK_GCC" = 2.96 ]; then
 fi
 # GCC objects were linked 8-byte aligned; the linker script's SUBALIGN(4) is not, so the
 # file's last function keeps its padding here. The list's last file ends where Metrowerks
-# code starts, on a 16-byte boundary (main_036 -> main_037 at 0x1A6C80).
+# code starts, on a 16-byte boundary (sdk/lgcc -> game/szgame at 0x1A6C80).
 P2=3
 if [ -n "$ROW" ] && [ "${IN_ABS#"$ROOT"/}" = "$(awk '{ sub(/#.*/, "") } NF { f = $1 } END { print f }' "$GCC_LIST")" ]; then
     P2=4

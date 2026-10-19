@@ -4,7 +4,7 @@ Offsets are into one profile; numbers are hexadecimal.
 
 The game keeps two profiles in `saveProfiles` (JP `gSzData_All`, 2 x 0xFFA0 bytes). `profileZeroSide` (JP
 `gSzData_bRoseFlag`) is the duel side that plays with profile 0; the other side gets profile 1
-(`SzData_GetData(side)`). The memory-card code (`TkMc_*`, `TakuSave_*`, `TakuLoad_*`, `src/main_068.c`) writes
+(`SzData_GetData(side)`). The memory-card code (`TkMc_*`, `TakuSave_*`, `TakuLoad_*`, `src/campaign/tkmc.c`) writes
 and reads them.
 
 | Offset | Size | What | Read/written by |

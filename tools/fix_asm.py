@@ -35,10 +35,10 @@ def fix(m):
 #    func_0017E23C and names the rest func_0017E244. Restore the real boundary (was a one-off
 #    hand fix, chatE split240.py, lost by a later re-split). Giving splat the two symbols in
 #    config/symbol_addrs.txt instead makes it merge 0x17E23C-0x17F284 into one function.
-d23 = root / "asm/nonmatchings/main_023"
+d23 = root / "asm/nonmatchings/sdk/kernel_sif"
 a23 = d23 / "func_0017E23C.s"
-# splat files func_0017E244 under matchings/ once main_023.c no longer INCLUDE_ASMs it
-b23 = next((p for p in (d23 / "func_0017E244.s", root / "asm/matchings/main_023/func_0017E244.s") if p.exists()),
+# splat files func_0017E244 under matchings/ once sdk/kernel_sif.c no longer INCLUDE_ASMs it
+b23 = next((p for p in (d23 / "func_0017E244.s", root / "asm/matchings/sdk/kernel_sif/func_0017E244.s") if p.exists()),
            d23 / "func_0017E244.s")
 if a23.exists() and b23.exists():
     a, b = a23.read_text(), b23.read_text()

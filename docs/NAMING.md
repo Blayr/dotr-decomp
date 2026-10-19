@@ -97,7 +97,9 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
 
 ## The state-sensitive files
 
-MWCC carries memory from one function to the next inside a file. In four files a function only matches behind
-its real predecessors: `src/main_042.c` (SzDuel_Act), `src/main_043.c` (SzDuel_SetupCard_Pipe),
-`src/main_047.c` (lSzBattle_DrawFakeShadow / FakeMirror) and `src/main_063.c` (Taku_Camp_Event_Name /
-Event_Window).Edit them in small steps and run `make check` after each one.
+MWCC carries memory from one function to the next inside a file. In these files a function only matches behind
+its predecessors: `src/duel/szduel_act.c` (SzDuel_Act), `src/duel/szduel_cards.c` (SzDuel_SetupCard_Pipe),
+`src/battle/szbattle.c` (lSzBattle_DrawGrass_Pipe, DrawFakeShadow / FakeMirror), `src/campaign/tkcamp.c`
+(Taku_Camp_Event_Name / Event_Window), `src/game/szview_look.c` (SzView_RollCamera),
+`src/campaign/taku_camp_cinema.c` (Taku_Camp_TEXT_WHO); `src/campaign/taku_camp_act.c`'s first function
+(Taku_Camp_ENEMY_WINDOW) only matches first in its file. The README's *How the files are split* has more.Edit them in small steps and run `make check` after each one.

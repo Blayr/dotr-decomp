@@ -80,13 +80,13 @@ struct TreeTag {
     struct TreeTag *pNextLink[4];
 };
 
-/* The hand-card node SzDuel_DrawHandCard_Pipe takes as its second parameter (main_038). */
+/* The hand-card node SzDuel_DrawHandCard_Pipe takes as its second parameter (duel/szduel_window). */
 typedef struct CardNode_001AF180_s CardNode_001AF180;
 
-/* SzDuel_SetupCard_Pipe's third parameter (main_043): the card being drawn. */
+/* SzDuel_SetupCard_Pipe's third parameter (duel/szduel_cards): the card being drawn. */
 typedef struct Draw_001DA7F0_s Draw_001DA7F0;
 
-/* Ta_Manage_ActEfc's parameters (main_075): the effect's id/param words, the effect record it fills,
+/* Ta_Manage_ActEfc's parameters (rules/ta_effects_2): the effect's id/param words, the effect record it fills,
    the kind pair it fills. */
 typedef struct ActEfcInfo_00263930_s ActEfcInfo_00263930;
 typedef struct ActEfcEffect_00263930_s ActEfcEffect_00263930;
