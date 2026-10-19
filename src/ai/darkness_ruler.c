@@ -237,7 +237,7 @@ s32 TaLogic_DarknessRuler_CommandUnit(void *pCtl, s32 pTask) {
 }
 
 /* The next unit of side `nSide` to act: first one that can attack now, then the others by task. */
-s32 TaLogic_DarknessRuler_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput) {
+s32 TaLogic_DarknessRuler_GetNextActiveUnit(DuelPlayer *pCtl, s32 nSide, s32 pInput) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -264,8 +264,8 @@ s32 TaLogic_DarknessRuler_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput) {
     }
     pos = nSide << 8;
     idx = TaLogic_GetActionUnitFromOwnerID(pCtl, pos);
-    TaLogic_DarknessRuler_CommandUnit(pCtl + idx * 8, ((u8 *)pCtl)[0x1A1] & 0xF);
-    if (((pCtl[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+    TaLogic_DarknessRuler_CommandUnit(&pCtl->taskList[idx], pCtl->AiActiveRelated & 0xF);
+    if (((pCtl->taskList[idx].mission >> 8) & 0xFF) == 10) {
         if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_DarknessRuler_GetMinimumTask_Summon(pos, nSide, pInput, TaLogic007_IsActiveMode()) >= 0) {
             return pos | 0x10000;
         }

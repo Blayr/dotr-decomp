@@ -249,7 +249,7 @@ s32 TaLogic_JasperDice_CommandUnit(void *pCtl) {
 }
 
 /* The next unit of side `nSide` to act: first one that can attack now, then the others by task. */
-s32 TaLogic_JasperDice_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput) {
+s32 TaLogic_JasperDice_GetNextActiveUnit(DuelPlayer *pCtl, s32 nSide, s32 pInput) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -285,8 +285,8 @@ s32 TaLogic_JasperDice_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput) {
     }
     pos = nSide << 8;
     idx = TaLogic_GetActionUnitFromOwnerID(pCtl, pos);
-    TaLogic_JasperDice_CommandUnit(pCtl + idx * 8);
-    if (((pCtl[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+    TaLogic_JasperDice_CommandUnit(&pCtl->taskList[idx]);
+    if (((pCtl->taskList[idx].mission >> 8) & 0xFF) == 10) {
         if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_JasperDice_GetMinimumTask_Summon(pos, nSide, pInput) >= 0) {
             return pos | 0x10000;
         }

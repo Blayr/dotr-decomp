@@ -962,7 +962,7 @@ s32 TaLogic_Seto_CommandUnit(void *pCtl, s32 pTask) {
 }
 
 /* The next unit of side `nSide` to act: first one that can attack now, then the others by task. */
-s32 TaLogic_Seto_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput, void *nMode) {
+s32 TaLogic_Seto_GetNextActiveUnit(DuelPlayer *pCtl, s32 nSide, s32 pInput, void *nMode) {
     s32 i;
     s32 pos;
     s32 ret;
@@ -989,8 +989,8 @@ s32 TaLogic_Seto_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput, void *nMode
     }
     pos = nSide << 8;
     idx = TaLogic_GetActionUnitFromOwnerID(pCtl, pos);
-    TaLogic_Seto_CommandUnit(pCtl + idx * 8, pInput);
-    if (((pCtl[idx * 8 + 2] >> 8) & 0xFF) == 10) {
+    TaLogic_Seto_CommandUnit(&pCtl->taskList[idx], pInput);
+    if (((pCtl->taskList[idx].mission >> 8) & 0xFF) == 10) {
         if (SzDuel_InqHandPhase(nSide) == 1 && TaLogic_Seto_GetMinimumTask_Summon(pos, nSide, nMode) >= 0) {
             return pos | 0x10000;
         }
