@@ -1136,43 +1136,6 @@ typedef union Color_001CE430 {
     struct { u8 r, g, b, a; } channels;
 } Color_001CE430;
 
-typedef struct Flags57_001CE430 {
-    s8 unused : 6;
-    s8 selected : 1;
-    s8 unused7 : 1;
-} Flags57_001CE430;
-
-typedef struct Flags58_001CE430 {
-    s8 hidden : 1;
-    s8 unused : 7;
-} Flags58_001CE430;
-
-typedef struct Object_001CE430 {
-    u8 pad0[0x30];
-    s32 render;
-    s16 x, z;
-    u8 pad38[8];
-    u8 cardX, cardZ;
-    u8 pad42[2];
-    u8 owner, state, model;
-    u8 pad47[2];
-    u8 moving, turning;
-    u8 pad4B[4];
-    u8 flags4F;
-    u8 pad50;
-    u8 status51;
-    u8 pad52;
-    u8 progress;
-    u8 pad54[3];
-    Flags57_001CE430 flags57;
-    Flags58_001CE430 flags58;
-} Object_001CE430;
-
-typedef struct Info_001CE430 {
-    u8 pad[0x14];
-    s16 height;
-} Info_001CE430;
-
 typedef union Render_001CE430 {
     __int128 value;
     s32 words[4];
@@ -1197,10 +1160,10 @@ s32 SzDuel_DrawUnit_Pipe(s32 packet) {
     f32 *pos;
     u8 *player;
     s32 row, column;
-    Object_001CE430 *object;
+    Unit *object;
     s32 selected;
     s32 model;
-    Info_001CE430 *info;
+    MapInfo *info;
     s32 extraModel, extra;
     u8 alpha;
     f32 fade;
@@ -1230,9 +1193,9 @@ s32 SzDuel_DrawUnit_Pipe(s32 packet) {
     SzEffect_SetIntensityOnly(4, fade);
     SzEffect_SetIntensityOnly(5, fade);
     if (mode == 1) {
-        Object_001CE430 *target;
-        target = (Object_001CE430 *)SzDuel_GetMapUnit(player[0x33D], player[0x33E]);
-        if (target != NULL && target->owner != game[0xD54]) {
+        Unit *target;
+        target = (Unit *)SzDuel_GetMapUnit(player[0x33D], player[0x33E]);
+        if (target != NULL && target->team != game[0xD54]) {
             tint = &otherColor;
         } else {
             tint = &ownColor;
@@ -1248,53 +1211,53 @@ s32 SzDuel_DrawUnit_Pipe(s32 packet) {
     do {
         column = 0;
         do {
-            object = (Object_001CE430 *)SzDuel_GetUnit(row, column);
+            object = (Unit *)SzDuel_GetUnit(row, column);
             selected = 0;
             render = D_00291500;
             if (object != NULL) {
-                model = object->model;
+                model = object->modelId;
                 if (SzModel_IsModelDisp(model) != 0 &&
-                    (object->state == 0 || object->status51 != 0 || object->progress != 0)) {
-                    info = (Info_001CE430 *)SzDuel_GetMapInfo(object->cardX, object->cardZ);
+                    (object->slot == 0 || object->ctlGoalM != 0 || object->ctlRateM != 0)) {
+                    info = SzDuel_GetMapInfo(object->locCol, object->locRow);
                     if (mode == 1 && game[0xD38] == 0) {
-                        Object_001CE430 *target;
-                        if (object->moving != 0 || object->turning != 0) {
+                        Unit *target;
+                        if (object->curseRest != 0 || object->spellRest != 0) {
                             if ((u32)func_001A23B0(SzModel_GetAnimFrame(model)) < 2U) {
                                 SzModel_SetAnimDir(model, 0);
                             }
                         } else {
                             SzModel_SetAnimDir(model, 1);
                         }
-                        target = *(Object_001CE430 **)(game + 0x6C8);
+                        target = *(Unit **)(game + 0x6C8);
                         if (target != NULL) {
                             if (target == object) {
                                 selected = 1;
-                            } else if (target->flags57.selected &&
-                                       *(Object_001CE430 **)(game + 0x6CC) != NULL &&
-                                       *(Object_001CE430 **)(game + 0x6CC) == object) {
+                            } else if (target->status.fPickup &&
+                                       *(Unit **)(game + 0x6CC) != NULL &&
+                                       *(Unit **)(game + 0x6CC) == object) {
                                 selected = 1;
                             }
                         }
                         if (selected == 0) {
-                            SzDuel_TrimUnitDir1(object->owner, object->state);
+                            SzDuel_TrimUnitDir1(object->team, object->slot);
                         }
-                        render.words[1] = object->render;
+                        render.words[1] = object->VisualRelated;
                     }
                     if (pos != NULL) {
-                        if (object->flags58.hidden) {
+                        if (object->modelStatusFlags.fModelBusy) {
                             pos[2] = 0.0f;
                             pos[1] = 0.0f;
                             pos[0] = 0.0f;
                         } else {
                             s32 height;
                             u32 remaining;
-                            height = info->height;
+                            height = info->fieldRate;
                             height = height > 0 ? height : 0;
-                            pos[0] = (f32)object->x;
+                            pos[0] = (f32)object->xOffsetTerrain;
                             pos[1] = (f32)(height * 35) / 128.0f;
-                            pos[2] = (f32)object->z;
-                            if (object->flags4F & 4) {
-                                remaining = 128 - object->progress;
+                            pos[2] = (f32)object->yOffsetTerrain;
+                            if (object->ctlModeM & 4) {
+                                remaining = 128 - object->ctlRateM;
                                 remaining = (s32)remaining > 0 ? remaining : 0;
                                 pos[1] -= (50.0f * (f32)remaining) / 128.0f;
                             }

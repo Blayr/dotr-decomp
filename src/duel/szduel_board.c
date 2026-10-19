@@ -4,29 +4,31 @@
 
 /* Clears a board square's record. */
 void SzDuel_InitMapInfo(void *cell) {
-    *(s32 *)cell = 0;
-    ((u8 *)cell)[6] = 0;
-    ((u8 *)cell)[5] = 0;
-    ((u8 *)cell)[4] = 0;
-    ((u8 *)cell)[7] = 0;
-    ((u8 *)cell)[0xA] = 0;
-    ((u8 *)cell)[9] = 0;
-    ((u8 *)cell)[8] = 0;
-    ((u8 *)cell)[0xB] = 0;
-    ((u8 *)cell)[0xE] = 0;
-    ((u8 *)cell)[0xD] = 0;
-    ((u8 *)cell)[0xC] = 0;
-    ((u8 *)cell)[0xF] = 0;
-    ((u8 *)cell)[0x12] = 0;
-    ((u8 *)cell)[0x11] = 0;
-    ((u8 *)cell)[0x10] = 0;
-    ((u8 *)cell)[0x13] = 0;
-    ((u8 *)cell)[0x16] = 0;
-    ((u8 *)cell)[0x17] = 0;
-    ((u8 *)cell)[0x18] = 0;
-    ((u8 *)cell)[0x19] = 0;
-    ((u8 *)cell)[0x1A] = 0x80;
-    *(s16 *)((u8 *)cell + 0x14) = 0;
+    MapInfo *info = cell;
+
+    info->unit = NULL;
+    info->TargetHighlight.r = 0;
+    info->TargetHighlight.g = 0;
+    info->TargetHighlight.b = 0;
+    info->TargetHighlight.a = 0;
+    info->Highlight.r = 0;
+    info->Highlight.g = 0;
+    info->Highlight.b = 0;
+    info->Highlight.a = 0;
+    info->TargetBorderOutline.r = 0;
+    info->TargetBorderOutline.g = 0;
+    info->TargetBorderOutline.b = 0;
+    info->TargetBorderOutline.a = 0;
+    info->BorderOutline.r = 0;
+    info->BorderOutline.g = 0;
+    info->BorderOutline.b = 0;
+    info->BorderOutline.a = 0;
+    info->field = 0;
+    info->MapMovable = 0;
+    info->TargetSelectionHighlight = 0;
+    info->SelectionHighlightType = 0;
+    info->mapAlpha = 0x80;
+    info->fieldRate = 0;
 }
 
 /* The record of board square (x, y), or NULL off the board. */
@@ -277,129 +279,17 @@ void SzDuel_DoUnitRequest(void) {
     } while (z < 7);
 }
 
-struct DotrStateItemBits {
-    signed char unknown_bit_0 : 1;
-    signed char unknown_bit_1 : 1;
-    signed char unknown_bit_2 : 1;
-    signed char unknown_bit_3 : 1;
-    signed char unknown_bit_4 : 1;
-    signed char unknown_bit_5 : 1;
-    signed char unknown_bit_6 : 1;
-    signed char unknown_bit_7 : 1;
-};
-struct DotrStateItemPairs {
-    signed char unknown_bits_0_1 : 2;
-    signed char unknown_bits_2_3 : 2;
-    signed char unknown_bits_4_5 : 2;
-    signed char unknown_bits_6_7 : 2;
-};
-struct DotrStateItemFlags {
-    signed char unknown_bit_0 : 1;
-    signed char unknown_bit_1 : 1;
-    signed char unknown_bit_2 : 1;
-    signed char unknown_bit_3 : 1;
-    signed char unknown_bits_4_7 : 4;
-};
-struct DotrStateItemObject;
-struct DotrStateItemSource {
-    unsigned char unknown_00;
-    unsigned char unknown_01;
-    unsigned char unknown_02_low : 4;
-    unsigned char unknown_02_high : 4;
-    unsigned char unknown_03;
-    unsigned short unknown_04;
-    unsigned char unknown_06[2];
-    unsigned short unknown_08;
-    unsigned short unknown_0a;
-};
-struct DotrStateEntry8 {
-    int unknown_words[2];
-};
-struct DotrStateItem {
-    struct DotrStateItemSource *unknown_00;
-    struct DotrStateItemObject *unknown_04; 
-    struct DotrStateEntry8 unknown_08[5];
-    int unknown_30;
-    unsigned char unknown_34[4];
-    short unknown_38;
-    short unknown_3a;
-    unsigned short unknown_3c;
-    unsigned char unknown_3e;
-    unsigned char unknown_3f;
-    unsigned char unknown_40;
-    unsigned char unknown_41;
-    unsigned char unknown_42[2];
-    unsigned char unknown_44;
-    unsigned char unknown_45;
-    unsigned char unknown_46;
-    unsigned char unknown_47;
-    unsigned char unknown_48;
-    unsigned char unknown_49;
-    unsigned char unknown_4a;
-    unsigned char unknown_4b;
-    unsigned char unknown_4c[2];
-    unsigned char unknown_4e;
-    unsigned char unknown_4f;
-    unsigned char unknown_50;
-    unsigned char unknown_51;
-    unsigned char unknown_52;
-    unsigned char unknown_53;
-    unsigned char unknown_54;
-    unsigned char unknown_55;
-    struct DotrStateItemPairs unknown_56;
-    struct DotrStateItemBits unknown_57;
-    struct DotrStateItemFlags unknown_58;
-    unsigned char unknown_59[3];
-};
-typedef char DotrStateItemMustBe5c[(sizeof(struct DotrStateItem) == 0x5c) ? 1 : -1];
-struct DotrStateVector {
-    float x, y, z;
-    float unknown_w;
-};
-struct DotrStateCellQuad_1dd2d0 {
-    unsigned char unknown_0;
-    unsigned char unknown_1;
-    unsigned char unknown_2;
-    unsigned char unknown_3;
-};
-typedef int DotrStateWord_1dd2d0;
-struct DotrStateCell_1dd2d0 {
-    DotrStateWord_1dd2d0 unknown_00;
-    struct DotrStateCellQuad_1dd2d0 unknown_04[4];
-    short unknown_14;
-    unsigned char unknown_16;
-    unsigned char unknown_17;
-    unsigned char unknown_18;
-    unsigned char unknown_19;
-    unsigned char unknown_1a;
-};
-typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell_1dd2d0) == 0x1c) ? 1 : -1];
-struct DotrStateItemObject {
-    struct DotrStateVector unknown_00;
-    struct DotrStateVector unknown_10;
-    unsigned char unknown_20[0x10];
-    struct DotrStateVector unknown_30;
-    struct DotrStateCellQuad_1dd2d0 unknown_40;
-};
-struct DotrUnitRequestObject {
-    unsigned char unknown_00[0x14];
-    int unknown_14;
-    int unknown_18;
-    unsigned char unknown_1c[0x14];
-    struct DotrStateVector unknown_30;
-    struct DotrStateCellQuad_1dd2d0 unknown_40;
-};
 extern int func_001AAF60_b(int a);
 extern int func_001F2800_b(int index, int value);
 
 /* Runs one board square's pending request. */
 void lSzDuel_DoUnitRequest(void *cell_v, int unknown)
 {
-    struct DotrStateCell_1dd2d0 * cell = cell_v;
-    struct DotrUnitRequestObject *o;
-    struct DotrStateVector v;
+    MapInfo *cell = cell_v;
+    CardRequest *o;
+    Vec4f v;
     int mode;
-    struct DotrStateItem *u = (struct DotrStateItem *)unknown;
+    Unit *u = (Unit *)unknown;
     int n, flag;
     signed char d;
     unsigned char level;
@@ -411,150 +301,150 @@ void lSzDuel_DoUnitRequest(void *cell_v, int unknown)
     if (u == 0) {
         return;
     }
-    if (!u->unknown_57.unknown_bit_7) {
-        if (!u->unknown_58.unknown_bit_1) {
-            if (u->unknown_57.unknown_bit_0) {
-                n = u->unknown_4c[1] - 4;
+    if (!u->status.fCardBusy) {
+        if (!u->modelStatusFlags.fCardColBusy) {
+            if (u->status.fFinish) {
+                n = u->CardHighlight - 4;
                 n = n > 64 ? n : 64;
-                u->unknown_4c[1] = n;
+                u->CardHighlight = n;
             } else {
-                n = u->unknown_4c[1] + 4;
+                n = u->CardHighlight + 4;
                 n = n < 128 ? n : 128;
-                u->unknown_4c[1] = n;
+                u->CardHighlight = n;
             }
         }
-        if (u->unknown_56.unknown_bits_4_5) {
-            d = u->unknown_56.unknown_bits_4_5;
-            if ((d > 0 && u->unknown_54 >= 255) || (d < 0 && u->unknown_54 <= 0)) {
-                u->unknown_56.unknown_bits_4_5 = 0;
+        if (u->SomeStatusBitfield.nOpenFlip) {
+            d = u->SomeStatusBitfield.nOpenFlip;
+            if ((d > 0 && u->openRate >= 255) || (d < 0 && u->openRate <= 0)) {
+                u->SomeStatusBitfield.nOpenFlip = 0;
             } else if (d > 0) {
-                n = u->unknown_54 + 32;
+                n = u->openRate + 32;
                 n = n < 255 ? n : 255;
-                u->unknown_54 = n;
+                u->openRate = n;
             } else {
-                n = u->unknown_54 - 32;
+                n = u->openRate - 32;
                 n = n > 0 ? n : 0;
-                u->unknown_54 = n;
+                u->openRate = n;
             }
         }
-        if (u->unknown_56.unknown_bits_6_7) {
-            d = u->unknown_56.unknown_bits_6_7;
-            if ((d > 0 && u->unknown_55 >= 255) || (d < 0 && u->unknown_55 <= 0)) {
-                u->unknown_56.unknown_bits_6_7 = 0;
+        if (u->SomeStatusBitfield.nDefenseFlip) {
+            d = u->SomeStatusBitfield.nDefenseFlip;
+            if ((d > 0 && u->defenseRate >= 255) || (d < 0 && u->defenseRate <= 0)) {
+                u->SomeStatusBitfield.nDefenseFlip = 0;
             } else if (d > 0) {
-                n = u->unknown_55 + 32;
+                n = u->defenseRate + 32;
                 n = n < 255 ? n : 255;
-                u->unknown_55 = n;
+                u->defenseRate = n;
             } else {
-                n = u->unknown_55 - 32;
+                n = u->defenseRate - 32;
                 n = n > 0 ? n : 0;
-                u->unknown_55 = n;
+                u->defenseRate = n;
             }
         }
-        n = u->unknown_56.unknown_bits_0_1;
-        if ((n > 0 && u->unknown_52 >= u->unknown_50) || (n < 0 && u->unknown_52 <= 0)) {
+        n = u->SomeStatusBitfield.nCtlFlipC;
+        if ((n > 0 && u->ctlRateC >= u->ctlGoalC) || (n < 0 && u->ctlRateC <= 0)) {
             if (mode == 1) {
-                u->unknown_4e = 1;
+                u->ctlModeC = 1;
             } else {
-                u->unknown_4e = 0;
+                u->ctlModeC = 0;
             }
-            u->unknown_56.unknown_bits_0_1 = 0;
+            u->SomeStatusBitfield.nCtlFlipC = 0;
         } else if (n > 0) {
-            int t = u->unknown_52 + 8;
-            t = t < u->unknown_50 ? t : u->unknown_50;
-            u->unknown_52 = t;
+            int t = u->ctlRateC + 8;
+            t = t < u->ctlGoalC ? t : u->ctlGoalC;
+            u->ctlRateC = t;
         } else if (n < 0) {
-            int t = u->unknown_52 - 8;
+            int t = u->ctlRateC - 8;
             t = t > 0 ? t : 0;
-            u->unknown_52 = t;
+            u->ctlRateC = t;
         }
-        o = (struct DotrUnitRequestObject *)u->unknown_04;
+        o = u->cardModel;
         if (o != 0) {
-            if (u->unknown_58.unknown_bit_1) {
+            if (u->modelStatusFlags.fCardColBusy) {
                 level = 128;
             } else {
-                level = cell->unknown_1a;
+                level = cell->mapAlpha;
             }
-            o->unknown_14 = -((u->unknown_55 << 14) / 255);
-            if (u->unknown_44 == 0) {
-                o->unknown_14 = o->unknown_14 + 0x8000;
+            o->rot.y = -((u->defenseRate << 14) / 255);
+            if (u->team == 0) {
+                o->rot.y = o->rot.y + 0x8000;
             }
-            o->unknown_18 = (u->unknown_54 << 15) / 255;
-            n = (u->unknown_4c[1] * level) >> 7;
-            o->unknown_40.unknown_0 = n;
-            o->unknown_40.unknown_1 = n;
-            o->unknown_40.unknown_2 = n;
-            if (u->unknown_4e & 1) {
-                o->unknown_40.unknown_3 = u->unknown_52;
+            o->rot.z = (u->openRate << 15) / 255;
+            n = (u->CardHighlight * level) >> 7;
+            o->color.r = n;
+            o->color.g = n;
+            o->color.b = n;
+            if (u->ctlModeC & 1) {
+                o->color.a = u->ctlRateC;
             }
-            if (u->unknown_4e & 2) {
-                f = (float)(unsigned)u->unknown_52 / 1280.0f;
-                o->unknown_30.z = f;
-                o->unknown_30.y = f;
-                o->unknown_30.x = f;
+            if (u->ctlModeC & 2) {
+                f = (float)(unsigned)u->ctlRateC / 1280.0f;
+                o->scale.z = f;
+                o->scale.y = f;
+                o->scale.x = f;
             }
         }
     }
-    if (u->unknown_45 >= 6) {
+    if (u->slot >= 6) {
         return;
     }
-    if (u->unknown_58.unknown_bit_0) {
+    if (u->modelStatusFlags.fModelBusy) {
         return;
     }
     flag = 0;
-    if (SzModel_IsModelStandby(u->unknown_46)) {
-        if (u->unknown_45 == 0) {
+    if (SzModel_IsModelStandby(u->modelId)) {
+        if (u->slot == 0) {
             flag = 1;
-        } else if (u->unknown_57.unknown_bit_4) {
+        } else if (u->status.fOpenF) {
             flag = 1;
         }
     }
     if (flag) {
-        n = u->unknown_56.unknown_bits_2_3;
-        if ((n > 0 && u->unknown_53 >= u->unknown_51) || (n < 0 && u->unknown_53 <= 0)) {
+        n = u->SomeStatusBitfield.nCtlFlipM;
+        if ((n > 0 && u->ctlRateM >= u->ctlGoalM) || (n < 0 && u->ctlRateM <= 0)) {
             if (mode == 1) {
-                u->unknown_4f = 1;
+                u->ctlModeM = 1;
             } else {
-                u->unknown_4f = 0;
+                u->ctlModeM = 0;
             }
-            u->unknown_56.unknown_bits_2_3 = 0;
+            u->SomeStatusBitfield.nCtlFlipM = 0;
         } else if (n > 0) {
-            int t = u->unknown_53 + 8;
-            t = t < u->unknown_51 ? t : u->unknown_51;
-            u->unknown_53 = t;
+            int t = u->ctlRateM + 8;
+            t = t < u->ctlGoalM ? t : u->ctlGoalM;
+            u->ctlRateM = t;
         } else if (n < 0) {
-            int t = u->unknown_53 - 8;
+            int t = u->ctlRateM - 8;
             t = t > 0 ? t : 0;
-            u->unknown_53 = t;
+            u->ctlRateM = t;
         }
     }
-    if (u->unknown_4f & 1) {
-        func_001F2800_b(u->unknown_46, u->unknown_53);
+    if (u->ctlModeM & 1) {
+        func_001F2800_b(u->modelId, u->ctlRateM);
     }
-    if (u->unknown_4f & 2) {
-        f = (float)(unsigned)u->unknown_53 / 128.0f;
+    if (u->ctlModeM & 2) {
+        f = (float)(unsigned)u->ctlRateM / 128.0f;
         f = f < 1.0f ? f : 1.0f;
         v.z = f;
         v.y = f;
         v.x = f;
-        SzModel_SetScale(u->unknown_46, &v);
+        SzModel_SetScale(u->modelId, &v);
     }
 }
 
 /* Turns the units on squares (x0, z0) and (x1, z1) to face each other. */
 s32 SzDuel_TrimUnitDir(s32 x0, s32 z0, s32 x1, s32 z1) {
     Unit *first;
-    u8 *second;
+    Unit *second;
     s32 result;
 
     first = (Unit *)SzDuel_GetUnit(x0, z0);
-    second = (u8 *)SzDuel_GetUnit(x1, z1);
+    second = (Unit *)SzDuel_GetUnit(x1, z1);
     result = 0;
     if (first == second) {
         second = 0;
     }
     if (first != 0 && second != 0) {
-        result |= SzDuel_TrimUnitDir2(x0, z0, second[0x40], second[0x41]);
+        result |= SzDuel_TrimUnitDir2(x0, z0, second->locCol, second->locRow);
         result |= SzDuel_TrimUnitDir2(x1, z1, first->locCol, first->locRow);
     } else {
         if (first != 0) {
@@ -567,32 +457,19 @@ s32 SzDuel_TrimUnitDir(s32 x0, s32 z0, s32 x1, s32 z1) {
     return result;
 }
 
-typedef struct Flags_001DD990 {
-    s8 unused : 1;
-    s8 facing : 1;
-    s8 remaining : 6;
-} Flags_001DD990;
-
-typedef struct State_001DD990 {
-    u8 pad00[0x30];
-    s32 angle;
-    u8 pad34[0x23];
-    Flags_001DD990 flags;
-} State_001DD990;
-
 /* Turns the unit on square (x, z) to face its side's way. */
 s32 SzDuel_TrimUnitDir1(s32 x, s32 z) {
-    State_001DD990 *state;
+    Unit *state;
     s32 result;
     s32 target;
     s32 delta;
 
-    state = (State_001DD990 *)SzDuel_GetUnit(x, z);
+    state = (Unit *)SzDuel_GetUnit(x, z);
     result = 0;
     if (state != 0) {
-        target = state->flags.facing ? 0x8000 : 0;
-        if (state->angle != target) {
-            delta = (target - state->angle) % 0x10000;
+        target = state->status.fRevolt ? 0x8000 : 0;
+        if (state->VisualRelated != target) {
+            delta = (target - state->VisualRelated) % 0x10000;
             if (delta < -0x7FFF) {
                 delta += 0x10000;
             } else if (delta > 0x8000) {
@@ -603,16 +480,16 @@ s32 SzDuel_TrimUnitDir1(s32 x, s32 z) {
                     if (delta > 0x800) {
                         delta = 0x800;
                     }
-                    state->angle += delta;
+                    state->VisualRelated += delta;
                 } else {
                     if (delta < -0x800) {
                         delta = -0x800;
                     }
-                    state->angle += delta;
+                    state->VisualRelated += delta;
                 }
-                state->angle = (state->angle + 0x10000) % 0x10000;
-                if (state->angle > 0x8000) {
-                    state->angle -= 0x10000;
+                state->VisualRelated = (state->VisualRelated + 0x10000) % 0x10000;
+                if (state->VisualRelated > 0x8000) {
+                    state->VisualRelated -= 0x10000;
                 }
             }
         }
@@ -621,30 +498,18 @@ s32 SzDuel_TrimUnitDir1(s32 x, s32 z) {
     return result;
 }
 
-typedef struct Unit_001DDAC0 {
-    u8 pad00[0x30];
-    s32 rotation;
-    s16 x;
-    s16 y;
-    u8 pad38[8];
-    u8 grid_x;
-    u8 grid_y;
-    u8 pad42[2];
-    u8 reversed;
-} Unit_001DDAC0;
-
 /* Turns the unit on square (x, z) towards square (targetX, targetZ). */
 s32 SzDuel_TrimUnitDir2(s32 sx, s32 sz, s32 targetX, s32 targetZ) {
     extern s32 func_001A22C0(f32);
-    Unit_001DDAC0 *self;
-    Unit_001DDAC0 *target;
+    Unit *self;
+    Unit *target;
     s32 x;
     s32 result;
     s32 y;
     s32 difference;
 
-    self = (Unit_001DDAC0 *)SzDuel_GetUnit(sx, sz);
-    target = (Unit_001DDAC0 *)SzDuel_GetMapUnit(targetX, targetZ);
+    self = (Unit *)SzDuel_GetUnit(sx, sz);
+    target = (Unit *)SzDuel_GetMapUnit(targetX, targetZ);
     x = func_001A22C0((f32)((targetX - 3) * 50));
     y = func_001A22C0((f32)((targetZ - 3) * 50));
     result = 0;
@@ -652,21 +517,21 @@ s32 SzDuel_TrimUnitDir2(s32 sx, s32 sz, s32 targetX, s32 targetZ) {
         return SzDuel_TrimUnitDir1(sx, sz);
     }
     if (target != 0) {
-        x += target->x;
-        y += target->y;
+        x += target->xOffsetTerrain;
+        y += target->yOffsetTerrain;
     }
     if (self != 0) {
         f32 dx;
         f32 dy;
         s32 desired_angle;
 
-        dx = (f32)x - ((f32)self->x + (f32)((self->grid_x - 3) * 50));
-        dy = (f32)y - ((f32)self->y + (f32)((self->grid_y - 3) * 50));
-        desired_angle = ((((self->reversed == 0 ? 0 : 0x8000) +
+        dx = (f32)x - ((f32)self->xOffsetTerrain + (f32)((self->locCol - 3) * 50));
+        dy = (f32)y - ((f32)self->yOffsetTerrain + (f32)((self->locRow - 3) * 50));
+        desired_angle = ((((self->team == 0 ? 0 : 0x8000) +
             func_001A22C0(65536.0f * (func_001A6C18(
                 dy, dx) /
                 6.2831855f)) + 0x400) >> 11) << 11);
-        desired_angle += self->rotation;
+        desired_angle += self->VisualRelated;
         difference = -((desired_angle + 0x14000) % 0x10000);
         if (difference < -0x7FFF) {
             difference += 0x10000;
@@ -678,16 +543,16 @@ s32 SzDuel_TrimUnitDir2(s32 sx, s32 sz, s32 targetX, s32 targetZ) {
                 if (difference > 0x800) {
                     difference = 0x800;
                 }
-                self->rotation += difference;
+                self->VisualRelated += difference;
             } else {
                 if (difference < -0x800) {
                     difference = -0x800;
                 }
-                self->rotation += difference;
+                self->VisualRelated += difference;
             }
-            self->rotation = (self->rotation + 0x10000) % 0x10000;
-            if (self->rotation > 0x8000) {
-                self->rotation -= 0x10000;
+            self->VisualRelated = (self->VisualRelated + 0x10000) % 0x10000;
+            if (self->VisualRelated > 0x8000) {
+                self->VisualRelated -= 0x10000;
             }
             result = 1;
         }
