@@ -190,8 +190,8 @@ typedef struct MapInfo {
 typedef struct UnitTask {
     u16 ownerId;                    /* 0x00: (side << 8) | unit */
     u16 summonOrder;                /* 0x02 */
-    u8 mission1;                    /* 0x04: UnitMission; the upper bits are the mission type */
-    u8 mission2Main;                /* 0x05: UnitMission */
+    u16 mission;                    /* 0x04: the task (TaskType) in its upper byte (batzpup: mission1,
+                                       mission2Main) */
     u8 field4_0x6;                  /* 0x06 */
     u8 field5_0x7;                  /* 0x07 */
     u16 goalLoc1[2];                /* 0x08 */

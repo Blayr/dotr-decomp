@@ -7,7 +7,7 @@
    when it set one. */
 s32 TaLogic_Manawyddan2_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
     extern s32 TaLogic_Manawyddan2_GetWarnHideLvl(s32);
-    u16 *tasks = pCtl;
+    UnitTask *tasks = pCtl;
     s32 side;
     s32 found;
     s32 result;
@@ -23,54 +23,54 @@ s32 TaLogic_Manawyddan2_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos)
         return 0;
     }
     if ((result >> 16) == 1) {
-        if (((tasks[index * 8 + 2] >> 8) & 0xFF) == 10) {
-            TaLogic_InitRogicControl(tasks + index * 8, 1);
+        if (((tasks[index].mission >> 8) & 0xFF) == TASK_SUMMON) {
+            TaLogic_InitRogicControl(&tasks[index], 1);
         } else {
-            TaLogic_InitRogicControl(tasks + index * 8, 0);
+            TaLogic_InitRogicControl(&tasks[index], 0);
         }
         return 1;
     }
-    TaLogic_Manawyddan2_CommandUnit(tasks + index * 8);
-    switch ((tasks[index * 8 + 2] >> 8) & 0xFF) {
-    case 5:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_Manawyddan2_GetMinimumTask_RunMission(tasks + index * 8, side, pInput, 1);
+    TaLogic_Manawyddan2_CommandUnit(&tasks[index]);
+    switch ((tasks[index].mission >> 8) & 0xFF) {
+    case TASK_RUN:
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            TaLogic_Manawyddan2_GetMinimumTask_RunMission(&tasks[index], side, pInput, 1);
             found = 1;
         }
         break;
-    case 2:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            if (TaLogic_Manawyddan2_GetMinimumTask_AtkMission(tasks + index * 8, side, pInput, 1) < 0) {
-                TaLogic_InitRogicControl(tasks + index * 8, 1);
+    case TASK_ATTACK:
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            if (TaLogic_Manawyddan2_GetMinimumTask_AtkMission(&tasks[index], side, pInput, 1) < 0) {
+                TaLogic_InitRogicControl(&tasks[index], 1);
                 return 1;
             }
             found = 1;
         }
         break;
-    case 10:
-        if (TaLogic_Manawyddan2_GetMinimumTask_Summon(tasks[index * 8], side, (s32)pInput) < 0) {
-            TaLogic_InitRogicControl(tasks + index * 8, 1);
+    case TASK_SUMMON:
+        if (TaLogic_Manawyddan2_GetMinimumTask_Summon(tasks[index].ownerId, side, (s32)pInput) < 0) {
+            TaLogic_InitRogicControl(&tasks[index], 1);
             *(u8 *)((u8 *)pInput + 2) = 0xFF;
             *(s32 *)((u8 *)pInput + 0xC) = 0;
         } else {
-            TaLogic_InitRogicControl(tasks + index * 8, 1);
+            TaLogic_InitRogicControl(&tasks[index], 1);
             found = 1;
         }
         break;
-    case 6:
+    case TASK_MOVETOLOCATION:
     case 16:
     case 15:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_Manawyddan2_GetMinimumTask_MoveMission(tasks + index * 8, side, pInput, 1, 0);
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            TaLogic_Manawyddan2_GetMinimumTask_MoveMission(&tasks[index], side, pInput, 1, 0);
             found = 1;
         }
         break;
-    case 9:
-        TaLogic_GetMinimumTask_EncMission(tasks + index * 8, side, pInput, 1, 1, TaLogic_Manawyddan2_GetWarnHideLvl(side), 4, 1);
+    case TASK_ENCHANT:
+        TaLogic_GetMinimumTask_EncMission(&tasks[index], side, pInput, 1, 1, TaLogic_Manawyddan2_GetWarnHideLvl(side), 4, 1);
         found = 1;
         break;
-    case 14:
-        TaLogic_GetMinimumTask_DoNone(tasks + index * 8, side, pInput);
+    case TASK_DO_NOTHING:
+        TaLogic_GetMinimumTask_DoNone(&tasks[index], side, pInput);
         found = 1;
         break;
     default:
@@ -80,46 +80,46 @@ s32 TaLogic_Manawyddan2_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos)
     if (found == 1) {
         return 1;
     }
-    switch (tasks[index * 8 + 2] & 0xFF) {
+    switch (tasks[index].mission & 0xFF) {
     case 5:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_Manawyddan2_GetMinimumTask_RunMission(tasks + index * 8, side, pInput, 0);
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            TaLogic_Manawyddan2_GetMinimumTask_RunMission(&tasks[index], side, pInput, 0);
             found = 1;
         }
         break;
     case 2:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            if (TaLogic_Manawyddan2_GetMinimumTask_AtkMission(tasks + index * 8, side, pInput, 0) < 0) {
-                TaLogic_Manawyddan2_GetMinimumTask_RunMission(tasks + index * 8, side, pInput, 0);
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            if (TaLogic_Manawyddan2_GetMinimumTask_AtkMission(&tasks[index], side, pInput, 0) < 0) {
+                TaLogic_Manawyddan2_GetMinimumTask_RunMission(&tasks[index], side, pInput, 0);
             }
             found = 1;
         }
         break;
     case 10:
-        if (TaLogic_Manawyddan2_GetMinimumTask_Summon(tasks[index * 8], side, (s32)pInput) < 0) {
-            TaLogic_InitRogicControl(tasks + index * 8, 0);
+        if (TaLogic_Manawyddan2_GetMinimumTask_Summon(tasks[index].ownerId, side, (s32)pInput) < 0) {
+            TaLogic_InitRogicControl(&tasks[index], 0);
             *(u8 *)((u8 *)pInput + 2) = 0xFF;
             found = 1;
             *(s32 *)((u8 *)pInput + 0xC) = 0;
         } else {
-            TaLogic_InitRogicControl(tasks + index * 8, 0);
+            TaLogic_InitRogicControl(&tasks[index], 0);
             found = 1;
         }
         break;
     case 6:
     case 16:
     case 15:
-        if (SzDuel_GetUnitStatus(tasks[index * 8] >> 8, tasks[index * 8] & 0xFF, 0) == 0) {
-            TaLogic_Manawyddan2_GetMinimumTask_MoveMission(tasks + index * 8, side, pInput, 0, 0);
+        if (SzDuel_GetUnitStatus(tasks[index].ownerId >> 8, tasks[index].ownerId & 0xFF, 0) == 0) {
+            TaLogic_Manawyddan2_GetMinimumTask_MoveMission(&tasks[index], side, pInput, 0, 0);
             found = 1;
         }
         break;
     case 9:
-        TaLogic_GetMinimumTask_EncMission(tasks + index * 8, side, pInput, 0, 1, TaLogic_Manawyddan2_GetWarnHideLvl(side), 4, 1);
+        TaLogic_GetMinimumTask_EncMission(&tasks[index], side, pInput, 0, 1, TaLogic_Manawyddan2_GetWarnHideLvl(side), 4, 1);
         found = 1;
         break;
     case 14:
-        TaLogic_GetMinimumTask_DoNone(tasks + index * 8, side, pInput);
+        TaLogic_GetMinimumTask_DoNone(&tasks[index], side, pInput);
         break;
     default:
         return 0;
