@@ -697,6 +697,8 @@ s32 lSzBattle_DrawGrass_Pipe(s32 packet, s32 model, s32 kind) {
         do {
             s32 value = *entry;
             if (value >= 0) {
+                /* a unit record; read raw (card[0x46] = its modelId): as a Unit * the float arguments
+                   below come out in another order (the compiler's memory, see the README) */
                 u8 *card = (u8 *)SzDuel_GetUnit(value >> 8, value & 0xFF);
                 if (card != NULL) {
                     result = lSzBattle_DrawFakeShadow(result, card[0x46], -1, -25.0f, 800.0f);
@@ -911,6 +913,8 @@ s32 lSzBattle_DrawNormal_Pipe(s32 packet, s32 model, s32 kind) {
         do {
             s32 value = *entry;
             if (value >= 0) {
+                /* a unit record; read raw (card[0x46] = its modelId): as a Unit * the float arguments
+                   below come out in another order (the compiler's memory, see the README) */
                 u8 *card = (u8 *)SzDuel_GetUnit(value >> 8, value & 0xFF);
                 if (card != NULL) {
                     packet = lSzBattle_DrawFakeShadow(packet, card[0x46], -1, -13.5f, 400.0f);

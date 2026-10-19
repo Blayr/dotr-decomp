@@ -2208,37 +2208,19 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     ExSortNode_Pipe(pipe2, &prim, nodeL2V3In, 0x70002000, 0, 0);
 }
 
-struct DotrStateCellQuad {
-    unsigned char unknown_0;
-    unsigned char unknown_1;
-    unsigned char unknown_2;
-    unsigned char unknown_3;
-};
-typedef int DotrStateWord;
-struct DotrStateCell {
-    DotrStateWord unknown_00;
-    struct DotrStateCellQuad unknown_04[4];
-    short unknown_14;
-    unsigned char unknown_16;
-    unsigned char unknown_17;
-    unsigned char unknown_18;
-    unsigned char unknown_19;
-    unsigned char unknown_1a;
-};
-typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell) == 0x1c) ? 1 : -1];
-struct DotrStateCell *func_001DCD00_b(int x, int y);
+MapInfo *func_001DCD00_b(int x, int y);
 
 /* Draws the line between the two halves of the board. */
 int SzDuel_DrawLine_Pipe(int cursor)
 {
     int x;
     int y;
-    struct DotrStateCell *cell;
+    MapInfo *cell;
     float pos[4];
     float dx;
     float dz;
-    struct DotrStateCellQuad c0;
-    struct DotrStateCellQuad c1;
+    Bgra c0;
+    Bgra c1;
 
     if (SzModel_GetDrawFlag(0) == 0) {
         return cursor;
@@ -2246,62 +2228,30 @@ int SzDuel_DrawLine_Pipe(int cursor)
     for (y = 0; y < 7; y++) {
         for (x = 0; x < 7; x++) {
             cell = func_001DCD00_b(x, y);
-            c0 = cell->unknown_04[1];
-            c1 = cell->unknown_04[3];
-            c0.unknown_2 = (c0.unknown_2 * cell->unknown_1a) >> 7;
-            c0.unknown_1 = (c0.unknown_1 * cell->unknown_1a) >> 7;
-            c0.unknown_0 = (c0.unknown_0 * cell->unknown_1a) >> 7;
-            c1.unknown_2 = (c1.unknown_2 * cell->unknown_1a) >> 7;
-            c1.unknown_1 = (c1.unknown_1 * cell->unknown_1a) >> 7;
-            c1.unknown_0 = (c1.unknown_0 * cell->unknown_1a) >> 7;
+            c0 = cell->Highlight;
+            c1 = cell->BorderOutline;
+            c0.r = (c0.r * cell->mapAlpha) >> 7;
+            c0.g = (c0.g * cell->mapAlpha) >> 7;
+            c0.b = (c0.b * cell->mapAlpha) >> 7;
+            c1.r = (c1.r * cell->mapAlpha) >> 7;
+            c1.g = (c1.g * cell->mapAlpha) >> 7;
+            c1.b = (c1.b * cell->mapAlpha) >> 7;
             pos[0] = (x - 3) * 50;
             pos[2] = (y - 3) * 50;
             pos[1] = -0.2f;
-            if (c0.unknown_3 != 0) {
+            if (c0.a != 0) {
                 dz = dx = 24.0f;
-                cursor = SzDuel_DrawCursor_Pipe(cursor, pos, dx, dz, cell->unknown_19, &c0.unknown_0, 1);
+                cursor = SzDuel_DrawCursor_Pipe(cursor, pos, dx, dz, cell->SelectionHighlightType, &c0.b, 1);
             }
             pos[1] = -0.1f;
-            if (c1.unknown_3 != 0) {
+            if (c1.a != 0) {
                 dz = dx = 24.0f;
-                cursor = SzDuel_DrawCursor_Pipe(cursor, pos, dx, dz, 1, &c1.unknown_0, 0);
+                cursor = SzDuel_DrawCursor_Pipe(cursor, pos, dx, dz, 1, &c1.b, 0);
             }
         }
     }
     return cursor;
 }
-
-typedef struct {
-    s8 unused : 7;
-    s8 set : 1;
-} Flag7_001DC790;
-
-typedef struct {
-    s8 unused : 1;
-    s8 set : 1;
-    s8 rest : 6;
-} Flag1_001DC790;
-
-typedef struct {
-    u8 pad0[4];
-    s32 state;
-    u8 pad8[0x38];
-    u8 x, y;
-    u8 pad42[4];
-    u8 angle;
-    u8 pad47[6];
-    u8 intensity;
-    u8 pad4E[9];
-    Flag7_001DC790 flag7;
-    Flag1_001DC790 flag1;
-} Card_001DC790;
-
-typedef struct {
-    u8 pad0[0x10];
-    u8 blue, green, red;
-    u8 pad13[7];
-    u8 intensity;
-} Info_001DC790;
 
 typedef union {
     __int128 q[4];
@@ -2344,11 +2294,11 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
     u8 *entry;
     f32 scale;
     s32 count;
-    Card_001DC790 *card;
-    Info_001DC790 *info;
+    Unit *card;
+    MapInfo *info;
     u8 intensity;
 
-    card = (Card_001DC790 *)SzDuel_GetUnit(side, 0);
+    card = (Unit *)SzDuel_GetUnit(side, 0);
     scale = 16.666666f;
     scale = (scale * DeckLeaderRoseSize) / 128.0f;
     points = D_00291590;
@@ -2370,14 +2320,14 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
     if (card == NULL) {
         return out;
     }
-    if (card->state != 0) {
+    if (card->cardModel != 0) {
         return out;
     } else {
-        info = SzDuel_GetMapInfo(card->x, card->y);
-        if (card->flag7.set == 0 && card->flag1.set == 0) {
-            intensity = info->intensity;
+        info = SzDuel_GetMapInfo(card->locCol, card->locRow);
+        if (card->status.fCardBusy == 0 && card->modelStatusFlags.fCardColBusy == 0) {
+            intensity = info->mapAlpha;
         }
-        SzModel_GetRot(card->angle, rotation);
+        SzModel_GetRot(card->modelId, rotation);
         rotation[2] = 0;
         rotation[0] = 0;
         RhGeom_GetRotXYZMatrix(&matrix, rotation);
@@ -2401,7 +2351,7 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
             intensity = (u8)intensity;
             do {
                 first = 1;
-                vertex->red = vertex->green = vertex->blue = (card->intensity * intensity) >> 7;
+                vertex->red = vertex->green = vertex->blue = (card->CardHighlight * intensity) >> 7;
                 vertex->alpha = baseAlpha;
                 vertex->q = 1.0f;
                 if (i > 1U) {
@@ -2427,9 +2377,9 @@ s32 SzDuel_DrawLeaderBase_Pipe(s32 out, s32 side, f32 *position, s32 baseAlpha, 
                 *bits = 0;
                 *data = 0;
                 ExAssignAlpha(&packet, 0x8000000048LL);
-                *(u8 *)(SCRATCHPAD_ADDR + 0x2018) = (info->red * intensity) >> 7;
-                *(u8 *)(SCRATCHPAD_ADDR + 0x2019) = (info->green * intensity) >> 7;
-                *(u8 *)(SCRATCHPAD_ADDR + 0x201A) = (info->blue * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x2018) = (info->BorderOutline.r * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x2019) = (info->BorderOutline.g * intensity) >> 7;
+                *(u8 *)(SCRATCHPAD_ADDR + 0x201A) = (info->BorderOutline.b * intensity) >> 7;
                 *(u8 *)(SCRATCHPAD_ADDR + 0x201B) = baseAlpha;
                 *(f32 *)(SCRATCHPAD_ADDR + 0x201C) = 1.0f;
                 vertex2 = (Vertex_001DC790 *)(SCRATCHPAD_ADDR + 0x2000);

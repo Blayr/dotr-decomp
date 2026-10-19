@@ -543,11 +543,11 @@ void lSzDuel_DoUnitRequest(void *cell_v, int unknown)
 
 /* Turns the units on squares (x0, z0) and (x1, z1) to face each other. */
 s32 SzDuel_TrimUnitDir(s32 x0, s32 z0, s32 x1, s32 z1) {
-    u8 *first;
+    Unit *first;
     u8 *second;
     s32 result;
 
-    first = (u8 *)SzDuel_GetUnit(x0, z0);
+    first = (Unit *)SzDuel_GetUnit(x0, z0);
     second = (u8 *)SzDuel_GetUnit(x1, z1);
     result = 0;
     if (first == second) {
@@ -555,7 +555,7 @@ s32 SzDuel_TrimUnitDir(s32 x0, s32 z0, s32 x1, s32 z1) {
     }
     if (first != 0 && second != 0) {
         result |= SzDuel_TrimUnitDir2(x0, z0, second[0x40], second[0x41]);
-        result |= SzDuel_TrimUnitDir2(x1, z1, first[0x40], first[0x41]);
+        result |= SzDuel_TrimUnitDir2(x1, z1, first->locCol, first->locRow);
     } else {
         if (first != 0) {
             result |= SzDuel_TrimUnitDir1(x0, z0);

@@ -70,6 +70,11 @@ typedef struct Rgba {
     u8 r, g, b, a;
 } Rgba;
 
+/* A colour stored blue first (the board squares). */
+typedef struct Bgra {
+    u8 b, g, r, a;
+} Bgra;
+
 /* A card's constant record (gSzDuel_CardConstInfo[card id]; 0x14 bytes). */
 typedef struct CardConstInfo {
     u8 kind;                        /* 0x00 (bKind) */
@@ -168,16 +173,16 @@ typedef struct Unit {
    grouped as the code uses them (SzDuel_CalcMapColor moves each current colour towards its target). */
 typedef struct MapInfo {
     Unit *unit;                     /* 0x00: the unit standing here, or NULL */
-    Rgba TargetHighlight;       /* 0x04: the square's colour to fade to */
-    Rgba Highlight;             /* 0x08: its colour now (a: its height) */
-    Rgba TargetBorderOutline;   /* 0x0C: the unit's glow to fade to */
-    Rgba BorderOutline;         /* 0x10: its glow now */
+    Bgra TargetHighlight;       /* 0x04: the square's colour to fade to */
+    Bgra Highlight;             /* 0x08: its colour now (a: its height) */
+    Bgra TargetBorderOutline;   /* 0x0C: the unit's glow to fade to */
+    Bgra BorderOutline;         /* 0x10: its glow now */
     s16 fieldRate;                  /* 0x14: the move highlight, -0x80..0x80 */
     u8 field;                       /* 0x16: the terrain (Field) */
     u8 MapMovable;                  /* 0x17: how far a unit can still walk from here (0xFF: not reached) */
     u8 TargetSelectionHighlight;    /* 0x18 */
     u8 SelectionHighlightType;      /* 0x19 */
-    s8 mapAlpha;                    /* 0x1A */
+    u8 mapAlpha;                    /* 0x1A: how bright the square is drawn (0x80 = full) */
     u8 field23_0x1b;                /* 0x1B */
 } MapInfo;
 

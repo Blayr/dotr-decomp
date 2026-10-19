@@ -446,17 +446,17 @@ s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s
 
     cell->TargetSelectionHighlight = colorValue;
     if (newColor != 0) {
-        cell->TargetHighlight = *(Rgba *)newColor;
+        cell->TargetHighlight = *(Bgra *)newColor;
     } else {
-        cell->TargetHighlight.b = 0;
-        cell->TargetHighlight.g = 0;
         cell->TargetHighlight.r = 0;
+        cell->TargetHighlight.g = 0;
+        cell->TargetHighlight.b = 0;
         cell->TargetHighlight.a = 0;
     }
 
-    cell->TargetBorderOutline.b = 0;
-    cell->TargetBorderOutline.g = 0;
     cell->TargetBorderOutline.r = 0;
+    cell->TargetBorderOutline.g = 0;
+    cell->TargetBorderOutline.b = 0;
     cell->TargetBorderOutline.a = 0;
 
     if (redraw != 0) {
@@ -465,17 +465,17 @@ s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s
             if (entity->status.fRevolt) {
                 lit = (channel * 0xFF) >> 7;
                 dim = (inverse * 0xFF) >> 7;
-                cell->TargetBorderOutline.b = lit + dim;
+                cell->TargetBorderOutline.r = lit + dim;
                 cell->TargetBorderOutline.g = dim;
-                cell->TargetBorderOutline.r = dim;
+                cell->TargetBorderOutline.b = dim;
             } else if (entity->team == 0) {
-                cell->TargetBorderOutline.b = 0xFF;
-                cell->TargetBorderOutline.g = 0;
-                cell->TargetBorderOutline.r = 0;
-            } else {
-                cell->TargetBorderOutline.b = 0xFF;
-                cell->TargetBorderOutline.g = 0xFF;
                 cell->TargetBorderOutline.r = 0xFF;
+                cell->TargetBorderOutline.g = 0;
+                cell->TargetBorderOutline.b = 0;
+            } else {
+                cell->TargetBorderOutline.r = 0xFF;
+                cell->TargetBorderOutline.g = 0xFF;
+                cell->TargetBorderOutline.b = 0xFF;
             }
             cell->TargetBorderOutline.a = 0x80;
         }
@@ -528,16 +528,16 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
         }
         return 1;
     } else {
-        current = p->Highlight.b;
-        target = p->TargetHighlight.b;
+        current = p->Highlight.r;
+        target = p->TargetHighlight.r;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p->Highlight.b -= step;
+            p->Highlight.r -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p->Highlight.b += step;
+            p->Highlight.r += step;
         }
         current = p->Highlight.g;
         target = p->TargetHighlight.g;
@@ -550,16 +550,16 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
             step = clamp_001E3230(step);
             p->Highlight.g += step;
         }
-        current = p->Highlight.r;
-        target = p->TargetHighlight.r;
+        current = p->Highlight.b;
+        target = p->TargetHighlight.b;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p->Highlight.r -= step;
+            p->Highlight.b -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p->Highlight.r += step;
+            p->Highlight.b += step;
         }
         current = p->Highlight.a;
         target = p->TargetHighlight.a;
@@ -572,16 +572,16 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
             step = clamp_001E3230(step);
             p->Highlight.a += step;
         }
-        current = p->BorderOutline.b;
-        target = p->TargetBorderOutline.b;
+        current = p->BorderOutline.r;
+        target = p->TargetBorderOutline.r;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p->BorderOutline.b -= step;
+            p->BorderOutline.r -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p->BorderOutline.b += step;
+            p->BorderOutline.r += step;
         }
         current = p->BorderOutline.g;
         target = p->TargetBorderOutline.g;
@@ -594,16 +594,16 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
             step = clamp_001E3230(step);
             p->BorderOutline.g += step;
         }
-        current = p->BorderOutline.r;
-        target = p->TargetBorderOutline.r;
+        current = p->BorderOutline.b;
+        target = p->TargetBorderOutline.b;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p->BorderOutline.r -= step;
+            p->BorderOutline.b -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p->BorderOutline.r += step;
+            p->BorderOutline.b += step;
         }
         current = p->BorderOutline.a;
         target = p->TargetBorderOutline.a;

@@ -13,12 +13,12 @@ typedef struct Flags_001E3850 {
 /* The unit record SzDuel_SetBusyFlag writes, or NULL. */
 static inline void *get_001E3850(void) {
     extern void *SzDuel_GetCardInfo();
-    u8 *card = SzDuel_GetCardInfo();
+    Unit *card = SzDuel_GetCardInfo();
 
     if (card == NULL) {
         return NULL;
     }
-    if (card[0x45] >= 0xB) {
+    if (card->slot >= 0xB) {
         return NULL;
     }
     return card;
