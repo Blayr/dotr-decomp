@@ -517,12 +517,12 @@ s32 TaLogic_GetNearCard2(void *pVarInfo, s32 nX, s32 nZ, s32 nSide, s32 bChase, 
 }
 
 /* The nearest enemy unit a unit (record `pVarInfo`) on (nX, nZ) can reach and beat, searched by a move tree. */
-void TaLogic_GetNearUnitL2(s32 pTree, s32 pVarInfo, s32 nX, s32 nZ,
+s32 TaLogic_GetNearUnitL2(s32 pTree, s32 pVarInfo, s32 nX, s32 nZ,
                    s32 nSide, s32 bChase, s32 fView, s32 bWarnLvl,
                    s32 nUnitLst, s32 wUnitNum, s32 wSize, s32 wNodeCount, s32 wIgnoreLst) {
     extern u8 *TaLogic_GetNearUnitPickUpTree();
 
-    TaLogic_GetNearUnitPickUpTree(pTree, 0, pVarInfo, nX, nZ, nSide, bChase, fView,
+    return (s32)TaLogic_GetNearUnitPickUpTree(pTree, 0, pVarInfo, nX, nZ, nSide, bChase, fView,
                    (u16) bWarnLvl, 0, (s64) wSize, (s64) wNodeCount,
                    (s64) nUnitLst, (s64) wUnitNum, (s64) wIgnoreLst);
 }
@@ -1061,7 +1061,7 @@ s32 TaLogic_IsUnitWin3(s32 pVarInfo, s32 bWarnLvl, s32 nX, s32 nZ) {
 }
 
 /* Whether a unit (record `pVarInfo`) beats enemy `nEnemyID` on (nX, nZ), judging hidden cards by level `bWarnLvl`. */
-void TaLogic_IsUnitWin4(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ, s32 fView) {
+s32 TaLogic_IsUnitWin4(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ, s32 fView) {
     if (nEnemyID == -1) {
         TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
@@ -1070,7 +1070,7 @@ void TaLogic_IsUnitWin4(s32 pVarInfo, s32 nEnemyID, s32 bWarnLvl, s32 nX, s32 nZ
         TaLogic_IsUnitWin3(pVarInfo, bWarnLvl, nX, nZ);
         return;
     }
-    TaLogic_IsUnitWin2(pVarInfo, nEnemyID, nX, nZ);
+    return TaLogic_IsUnitWin2(pVarInfo, nEnemyID, nX, nZ);
 }
 
 /* Whether a unit (record `pVarInfo`) beats enemy `nEnemyID` on (nX, nZ), with attribute and effect bonuses. */
@@ -1173,12 +1173,12 @@ u16 TaLogic_GetActOfs(void *pVarInfo, void *pVarInfo2) {
 }
 
 /* How many monsters (or spells, `fSpell`) side `nSide` has. */
-void TaLogic_GetUnitNum(s32 nSide, s32 fSpell) {
+s32 TaLogic_GetUnitNum(s32 nSide, s32 fSpell) {
     if (fSpell == 1) {
         SzDuel_GetUnitSpellCount(nSide);
         return;
     }
-    SzDuel_GetUnitMonsterCount(nSide);
+    return SzDuel_GetUnitMonsterCount(nSide);
 }
 
 typedef struct {
@@ -1652,9 +1652,9 @@ u8 *TaLogic_GetRootTree2(u8 *node, s32 parent, s32 card, s32 x, s32 y,
 }
 
 /* Whether unit (nSide, nID) can move from (nX, nZ) to (gX, gZ) this turn. */
-void TaLogic_IsPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
+s32 TaLogic_IsPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
                    s32 gX, s32 gZ, s32 gUnitID) {
-    TaLogic_IsPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ, gX, gZ, gUnitID);
+    return TaLogic_IsPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ, gX, gZ, gUnitID);
 }
 
 /* Whether a unit (record `pVarInfo`) can move from (nX, nZ) to (gX, gZ) this turn (fields, units in the way). */
@@ -1717,9 +1717,9 @@ s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitI
 }
 
 /* Whether unit (nSide, nID) can run from (nX, nZ) to (gX, gZ) (`fFoot` counts its moves). */
-void TaLogic_IsRunPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
+s32 TaLogic_IsRunPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
                    s32 gX, s32 gZ, s32 gUnitID, s32 fFoot) {
-    TaLogic_IsRunPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ,
+    return TaLogic_IsRunPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ,
                   gX, gZ, gUnitID, fFoot);
 }
 
@@ -1795,9 +1795,9 @@ s32 TaLogic_IsRunPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUn
 }
 
 /* The attack path for unit (nSide, nID) from (nX, nZ) to (gX, gZ), into `pMovePiece`. */
-void TaLogic_GetInvadeRoot(s32 nSide, s32 nID, s32 pMovePiece, s32 nX, s32 nZ,
+s32 TaLogic_GetInvadeRoot(s32 nSide, s32 nID, s32 pMovePiece, s32 nX, s32 nZ,
                    s32 gX, s32 gZ, s32 gUnitID, s32 fView, u8 bAbort, u16 bWarnLvl) {
-    TaLogic_GetInvadeRoot2(SzDuel_GetUnit(nSide, nID), pMovePiece, nX, nZ, gX,
+    return TaLogic_GetInvadeRoot2(SzDuel_GetUnit(nSide, nID), pMovePiece, nX, nZ, gX,
                   gZ, gUnitID, fView, bAbort, bWarnLvl);
 }
 
@@ -2254,9 +2254,9 @@ void TaLogic_InitRogicControl(void *pUnit, u8 Is1st) {
 }
 
 /* Whether unit (nSide, nID) on (nX, nZ) has an open path to unit (gSide, gID) on (gX, gZ). */
-void TaLogic_IsRootOpen(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gSide,
+s32 TaLogic_IsRootOpen(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gSide,
                    s32 gID, s32 gX, s32 gZ, u8 bAbort) {
-    TaLogic_IsRootOpen2(SzDuel_GetUnit(nSide, nID), nX, nZ, gSide, gID,
+    return TaLogic_IsRootOpen2(SzDuel_GetUnit(nSide, nID), nX, nZ, gSide, gID,
                   gX, gZ, bAbort);
 }
 

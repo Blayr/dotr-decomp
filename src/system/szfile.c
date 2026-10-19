@@ -59,8 +59,8 @@ void SzFile_Init(void) {
 
 /* Queues a read of file `path` to `address` (`size` bytes or -1 for all), calling `callback(request, ok)` with
    `callbackArg` when done. */
-void SzFile_ReadRequest(s32 owner, s32 path, s32 address, s32 size, s32 callback, s64 callbackArg) {
-    SzFile_ReadRequestParam(owner, 0, path, address, size, 0, -1, callback, callbackArg);
+s32 SzFile_ReadRequest(s32 owner, s32 path, s32 address, s32 size, s32 callback, s64 callbackArg) {
+    return SzFile_ReadRequestParam(owner, 0, path, address, size, 0, -1, callback, callbackArg);
 }
 
 typedef struct Request_001FECB0 {
@@ -955,8 +955,8 @@ s32 RhFile_Term(void) {
 }
 
 /* Loads IOP module `name`. */
-void RhFile_LoadIopModuleWrapper(s32 name, s32 argCount) {
-    RhFile_LoadIopModuleWrapperEx(name, 0, 0, argCount);
+s32 RhFile_LoadIopModuleWrapper(s32 name, s32 argCount) {
+    return RhFile_LoadIopModuleWrapperEx(name, 0, 0, argCount);
 }
 
 /* Loads IOP module `name` (from the disc's module folder) with its arguments, retrying until it loads. */

@@ -892,7 +892,7 @@ s32 lSzDuel_DrawTrade_Base_Pipe(s32 out) {
 }
 
 /* Draws the trade screen's title bar. */
-void lSzDuel_DrawTrade_Title_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawTrade_Title_Pipe(s32 packet, s32 left, s32 top) {
     s32 text = (s32)&D_002BF00B;
     s32 x = left + 0xE0;
     s32 y = top + 0x20;
@@ -900,7 +900,7 @@ void lSzDuel_DrawTrade_Title_Pipe(s32 packet, s32 left, s32 top) {
 
     packet = lSzDuel_DrawWindow_Base_Pipe(packet, x, y, 6, 1);
     element = lSzDuel_DrawWindow_Frame_Pipe(packet, -1, 0x73, 4, x, y, 0x15, 2, 1);
-    SzDuel_DrawWindow_Font_Pipe(element, left + 0x140, top + 0x27, 2, 3,
+    return SzDuel_DrawWindow_Font_Pipe(element, left + 0x140, top + 0x27, 2, 3,
                   func_0019BEF0((const char *)text), (s8 *)text, 0);
 }
 
@@ -1497,7 +1497,7 @@ s32 lSzDuel_DrawTrade_Ready_Pipe(s32 packet, s32 left, s32 top) {
 #pragma opt_propagation reset
 
 /* Draws the leave-trade dialog (yes / no). */
-void lSzDuel_DrawTrade_Exit_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawTrade_Exit_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 *SzMsg_GetInfo(s32);
     extern s32 SzMsg_DrawX_Pipe(s32, s32, s32, s32, s32, void (*)(void));
@@ -1518,12 +1518,12 @@ void lSzDuel_DrawTrade_Exit_Pipe(s32 packet, s32 left, s32 top) {
     SzMsg_Free(1);
     id = SzDuel_DrawWindow_Font_Pipe(id, left + 0xF0, top + 0x119, 2, 3, func_0019BEF0((char *)text2), text2,
                        D_003181C6 != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x119, 2, 3, func_0019BEF0((char *)text3), text3,
+    return SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x119, 2, 3, func_0019BEF0((char *)text3), text3,
                   state[0xD36] != 0 ? (s32)D_002BE944 : 0);
 }
 
 /* Draws the do-trade dialog (yes / no). */
-void lSzDuel_DrawTrade_Do_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawTrade_Do_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 *SzMsg_GetInfo(s32);
     extern s32 SzMsg_DrawX_Pipe(s32, s32, s32, s32, s32, void (*)(void));
@@ -1544,16 +1544,16 @@ void lSzDuel_DrawTrade_Do_Pipe(s32 packet, s32 left, s32 top) {
     SzMsg_Free(1);
     id = SzDuel_DrawWindow_Font_Pipe(id, left + 0xF0, top + 0x10E, 2, 3, func_0019BEF0((char *)text2), text2,
                        D_003181C6 != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x10E, 2, 3, func_0019BEF0((char *)text3), text3,
+    return SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x10E, 2, 3, func_0019BEF0((char *)text3), text3,
                   state[0xD36] != 0 ? (s32)D_002BE944 : 0);
 }
 
 /* Draws the trade notice dialog. */
-void lSzDuel_DrawTrade_Notice_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawTrade_Notice_Pipe(s32 packet, s32 left, s32 top) {
     s32 text = (s32) &D_002BF040;
     s32 length = func_0019BEF0((const char *) text);
 
-    lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x80, left + 0x140, top + 0xA3,
+    return lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x80, left + 0x140, top + 0xA3,
                   0x140, 0x7A, length, text, 1);
 }
 

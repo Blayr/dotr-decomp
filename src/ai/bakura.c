@@ -512,8 +512,8 @@ void TaLogic018_CommandBtlUnit(void *pTask) {
 }
 
 /* TaLogic_GetNearUnit with this duelist's view and strength settings. */
-void TaLogic018_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
-    TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
+s32 TaLogic018_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
+    return TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
                   nUnitLst, wUnitNum, wSize, wNodeCount, bChase,
                   0, 2500, wIgnoreLst);
 }
@@ -549,14 +549,14 @@ void TaLogic018_CommandEfcMonster(void *pTask) {
 }
 
 /* The virus-field squares joined to (nX, nZ), into `buf` (49 entries). */
-void TaLogic018_GetOutVirusZone(s32 nX, s32 nZ, u16 *buf) {
+s32 TaLogic018_GetOutVirusZone(s32 nX, s32 nZ, u16 *buf) {
     s32 i;
 
     for (i = 0; i < 0x31; i++) {
         buf[i] = 0xFFFF;
     }
     TaLogic018_GetZoneSide(nX, nZ, buf);
-    TaLogic018_GetZoneSize(buf);
+    return TaLogic018_GetZoneSize(buf);
 }
 
 /* `value`, at most 6. */

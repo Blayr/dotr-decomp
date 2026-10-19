@@ -690,9 +690,9 @@ static inline void *check_001E08F0(void *info) {
 }
 
 /* Unit (side, unit)'s level (`baseOnly`: without its changes). */
-void SzDuel_GetUnitLevel(s32 side, s32 unit, s32 baseOnly) {
+s32 SzDuel_GetUnitLevel(s32 side, s32 unit, s32 baseOnly) {
     extern void *SzDuel_GetCardInfo();
-    SzDuel_GetUnitLevel2(check_001E08F0(SzDuel_GetCardInfo()), baseOnly);
+    return SzDuel_GetUnitLevel2(check_001E08F0(SzDuel_GetCardInfo()), baseOnly);
 }
 
 typedef struct Flags_001E0950 {

@@ -592,7 +592,7 @@ typedef struct {
 } Vec4_0020ED30;
 
 /* The GS depth of point `point` (moved by `bias`). */
-void RhView_GetSampleZ(void *point, f32 bias) {
+s32 RhView_GetSampleZ(void *point, f32 bias) {
     u8 buffer[31];
     Vec4_0020ED30 *vector;
     void *matrix;
@@ -602,7 +602,7 @@ void RhView_GetSampleZ(void *point, f32 bias) {
     *vector = *(Vec4_0020ED30 *) point;
     vector->z -= bias;
     RhGeom_MulMatrixVector(vector, matrix, vector);
-    func_001A23B0(vector->z / vector->w);
+    return func_001A23B0(vector->z / vector->w);
 }
 
 typedef __int128 DotrViewWord128;

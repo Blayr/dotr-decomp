@@ -1421,7 +1421,7 @@ extern s16 D_00298DEE;
 extern Item_0022A710 D_00298E10;
 
 /* Draws the campaign map in 3D: the ground, the castles, the leaders' models. */
-void Taku_Camp_3D(s32 packet) {
+s32 Taku_Camp_3D(s32 packet) {
     extern s32 SzModel_Draw_Pipe();
     extern f32 campaignPlaces_2[];
     s16 side;
@@ -1660,7 +1660,7 @@ control_updated:
     packet = Taku_Camp_3D_SHIP(packet, side, choice, kind);
     packet = SzModel_Draw_Pipe(packet, 0x29, 0, 0, 0, 0, 0);
     packet = SzModel_Draw_Pipe(packet, 0x28, 0, 0, 0, 0, 0);
-    Taku_Camp_3D_LeaderModel(packet);
+    return Taku_Camp_3D_LeaderModel(packet);
 }
 
 struct DotrLeaderModelSpot {

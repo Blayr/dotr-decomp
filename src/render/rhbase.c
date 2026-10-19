@@ -1176,7 +1176,7 @@ s32 lRhBase_InitGsAndVif(s32 mode) {
 }
 
 /* Sets a random dither matrix (`on`). */
-void lRhBase_SetRandomDither(s32 on) {
+s32 lRhBase_SetRandomDither(s32 on) {
     extern void sceVif1PkAddGsAD();
     u8 buffer[0x40];
     u8 *packet;
@@ -1198,5 +1198,5 @@ void lRhBase_SetRandomDither(s32 on) {
     sceVif1PkAddGsAD(packet, 0x44, D_00326180);
     sceVif1PkCloseGifTag(packet);
     sceVif1PkCloseDirectHLCode(packet);
-    sceVif1PkTerminate(packet);
+    return sceVif1PkTerminate(packet);
 }

@@ -4,7 +4,7 @@
 #include "campaign.h"
 
 /* Plays the movie file `path` (with audio `withAudio`, interlaced `interlaced`) in the movie memory area. */
-void movie_play(s32 path, s32 withAudio, s32 interlaced) {
+s32 movie_play(s32 path, s32 withAudio, s32 interlaced) {
     isWithAudio = withAudio;
     isWithInter = interlaced;
     clearGsMem(0, 0, 0, 0x280, 0x1C0);
@@ -20,7 +20,7 @@ void movie_play(s32 path, s32 withAudio, s32 interlaced) {
     viBufData = 0x017EA680;
     videoDecStack = 0x0186A680;
     timeStamp = 0x0186E680;
-    movie(path);
+    return movie(path);
 }
 
 /* Plays movie file `name` (Sony's ezmpeg sample player): sets everything up, plays until the end or a button

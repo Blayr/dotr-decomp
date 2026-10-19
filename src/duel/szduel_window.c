@@ -2021,13 +2021,13 @@ s32 lSzDuel_DrawWindow_FieldPiece_Pipe(s32 start, s32 colorIndex, s32 card, s32 
 }
 
 /* Draws an icon: lSzDuel_DrawWindow_ExIcon_Pipe without flips, at full alpha. */
-void lSzDuel_DrawWindow_Icon_Pipe(s32 packet, s32 src, s32 x, s32 y,
+s32 lSzDuel_DrawWindow_Icon_Pipe(s32 packet, s32 src, s32 x, s32 y,
                    s32 background, s32 image, s32 border, s32 shrink,
                    s32 bright, s32 rgb, s32 blend) {
-    extern void lSzDuel_DrawWindow_ExIcon_Pipe(s32, s32, s32, s32, s32, s32, s32, s32,
+    extern s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32, s32, s32, s32, s32, s32, s32, s32,
                               s64, s64, s64, s64, s64, s64);
 
-    lSzDuel_DrawWindow_ExIcon_Pipe(packet, src, x, y, background, image, border, shrink,
+    return lSzDuel_DrawWindow_ExIcon_Pipe(packet, src, x, y, background, image, border, shrink,
                   0, 0, (s64) bright, (s64) rgb, (s64) blend, 0x80);
 }
 
@@ -2848,9 +2848,9 @@ s32 lSzDuel_DrawWindow_Base_Pipe(s32 packet, s32 x, s32 y, s32 columns, s32 rows
 }
 
 /* Draws a window board in style 0 (lSzDuel_DrawWindow_ExBoard_Pipe). */
-void lSzDuel_DrawWindow_Board_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w,
+s32 lSzDuel_DrawWindow_Board_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s32 w,
                    s32 h, s32 shadow) {
-    lSzDuel_DrawWindow_ExBoard_Pipe(packet, colorIndex, x, y, w, h, shadow, 0);
+    return lSzDuel_DrawWindow_ExBoard_Pipe(packet, colorIndex, x, y, w, h, shadow, 0);
 }
 
 typedef struct {
@@ -3046,8 +3046,8 @@ s32 lSzDuel_DrawWindow_ExBoard_Pipe(s32 packet, s32 colorIndex, s32 x, s32 y, s3
 }
 
 /* Draws `number` as `digits` digits at (x, y) (SzDuel_DrawWindow_ExDigit_Pipe without padding). */
-void SzDuel_DrawWindow_Digit_Pipe(s32 packet, s32 x, s32 y, s32 digits, s32 number, s32 narrow) {
-    SzDuel_DrawWindow_ExDigit_Pipe(packet, x, y, digits, number, narrow, 0, 0);
+s32 SzDuel_DrawWindow_Digit_Pipe(s32 packet, s32 x, s32 y, s32 digits, s32 number, s32 narrow) {
+    return SzDuel_DrawWindow_ExDigit_Pipe(packet, x, y, digits, number, narrow, 0, 0);
 }
 
 typedef struct Result_001B6CA0 {
@@ -3100,7 +3100,7 @@ s32 SzDuel_DrawWindow_ExDigit_Pipe(s32 packet, s32 x, s32 y, s32 digits, s32 num
 }
 
 /* Draws `number` as text in the window font at (x, y). */
-void SzDuel_DrawWindow_FontDigit_Pipe(s32 packet, s32 x, s32 y, s32 font,
+s32 SzDuel_DrawWindow_FontDigit_Pipe(s32 packet, s32 x, s32 y, s32 font,
                    s32 flags, s32 width, s32 number) {
     s8 text[16];
     s32 padded;
@@ -3123,7 +3123,7 @@ void SzDuel_DrawWindow_FontDigit_Pipe(s32 packet, s32 x, s32 y, s32 font,
             break;
         }
     }
-    SzDuel_DrawWindow_Font_Pipe(packet, x, y, font, flags, width, text, 0);
+    return SzDuel_DrawWindow_Font_Pipe(packet, x, y, font, flags, width, text, 0);
 }
 
 typedef struct {
@@ -3792,7 +3792,7 @@ typedef struct {
 } Packet_001B8260;
 
 /* Draws a black rectangle at (left, top), w x h, with alpha `alpha`. */
-void lSzDuel_Draw_Fade_Pipe(s32 cursor, s32 left, s32 top, s32 w, s32 h, s32 alpha) {
+s32 lSzDuel_Draw_Fade_Pipe(s32 cursor, s32 left, s32 top, s32 w, s32 h, s32 alpha) {
     s32 x;
     s32 y;
     Packet_001B8260 packet;
@@ -3819,7 +3819,7 @@ void lSzDuel_Draw_Fade_Pipe(s32 cursor, s32 left, s32 top, s32 w, s32 h, s32 alp
     packet.vertices[1].fog = 0;
     cursor = RhBase_SetZBufferMode(cursor, 0);
     cursor = ExSortPrim_Pipe(cursor, (s32) &packet, 0, 0);
-    RhBase_SetZBufferMode(cursor, 1);
+    return RhBase_SetZBufferMode(cursor, 1);
 }
 
 /* Draws the two cards being joined (fusion or equip). */

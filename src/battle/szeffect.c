@@ -656,8 +656,8 @@ void SzEffect_Draw(s32 group) {
 }
 
 /* Starts effect `card` of `kind` from unit `from` on unit `target` (no callback). */
-void SzEffect_Entry(s32 kind, s32 card, s32 mode, s32 from, s32 target) {
-    SzEffect_EntryCallback(kind, card, mode, from, target, 0, 0);
+s32 SzEffect_Entry(s32 kind, s32 card, s32 mode, s32 from, s32 target) {
+    return SzEffect_EntryCallback(kind, card, mode, from, target, 0, 0);
 }
 
 typedef struct Slot_001F4900 {

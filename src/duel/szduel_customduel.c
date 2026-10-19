@@ -799,7 +799,7 @@ s32 lSzDuel_DrawCustomDuel_Base_Pipe(s32 out) {
 }
 
 /* Draws the custom duel screen's title bar. */
-void lSzDuel_DrawCustomDuel_Title_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawCustomDuel_Title_Pipe(s32 packet, s32 left, s32 top) {
     extern char D_002BF047[];
     extern char D_002BF04E[];
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
@@ -818,7 +818,7 @@ void lSzDuel_DrawCustomDuel_Title_Pipe(s32 packet, s32 left, s32 top) {
     ty = top + 0x27;
     element = SzDuel_DrawWindow_Font_Pipe(element, tx, ty, 2, 3, func_0019BEF0((const char *)text), (s8 *)text,
                             hint != 0 ? (s32)D_002BE944 : 0);
-    SzDuel_DrawWindow_Font_Pipe(element, left + 0x140, top + 0x46, 2, 3, func_0019BEF0((const char *)text2),
+    return SzDuel_DrawWindow_Font_Pipe(element, left + 0x140, top + 0x46, 2, 3, func_0019BEF0((const char *)text2),
                   (s8 *)text2, hint != 0 ? (s32)D_002BE944 : 0);
 }
 extern s32 D_00290A1C;

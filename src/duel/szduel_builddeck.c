@@ -1882,7 +1882,7 @@ static inline s32 rectangle_001BC350(s32 cursor, Packet_001BC350 *packet,
 #pragma alignlabel off
 
 /* Draws the deck list at (left, top): the leader's portrait, sort keys, cards and page. */
-void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
+s32 lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
     extern u8 D_00290A76[];
     extern s32 lSzDuel_DrawWindow_ExBoard_Pipe();
     extern s32 SzDuel_DrawWindow_Font_Pipe();
@@ -2048,7 +2048,7 @@ void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
     {
         s32 x = baseX + 0x638;
         s32 y = top + 0x8B4;
-        lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290972, x, y, 0, 1, 0, 0, 0, 0, state == 2 ? 1 : 0, 0, -1, 0x80);
+        return lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290972, x, y, 0, 1, 0, 0, 0, 0, state == 2 ? 1 : 0, 0, -1, 0x80);
     }
 }
 
@@ -3313,7 +3313,7 @@ s32 lSzDuel_DrawBuildDeck_DeckCursor_Pipe(s32 id, s32 left, s32 top, s32 row) {
 }
 
 /* Draws the reincarnation dialog: pick cards to give up for new ones. */
-void lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe();
     extern s32 SzDuel_DrawWindow_Font_Pipe();
     extern s32 SzMsg_DrawX_Pipe();
@@ -3344,7 +3344,7 @@ void lSzDuel_DrawBuildDeck_Reincarnation_Pipe(s32 packet, s32 left, s32 top) {
     SzMsg_Free(1);
     res = SzDuel_DrawWindow_Font_Pipe(res, left + 0xCD, top + 0x154, 2, 3, func_0019BEF0(text1), text1,
                         D_003181C6 != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(res, left + 0x1B3, top + 0x154, 2, 3, func_0019BEF0(text2), text2,
+    return SzDuel_DrawWindow_Font_Pipe(res, left + 0x1B3, top + 0x154, 2, 3, func_0019BEF0(text2), text2,
                   state[0xD36] != 0 ? (s32)D_002BE944 : 0);
 }
 
@@ -3532,26 +3532,26 @@ s32 lSzDuel_DrawBuildDeck_PasswordSuccess_Pipe(s32 packet, s32 left, s32 top) {
 }
 
 /* Draws the dialog for a wrong password. */
-void lSzDuel_DrawBuildDeck_PasswordFail_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawBuildDeck_PasswordFail_Pipe(s32 packet, s32 left, s32 top) {
     s32 text = (s32)D_002BF002;
 
-    lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x96, left + 0x140, top + 0x8D,
+    return lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x96, left + 0x140, top + 0x8D,
                   0x1CC, 0xA6, func_0019BEF0((char *)text), text, 1);
 }
 
 /* Draws the dialog for a password already used. */
-void lSzDuel_DrawBuildDeck_PasswordDone_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawBuildDeck_PasswordDone_Pipe(s32 packet, s32 left, s32 top) {
     s32 text = (s32)D_002BF002;
 
-    lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x97, left + 0x140, top + 0x8D,
+    return lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x97, left + 0x140, top + 0x8D,
                   0x1CC, 0xA6, func_0019BEF0((char *)text), text, 1);
 }
 
 /* Draws the warning dialog shown when the deck cannot be used. */
-void lSzDuel_DrawBuildDeck_Caution_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawBuildDeck_Caution_Pipe(s32 packet, s32 left, s32 top) {
     s32 text = (s32)D_002BEF67;
 
-    lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x7C, left + 0x140, top + 0xA3,
+    return lSzDuel_DrawDialog_Window_Pipe(packet, 2, -1, 0x7C, left + 0x140, top + 0xA3,
                   0x140, 0x7A, func_0019BEF0((char *)text), text, 1);
 }
 

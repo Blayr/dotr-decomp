@@ -223,7 +223,7 @@ s32 lSzDuel_DrawCustomDuel_Menu_SelectMapEdit_Pipe(s32 id, s32 player, s32 x, s3
 }
 
 /* Draws the leave-custom-duel dialog (yes / no). */
-void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 left, s32 top) {
+s32 lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 left, s32 top) {
     extern s32 lSzDuel_DrawDialog_Window_Pipe(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
     extern s32 SzDuel_DrawWindow_Font_Pipe(s32, s32, s32, s32, s32, s32, s8 *, s32);
     s32 text = (s32)D_002BEF98;
@@ -235,7 +235,7 @@ void lSzDuel_DrawCustomDuel_Exit_Pipe(s32 packet, s32 left, s32 top) {
                          func_0019BEF0((char *)text), text, 0);
     id = SzDuel_DrawWindow_Font_Pipe(packet, left + 0xF0, top + 0x108, 2, 3, func_0019BEF0((char *)text2), text2,
                        *(u8 *)0xA9C08E != 0 ? 0 : (s32)D_002BE944);
-    SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
+    return SzDuel_DrawWindow_Font_Pipe(id, left + 0x190, top + 0x108, 2, 3, func_0019BEF0((char *)text3), text3,
                   *(u8 *)0xA9C08E != 0 ? (s32)D_002BE944 : 0);
 }
 

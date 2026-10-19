@@ -1972,8 +1972,8 @@ s32 Ta_IsVirus(s32 nSide, s32 nID, s32 eInfo) {
 }
 
 /* Whether unit (nSide, nID) is a virus target. */
-void Ta_IsVirus_Chk(s32 nSide, s32 nID) {
-    Ta_IsVirus_Chk2(SzDuel_GetUnit(nSide, nID));
+s32 Ta_IsVirus_Chk(s32 nSide, s32 nID) {
+    return Ta_IsVirus_Chk2(SzDuel_GetUnit(nSide, nID));
 }
 
 /* Whether a unit (record `pVarInfo`) is a virus target (by its attack). */
@@ -2384,11 +2384,11 @@ s32 TaUtil_GetUnitDP(s32 nSide, s32 nID, s32 nX, s32 nZ) {
 }
 
 /* A unit's (record `pVarInfo`) defence on square (nX, nZ), with the field bonus, kept in range. */
-void TaUtil_GetUnitDP2(s32 pVarInfo, s32 nX, s32 nZ) {
+s32 TaUtil_GetUnitDP2(s32 pVarInfo, s32 nX, s32 nZ) {
     s32 unitDP;
 
     unitDP = SzDuel_GetUnitDP2((void *)pVarInfo, 0);
-    GetStatCap(unitDP + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
+    return GetStatCap(unitDP + Ta_GetParamOfs(pVarInfo, nX, nZ, 0));
 }
 
 /* Unit (nSide, nID)'s defence on square (nX, nZ), with the field bonus. */

@@ -374,8 +374,8 @@ void TaLogic014_CommandBtlUnit(void *pTask) {
 }
 
 /* TaLogic_GetNearUnit with this duelist's view and strength settings. */
-void TaLogic014_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
-    TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
+s32 TaLogic014_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s32 eSide, s32 bDist, s32 WarnLvl, s32 nUnitLst, u16 wUnitNum, s32 wSize, s32 wNodeCount, u8 bChase, s32 wIgnoreLst) {
+    return TaLogic_GetNearUnit(pTask, pTree, pVarInfo, nX, nZ, eSide, bDist, WarnLvl,
         nUnitLst, wUnitNum, wSize, wNodeCount, bChase, 0, 2500, wIgnoreLst);
 }
 
@@ -931,8 +931,8 @@ s32 TaLogic014_SetSpecialComboQue(s32 nSide, void *bCombo, void *pCardInfo) {
 }
 
 /* Ta_GetSommonPiecePreference for this duelist. */
-void TaLogic_Mako_GetSommonPiecePreference(s32 nSide, s32 nPr) {
-    Ta_GetSommonPiecePreference(nSide, nPr);
+s32 TaLogic_Mako_GetSommonPiecePreference(s32 nSide, s32 nPr) {
+    return Ta_GetSommonPiecePreference(nSide, nPr);
 }
 
 typedef struct {

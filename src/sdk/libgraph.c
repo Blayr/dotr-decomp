@@ -93,9 +93,9 @@ s32 func_00183310(s32 name, s32 arglen, s32 args, s32 ret, s32 rpcno) {
 }
 
 /* func_00183310 with a scratch result buffer. */
-void func_00183538(s32 arg0, s32 arg1, s32 arg2) {
+s32 func_00183538(s32 arg0, s32 arg1, s32 arg2) {
     s32 sp0[4];
-    func_00183310(arg0, arg1, arg2, (s32) sp0, 0);
+    return func_00183310(arg0, arg1, arg2, (s32) sp0, 0);
 }
 
 /* func_00183310 with `arg0`..`arg3` and 0. */

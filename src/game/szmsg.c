@@ -90,7 +90,7 @@ typedef union Packet_001FD4C0 {
 } Packet_001FD4C0;
 
 /* Loads text palette `index` into GS memory at `address`. */
-void SzMsg_LoadClut_Pipe(u64 *cursor, s32 index, s32 address) {
+s32 SzMsg_LoadClut_Pipe(u64 *cursor, s32 index, s32 address) {
     extern void *RhMem_CopyMemory4(void *, void *, s32);
     extern u8 textAlphas[][16];
     extern u8 textColors[][16];
@@ -126,6 +126,7 @@ void SzMsg_LoadClut_Pipe(u64 *cursor, s32 index, s32 address) {
     packet->header.count = count;
     packet->header.dma0 = 0x11000000;
     packet->header.dma1 = (count & 0xFFFF) | 0x51000000;
+    return (s32)end;
 }
 
 /* Renders message `msg` into text slot `slot` at (x, y) of the text texture. */

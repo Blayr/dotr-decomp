@@ -5045,8 +5045,8 @@ f32 SzModel_GetAnimFrameParam(s32 index, s32 which) {
 }
 
 /* Sets model slot `index`'s current animation frame. */
-void SzModel_SetAnimFrame(s32 index, f32 value) {
-    SzModel_SetAnimFrameParam(index, 0, value);
+s32 SzModel_SetAnimFrame(s32 index, f32 value) {
+    return SzModel_SetAnimFrameParam(index, 0, value);
 }
 
 typedef struct View_001F1C50 {

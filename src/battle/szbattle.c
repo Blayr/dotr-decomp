@@ -70,7 +70,7 @@ static inline s32 abs_001E4570(s32 value) {
 }
 
 /* Draws the hand cursor (the pointing hand) at (x, y), turned by `angle`. */
-void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
+s32 lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     extern Quad_001E4570 D_00291600;
     extern Rotation_001E4570 D_00291680;
     extern u8 D_00290814[];
@@ -192,7 +192,7 @@ void lSzDuel_OpenHandCursor_Pipe(s32 packet, s32 angle, s32 x, s32 y) {
     sprite.corners[2].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[25]);
     sprite.corners[3].xyz.x = (originX << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[28]);
     sprite.corners[3].xyz.y = (originY << 4) + (s32)(16.0f * ((f32 *)SCRATCHPAD_ADDR)[29]);
-    ExSortPrim_Pipe(packet, (s32)&sprite, 0, 0);
+    return ExSortPrim_Pipe(packet, (s32)&sprite, 0, 0);
 }
 
 /* Closes the hand cursor. */

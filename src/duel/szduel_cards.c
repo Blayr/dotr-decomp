@@ -2113,7 +2113,7 @@ static inline void init_001DBFE0(void *prim, s32 flags) {
 
 /* Draws the 3D box cursor around a board square at `position`, in `color` (or the default), with its top if
    `withTop`. */
-void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop) {
+s32 SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop) {
     Primitive_001DBFE0 prim;
     f32 temp_f20;
     f32 height = 35.0f;
@@ -2205,7 +2205,7 @@ void SzDuel_DrawBoxCursor_Pipe(s32 packet, f32 *position, u8 *color, s32 withTop
     *(f32 *)(SCRATCHPAD_ADDR + 0x2098) = (position[2] + half_width);
     nodeL2V3In = Ex3d_NodeL2V(0, 4, (void *)(SCRATCHPAD_ADDR + 0x2000), 0xAA, (void *)SCRATCHPAD_ADDR, 0, 0);
     Ex3d_NodeV2S(NULL, nodeL2V3In, (void *)(SCRATCHPAD_ADDR + 0x2000));
-    ExSortNode_Pipe(pipe2, &prim, nodeL2V3In, 0x70002000, 0, 0);
+    return ExSortNode_Pipe(pipe2, &prim, nodeL2V3In, 0x70002000, 0, 0);
 }
 
 MapInfo *func_001DCD00_b(int x, int y);

@@ -67,14 +67,14 @@ typedef struct Values_00245160 {
 extern u8 D_003506C8[];
 
 /* Records a video timestamp (pts, dts) for stream position `pos` of `len` bytes. */
-void videoDecPutTs(void *vd, s64 pts, s64 dts, s32 pos, s32 len) {
+s32 videoDecPutTs(void *vd, s64 pts, s64 dts, s32 pos, s32 len) {
     Values_00245160 values;
 
     values.first = pts;
     values.second = dts;
     values.offset = pos - *(s32 *)((u8 *)vd + 0x48);
     values.fourth = len;
-    viBufPutTs(D_003506C8, &values);
+    return viBufPutTs(D_003506C8, &values);
 }
 
 typedef struct {
