@@ -12,7 +12,7 @@ typedef struct {
 /* This duelist's move: picks the next unit to act, gives it a task and turns that into input `pInput`; returns 1
    when it set one. */
 s32 TaLogic_DarknessRuler_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
-    extern s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *, s32, void *, u8, u8);
+    extern s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(UnitTask *, s32, void *, u8, u8);
     extern s32 TaLogic_DarknessRuler_GetMinimumTask_TrapMission(void *, s32, void *, u8, u8);
     UnitTask *tasks = pCtl;
     Ai_0012BB70 *ai = pCtl;
@@ -1306,7 +1306,7 @@ typedef struct Output_0012E820 {
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
    for the unit's first-choice task). */
-s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst, u8 nMode) {
+s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst, u8 nMode) {
     Output_0012E820 *output = pInput;
     s32 target;
     u8 endX;
@@ -1319,7 +1319,7 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void 
     extern s32 TaLogic_DarknessRuler_IsOpenUnit(s32, s32, void *, u8);
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
 
-    target = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    target = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     p = nibbles;
     i = 0;
     do {
@@ -1344,21 +1344,21 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void 
         initialScore = TaLogic_DarknessRuler_GetWarnHideLvl(nSide);
         centerX = target & 0xFF;
         centerY = target >> 8;
-        if (TaLogic_GetUnitWarning(centerX, centerY, *pTask, 3, initialScore, 0) == 0) {
-            output->position = *pTask;
+        if (TaLogic_GetUnitWarning(centerX, centerY, pTask->ownerId, 3, initialScore, 0) == 0) {
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_DarknessRuler_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask, nMode);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_DarknessRuler_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask, nMode);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
-        if ((range = GetMoveRange(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), centerX, centerY)) == 0) {
-            output->position = *pTask;
+        if ((range = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), centerX, centerY)) == 0) {
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_DarknessRuler_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask, nMode);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_DarknessRuler_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask, nMode);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
@@ -1373,8 +1373,8 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void 
             limit = 6;
         }
         maxY = (u8)limit;
-        if ((*pTask & 0xFF) == 0) {
-            extra = (u8)TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 0);
+        if ((pTask->ownerId & 0xFF) == 0) {
+            extra = (u8)TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
         } else {
             extra = 0;
         }
@@ -1386,9 +1386,9 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void 
                     ((y < centerY ? centerY : y) - (centerY < y ? centerY : y))) > (range & 0xF)) {
                     continue;
                 }
-                if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, centerX, centerY, x, y, pTask, extra) == 1) {
-                    if (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 0) == 0 || (u8)*pTask == 0) {
-                        candidateScore = TaLogic_GetUnitWarning(x, y, *pTask, 3, (u16)TaLogic_DarknessRuler_GetWarnHideLvl(nSide), 0);
+                if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, centerX, centerY, x, y, pTask, extra) == 1) {
+                    if (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0) {
+                        candidateScore = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, (u16)TaLogic_DarknessRuler_GetWarnHideLvl(nSide), 0);
                         if (candidateScore < bestScore) {
                             bestScore = candidateScore;
                             best = packedY | x;
@@ -1402,21 +1402,21 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void 
             }
         }
         if (best != 0xFF) {
-            output->position = *pTask;
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = best;
             if (best == target) {
-                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
             } else {
-                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 0, 0);
+                output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 0, 0);
             }
-            output->special = TaLogic_DarknessRuler_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask, nMode);
+            output->special = TaLogic_DarknessRuler_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask, nMode);
         } else {
-            output->position = *pTask;
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_DarknessRuler_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask, nMode);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_DarknessRuler_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask, nMode);
         }
         TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
@@ -1440,14 +1440,14 @@ typedef struct Result_0012ED70 {
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
    first-choice task). */
-s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32 pInput, u8 fFirst) {
+s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(UnitTask *pTask, s32 nSide, s32 pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     Coord_0012ED70 positions[12];
     s32 i;
     Coord_0012ED70 *p;
     s32 position;
 
-    position = SzDuel_GetUnitLoc(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     p = positions;
     i = 0;
     do {
@@ -1464,18 +1464,18 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s
         if (data >= 0) {
             player = (u16)(data >> 16);
             card = TaLogic_GetGraveEntryAfterScreen(player, data & 0xFF, 30);
-            ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+            ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
             ((Result_0012ED70 *)pInput)->action = 12;
-            ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+            ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
             ((Result_0012ED70 *)pInput)->count = 1;
             *(u16 *)(pInput + 4) = (player << 8) | card;
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
     }
-    if (SzDuel_GetUnitStatus(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 4) != 0) {
-        SzDuel_SetUnitStatus(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 0, 1);
-        ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+    if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+        SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+        ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
         ((Result_0012ED70 *)pInput)->action = 14;
         return 0;
     }
@@ -1500,20 +1500,20 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s
         card = TaLogic_DarknessRuler_GetWarnHideLvl(nSide);
         centerX = position & 0xFF;
         centerY = position >> 8;
-        if (TaLogic_GetUnitWarning(centerX, centerY, *(u16 *)pTask, 3, card, 0) == 0) {
-            ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+        if (TaLogic_GetUnitWarning(centerX, centerY, pTask->ownerId, 3, card, 0) == 0) {
+            ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
             ((Result_0012ED70 *)pInput)->action = 6;
             *(u16 *)(pInput + 4) = position;
-            ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+            ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
             ((Result_0012ED70 *)pInput)->count = 2;
             TaLogic_InitRogicControl(pTask, fFirst);
         } else {
-            rangeResult = GetMoveRange(SzDuel_GetUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF), centerX, centerY);
+            rangeResult = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), centerX, centerY);
             if (rangeResult == 0) {
-                ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+                ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
                 ((Result_0012ED70 *)pInput)->action = 6;
                 *(u16 *)(pInput + 4) = position;
-                ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                 ((Result_0012ED70 *)pInput)->count = 2;
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
@@ -1533,8 +1533,8 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s
                     bound = 6;
                 }
                 maxY = (u8)bound;
-                if ((*(u16 *)pTask & 0xFF) == 0) {
-                    flags = (u8)TaLogic_IsAttackedNow(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 0);
+                if ((pTask->ownerId & 0xFF) == 0) {
+                    flags = (u8)TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
                 } else {
                     flags = 0;
                 }
@@ -1542,10 +1542,10 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s
                     for (y = (u8)minY, packedY = y << 8; y <= (u8)maxY; packedY += 0x100, y++) {
                         if (((x < centerX ? centerX : x) - (centerX < x ? centerX : x)) +
                             ((y < centerY ? centerY : y) - (centerY < y ? centerY : y)) <= (rangeResult & 15)) {
-                            if (TaLogic_IsRunPassRoot(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, centerX, centerY, x, y, pTask, (u8)flags) == 1 &&
-                                (TaLogic_IsAttackedNow2(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, x, y, 0) == 0 || (u8)*(u16 *)pTask == 0)) {
+                            if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, centerX, centerY, x, y, pTask, (u8)flags) == 1 &&
+                                (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0)) {
                                 card = TaLogic_DarknessRuler_GetWarnHideLvl(nSide);
-                                cost = TaLogic_GetUnitWarning(x, y, *(u16 *)pTask, 3, card, 0);
+                                cost = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, card, 0);
                                 if (cost < bestCost) {
                                     bestCost = cost;
                                     bestPosition = packedY | x;
@@ -1559,20 +1559,20 @@ s32 TaLogic_DarknessRuler_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s
                     }
                 }
                 if (bestPosition != 0xFF) {
-                    ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+                    ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
                     ((Result_0012ED70 *)pInput)->action = 6;
                     *(u16 *)(pInput + 4) = bestPosition;
                     if (bestPosition == position) {
-                        ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                        ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                     } else {
-                        ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 0, 0);
+                        ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 0, 0);
                     }
                     ((Result_0012ED70 *)pInput)->count = 2;
                 } else {
-                    ((Result_0012ED70 *)pInput)->card = *(u16 *)pTask;
+                    ((Result_0012ED70 *)pInput)->card = pTask->ownerId;
                     ((Result_0012ED70 *)pInput)->action = 6;
                     *(u16 *)(pInput + 4) = position;
-                    ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                    ((Result_0012ED70 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                     ((Result_0012ED70 *)pInput)->count = 2;
                 }
                 TaLogic_InitRogicControl(pTask, fFirst);

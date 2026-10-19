@@ -999,7 +999,7 @@ typedef struct {
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
    for the unit's first-choice task). */
-s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Pegasus_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     s32 position;
     u8 upperX;
@@ -1017,7 +1017,7 @@ s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInpu
     s32 bestScore;
     Output_001374D0 *out = pInput;
 
-    position = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     i = 0;
     do {
         cells[i].low = cells[i].high = 15;
@@ -1026,22 +1026,22 @@ s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInpu
 
     originalX = position & 0xFF;
     originalY = position >> 8;
-    if (TaLogic_GetUnitWarning(originalX, originalY, *pTask, 3, 0, 1) == 0) {
-        out->id = *pTask;
+    if (TaLogic_GetUnitWarning(originalX, originalY, pTask->ownerId, 3, 0, 1) == 0) {
+        out->id = pTask->ownerId;
         out->action = 6;
         out->position = position;
-        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
-        out->value = TaLogic_Pegasus_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+        out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 1);
+        out->value = TaLogic_Pegasus_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
         TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     } else {
-        result = GetMoveRange(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), originalX, originalY);
+        result = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), originalX, originalY);
         if (result == 0) {
-            out->id = *pTask;
+            out->id = pTask->ownerId;
             out->action = 6;
             out->position = position;
-            out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
-            out->value = TaLogic_Pegasus_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 1);
+            out->value = TaLogic_Pegasus_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         } else {
@@ -1064,8 +1064,8 @@ s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInpu
                 end = 6;
             }
             endY = end & 0xFF;
-            if ((*pTask & 0xFF) == 0) {
-                flag = TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 1) & 0xFF;
+            if ((pTask->ownerId & 0xFF) == 0) {
+                flag = TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 1) & 0xFF;
             } else {
                 flag = 0;
             }
@@ -1077,9 +1077,9 @@ s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInpu
                           (originalX < x ? originalX : x)) +
                          ((y < originalY ? originalY : y) -
                           (originalY < y ? originalY : y))) <= (result & 15)) {
-                        if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
-                            (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 1) == 0 || (u8)*pTask == 0)) {
-                            score = TaLogic_GetUnitWarning(x, y, *pTask, 3, 0, 1);
+                        if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
+                            (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 1) == 0 || (u8)pTask->ownerId == 0)) {
+                            score = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, 0, 1);
                             if (score < bestScore) {
                                 bestScore = score;
                                 bestPosition = packedY | x;
@@ -1094,21 +1094,21 @@ s32 TaLogic_Pegasus_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInpu
                 }
             }
             if (bestPosition != 0xFF) {
-                out->id = *pTask;
+                out->id = pTask->ownerId;
                 out->action = 6;
                 out->position = bestPosition;
                 if (bestPosition == position) {
-                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
+                    out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 1);
                 } else {
-                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 0, 1);
+                    out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 0, 1);
                 }
-                out->value = TaLogic_Pegasus_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                out->value = TaLogic_Pegasus_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             } else {
-                out->id = *pTask;
+                out->id = pTask->ownerId;
                 out->action = 6;
                 out->position = position;
-                out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 1);
-                out->value = TaLogic_Pegasus_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 1);
+                out->value = TaLogic_Pegasus_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             }
             TaLogic_InitRogicControl(pTask, fFirst);
         }
@@ -1504,7 +1504,7 @@ typedef struct {
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
    first-choice task). */
-s32 TaLogic_Pegasus_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Pegasus_GetMinimumTask_ReviveMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     s32 card;
     s32 col;
     u16 row;
@@ -1513,7 +1513,7 @@ s32 TaLogic_Pegasus_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pI
     s32 i;
     Nibbles_00138780 *entry;
 
-    SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     entry = entries;
     i = 0;
     do {
@@ -1523,23 +1523,23 @@ s32 TaLogic_Pegasus_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pI
     } while (i < 12);
 
     card = TaLogic009_IsUseCopyCat(nSide);
-    if (TaLogic_GetActionReaction(*pTask >> 8, *pTask & 0xFF, 0, 0, 6, 1) == 5) {
+    if (TaLogic_GetActionReaction(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 0, 6, 1) == 5) {
         card = -1;
     }
     if (card >= 0) {
         row = card >> 16;
         col = TaLogic_GetGraveEntryAfterScreen(row, card & 0xFF, 0);
-        out->pos = *pTask;
+        out->pos = pTask->ownerId;
         out->kind = 12;
-        out->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->target, 1, 1);
+        out->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->target, 1, 1);
         out->flag = 1;
         out->target = (row << 8) | col;
         TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     }
-    if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
-        SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
-        out->pos = *pTask;
+    if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+        SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+        out->pos = pTask->ownerId;
         out->kind = 14;
         return 0;
     }

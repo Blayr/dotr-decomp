@@ -143,33 +143,33 @@ s32 TaLogic_Rex_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
 #pragma conditional_move reset
 
 /* Gives a unit of this duelist its order for this turn (attack, run, move, summon, guard). */
-s32 TaLogic_Rex_CommandUnit(void *pCtl) {
+s32 TaLogic_Rex_CommandUnit(UnitTask *pCtl) {
     u16 key;
     s32 controllingSide;
     s32 kind;
 
-    key = *(u16 *)pCtl;
+    key = pCtl->ownerId;
     controllingSide = Ta_IsUnitControl((s32)key >> 8, key & 0xFF);
 
-    key = *(u16 *)pCtl;
+    key = pCtl->ownerId;
     if (SzDuel_GetUnit((s32)key >> 8, key & 0xFF) != 0) {
-        key = *(u16 *)pCtl;
+        key = pCtl->ownerId;
         if (SzDuel_GetUnitStatus((s32)key >> 8, key & 0xFF, 0) == 0) {
-            key = *(u16 *)pCtl;
+            key = pCtl->ownerId;
             if (key != 0xFFFF) {
                 if ((key & 0xFF) == 0) {
-                    if (*(s32 *)((u8 *)pCtl + 8) == -1) {
+                    if ((s32)pCtl->dwGoal == -1) {
                         if (TaLogic_IsAttackedNow((s32)key >> 8, key & 0xFF, 0) == 1) {
-                            if (SzDuel_InqHandPhase((s32)(*(u16 *)pCtl) >> 8) == 1) {
-                                *(u16 *)((u8 *)pCtl + 4) = 0x50A;
+                            if (SzDuel_InqHandPhase((s32)(pCtl->ownerId) >> 8) == 1) {
+                                pCtl->mission = 0x50A;
                             } else {
-                                *(u16 *)((u8 *)pCtl + 4) = 0x5FF;
+                                pCtl->mission = 0x5FF;
                             }
                         } else {
-                            if (SzDuel_InqHandPhase((s32)(*(u16 *)pCtl) >> 8) == 1) {
-                                *(u16 *)((u8 *)pCtl + 4) = 0xA05;
+                            if (SzDuel_InqHandPhase((s32)(pCtl->ownerId) >> 8) == 1) {
+                                pCtl->mission = 0xA05;
                             } else {
-                                *(u16 *)((u8 *)pCtl + 4) = 0xFF05;
+                                pCtl->mission = 0xFF05;
                             }
                         }
                     }
@@ -184,13 +184,13 @@ s32 TaLogic_Rex_CommandUnit(void *pCtl) {
                         break;
                     case 4:
                     case 5:
-                        *(u16 *)((u8 *)pCtl + 4) = 0x5FF;
+                        pCtl->mission = 0x5FF;
                         break;
                     case 2:
                         TaLogic_CommandEncUnit(pCtl, 3, 0, TaLogic_Rex_GetWarnHideLvl(controllingSide) & 0xFF);
                         break;
                     default:
-                        *(u16 *)((u8 *)pCtl + 4) = 0x5FF;
+                        pCtl->mission = 0x5FF;
                         break;
                     }
                 }

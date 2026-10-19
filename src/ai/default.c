@@ -1084,7 +1084,7 @@ s32 TaLogic_Default_GetNextActiveUnit(u16 *pCtl, s32 nSide, s32 pInput) {
 
 /* Orders a fighting unit (task `pTask`): straight at its goal when the path is open, else the nearest enemy it can
    beat. */
-void TaLogic022_CommandBtlUnit(u16 *pTask) {
+void TaLogic022_CommandBtlUnit(UnitTask *pTask) {
     extern s32 TaLogic022_CommandAtkUnit();
     s32 temp_s1;
     u16 temp_v0;
@@ -1094,21 +1094,21 @@ void TaLogic022_CommandBtlUnit(u16 *pTask) {
     u16 temp_v0_5;
     u16 temp_v1;
 
-    temp_v0 = *pTask;
+    temp_v0 = pTask->ownerId;
     if (SzDuel_GetUnit((s32) temp_v0 >> 8, temp_v0 & 0xFF) != 0) {
-        temp_v0_2 = *pTask;
+        temp_v0_2 = pTask->ownerId;
         temp_s1 = ((Ta_GetCurrentSide((s32) temp_v0_2 >> 8, temp_v0_2 & 0xFF) == 0) ? 1 : 0) << 8;
-        temp_v1 = *pTask;
+        temp_v1 = pTask->ownerId;
         SzDuel_GetUnitLoc((s32) temp_v1 >> 8, temp_v1 & 0xFF);
         SzDuel_GetUnitLoc(temp_s1 >> 8, temp_s1 & 0xFF);
-        temp_v0_3 = *pTask;
+        temp_v0_3 = pTask->ownerId;
         SzDuel_GetUnit((s32) temp_v0_3 >> 8, temp_v0_3 & 0xFF);
-        temp_v0_4 = *pTask;
+        temp_v0_4 = pTask->ownerId;
         if (SzDuel_GetUnitAP((s32) temp_v0_4 >> 8, temp_v0_4 & 0xFF, 0) >= 0x9C4) {
             TaLogic022_CommandAtkUnit(pTask);
             return;
         }
-        temp_v0_5 = *pTask;
+        temp_v0_5 = pTask->ownerId;
         if (TaLogic022_IsEmptyCntrGuard((s32) temp_v0_5 >> 8, temp_v0_5 & 0xFF, 1) == 1) {
             TaLogic022_CommandLineUnit(pTask, 1);
             return;

@@ -2002,7 +2002,7 @@ typedef struct Output_00115850 {
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
    for the unit's first-choice task). */
-s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Seto_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     Output_00115850 *output = pInput;
     s32 target;
     u8 endX;
@@ -2015,7 +2015,7 @@ s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, 
     extern s32 TaLogic_Seto_IsOpenUnit();
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
 
-    target = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    target = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     p = nibbles;
     i = 0;
     do {
@@ -2040,29 +2040,29 @@ s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, 
         initialScore = TaLogic_Seto_GetWarnHideLvl(nSide);
         centerX = target & 0xFF;
         centerY = target >> 8;
-        if (TaLogic_GetUnitWarning(centerX, centerY, *pTask, 3, initialScore, 0) == 0) {
-            output->position = *pTask;
+        if (TaLogic_GetUnitWarning(centerX, centerY, pTask->ownerId, 3, initialScore, 0) == 0) {
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_Seto_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_Seto_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
-        if ((range = GetMoveRange(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), centerX, centerY)) == 0) {
-            output->position = *pTask;
+        if ((range = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), centerX, centerY)) == 0) {
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_Seto_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_Seto_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
-        if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
-            if ((SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5) == 1 ||
-                (SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5) == 5) {
-                SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
-                output->position = *pTask;
+        if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+                output->position = pTask->ownerId;
                 output->action = 0xE;
                 return 0;
             }
@@ -2078,8 +2078,8 @@ s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, 
             limit = 6;
         }
         maxY = (u8)limit;
-        if ((*pTask & 0xFF) == 0) {
-            extra = (u8)TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 0);
+        if ((pTask->ownerId & 0xFF) == 0) {
+            extra = (u8)TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
         } else {
             extra = 0;
         }
@@ -2091,9 +2091,9 @@ s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, 
                     ((y < centerY ? centerY : y) - (centerY < y ? centerY : y))) > (range & 0xF)) {
                     continue;
                 }
-                if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, centerX, centerY, x, y, pTask, extra) == 1) {
-                    if (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 0) == 0 || (u8)*pTask == 0) {
-                        candidateScore = TaLogic_GetUnitWarning(x, y, *pTask, 3, (u16)TaLogic_Seto_GetWarnHideLvl(nSide), 0);
+                if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, centerX, centerY, x, y, pTask, extra) == 1) {
+                    if (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0) {
+                        candidateScore = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, (u16)TaLogic_Seto_GetWarnHideLvl(nSide), 0);
                         if (candidateScore < bestScore) {
                             bestScore = candidateScore;
                             best = packedY | x;
@@ -2107,21 +2107,21 @@ s32 TaLogic_Seto_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, 
             }
         }
         if (best != 0xFF) {
-            output->position = *pTask;
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = best;
             if (best == target) {
-                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
             } else {
-                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
             }
-            output->special = TaLogic_Seto_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            output->special = TaLogic_Seto_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
         } else {
-            output->position = *pTask;
+            output->position = pTask->ownerId;
             output->action = 6;
             output->destination = target;
-            output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->destination, 1, 0);
-            output->special = TaLogic_Seto_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->destination, 1, 0);
+            output->special = TaLogic_Seto_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
         }
         TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
@@ -2620,7 +2620,7 @@ typedef struct Output_001170A0 {
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
    first-choice task). */
-s32 TaLogic_Seto_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Seto_GetMinimumTask_ReviveMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     Nibbles_001170A0 flags[12];
     s32 card;
     s32 selected;
@@ -2631,13 +2631,13 @@ s32 TaLogic_Seto_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
         s32 state;
         u32 *data;
 
-        if ((SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5) == 0) {
-            data = SzDuel_GetUnitEffect(*pTask >> 8, *pTask & 0xFF, 3);
+        if ((SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF) >> 5) == 0) {
+            data = SzDuel_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 3);
         } else {
-            data = SzDuel_GetUnitEffect(*pTask >> 8, *pTask & 0xFF, 0);
+            data = SzDuel_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
         }
-        card = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
-        state = SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5;
+        card = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
+        state = SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF) >> 5;
         index = 0;
         do {
             flags[index].low = flags[index].high = 15;
@@ -2650,16 +2650,16 @@ s32 TaLogic_Seto_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
                 if (SzDuel_GetField(card & 0xFF, card >> 8) == 9) {
                     selected = -1;
                 }
-                if (TaLogic_GetActionReaction(*pTask >> 8, *pTask & 0xFF, 0, 0, 6, 0) == 5) {
+                if (TaLogic_GetActionReaction(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 0, 6, 0) == 5) {
                     selected = -1;
                 }
             }
             if (selected >= 0) {
                 state = (selected >> 16) & 0xFFFF;
                 card = TaLogic_GetGraveEntryAfterScreen(state, selected & 0xFF, *data & 0x3F);
-                output->position = *pTask;
+                output->position = pTask->ownerId;
                 output->command = 12;
-                output->result = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, output->value, 1, 0);
+                output->result = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, output->value, 1, 0);
                 output->count = 1;
                 if (((*data >> 6) & 3) != 3) {
                     output->value = (nSide << 8) | card;
@@ -2670,9 +2670,9 @@ s32 TaLogic_Seto_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
                 return 0;
             }
         }
-        if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
-            SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
-            output->position = *pTask;
+        if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+            SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+            output->position = pTask->ownerId;
             output->command = 14;
             return 0;
         }

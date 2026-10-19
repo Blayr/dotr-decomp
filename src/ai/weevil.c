@@ -1476,7 +1476,7 @@ static inline s32 score_0010FA60(s32 arg0) {
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
    for the unit's first-choice task). */
-s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Weevil_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_GetUnitWarning(s32, s32, s32, s32, s32, u8);
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     extern s32 TaLogic_Weevil_IsOpenUnit();
@@ -1496,7 +1496,7 @@ s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput
     s32 bestScore;
     Output_0010FA60 *out = pInput;
 
-    position = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     i = 0;
     do {
         cells[i].low = cells[i].high = 15;
@@ -1507,22 +1507,22 @@ s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput
         u16 value = (u16)score_0010FA60(nSide);
         originalX = position & 0xFF;
         originalY = position >> 8;
-        if (TaLogic_GetUnitWarning(originalX, originalY, *pTask, 3, value, 0) == 0) {
-            out->id = *pTask;
+        if (TaLogic_GetUnitWarning(originalX, originalY, pTask->ownerId, 3, value, 0) == 0) {
+            out->id = pTask->ownerId;
             out->action = 6;
             out->position = position;
-            out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-            out->value = TaLogic_Weevil_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+            out->value = TaLogic_Weevil_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         } else {
-            result = GetMoveRange(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), originalX, originalY);
+            result = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), originalX, originalY);
             if (result == 0) {
-                out->id = *pTask;
+                out->id = pTask->ownerId;
                 out->action = 6;
                 out->position = position;
-                out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-                out->value = TaLogic_Weevil_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+                out->value = TaLogic_Weevil_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             } else {
@@ -1545,8 +1545,8 @@ s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput
                     end = 6;
                 }
                 endY = end & 0xFF;
-                if ((*pTask & 0xFF) == 0) {
-                    flag = TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 0) & 0xFF;
+                if ((pTask->ownerId & 0xFF) == 0) {
+                    flag = TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0) & 0xFF;
                 } else {
                     flag = 0;
                 }
@@ -1558,10 +1558,10 @@ s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput
                               (originalX < x ? originalX : x)) +
                              ((y < originalY ? originalY : y) -
                               (originalY < y ? originalY : y))) <= (result & 15)) {
-                            if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
-                                (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 0) == 0 || (u8)*pTask == 0)) {
+                            if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
+                                (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0)) {
                                 value = (u16)score_0010FA60(nSide);
-                                score = TaLogic_GetUnitWarning(x, y, *pTask, 3, value, 0);
+                                score = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, value, 0);
                                 if (score < bestScore) {
                                     bestScore = score;
                                     bestPosition = packedY | x;
@@ -1576,21 +1576,21 @@ s32 TaLogic_Weevil_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput
                     }
                 }
                 if (bestPosition != 0xFF) {
-                    out->id = *pTask;
+                    out->id = pTask->ownerId;
                     out->action = 6;
                     out->position = bestPosition;
                     if (bestPosition == position) {
-                        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
+                        out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
                     } else {
-                        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
+                        out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
                     }
-                    out->value = TaLogic_Weevil_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                    out->value = TaLogic_Weevil_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 } else {
-                    out->id = *pTask;
+                    out->id = pTask->ownerId;
                     out->action = 6;
                     out->position = position;
-                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-                    out->value = TaLogic_Weevil_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                    out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+                    out->value = TaLogic_Weevil_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 }
                 TaLogic_InitRogicControl(pTask, fFirst);
             }

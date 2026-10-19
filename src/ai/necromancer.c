@@ -382,17 +382,17 @@ s32 TaLogic006_GetNearUnit(s32 pTask, s32 pTree, s32 pVarInfo, s32 nX, s32 nZ, s
 }
 
 /* Orders a unit (task `pTask`) to push into the opponent's side of the board. */
-void TaLogic006_CommandInvadeUnit(void *pTask) {
+void TaLogic006_CommandInvadeUnit(UnitTask *pTask) {
     s32 loc;
     u16 temp_v0;
 
-    temp_v0 = *(u16 *)pTask;
+    temp_v0 = pTask->ownerId;
     loc = SzDuel_GetUnitLoc((s32) temp_v0 >> 8, temp_v0 & 0xFF);
-    *(s16 *)((u8 *)pTask + 4) = 0x6FF;
+    *(s16 *)&pTask->mission = 0x6FF;
     if ((loc >> 8) < 3) {
-        *(u32 *)((u8 *)pTask + 8) = *(u16 *)((u8 *)pTask + 8) | 0x03010000;
+        pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x03010000;
     } else {
-        *(u32 *)((u8 *)pTask + 8) = *(u16 *)((u8 *)pTask + 8) | 0x05020000;
+        pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x05020000;
     }
 }
 
@@ -1123,7 +1123,7 @@ typedef struct {
 
 /* The task of a unit running from danger (task `pTask`): the safest square in reach, into `pInput` (`fFirst` = 1
    for the unit's first-choice task). */
-s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *pInput, u8 fFirst) {
+s32 TaLogic_Necromancer_GetMinimumTask_RunMission(UnitTask *pTask, s32 nSide, void *pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     extern s32 TaLogic_Necromancer_IsOpenUnit();
     s32 position;
@@ -1142,7 +1142,7 @@ s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *p
     s32 bestScore;
     Output_001291C0 *out = pInput;
 
-    position = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     i = 0;
     do {
         cells[i].low = cells[i].high = 15;
@@ -1153,22 +1153,22 @@ s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *p
         u16 value = (u16)TaLogic_Necromancer_GetWarnHideLvl(nSide);
         originalX = position & 0xFF;
         originalY = position >> 8;
-        if (TaLogic_GetUnitWarning(originalX, originalY, *pTask, 3, value, 0) == 0) {
-            out->id = *pTask;
+        if (TaLogic_GetUnitWarning(originalX, originalY, pTask->ownerId, 3, value, 0) == 0) {
+            out->id = pTask->ownerId;
             out->action = 6;
             out->position = position;
-            out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-            out->value = TaLogic_Necromancer_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+            out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+            out->value = TaLogic_Necromancer_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
             TaLogic006_InitRogicControl(pTask, fFirst);
             return 0;
         } else {
-            result = GetMoveRange(SzDuel_GetUnit(*pTask >> 8, *pTask & 0xFF), originalX, originalY);
+            result = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), originalX, originalY);
             if (result == 0) {
-                out->id = *pTask;
+                out->id = pTask->ownerId;
                 out->action = 6;
                 out->position = position;
-                out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-                out->value = TaLogic_Necromancer_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+                out->value = TaLogic_Necromancer_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 TaLogic006_InitRogicControl(pTask, fFirst);
                 return 0;
             } else {
@@ -1191,8 +1191,8 @@ s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *p
                     end = 6;
                 }
                 endY = end & 0xFF;
-                if ((*pTask & 0xFF) == 0) {
-                    flag = TaLogic_IsAttackedNow(*pTask >> 8, *pTask & 0xFF, 0) & 0xFF;
+                if ((pTask->ownerId & 0xFF) == 0) {
+                    flag = TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0) & 0xFF;
                 } else {
                     flag = 0;
                 }
@@ -1204,10 +1204,10 @@ s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *p
                               (originalX < x ? originalX : x)) +
                              ((y < originalY ? originalY : y) -
                               (originalY < y ? originalY : y))) <= (result & 15)) {
-                            if (TaLogic_IsRunPassRoot(*pTask >> 8, *pTask & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
-                                (TaLogic_IsAttackedNow2(*pTask >> 8, *pTask & 0xFF, x, y, 0) == 0 || (u8)*pTask == 0)) {
+                            if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, originalX, originalY, x, y, pTask, flag) == 1 &&
+                                (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0)) {
                                 value = (u16)TaLogic_Necromancer_GetWarnHideLvl(nSide);
-                                score = TaLogic_GetUnitWarning(x, y, *pTask, 3, value, 0);
+                                score = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, value, 0);
                                 if (score < bestScore) {
                                     bestScore = score;
                                     bestPosition = packedY | x;
@@ -1222,21 +1222,21 @@ s32 TaLogic_Necromancer_GetMinimumTask_RunMission(u16 *pTask, s32 nSide, void *p
                     }
                 }
                 if (bestPosition != 0xFF) {
-                    out->id = *pTask;
+                    out->id = pTask->ownerId;
                     out->action = 6;
                     out->position = bestPosition;
                     if (bestPosition == position) {
-                        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
+                        out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
                     } else {
-                        out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 0, 0);
+                        out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 0, 0);
                     }
-                    out->value = TaLogic_Necromancer_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                    out->value = TaLogic_Necromancer_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 } else {
-                    out->id = *pTask;
+                    out->id = pTask->ownerId;
                     out->action = 6;
                     out->position = position;
-                    out->mode = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, out->position, 1, 0);
-                    out->value = TaLogic_Necromancer_IsOpenUnit(*pTask >> 8, *pTask & 0xFF, pTask);
+                    out->mode = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, out->position, 1, 0);
+                    out->value = TaLogic_Necromancer_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask);
                 }
                 TaLogic006_InitRogicControl(pTask, fFirst);
             }
@@ -1262,14 +1262,14 @@ typedef struct Result_00129700 {
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
    first-choice task). */
-s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32 pInput, u8 fFirst) {
+s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(UnitTask *pTask, s32 nSide, s32 pInput, u8 fFirst) {
     extern s32 TaLogic_IsRunPassRoot(s32, s32, s32, s32, s32, s32, void *, u8);
     Coord_00129700 positions[12];
     s32 i;
     Coord_00129700 *p;
     s32 position;
 
-    position = SzDuel_GetUnitLoc(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF);
+    position = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
     p = positions;
     i = 0;
     do {
@@ -1277,7 +1277,7 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
         i++;
         p++;
     } while (i < 12);
-    if (TaLogic_Necromancer_IsOpenUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, pTask) == 1) {
+    if (TaLogic_Necromancer_IsOpenUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, pTask) == 1) {
         s32 data;
         s32 card;
         s32 player;
@@ -1285,17 +1285,17 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
         data = TaLogic_GetMaxAPGraveCard(nSide, 3);
         player = data >> 24;
         card = TaLogic_GetGraveEntryAfterScreen(player & 0xFF, (data >> 16) & 0xFF, 29);
-        ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+        ((Result_00129700 *)pInput)->card = pTask->ownerId;
         ((Result_00129700 *)pInput)->action = 12;
-        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
         ((Result_00129700 *)pInput)->count = 1;
         *(u16 *)(pInput + 4) = ((player & 15) << 8) | card;
         TaLogic006_InitRogicControl(pTask, fFirst);
         return 0;
     }
-    if (SzDuel_GetUnitStatus(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 4) != 0) {
-        SzDuel_SetUnitStatus(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 0, 1);
-        ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+    if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+        SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+        ((Result_00129700 *)pInput)->card = pTask->ownerId;
         ((Result_00129700 *)pInput)->action = 14;
         return 0;
     }
@@ -1320,20 +1320,20 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
         card = TaLogic_Necromancer_GetWarnHideLvl(nSide);
         centerX = position & 0xFF;
         centerY = position >> 8;
-        if (TaLogic_GetUnitWarning(centerX, centerY, *(u16 *)pTask, 3, card, 0) == 0) {
-            ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+        if (TaLogic_GetUnitWarning(centerX, centerY, pTask->ownerId, 3, card, 0) == 0) {
+            ((Result_00129700 *)pInput)->card = pTask->ownerId;
             ((Result_00129700 *)pInput)->action = 6;
             *(u16 *)(pInput + 4) = position;
-            ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+            ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
             ((Result_00129700 *)pInput)->count = 2;
             TaLogic006_InitRogicControl(pTask, fFirst);
         } else {
-            rangeResult = GetMoveRange(SzDuel_GetUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF), centerX, centerY);
+            rangeResult = GetMoveRange(SzDuel_GetUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF), centerX, centerY);
             if (rangeResult == 0) {
-                ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+                ((Result_00129700 *)pInput)->card = pTask->ownerId;
                 ((Result_00129700 *)pInput)->action = 6;
                 *(u16 *)(pInput + 4) = position;
-                ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                 ((Result_00129700 *)pInput)->count = 2;
                 TaLogic006_InitRogicControl(pTask, fFirst);
                 return 0;
@@ -1353,8 +1353,8 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
                     bound = 6;
                 }
                 maxY = (u8)bound;
-                if ((*(u16 *)pTask & 0xFF) == 0) {
-                    flags = (u8)TaLogic_IsAttackedNow(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, 0);
+                if ((pTask->ownerId & 0xFF) == 0) {
+                    flags = (u8)TaLogic_IsAttackedNow(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
                 } else {
                     flags = 0;
                 }
@@ -1362,10 +1362,10 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
                     for (y = (u8)minY, packedY = y << 8; y <= (u8)maxY; packedY += 0x100, y++) {
                         if (((x < centerX ? centerX : x) - (centerX < x ? centerX : x)) +
                             ((y < centerY ? centerY : y) - (centerY < y ? centerY : y)) <= (rangeResult & 15)) {
-                            if (TaLogic_IsRunPassRoot(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, centerX, centerY, x, y, pTask, (u8)flags) == 1 &&
-                                (TaLogic_IsAttackedNow2(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, x, y, 0) == 0 || (u8)*(u16 *)pTask == 0)) {
+                            if (TaLogic_IsRunPassRoot(pTask->ownerId >> 8, pTask->ownerId & 0xFF, centerX, centerY, x, y, pTask, (u8)flags) == 1 &&
+                                (TaLogic_IsAttackedNow2(pTask->ownerId >> 8, pTask->ownerId & 0xFF, x, y, 0) == 0 || (u8)pTask->ownerId == 0)) {
                                 card = TaLogic_Necromancer_GetWarnHideLvl(nSide);
-                                cost = TaLogic_GetUnitWarning(x, y, *(u16 *)pTask, 3, card, 0);
+                                cost = TaLogic_GetUnitWarning(x, y, pTask->ownerId, 3, card, 0);
                                 if (cost < bestCost) {
                                     bestCost = cost;
                                     bestPosition = packedY | x;
@@ -1379,20 +1379,20 @@ s32 TaLogic_Necromancer_GetMinimumTask_ReviveMission(void *pTask, s32 nSide, s32
                     }
                 }
                 if (bestPosition != 0xFF) {
-                    ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+                    ((Result_00129700 *)pInput)->card = pTask->ownerId;
                     ((Result_00129700 *)pInput)->action = 6;
                     *(u16 *)(pInput + 4) = bestPosition;
                     if (bestPosition == position) {
-                        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                     } else {
-                        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 0, 0);
+                        ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 0, 0);
                     }
                     ((Result_00129700 *)pInput)->count = 2;
                 } else {
-                    ((Result_00129700 *)pInput)->card = *(u16 *)pTask;
+                    ((Result_00129700 *)pInput)->card = pTask->ownerId;
                     ((Result_00129700 *)pInput)->action = 6;
                     *(u16 *)(pInput + 4) = position;
-                    ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(*(u16 *)pTask >> 8, *(u16 *)pTask & 0xFF, *(u16 *)(pInput + 4), 1, 0);
+                    ((Result_00129700 *)pInput)->flags = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, *(u16 *)(pInput + 4), 1, 0);
                     ((Result_00129700 *)pInput)->count = 2;
                 }
                 TaLogic006_InitRogicControl(pTask, fFirst);

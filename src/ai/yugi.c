@@ -162,36 +162,36 @@ s32 TaLogic_Yugi_GetMinimumTask(void *pCtl, void *pInput, s32 wCursorPos) {
 #pragma conditional_move reset
 
 /* Gives a unit of this duelist its order for this turn (attack, run, move, summon, guard). */
-s32 TaLogic_Yugi_CommandUnit(void *pCtl) {
+s32 TaLogic_Yugi_CommandUnit(UnitTask *pCtl) {
     u16 card;
     s32 low;
     s32 controllingSide;
     s32 type;
 
-    card = *(u16 *)pCtl;
+    card = pCtl->ownerId;
     SzDuel_GetUnitLoc(card >> 8, card & 0xFF);
-    card = *(u16 *)pCtl;
+    card = pCtl->ownerId;
     controllingSide = Ta_IsUnitControl(card >> 8, card & 0xFF);
-    card = *(u16 *)pCtl;
+    card = pCtl->ownerId;
     if (SzDuel_GetUnit(card >> 8, card & 0xFF) != 0) {
-        card = *(u16 *)pCtl;
+        card = pCtl->ownerId;
         if (SzDuel_GetUnitStatus(card >> 8, card & 0xFF, 0) == 0) {
-            card = *(u16 *)pCtl;
+            card = pCtl->ownerId;
             if (card != 0xFFFF) {
                 low = card & 0xFF;
                 if (low == 0) {
-                    if (*(s32 *)((u8 *)pCtl + 8) == -1) {
+                    if ((s32)pCtl->dwGoal == -1) {
                         if (TaLogic_IsAttackedNow(card >> 8, low, 0) == 1) {
-                            if (SzDuel_InqHandPhase(*(u16 *)pCtl >> 8) == 1) {
-                                *(s16 *)((u8 *)pCtl + 4) = 0x50A;
+                            if (SzDuel_InqHandPhase(pCtl->ownerId >> 8) == 1) {
+                                *(s16 *)&pCtl->mission = 0x50A;
                             } else {
-                                *(s16 *)((u8 *)pCtl + 4) = 0x5FF;
+                                *(s16 *)&pCtl->mission = 0x5FF;
                             }
                         } else {
-                            if (SzDuel_InqHandPhase(*(u16 *)pCtl >> 8) == 1) {
-                                *(s16 *)((u8 *)pCtl + 4) = 0xA05;
+                            if (SzDuel_InqHandPhase(pCtl->ownerId >> 8) == 1) {
+                                *(s16 *)&pCtl->mission = 0xA05;
                             } else {
-                                *(s16 *)((u8 *)pCtl + 4) = 0x5FF;
+                                *(s16 *)&pCtl->mission = 0x5FF;
                             }
                         }
                     }
@@ -199,7 +199,7 @@ s32 TaLogic_Yugi_CommandUnit(void *pCtl) {
                     type = SzDuel_GetUnitKind(card >> 8, low) >> 5;
                     switch (type) {
                     case 0:
-                        card = *(u16 *)pCtl;
+                        card = pCtl->ownerId;
                         if (TaUtil_IsExMonster(card >> 8, card & 0xFF) == 1) {
                             TaLogic019_CommandEfcMonster(pCtl);
                         } else {
@@ -215,7 +215,7 @@ s32 TaLogic_Yugi_CommandUnit(void *pCtl) {
                         TaLogic019_CommandSpellUnit(pCtl);
                         break;
                     default:
-                        *(s16 *)((u8 *)pCtl + 4) = 0x5FF;
+                        *(s16 *)&pCtl->mission = 0x5FF;
                         break;
                     }
                 }
@@ -2149,7 +2149,7 @@ typedef struct Result_00161BF0 {
 
 /* The task of reviving a monster from the graveyard (task `pTask`), into `pInput` (`fFirst` = 1 for the unit's
    first-choice task). */
-s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInput, s32 fFirst) {
+s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(UnitTask *pTask, s32 nSide, void *pInput, s32 fFirst) {
     extern void TaLogic_InitRogicControl();
     extern s32 TaLogic_Yugi_GetMinimumTask_RunMission();
     Nibbles_00161BF0 entries[12];
@@ -2162,13 +2162,13 @@ s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
         u32 *card;
         s32 mode;
 
-        mode = (u8)(SzDuel_GetUnitKind(*pTask >> 8, *pTask & 0xFF) >> 5);
+        mode = (u8)(SzDuel_GetUnitKind(pTask->ownerId >> 8, pTask->ownerId & 0xFF) >> 5);
         if (mode == 0) {
-            card = SzDuel_GetUnitEffect(*pTask >> 8, *pTask & 0xFF, 3);
+            card = SzDuel_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 3);
         } else {
-            card = SzDuel_GetUnitEffect(*pTask >> 8, *pTask & 0xFF, 0);
+            card = SzDuel_GetUnitEffect(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0);
         }
-        value = SzDuel_GetUnitLoc(*pTask >> 8, *pTask & 0xFF);
+        value = SzDuel_GetUnitLoc(pTask->ownerId >> 8, pTask->ownerId & 0xFF);
         index = 0;
         do {
             entries[index].low = entries[index].high = -1;
@@ -2181,7 +2181,7 @@ s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
                 if (SzDuel_GetField(value & 0xFF, value >> 8) == 9) {
                     selection = -1;
                 }
-                if (TaLogic_GetActionReaction(*pTask >> 8, *pTask & 0xFF, 0, 0, 6, 0) == 5) {
+                if (TaLogic_GetActionReaction(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 0, 6, 0) == 5) {
                     selection = -1;
                 }
             } else {
@@ -2190,9 +2190,9 @@ s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
             if (selection >= 0) {
                 value = (selection >> 16) & 0xFFFF;
                 mode = TaLogic_GetGraveEntryAfterScreen(value, selection & 0xFF, *card & 0x3F);
-                result->id = *pTask;
+                result->id = pTask->ownerId;
                 result->type = 12;
-                result->outcome = TaLogic_IsDefStyleUnit(*pTask >> 8, *pTask & 0xFF, result->target, 1, 0);
+                result->outcome = TaLogic_IsDefStyleUnit(pTask->ownerId >> 8, pTask->ownerId & 0xFF, result->target, 1, 0);
                 result->state = 1;
                 if (((*card >> 6) & 3) != 3) {
                     result->target = (nSide << 8) | mode;
@@ -2204,9 +2204,9 @@ s32 TaLogic_Yugi_GetMinimumTask_ReviveMission(u16 *pTask, s32 nSide, void *pInpu
             }
         }
         if (mode != 0) {
-            if (SzDuel_GetUnitStatus(*pTask >> 8, *pTask & 0xFF, 4) != 0) {
-                SzDuel_SetUnitStatus(*pTask >> 8, *pTask & 0xFF, 0, 1);
-                result->id = *pTask;
+            if (SzDuel_GetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 4) != 0) {
+                SzDuel_SetUnitStatus(pTask->ownerId >> 8, pTask->ownerId & 0xFF, 0, 1);
+                result->id = pTask->ownerId;
                 result->type = 14;
                 return 0;
             }

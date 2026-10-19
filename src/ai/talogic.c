@@ -3200,7 +3200,7 @@ s32 TaLogic_GetMinimumTask_EncMission(void *arg0, s32 arg1, void *arg2, u8 arg3,
 }
 
 /* Gives a ranged (gunner) unit its task: the strongest enemy in reach. */
-s32 TaLogic_CommandGunnerUnit(u16 *pTask, s32 fView) {
+s32 TaLogic_CommandGunnerUnit(UnitTask *pTask, s32 fView) {
     u16 candidates[22];
     s32 side;
     s32 target;
@@ -3208,7 +3208,7 @@ s32 TaLogic_CommandGunnerUnit(u16 *pTask, s32 fView) {
     u16 *p;
     u16 position;
 
-    position = *pTask;
+    position = pTask->ownerId;
     side = Ta_GetCurrentSide((s32) position >> 8, position & 0xFF);
     p = candidates;
     i = 0;
@@ -3216,10 +3216,10 @@ s32 TaLogic_CommandGunnerUnit(u16 *pTask, s32 fView) {
         i += 1;
         *p++ = 0xFFFF;
     } while (i < 22);
-    position = *pTask;
+    position = pTask->ownerId;
     switch (SzDuel_GetUnitKind((s32) position >> 8, position & 0xFF) >> 5) {
     case 0:
-        position = *pTask;
+        position = pTask->ownerId;
         if (SzDuel_GetUnitStatus((s32) position >> 8, position & 0xFF, 4) != 0) {
             return 0;
         }
