@@ -40,4 +40,6 @@ A change that makes either line fail is not accepted, however good the name.
   index can fold an offset differently). Where the readable form changes the build, keep the matching form
   and add a note.
 - **Shared headers** recompile everything: run the full `make check`.
+- **Struct layouts in `include/game.h`** are checked at compile time (the layout guard at its end): when you
+  add, rename or retype a member, update its `DOTR_LAYOUT` line, with the offset the PS2 build gives it.
 - The code modules (`src/mod`) are a separate build; leave them out of naming changes unless agreed first.
