@@ -108,31 +108,25 @@ typedef struct Unit {
     u8 padding2;                    /* 0x5B */
 } Unit;
 
-/* One board square (boardSquares: [7][7], [row][column]; 0x1C bytes). */
+/* A square's colour, in the GS's byte order. */
+typedef struct MapColor {
+    u8 r, g, b, a;
+} MapColor;
+
+/* One board square (boardSquares: [7][7], [row][column]; 0x1C bytes). batzpup's names; the four colours are
+   grouped as the code uses them (SzDuel_CalcMapColor moves each current colour towards its target). */
 typedef struct MapInfo {
     Unit *unit;                     /* 0x00: the unit standing here, or NULL */
-    u8 TargetBlueHighlight;         /* 0x04 */
-    u8 TargetGreenHighlight;        /* 0x05 */
-    u8 TargetRedHighlight;          /* 0x06 */
-    u8 TargetHighlightHeightOpacity; /* 0x07 */
-    u8 BlueHighlight;               /* 0x08 */
-    u8 GreenHighlight;              /* 0x09 */
-    u8 RedHighlight;                /* 0x0A */
-    u8 HighlightHeightOpacity;      /* 0x0B */
-    u8 TargetBorderOutlineBlueValue; /* 0x0C */
-    u8 TargetBorderOutlineGreenValue; /* 0x0D */
-    u8 BorderOutlineEnabled;        /* 0x0E */
-    u8 BorderOutlineStrengthRed;    /* 0x0F */
-    u8 BorderOutlineStrengthBlue;   /* 0x10 */
-    u8 BorderOutlineStrengthGreen;  /* 0x11 */
-    u8 BorderOutlinedOpacity;       /* 0x12 */
-    u8 BorderOutlineRelated;        /* 0x13 */
-    u16 fieldRate;                  /* 0x14 */
+    MapColor TargetHighlight;       /* 0x04: the square's colour to fade to */
+    MapColor Highlight;             /* 0x08: its colour now (a: its height) */
+    MapColor TargetBorderOutline;   /* 0x0C: the unit's glow to fade to */
+    MapColor BorderOutline;         /* 0x10: its glow now */
+    s16 fieldRate;                  /* 0x14: the move highlight, -0x80..0x80 */
     u8 field;                       /* 0x16: the terrain (Field) */
-    u8 MapMovable;                  /* 0x17 */
+    u8 MapMovable;                  /* 0x17: how far a unit can still walk from here (0xFF: not reached) */
     u8 TargetSelectionHighlight;    /* 0x18 */
     u8 SelectionHighlightType;      /* 0x19 */
-    u8 mapAlpha;                    /* 0x1A */
+    s8 mapAlpha;                    /* 0x1A */
     u8 field23_0x1b;                /* 0x1B */
 } MapInfo;
 
@@ -434,7 +428,7 @@ extern volatile s32 D_0035060C;
 
 
 extern u16 AlternateCardIds[];
-extern u8 boardSquares[]; /* original: gSzDuel_aaMapInfo */
+extern MapInfo boardSquares[7][7]; /* [row][column]; original: gSzDuel_aaMapInfo */
 
 
 

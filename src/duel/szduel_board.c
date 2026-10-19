@@ -34,7 +34,7 @@ void *SzDuel_GetMapInfo(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 typedef struct Pair_001DCD70 {
@@ -245,10 +245,8 @@ void *SzDuel_GetCardInfo(s32 group, s32 index) {
     return group * 0x3F4 + duelUnits + index * 0x5C;
 }
 
-extern u8 boardSquares[]; /* original: gSzDuel_aaMapInfo */
-
 /* A board square's record, or NULL off the board. */
-static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell) {
+static inline MapInfo *cell_001DD220(s32 x, s32 y, MapInfo *cell) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
@@ -259,23 +257,23 @@ static inline u8 *cell_001DD220(s32 x, s32 y, u8 *cell) {
 void SzDuel_DoUnitRequest(void) {
     s32 x;
     s32 z;
-    u8 *info;
-    u8 *cell;
-    u8 *row;
+    MapInfo *info;
+    MapInfo *cell;
+    MapInfo *row;
 
-    row = boardSquares;
+    row = boardSquares[0];
     z = 0;
     do {
         x = 0;
         cell = row;
         do {
             info = cell_001DD220(x, z, cell);
-            lSzDuel_DoUnitRequest(info, *(s32 *)info);
+            lSzDuel_DoUnitRequest(info, (s32)info->unit);
             x += 1;
-            cell += 0x1C;
+            cell++;
         } while (x < 7);
         z += 1;
-        row += 0xC4;
+        row += 7;
     } while (z < 7);
 }
 

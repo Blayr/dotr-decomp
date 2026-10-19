@@ -3,42 +3,42 @@
 #include "common.h"
 
 /* Board square (x, z)'s record, or NULL off the board. */
-static inline u8 *get_001E2220(s32 x, s32 z) {
+static inline MapInfo *get_001E2220(s32 x, s32 z) {
     if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (z * 0xC4));
+    return &boardSquares[z][x];
 }
 
 /* Sets board square (x, z)'s field type. */
 s32 SzDuel_SetField(s32 x, s32 z, s8 field) {
-    u8 *cell;
+    MapInfo *cell;
 
     cell = get_001E2220(x, z);
     if (cell == NULL) {
         return 0;
     }
-    cell[0x16] = field;
+    cell->field = field;
     return 1;
 }
 
 /* Board square (x, z)'s record, or NULL off the board. */
-static inline u8 *get_001E22B0(s32 x, s32 z) {
+static inline MapInfo *get_001E22B0(s32 x, s32 z) {
     if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (z * 0xC4));
+    return &boardSquares[z][x];
 }
 
 /* Board square (x, z)'s field type, or -1 off the board. */
 s32 SzDuel_GetField(s32 x, s32 z) {
-    u8 *cell;
+    MapInfo *cell;
 
     cell = get_001E22B0(x, z);
     if (cell == NULL) {
         return -1;
     }
-    return cell[0x16];
+    return cell->field;
 }
 
 /* Resets every square's field-rate (its highlight) to 0. */
@@ -58,16 +58,16 @@ void SzDuel_InitFieldRate(void) {
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *cell_001E23A0(s32 x, s32 y) {
+static inline MapInfo *cell_001E23A0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* Sets board square (x, z)'s field-rate (its highlight), clamped. */
 s32 SzDuel_SetFieldRate(s32 x, s32 z, s32 rate) {
-    u8 *cell;
+    MapInfo *cell;
 
     cell = cell_001E23A0(x, z);
     if (cell == NULL) {
@@ -79,46 +79,46 @@ s32 SzDuel_SetFieldRate(s32 x, s32 z, s32 rate) {
     if (rate > 0x80) {
         rate = 0x80;
     }
-    *(s16 *)(cell + 0x14) = rate;
+    cell->fieldRate = rate;
     return rate;
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *lookup_001E2450(s32 x, s32 y) {
+static inline MapInfo *lookup_001E2450(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* Board square (x, z)'s field-rate (its highlight). */
 s16 SzDuel_GetFieldRate(s32 x, s32 z) {
-    u8 *entry;
+    MapInfo *entry;
 
     entry = lookup_001E2450(x, z);
     if (entry == NULL) {
         return 0;
     }
-    return *(s16 *)(entry + 0x14);
+    return entry->fieldRate;
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *cell_001E24E0(s32 x, s32 y) {
+static inline MapInfo *cell_001E24E0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* How far a unit can still walk from square (x, y) (the move highlight), or 0xFF. */
 u8 SzDuel_GetMapMovable(s32 x, s32 y) {
-    u8 *cell;
+    MapInfo *cell;
 
     cell = cell_001E24E0(x, y);
     if (cell == NULL) {
         return 0xFFU;
     }
-    return cell[0x17];
+    return cell->MapMovable;
 }
 
 struct DotrStateItemBits {
@@ -301,7 +301,7 @@ static inline Cell_001E27D0 *cell_001E27D0(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E27D0 *)(x * 0x1C + (boardSquares + y * 0xC4));
+    return (Cell_001E27D0 *)&boardSquares[y][x];
 }
 
 /* Sets a square's walk distance. */
@@ -409,7 +409,7 @@ static inline Cell_001E2A60 *cell_001E2A60(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E2A60 *)(x * 0x1C + (boardSquares + y * 0xC4));
+    return (Cell_001E2A60 *)&boardSquares[y][x];
 }
 
 /* A square's field type. */
@@ -585,7 +585,7 @@ s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s
     if (x < 0 || x >= 7 || z < 0 || z >= 7) {
         cell = NULL;
     } else {
-        cell = (Cell_001E3070 *)(boardSquares + z * 0xC4 + x * 0x1C);
+        cell = (Cell_001E3070 *)&boardSquares[z][x];
     }
 
     channel = (D_00318118 >> 8) & 0xFF;
@@ -648,16 +648,16 @@ static inline s32 clamp_001E3230(s32 value) {
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *lookup_001E3230(s32 x, s32 y) {
+static inline MapInfo *lookup_001E3230(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return boardSquares + y * 0xC4 + x * 0x1C;
+    return &boardSquares[y][x];
 }
 
 /* Works out board square (x, y)'s colour from its field type, highlight and blinking. */
 s32 SzDuel_CalcMapColor(s32 x, s32 y) {
-    u8 *p;
+    MapInfo *p;
     s32 step;
     u8 current;
     u8 target;
@@ -666,127 +666,127 @@ s32 SzDuel_CalcMapColor(s32 x, s32 y) {
     if (p == NULL) {
         return 0;
     }
-    current = p[0x18];
-    if (current != p[0x19]) {
-        target = p[0xB];
+    current = p->TargetSelectionHighlight;
+    if (current != p->SelectionHighlightType) {
+        target = p->Highlight.a;
         if (target != 0) {
             step = target & 0xFF;
             step = clamp_001E3230(step);
-            p[0xB] -= step;
+            p->Highlight.a -= step;
         } else {
-            p[0x19] = current;
+            p->SelectionHighlightType = current;
         }
         return 1;
     } else {
-        current = p[0xA];
-        target = p[0x6];
+        current = p->Highlight.b;
+        target = p->TargetHighlight.b;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0xA] -= step;
+            p->Highlight.b -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0xA] += step;
+            p->Highlight.b += step;
         }
-        current = p[0x9];
-        target = p[0x5];
+        current = p->Highlight.g;
+        target = p->TargetHighlight.g;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x9] -= step;
+            p->Highlight.g -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x9] += step;
+            p->Highlight.g += step;
         }
-        current = p[0x8];
-        target = p[0x4];
+        current = p->Highlight.r;
+        target = p->TargetHighlight.r;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x8] -= step;
+            p->Highlight.r -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x8] += step;
+            p->Highlight.r += step;
         }
-        current = p[0xB];
-        target = p[0x7];
+        current = p->Highlight.a;
+        target = p->TargetHighlight.a;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0xB] -= step;
+            p->Highlight.a -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0xB] += step;
+            p->Highlight.a += step;
         }
-        current = p[0x12];
-        target = p[0xE];
+        current = p->BorderOutline.b;
+        target = p->TargetBorderOutline.b;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x12] -= step;
+            p->BorderOutline.b -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x12] += step;
+            p->BorderOutline.b += step;
         }
-        current = p[0x11];
-        target = p[0xD];
+        current = p->BorderOutline.g;
+        target = p->TargetBorderOutline.g;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x11] -= step;
+            p->BorderOutline.g -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x11] += step;
+            p->BorderOutline.g += step;
         }
-        current = p[0x10];
-        target = p[0xC];
+        current = p->BorderOutline.r;
+        target = p->TargetBorderOutline.r;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x10] -= step;
+            p->BorderOutline.r -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x10] += step;
+            p->BorderOutline.r += step;
         }
-        current = p[0x13];
-        target = p[0xF];
+        current = p->BorderOutline.a;
+        target = p->TargetBorderOutline.a;
         if (current > target) {
             step = current - target;
             step = clamp_001E3230(step);
-            p[0x13] -= step;
+            p->BorderOutline.a -= step;
         } else {
             step = target - current;
             step = clamp_001E3230(step);
-            p[0x13] += step;
+            p->BorderOutline.a += step;
         }
     }
     return 1;
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *lookup_001E3650(s32 x, s32 y) {
+static inline MapInfo *lookup_001E3650(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* Sets board square (x, z)'s alpha. */
 s32 SzDuel_SetMapAlpha(s32 x, s32 z, s8 alpha) {
-    u8 *cell;
+    MapInfo *cell;
 
     cell = lookup_001E3650(x, z);
     if (cell == NULL) {
         return 0;
     }
-    *(s8 *)(cell + 0x1A) = alpha;
+    cell->mapAlpha = alpha;
     return 1;
 }
 
@@ -795,7 +795,7 @@ static inline void **cell_001E36E0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (void **)(boardSquares + y * 0xC4 + x * 0x1C);
+    return (void **)&boardSquares[y][x];
 }
 
 /* The unit standing on board square (x, z), or 0. */
@@ -822,7 +822,7 @@ static inline void **lookup_001E3790(s32 x, s32 z) {
     if ((x < 0) || (x >= 7) || (z < 0) || (z >= 7)) {
         return NULL;
     }
-    return (void **)(boardSquares + (z * 0xC4) + (x * 0x1C));
+    return (void **)&boardSquares[z][x];
 }
 
 /* The unit standing on board square (x, z) as (side << 8) | unit, or -1. */

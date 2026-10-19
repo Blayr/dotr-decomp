@@ -429,11 +429,11 @@ static inline s32 release_001DFBB0(void *p) {
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *cell_001DFBB0(s32 x, s32 y) {
+static inline MapInfo *cell_001DFBB0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* Card control record i, or NULL. */
@@ -460,7 +460,7 @@ s32 SzDuel_DelUnit(s32 side, s32 unit) {
         if (*(void **)(obj + 4) != NULL) {
             release_001DFBB0(*(void **)(obj + 4));
         }
-        *(s32 *)cell_001DFBB0(obj[0x40], obj[0x41]) = 0;
+        cell_001DFBB0(obj[0x40], obj[0x41])->unit = NULL;
     } else if (unit > 0) {
         slot = slot_001DFBB0(unit);
         if (slot != NULL) {
@@ -558,14 +558,14 @@ void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         destination = NULL;
     } else {
-        destination = (Cell_001DFD50 *)(x * 0x1C + (boardSquares + y * 0xC4));
+        destination = (Cell_001DFD50 *)&boardSquares[y][x];
     }
     oldY = piece->y;
     source = NULL;
     if (oldX < 0 || oldX >= 7 || oldY < 0 || oldY >= 7) {
         source = NULL;
     } else {
-        source = (Cell_001DFD50 *)(oldX * 0x1C + (boardSquares + oldY * 0xC4));
+        source = (Cell_001DFD50 *)&boardSquares[oldY][oldX];
     }
     if (destination == NULL || source == NULL) {
         return NULL;
@@ -595,7 +595,7 @@ void *SzDuel_MoveUnit(s32 side, s32 unit, s32 x, s32 y) {
                 if (removedX < 0 || removedX >= 7 || removedY < 0 || removedY >= 7) {
                     removed = NULL;
                 } else {
-                    removed = (Cell_001DFD50 *)(removedX * 0x1C + (boardSquares + removedY * 0xC4));
+                    removed = (Cell_001DFD50 *)&boardSquares[removedY][removedX];
                 }
                 removed->piece = NULL;
             } else if (index > 0) {
@@ -1157,7 +1157,7 @@ void *SzDuel_GetUnitConstEffect2(void *unitInfo, s32 index) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         cell = NULL;
     } else {
-        cell = (void *)(x * 0x1C + (boardSquares + y * 0xC4));
+        cell = &boardSquares[y][x];
     }
     if (cell == NULL || *(void **)cell != object) {
         on_board = 0;
@@ -1480,11 +1480,11 @@ static inline u8 *check_001E11B0(s32 a0, s32 a1) {
 }
 
 /* A board square's record, or NULL off the board. */
-static inline u8 *cell_001E11B0(s32 x, s32 y) {
+static inline MapInfo *cell_001E11B0(s32 x, s32 y) {
     if ((x < 0) || (x >= 7) || (y < 0) || (y >= 7)) {
         return NULL;
     }
-    return (x * 0x1C) + (boardSquares + (y * 0xC4));
+    return &boardSquares[y][x];
 }
 
 /* SzDuel_CalcUnitPos written out. */
@@ -1511,7 +1511,7 @@ s32 SzDuel_GetUnitPos(s32 side, s32 unit, f32 *pos) {
     if (p == NULL) {
         return 0;
     }
-    place_001E11B0(p[0x40], p[0x41], *(s16 *)(cell_001E11B0(p[0x40], p[0x41]) + 0x14), pos);
+    place_001E11B0(p[0x40], p[0x41], cell_001E11B0(p[0x40], p[0x41])->fieldRate, pos);
     pos[0] += (f32) *(s16 *)(p + 0x34);
     pos[2] += (f32) *(s16 *)(p + 0x36);
     return 1;
