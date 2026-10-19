@@ -1403,26 +1403,11 @@ s32 SzDuel_SetUnitCtlGoalM(s32 side, s32 unit, s8 goal) {
     return 1;
 }
 
-/* The unit record SzDuel_GetUnitCtlGoalC reads, or NULL. */
-static inline Unit *get_entry_001E1A30(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *entry;
-
-    entry = SzDuel_GetCardInfo();
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (entry->slot >= 0xB) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* A unit's card control goal, or -1. */
-s32 SzDuel_GetUnitCtlGoalC(void) {
+s32 SzDuel_GetUnitCtlGoalC(s32 side, s32 unit) {
     Unit *entry;
 
-    entry = get_entry_001E1A30();
+    entry = lSzDuel_GetUnit(side, unit);
     if (entry != NULL) {
         return entry->ctlGoalC;
     }
@@ -1592,26 +1577,11 @@ s32 SzDuel_SetUnitOpenRate(s32 side, s32 unit, s32 openMode, s32 speed) {
     return 1;
 }
 
-/* The unit record SzDuel_GetUnitOpenRate reads, or NULL. */
-static inline Unit *lookup_001E1E10(void) {
-    extern void *SzDuel_GetCardInfo();
-    Unit *entry;
-
-    entry = SzDuel_GetCardInfo();
-    if (entry == NULL) {
-        return NULL;
-    }
-    if (entry->slot >= 0xB) {
-        return NULL;
-    }
-    return entry;
-}
-
 /* How fast a unit's card opens, or -1. */
-s32 SzDuel_GetUnitOpenRate(void) {
+s32 SzDuel_GetUnitOpenRate(s32 side, s32 unit) {
     Unit *entry;
 
-    entry = lookup_001E1E10();
+    entry = lSzDuel_GetUnit(side, unit);
     if (entry != NULL) {
         return entry->openRate;
     }
