@@ -1295,21 +1295,16 @@ static inline u32 destination_0013C430(void *src, s32 mode) {
     return *(u16 *)((u8 *)src + 8);
 }
 
-/* The larger of the two values. */
-static inline s32 maximum_0013C430(s32 a, s32 b) {
-    return b < a ? a : b;
-}
-
 /* Whether the first square is nearer to (x, y) than the second. */
 static inline s32 closer_0013C430(Coord_0013C430 *current, Coord_0013C430 *best, s32 x, s32 y) {
     s32 bestLowY = best->y < y ? best->y : y;
-    s32 bestHighY = maximum_0013C430(best->y, y);
+    s32 bestHighY = MaxSel(best->y, y);
     s32 bestLowX = best->x < x ? best->x : x;
-    s32 bestHighX = maximum_0013C430(best->x, x);
+    s32 bestHighX = MaxSel(best->x, x);
     s32 nextLowY = current->y < y ? current->y : y;
-    s32 nextHighY = maximum_0013C430(current->y, y);
+    s32 nextHighY = MaxSel(current->y, y);
     s32 nextLowX = current->x < x ? current->x : x;
-    s32 nextHighX = maximum_0013C430(current->x, x);
+    s32 nextHighX = MaxSel(current->x, x);
     return (nextHighX - nextLowX) + (nextHighY - nextLowY) <
            (bestHighX - bestLowX) + (bestHighY - bestLowY);
 }
@@ -1813,23 +1808,15 @@ s32 TaLogic_Richard_IsOpenUnit(s32 nSide, s32 nID) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_0013D880(s32 a, s32 b) {
-    if (b < a) {
-        return a;
-    }
-    return b;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic010_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_0013D880(nZ, gZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_0013D880(nX, gX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

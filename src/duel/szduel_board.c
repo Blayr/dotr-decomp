@@ -244,14 +244,6 @@ void *SzDuel_GetCardInfo(s32 group, s32 index) {
     return &duelUnits[group][index];
 }
 
-/* A board square's record, or NULL off the board. */
-static inline MapInfo *cell_001DD220(s32 x, s32 y, MapInfo *cell) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return cell;
-}
-
 /* Runs the pending move/summon requests of every board square. */
 void SzDuel_DoUnitRequest(void) {
     s32 x;
@@ -266,7 +258,7 @@ void SzDuel_DoUnitRequest(void) {
         x = 0;
         cell = row;
         do {
-            info = cell_001DD220(x, z, cell);
+            info = SzDuel_MapInfoAt(x, z, cell);
             lSzDuel_DoUnitRequest(info, (s32)info->unit);
             x += 1;
             cell++;

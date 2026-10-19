@@ -994,20 +994,12 @@ typedef struct {
     u8 padding_52[2];
 } Entry_002159D0;
 
-/* The save profile of a duel side. */
-static inline s32 side_002159D0(s32 player) {
-    if (profileZeroSide == player) {
-        return 0;
-    }
-    return 1;
-}
-
 /* The leader of deck `deck` of side `side` (CARD_NONE for none). */
 s32 SzData_GetLeader(s32 player, s32 deck) {
     u8 *side;
     Entry_002159D0 *entry;
 
-    side = (u8 *)saveProfiles_2 + side_002159D0(player) * 0xFFA0;
+    side = (u8 *)saveProfiles_2 + SzData_Side(player) * 0xFFA0;
     entry = (Entry_002159D0 *)(side + deck * sizeof(Entry_002159D0) + 0xFD94);
     if ((player < 0) || (player >= 2)) {
         return -1;
@@ -1225,20 +1217,12 @@ typedef struct {
     u16 value;
 } Entry_00215F00;
 
-/* The save profile of a duel side. */
-static inline s32 side_00215F00(s32 player) {
-    if (profileZeroSide == player) {
-        return 0;
-    }
-    return 1;
-}
-
 /* The deck cost of deck `deck` of side `side`. */
 s32 SzData_GetDeckCost(s32 player, s32 deck) {
     u8 *side;
     Entry_00215F00 *entry;
 
-    side = (u8 *)saveProfiles_2 + side_00215F00(player) * 0xFFA0;
+    side = (u8 *)saveProfiles_2 + SzData_Side(player) * 0xFFA0;
     entry = (Entry_00215F00 *)(side + deck * sizeof(Entry_00215F00) + 0xFD94);
     if ((player < 0) || (player >= 2)) {
         return -1;
@@ -1297,18 +1281,9 @@ typedef struct {
     s32 unknownFF9C;
 } Player_00216040;
 
-/* The save profile of a duel side. */
-static inline s32 side_00216040(s32 player) {
-    extern u8 profileZeroSide;
-    if (profileZeroSide == player) {
-        return 0;
-    }
-    return 1;
-}
-
 /* A side's save profile. */
 static inline Player_00216040 *data_00216040(s32 player, void *base) {
-    return &((Player_00216040 *)base)[side_00216040(player)];
+    return &((Player_00216040 *)base)[SzData_Side(player)];
 }
 
 /* A random number. */
@@ -1378,18 +1353,9 @@ typedef struct {
     s32 unknownFF9C;
 } Player_00216280;
 
-/* The save profile of a duel side. */
-static inline s32 side_00216280(s32 player) {
-    extern u8 profileZeroSide;
-    if (profileZeroSide == player) {
-        return 0;
-    }
-    return 1;
-}
-
 /* A side's save profile. */
 static inline Player_00216280 *data_00216280(s32 player, void *base) {
-    return &((Player_00216280 *)base)[side_00216280(player)];
+    return &((Player_00216280 *)base)[SzData_Side(player)];
 }
 
 /* Adds the copy of card `card` from profile `owner` (0: its own) with serial `serial` to side `side`'s trunk,
@@ -1903,19 +1869,11 @@ typedef struct PlayerState_00216F80 {
     u8 flags[0x100];
 } PlayerState_00216F80;
 
-/* The save profile of a duel side. */
-static inline s32 player_index_00216F80(s32 player) {
-    if (profileZeroSide == player) {
-        return 0;
-    }
-    return 1;
-}
-
 /* Marks treasure `flag` as found by side `player`. */
 s32 SzData_SetTreasureFlag(s32 player, s32 flag, s32 enabled) {
     PlayerState_00216F80 *state;
 
-    state = &((PlayerState_00216F80 *)saveProfiles_2)[player_index_00216F80(player)];
+    state = &((PlayerState_00216F80 *)saveProfiles_2)[SzData_Side(player)];
     if (player < 0 || player >= 2) {
         return 0;
     }

@@ -1965,14 +1965,6 @@ s32 TaLogic_Mai_IsOpenUnit(s32 nSide, s32 nID) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_0014B140(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether `status` is 1. */
 static inline s32 check_0014B140(s32 status) {
     if (status != 1) {
@@ -1987,9 +1979,9 @@ s32 TaLogic013_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_0014B140(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_0014B140(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

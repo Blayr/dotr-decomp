@@ -1276,11 +1276,6 @@ static inline u32 target_00140830(void *src, u8 mode) {
     return *(u16 *)&input->targets;
 }
 
-/* The larger of the two values. */
-static inline s32 max_00140830(s32 a, s32 b) {
-    return a > b ? a : b;
-}
-
 /* The task of a unit attacking (task `pTask`): its path to the goal, into `pInput`; -1 when it has none (`fFirst`
    = 1 for the unit's first-choice task). */
 s32 TaLogic_Tea_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInput, u8 fFirst) {
@@ -1379,13 +1374,13 @@ s32 TaLogic_Tea_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInput, 
                             minCost = cost;
                             best = n;
                         } else if (cost == minCost) {
-                            if ((max_00140830(candidate->x, destinationX) -
+                            if ((MaxSel(candidate->x, destinationX) -
                                  (candidate->x < destinationX ? candidate->x : destinationX)) +
-                                (max_00140830(candidate->y, destination) -
+                                (MaxSel(candidate->y, destination) -
                                  (candidate->y < destination ? candidate->y : destination)) <
-                                (max_00140830(points[best].x, destinationX) -
+                                (MaxSel(points[best].x, destinationX) -
                                  (points[best].x < destinationX ? points[best].x : destinationX)) +
-                                (max_00140830(points[best].y, destination) -
+                                (MaxSel(points[best].y, destination) -
                                  (points[best].y < destination ? points[best].y : destination))) {
                                 minCost = cost;
                                 best = n;
@@ -1815,14 +1810,6 @@ s32 TaLogic_Tea_IsOpenUnit(s32 nSide, s32 nID) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_00141E30(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic011_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ,
                   s32 gX, s32 gZ) {
@@ -1830,9 +1817,9 @@ s32 TaLogic011_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ,
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_00141E30(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_00141E30(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

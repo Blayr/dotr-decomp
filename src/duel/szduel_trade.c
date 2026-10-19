@@ -942,15 +942,6 @@ static inline s32 side_001C3E20(s32 player, s32 left, s32 right) {
 
 #define SIDE_001C3E20(left, right) side_001C3E20(arg1, left, right)
 
-/* Draws `text` in the window font. */
-static inline s32 text_001C3E20(s32 cursor, s32 x, s32 y, s32 align,
-                               s32 flags, s8 *text, void *color) {
-    extern s32 SzDuel_DrawWindow_Font_Pipe();
-    s32 length = func_0019BEF0((char *)text);
-    return SzDuel_DrawWindow_Font_Pipe(cursor, x, y, align, flags,
-                        length, text, color);
-}
-
 /* How many cards side `player` has picked to trade. */
 static inline s32 total_001C3E20(s32 player) {
     u8 *state = duelState.b;
@@ -970,13 +961,6 @@ static inline s32 total_001C3E20(s32 player) {
         i++;
     } while (i < 0x356);
     return total;
-}
-
-/* Draws how many cards side `player` owns. */
-static inline s32 number_001C3E20(s32 cursor, s32 x, s32 y, s32 player) {
-    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
-    s32 count = SzData_GetBagCountAll(player);
-    return SzDuel_DrawWindow_FontDigit_Pipe(cursor, x, y, 1, 0, 4, count);
 }
 
 /* Draws a filled rectangle. */
@@ -1102,20 +1086,20 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 topIn) {
     out = lSzDuel_DrawWindow_Frame_Pipe(out, 0xC, -1, 0xB, textX, textY, -0x30, -0x30, 1);
     textX = left + SIDE_001C3E20(0x10, 0x240) + 0x18;
     textY = topIn + 0x1F;
-    cursor = text_001C3E20(out, textX, textY, 2, 3, titleText, NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(out, textX, textY, 2, 3, titleText, NULL);
     x = left + SIDE_001C3E20(0x40, 0x1B0);
     cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 6, x, topIn + 0x10, -0x8C, -0x2C, 1);
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x48;
     textY = topIn + 0x15;
-    cursor = text_001C3E20(cursor, textX, textY, 1, 3, subText, NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(cursor, textX, textY, 1, 3, subText, NULL);
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x24;
     textY = topIn + 0x23;
-    cursor = text_001C3E20(cursor, textX, textY, 1, 3, work.labels.text[1], NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(cursor, textX, textY, 1, 3, work.labels.text[1], NULL);
     textY = topIn + 0x31;
     cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, textX, textY, 1, 2, 4, total_001C3E20(arg1));
     textX = left + SIDE_001C3E20(0x40, 0x1B0) + 0x6C;
     textY = topIn + 0x23;
-    cursor = text_001C3E20(cursor, textX, textY, 1, 3, work.labels.text[2], NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(cursor, textX, textY, 1, 3, work.labels.text[2], NULL);
     textY = topIn + 0x31;
     cursor = SzDuel_DrawWindow_FontDigit_Pipe(cursor, textX, textY, 1, 2, 4, total_001C3E20(arg1 ^ 1));
     x = left + SIDE_001C3E20(0x10, 0x230);
@@ -1126,7 +1110,7 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 topIn) {
         s32 c = cursor;
         s32 x = left + SIDE_001C3E20(0x10, 0x230) + 0x17;
         s32 y = topIn + 0x44;
-        cursor = number_001C3E20(c, x, y, arg1);
+        cursor = SzDuel_DrawBagCount_Pipe(c, x, y, arg1);
     }
     x = left + SIDE_001C3E20(0x10, 0x230);
     cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 3, x, topIn + 0x54, -0x40, -0x1C, -1, 0);
@@ -1162,7 +1146,7 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 topIn) {
     if (color != NULL) {
         flags |= 8;
     }
-    cursor = text_001C3E20(cursor, sortX, sortY, 0, flags, sortText, color);
+    cursor = SzDuel_DrawWindowText_Pipe(cursor, sortX, sortY, 0, flags, sortText, color);
     textX = left + SIDE_001C3E20(8, 0x148);
     sortY = topIn + 0x70;
     sortIndex = 0;
@@ -1183,7 +1167,7 @@ s32 lSzDuel_DrawTrade_Bag_Pipe(s32 out, s32 arg1, s32 left, s32 topIn) {
         s32 c = cursor;
         s32 x = left + SIDE_001C3E20(0x2C, 0x231);
         s32 y = topIn + 0x19D;
-        cursor = text_001C3E20(c, x, y, 1, 0, (s8 *)descText, NULL);
+        cursor = SzDuel_DrawWindowText_Pipe(c, x, y, 1, 0, (s8 *)descText, NULL);
     }
     labelX = left + SIDE_001C3E20(0x7E, 0x18A);
     labelY = topIn + 0x182;

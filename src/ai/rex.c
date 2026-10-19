@@ -1859,23 +1859,15 @@ s32 TaLogic_Rex_IsOpenUnit(s32 nSide, s32 nID, u32 *pInfo) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_0011C2E0(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic003_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 minY;
     s32 minX;
 
     minY = nZ < gZ ? nZ : gZ;
-    gZ = max_0011C2E0(gZ, nZ);
+    gZ = Max(gZ, nZ);
     minX = nX < gX ? nX : gX;
-    gX = max_0011C2E0(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - minX) + (gZ - minY) != 2) {
         return 0;
     }

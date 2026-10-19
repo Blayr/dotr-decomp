@@ -1245,11 +1245,6 @@ static inline u32 destination_00133BE0(void *input, s32 mode) {
     return (u16)((Input_00133BE0 *)input)->destinations;
 }
 
-/* The larger of the two values. */
-static inline s32 maximum_00133BE0(s32 a, s32 b) {
-    return b < a ? a : b;
-}
-
 /* The task of a unit attacking (task `pTask`): its path to the goal, into `pInput`; -1 when it has none (`fFirst`
    = 1 for the unit's first-choice task). */
 s32 TaLogic_LabyrinthRuler_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInput, u8 fFirst) {
@@ -1341,13 +1336,13 @@ s32 TaLogic_LabyrinthRuler_GetMinimumTask_AtkMission(void *pTask, s32 nSide, voi
                     } else if (score == bestScore) {
                         Position_00133BE0 *best = &positions[bestIndex];
                         s32 bestMinY = (best->y < target ? best->y : target);
-                        s32 bestMaxY = maximum_00133BE0(best->y, target);
+                        s32 bestMaxY = MaxSel(best->y, target);
                         s32 bestMinX = (best->x < targetX ? best->x : targetX);
-                        s32 bestMaxX = maximum_00133BE0(best->x, targetX);
+                        s32 bestMaxX = MaxSel(best->x, targetX);
                         s32 currentMinY = (current->y < target ? current->y : target);
-                        s32 currentMaxY = maximum_00133BE0(current->y, target);
+                        s32 currentMaxY = MaxSel(current->y, target);
                         s32 currentMinX = (current->x < targetX ? current->x : targetX);
-                        s32 currentMaxX = maximum_00133BE0(current->x, targetX);
+                        s32 currentMaxX = MaxSel(current->x, targetX);
                         if ((currentMaxX - currentMinX) + (currentMaxY - currentMinY) <
                             (bestMaxX - bestMinX) + (bestMaxY - bestMinY)) {
                             bestScore = score;
@@ -1663,31 +1658,15 @@ s32 TaLogic_LabyrinthRuler_IsOpenUnit(s32 nSide, s32 nID, void *pInfo) {
     return 2;
 }
 
-/* The smaller of the two values. */
-static inline s32 min_00134F00(s32 a, s32 b) {
-    if (a < b) {
-        return a;
-    }
-    return b;
-}
-
-/* The larger of the two values. */
-static inline s32 max_00134F00(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic008_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
-    min_y = min_00134F00(nZ, gZ);
-    gZ = max_00134F00(gZ, nZ);
-    min_x = min_00134F00(nX, gX);
-    gX = max_00134F00(gX, nX);
+    min_y = Min(nZ, gZ);
+    gZ = Max(gZ, nZ);
+    min_x = Min(nX, gX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

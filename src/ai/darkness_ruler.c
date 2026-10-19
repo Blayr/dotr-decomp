@@ -2227,14 +2227,6 @@ s32 TaLogic_DarknessRuler_IsOpenUnit(s32 nSide, s32 nID, void *pInfo, s32 nMode)
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_00130BB0(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic007_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ,
                   s32 gX, s32 gZ) {
@@ -2242,9 +2234,9 @@ s32 TaLogic007_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ,
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_00130BB0(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_00130BB0(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

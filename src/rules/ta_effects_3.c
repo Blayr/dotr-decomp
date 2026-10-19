@@ -160,10 +160,6 @@ typedef struct Request_00265890 {
     s32 flag;
 } Request_00265890;
 
-/* The absolute value of `value`. */
-static inline s32 absolute_00265890(s32 value) {
-    return value >= 0 ? value : -value;
-}
 #pragma opt_strength_reduction off
 
 /* Effect script 046, step `ID`: its camera, fades and effect module; it destroys units, changes life points, uses
@@ -260,7 +256,7 @@ s32 Ta_Eff_046(void *eInfo, void *Temp, s32 ID) {
                 while (1) {
                     if (x >= 0 && x < 7 && y >= 0 && y < 7) {
                         distance = outer + inner;
-                        distance = absolute_00265890(distance);
+                        distance = Abs(distance);
                         if (distance < 3 && (outer != 0 || inner != 0)) {
                             request->command = 0x222;
                             request->unk4 = 0;

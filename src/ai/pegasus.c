@@ -1755,23 +1755,15 @@ s32 TaLogic009_IsDoCerem(s32 nSide, s32 nCardNo) {
     return 1;
 }
 
-/* The larger of the two values. */
-static inline s32 max_00139080(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic009_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_00139080(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_00139080(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

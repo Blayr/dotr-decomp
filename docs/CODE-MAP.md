@@ -50,5 +50,8 @@ which files are parts of one bigger original file.
 - **Arithmetic operations** of the `Calc*` functions (`SzDuel_CalcLP`, `SzDuel_CalcSummonPower`,
   `SzData_CalcExp`, `SzDuel_CalcUnitAP`) are `DUEL_CALC_ADD`, `SUB`, `MUL`, `DIV`, `SET`.
 - **Pads:** `SzPad_Check(pad, mode, mask)` with mode 0 newly pressed, 1 held, 2 newly pressed or repeating.
+- **Inline helpers:** small functions the compiler wrote inline into many callers are written once, in
+  `include/inlines.h` (`lSzDuel_GetUnit`, `Max`, `Abs`, ...); the board-square lookup `SzDuel_MapInfo` is in
+  `include/game.h` next to `boardSquares`.
 - Constructs written only so the build matches carry a short note (`needed for the match`); leave them as they
   are.

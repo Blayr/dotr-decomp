@@ -44,6 +44,12 @@ Other sources: the other team's names (dotr-decomp, CC0), credited where used; t
   (`TaLogic_Weevil_GetMinimumTask`, `Ta_IsInLeaderRange` for `Ta_IsLDRange`). Where he only changed a spelling
   (`Exodia` for the developers' `Exzodia`), replaced the prefix (`Home_` for `Taku_`) or read the code
   differently, his name is a linker alias in `config/ghidra_names.txt`.
+- **Inline helpers.** The compiler wrote small functions inline into their callers, so the same body shows up in
+  many places. Each body is written once: the shared ones are in `include/inlines.h` (`lSzDuel_GetUnit`, the body
+  of `SzDuel_GetUnit`; `Max`, `Abs`, ...) and `SzDuel_MapInfo`, the body of `SzDuel_GetMapInfo`, sits in
+  `include/game.h` next to `boardSquares`; the real function returns its inline. A `static inline` helper still
+  named `<what>_<address>` (`slot_001CEE60`) has one caller's file to itself, or is a copy whose own spelling the
+  match needs (a note says so).
 - A function the JP table does not name keeps `func_XXXXXXXX` until the code says what it does; then it gets a
   name in the style of its neighbours (`SzDuel_` + verb + object for a duel function).
 - Renames go through `config/symbol_addrs.txt`, with the old name kept as an alias in `config/old_names.txt`

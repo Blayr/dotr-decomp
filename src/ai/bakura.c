@@ -329,10 +329,6 @@ void TaLogic018_CommandLDUnit(void *pTask) {
     }
 }
 
-/* The smaller of the two values. */
-static inline s32 min_00159930(s32 a, s32 b) {
-    return (a >= b + 1) ? b : a;
-}
 #pragma opt_propagation off
 
 /* Where unit (nSide, nID) moves to keep out of the virus squares. */
@@ -357,9 +353,9 @@ s32 TaLogic018_GetVirusMove(s32 nSide, s32 nID) {
     pos = SzDuel_GetUnitLoc(nSide, nID);
     range = GetMoveRange(SzDuel_GetUnit(nSide, nID), pos & 0xFF, pos >> 8);
     xMin = GetCap(0, (pos & 0xFF) - (range & 0xF));
-    xMax = min_00159930((pos & 0xFF) + (range & 0xF), 6);
+    xMax = MinSel((pos & 0xFF) + (range & 0xF), 6);
     yMin = GetCap(0, (pos >> 8) - (range & 0xF));
-    yMax = min_00159930((pos >> 8) + (range & 0xF), 6);
+    yMax = MinSel((pos >> 8) + (range & 0xF), 6);
     for (i = xMin; i <= xMax; i++) {
         for (j = yMin; j <= yMax; j++) {
             if (((pos & 0xFF) > i ? (pos & 0xFF) : i) - ((pos & 0xFF) < i ? (pos & 0xFF) : i) +
@@ -1794,23 +1790,15 @@ s32 TaLogic_Bakura_IsOpenUnit(s32 nSide, s32 nID) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_0015CF30(s32 a, s32 b) {
-    if (b < a) {
-        return a;
-    }
-    return b;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic018_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 minY;
     s32 minX;
 
     minY = (nZ < gZ) ? nZ : gZ;
-    gZ = max_0015CF30(nZ, gZ);
+    gZ = Max(gZ, nZ);
     minX = (nX < gX) ? nX : gX;
-    gX = max_0015CF30(nX, gX);
+    gX = Max(gX, nX);
 
     if (((gX - minX) + (gZ - minY)) != 2) {
         return 0;

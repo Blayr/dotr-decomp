@@ -292,22 +292,6 @@ typedef struct {
     } data;
 } State_00142F50;
 
-/* The smaller of the two values. */
-static inline s32 min_00142F50(s32 a, s32 b) {
-    if (a < b) {
-        return a;
-    }
-    return b;
-}
-
-/* The larger of the two values. */
-static inline s32 max_00142F50(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Orders a unit (task `pTask`) to hold its line of the board. */
 void TaLogic012_CommandLineUnit(void *pTask) {
     extern s32 TaLogic_IsRootOpen();
@@ -411,10 +395,10 @@ void TaLogic012_CommandLineUnit(void *pTask) {
                     }
                 } else {
                     candidateY = candidatePosition >> 8;
-                    lowY = min_00142F50(y, candidateY);
-                    candidateY = max_00142F50(candidateY, y);
-                    lowX = min_00142F50(x, candidateX);
-                    candidateX = max_00142F50(candidateX, x);
+                    lowY = Min(y, candidateY);
+                    candidateY = Max(candidateY, y);
+                    lowX = Min(x, candidateX);
+                    candidateX = Max(candidateX, x);
                     if ((candidateX - lowX) + (candidateY - lowY) < 3) {
                         st->action = 0x3FF;
                         st->data.word = (position << 16) | st->data.halves.low;
@@ -1825,23 +1809,15 @@ s32 TaLogic_Tristan_IsOpenUnit(s32 nSide, s32 nID) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_001464A0(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic012_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_001464A0(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_001464A0(gX, nX);
+    gX = Max(gX, nX);
 
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;

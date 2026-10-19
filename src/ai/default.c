@@ -1364,14 +1364,6 @@ typedef struct Candidate_0016E510 {
     u8 flags;
 } Candidate_0016E510;
 
-/* The larger of the two values. */
-static inline s32 max_0016E510(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether side `player`'s leader is Exodia's head (0x3A) and its deck holds all four limbs. */
 static inline s32 ready_0016E510(s32 player) {
     extern s32 SzDuel_GetUnitCardNo();
@@ -1679,9 +1671,9 @@ void TaLogic022_CommandEfcMonster(u16 *pTask) {
                             nearest_card = Ta_GetUnitOwnerIDFromLstCount(nearest_mask, nearest_i);
                             nearest_position = SzDuel_GetUnitLoc(nearest_card >> 8, nearest_card & 0xFF);
                             miny = nearest_y < (nearest_position >> 8) ? nearest_y : (nearest_position >> 8);
-                            maxy = max_0016E510(nearest_position >> 8, nearest_y);
+                            maxy = Max(nearest_position >> 8, nearest_y);
                             minx = nearest_x < (nearest_position & 0xFF) ? nearest_x : (nearest_position & 0xFF);
-                            maxx = max_0016E510(nearest_position & 0xFF, nearest_x);
+                            maxx = Max(nearest_position & 0xFF, nearest_x);
                             nearest_delta = (maxx - minx) + (maxy - miny);
                             if (nearest_delta < distance) {
                                 distance = nearest_delta;
@@ -3068,23 +3060,15 @@ s32 TaLogic_Default_GetMinimumTask_RevoltMission(u16 *pTask, s32 nSide, void *pI
     return TaLogic_Default_GetMinimumTask_RunMission(unit, nSide, out, fFirst);
 }
 
-/* The larger of the two values. */
-static inline s32 max_00172210(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic022_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_00172210(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_00172210(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

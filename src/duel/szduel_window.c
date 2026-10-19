@@ -698,14 +698,6 @@ s32 SzDuel_DrawDialog_Pipe(s32 packetStart) {
     return packet;
 }
 
-/* Absolute value. */
-static inline s32 abs_001B0CE0(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
 /* Draws a dialog window at (x, y), at least width x height (a negative width keeps it fixed), with an optional
    title font and text. */
 s32 lSzDuel_DrawDialog_Window_Pipe(s32 packet, s32 side, s32 image, s32 font, s32 x, s32 y, s32 width, s32 height,
@@ -737,7 +729,7 @@ s32 lSzDuel_DrawDialog_Window_Pipe(s32 packet, s32 side, s32 image, s32 font, s3
     }
     card = (image >= 0x8000) ? 1 : 0;
     scale = 1.0f;
-    width = abs_001B0CE0(width);
+    width = Abs(width);
     if (card) {
         image -= 0x8000;
     }
@@ -2104,30 +2096,6 @@ static inline void tag_001B3CC0(Tag_001B3CC0 *tag, s32 count, s32 flags, u64 reg
     tag->reserved = 0;
 }
 
-/* Absolute value. */
-static inline s32 abs_001B3CC0(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
-/* The icon brightness: 0x80 when bright, else 0x30. */
-static inline s32 intensity_001B3CC0(s32 bright) {
-    if (bright != 0) {
-        return 0x80;
-    }
-    return 0x30;
-}
-
-/* Clamps at 0. */
-static inline s32 lower_001B3CC0(s32 value) {
-    if (value > 0) {
-        return value;
-    }
-    return 0;
-}
-
 /* Clamps at 0x3FFF. */
 static inline s32 upper_001B3CC0(s32 value) {
     if (value < 0x3FFF) {
@@ -2148,8 +2116,8 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     s32 height;
 
     graphics = (State_001B3CC0 *)duelState.b;
-    width = abs_001B3CC0(src[3] - src[1]);
-    height = abs_001B3CC0(src[4] - src[2]);
+    width = Abs(src[3] - src[1]);
+    height = Abs(src[4] - src[2]);
     if (shrink != 0) {
         width = (width * 3) >> 2;
         height = (height * 3) >> 2;
@@ -2157,7 +2125,7 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     tag_001B3CC0((Tag_001B3CC0 *)sprite.tag, 5, 0x26, 0x42421);
     ((Tag_001B3CC0 *)sprite.tag)->flags |= 0x800;
     ExAssignAlpha(&sprite, 0x8000000044LL);
-    sprite.color.r = sprite.color.g = sprite.color.b = intensity_001B3CC0(bright);
+    sprite.color.r = sprite.color.g = sprite.color.b = SzDuel_WindowIntensity(bright);
     sprite.color.a = alpha;
     sprite.color.q = 1.0f;
     sprite.xyz0.z = graphics->depth;
@@ -2185,20 +2153,20 @@ s32 lSzDuel_DrawWindow_ExIcon_Pipe(s32 packet, u16 *src, s32 x, s32 y,
     if (image != 0) {
         ExAssignTexture(&sprite, graphics->textures[((u8 *)src)[0]], 0);
         if (flipX != 0 && flipY != 0) {
-            ((UV_001B3CC0 *)&sprite.uv0)->u = lower_001B3CC0(src[3] * 16 - 8);
-            ((UV_001B3CC0 *)&sprite.uv0)->v = lower_001B3CC0(src[4] * 16 - 8);
-            ((UV_001B3CC0 *)&sprite.uv1)->u = lower_001B3CC0(src[1] * 16 - 8);
-            ((UV_001B3CC0 *)&sprite.uv1)->v = lower_001B3CC0(src[2] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->u = AtLeast0(src[3] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = AtLeast0(src[4] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = AtLeast0(src[1] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = AtLeast0(src[2] * 16 - 8);
         } else if (flipX != 0 && flipY == 0) {
-            ((UV_001B3CC0 *)&sprite.uv0)->u = lower_001B3CC0(src[3] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->u = AtLeast0(src[3] * 16 - 8);
             ((UV_001B3CC0 *)&sprite.uv0)->v = upper_001B3CC0(src[2] * 16 + 8);
-            ((UV_001B3CC0 *)&sprite.uv1)->u = lower_001B3CC0(src[1] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->u = AtLeast0(src[1] * 16 - 8);
             ((UV_001B3CC0 *)&sprite.uv1)->v = upper_001B3CC0(src[4] * 16 + 8);
         } else if (flipX == 0 && flipY != 0) {
             ((UV_001B3CC0 *)&sprite.uv0)->u = upper_001B3CC0(src[1] * 16 + 8);
-            ((UV_001B3CC0 *)&sprite.uv0)->v = lower_001B3CC0(src[4] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv0)->v = AtLeast0(src[4] * 16 - 8);
             ((UV_001B3CC0 *)&sprite.uv1)->u = upper_001B3CC0(src[3] * 16 + 8);
-            ((UV_001B3CC0 *)&sprite.uv1)->v = lower_001B3CC0(src[2] * 16 - 8);
+            ((UV_001B3CC0 *)&sprite.uv1)->v = AtLeast0(src[2] * 16 - 8);
         } else {
             ((UV_001B3CC0 *)&sprite.uv0)->u = upper_001B3CC0(src[1] * 16 + 8);
             ((UV_001B3CC0 *)&sprite.uv0)->v = upper_001B3CC0(src[2] * 16 + 8);
@@ -2369,21 +2337,6 @@ static inline void tag_001B4780(Tag_001B4780 *tag, s32 count, s32 flags, u64 reg
     tag->reserved = 0;
 }
 
-/* Absolute value. */
-static inline s32 abs_001B4780(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
-/* The frame brightness: 0x80 when bright, else 0x30. */
-static inline s32 intensity_001B4780(s32 bright) {
-    if (bright != 0) {
-        return 0x80;
-    }
-    return 0x30;
-}
 #pragma opt_propagation reset
 
 /* Draws a window frame at (x, y), cols x rows tiles (negative sizes are in pixels), in `style` and side colour
@@ -2432,12 +2385,12 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
         if (cols >= 0) {
             width = ((parts[2].x1 - parts[2].x0) - margin[1]) + (((parts[0].x1 - parts[0].x0) - margin[0]) + cols * (parts[1].x1 - parts[1].x0));
         } else {
-            width = abs_001B4780(cols);
+            width = Abs(cols);
         }
         if (rows >= 0) {
             height = ((parts[6].y1 - parts[6].y0) - margin[3]) + (((parts[0].y1 - parts[0].y0) - margin[2]) + rows * (parts[3].y1 - parts[3].y0));
         } else {
-            height = abs_001B4780(rows);
+            height = Abs(rows);
         }
         height >>= 1;
         x0 = tmp + margin[0];
@@ -2506,7 +2459,7 @@ s32 lSzDuel_DrawWindow_Frame_Pipe(s32 packet, s32 colorIndex, s32 icons, s32 sty
     tag_001B4780((Tag_001B4780 *)sprite.tag, 5, 0x26, 0x42421);
     ((Tag_001B4780 *)sprite.tag)->flags |= 0x800;
     ExAssignAlpha(&sprite, 0x8000000044LL);
-    sprite.color.r = sprite.color.g = sprite.color.b = intensity_001B4780(bright);
+    sprite.color.r = sprite.color.g = sprite.color.b = SzDuel_WindowIntensity(bright);
     sprite.color.a = 0x80;
     sprite.color.q = 1.0f;
     sprite.xyz0.z = graphics->depth;

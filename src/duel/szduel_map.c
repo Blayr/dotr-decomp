@@ -145,17 +145,9 @@ static inline void set_001E27D0(s32 x, s32 y, s32 value) {
     }
 }
 
-/* A square's record if (x, y) is on the board. */
-static inline MapInfo *checked_001E27D0(s32 x, s32 y, MapInfo *cell) {
-    if (x < 0 || x >= 7 || y < 0 || y >= 7) {
-        return NULL;
-    }
-    return cell;
-}
-
 /* Sets a square's walk mark. */
 static inline void set_walk_001E27D0(s32 x, s32 y, MapInfo *p, s32 value) {
-    MapInfo *cell = checked_001E27D0(x, y, p);
+    MapInfo *cell = SzDuel_MapInfoAt(x, y, p);
     if (cell != NULL) {
         cell->MapMovable = value;
     }
@@ -163,7 +155,7 @@ static inline void set_walk_001E27D0(s32 x, s32 y, MapInfo *p, s32 value) {
 
 /* A square's walk mark. */
 static inline s32 get_walk_001E27D0(s32 x, s32 y, MapInfo *p) {
-    MapInfo *cell = checked_001E27D0(x, y, p);
+    MapInfo *cell = SzDuel_MapInfoAt(x, y, p);
     if (cell != NULL) {
         return cell->MapMovable;
     }

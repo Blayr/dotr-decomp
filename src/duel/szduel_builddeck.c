@@ -90,14 +90,6 @@ void SzDuel_InitBuildDeck(s32 side) {
     *(s8 *)(state + 0xD32) = 0;
 }
 
-/* Clamps at 0. */
-static inline s32 nonnegative_001B8720(s32 value) {
-    if (value > 0) {
-        return value;
-    }
-    return 0;
-}
-
 /* Rebuilds the trunk list from the cards owned, less those in the deck, and sorts it. */
 void lSzDuel_ReBuildBag(void) {
     DuelState *state;
@@ -122,10 +114,10 @@ void lSzDuel_ReBuildBag(void) {
         card++;
         entry++;
     } while (card < 0x356);
-    limit = nonnegative_001B8720(state->trunkCount - 5);
+    limit = AtLeast0(state->trunkCount - 5);
     offset = state->trunkTop;
-    if (nonnegative_001B8720(offset) < limit) {
-        offset = nonnegative_001B8720(offset);
+    if (AtLeast0(offset) < limit) {
+        offset = AtLeast0(offset);
     } else {
         offset = limit;
     }
@@ -140,14 +132,6 @@ void SzDuel_TermBuildDeck(void) {
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
-
-/* Clamps at 0. */
-static inline s32 nonnegative_001B8840(s32 value) {
-    if (value > 0) {
-        return value;
-    }
-    return 0;
-}
 
 /* Runs one frame of deck building: the trunk and deck lists, moving cards, sorting, passwords, reincarnation, the
    3D viewer and leaving. */
@@ -822,11 +806,11 @@ void SzDuel_ActBuildDeck(void) {
         }
     }
     if (dx != 0) {
-        limit = nonnegative_001B8840(d->trunkCount - 5);
+        limit = AtLeast0(d->trunkCount - 5);
         oldOffset = d->trunkTop;
         offset = oldOffset + dx;
-        if (nonnegative_001B8840(offset) < limit) {
-            offset = nonnegative_001B8840(offset);
+        if (AtLeast0(offset) < limit) {
+            offset = AtLeast0(offset);
         } else {
             offset = limit;
         }
@@ -837,11 +821,11 @@ void SzDuel_ActBuildDeck(void) {
         d->idleTimer = 0x5A;
     }
     if (dy != 0) {
-        limit2 = nonnegative_001B8840(d->deckCount - 5);
+        limit2 = AtLeast0(d->deckCount - 5);
         oldOffset2 = d->deckTop;
         offset2 = oldOffset2 + dy;
-        if (nonnegative_001B8840(offset2) < limit2) {
-            offset2 = nonnegative_001B8840(offset2);
+        if (AtLeast0(offset2) < limit2) {
+            offset2 = AtLeast0(offset2);
         } else {
             offset2 = limit2;
         }
@@ -1640,15 +1624,6 @@ extern u8 DeckBuildingSide;
 extern u8 BuildDeckHorizontalCursorIndex;
 extern u16 D_00318118;
 
-/* Draws `text` in the window font. */
-static inline s32 text_001BB940(s32 cursor, s32 x, s32 y, s32 align,
-                               s32 flags, s8 *text, void *color) {
-    extern s32 SzDuel_DrawWindow_Font_Pipe();
-    s32 length = func_0019BEF0((char *)text);
-    return SzDuel_DrawWindow_Font_Pipe(cursor, x, y, align, flags,
-                        length, text, color);
-}
-
 /* Draws a filled rectangle. */
 static inline s32 rectangle_001BB940(s32 cursor, Packet_001BB940 *packet,
                                     s32 x, s32 y, u8 *data) {
@@ -1670,13 +1645,6 @@ static inline s32 rectangle_001BB940(s32 cursor, Packet_001BB940 *packet,
     packet->second.z = *(s32 *)(data + 0xC58);
     packet->second.fog = 0;
     return ExSortPrim_Pipe(cursor, (s32)&packet->header, 0, 0);
-}
-
-/* Draws how many cards side `player` owns. */
-static inline s32 number_001BB940(s32 cursor, s32 x, s32 y, s32 player) {
-    extern s32 SzDuel_DrawWindow_FontDigit_Pipe();
-    s32 count = SzData_GetBagCountAll(player);
-    return SzDuel_DrawWindow_FontDigit_Pipe(cursor, x, y, 1, 0, 4, count);
 }
 
 /* Whether a deck has 40 cards and a leader. */
@@ -1759,7 +1727,7 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 out, s32 left, s32 top) {
     out = lSzDuel_DrawWindow_Frame_Pipe(out, 0xC, -1, 11, textX, textY, -0xC0, -0x30, 1);
     textX = left + 0x70;
     textY = top + 0x1F;
-    cursor = text_001BB940(out, textX, textY, 2, 3, (s8 *)titleText, NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(out, textX, textY, 2, 3, (s8 *)titleText, NULL);
     cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, 0xC, -1, 5, left + 0x10, top + 0x40, -0x40, -0x14, 1);
     cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_0029086E, left + 0x6D2, top + 0x762,
                         0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
@@ -1767,7 +1735,7 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 out, s32 left, s32 top) {
         s32 c = cursor;
         s32 x = left + 0x27;
         s32 y = top + 0x44;
-        cursor = number_001BB940(c, x, y, player);
+        cursor = SzDuel_DrawBagCount_Pipe(c, x, y, player);
     }
     cursor = lSzDuel_DrawWindow_ExBoard_Pipe(cursor, 2, left + 0x10, top + 0x54, -0x40, -0x1C, -1, 0);
     if (special != 0) {
@@ -1830,7 +1798,7 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 out, s32 left, s32 top) {
             s32 c = actionCursor;
             s32 x = left + 0x2C;
             s32 y = top + 0x19D;
-            deckCursor = text_001BB940(c, x, y, 1, 0, (s8 *)descText, NULL);
+            deckCursor = SzDuel_DrawWindowText_Pipe(c, x, y, 1, 0, (s8 *)descText, NULL);
         }
     }
     if (special != 0) {
@@ -1850,7 +1818,7 @@ s32 lSzDuel_DrawBuildDeck_Bag_Pipe(s32 out, s32 left, s32 top) {
             titleText = D_002BEF9D;
             textX = left + 0xA4;
             textY = top + 0x191;
-            deckCursor = text_001BB940(deckCursor, textX, textY, 0, 3, (s8 *)titleText, &shine);
+            deckCursor = SzDuel_DrawWindowText_Pipe(deckCursor, textX, textY, 0, 3, (s8 *)titleText, &shine);
         }
     }
     barX = left + 0xFC;
@@ -1888,15 +1856,6 @@ extern u8 D_0029095E[];
 extern u8 D_00290968[];
 extern u8 D_00290972[];
 extern char D_002BEFAB[];
-
-/* Draws `text` in the window font. */
-static inline s32 text_001BC350(s32 cursor, s32 x, s32 y, s32 align,
-                               s32 flags, s8 *text, void *color) {
-    extern s32 SzDuel_DrawWindow_Font_Pipe();
-    s32 length = func_0019BEF0((char *)text);
-    return SzDuel_DrawWindow_Font_Pipe(cursor, x, y, align, flags,
-                        length, text, color);
-}
 
 /* Draws a filled rectangle. */
 static inline s32 rectangle_001BC350(s32 cursor, Packet_001BC350 *packet,
@@ -2034,7 +1993,7 @@ void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
     if (color != NULL) {
         flags |= 8;
     }
-    cursor = text_001BC350(sortCursor, textX, textY, 0, flags, sortText, color);
+    cursor = SzDuel_DrawWindowText_Pipe(sortCursor, textX, textY, 0, flags, sortText, color);
     cardX = baseX - 0x138;
     cardY = top + 0x70;
     cardIndex = 0;
@@ -2072,13 +2031,13 @@ void lSzDuel_DrawBuildDeck_Deck_Pipe(s32 out, s32 left, s32 top) {
                             0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
         actionX = baseX - 0x4F;
         actionY = top + 0x19D;
-        cursor = text_001BC350(actionCursor, actionX, actionY, 1, 0, (s8 *)actionText, NULL);
+        cursor = SzDuel_DrawWindowText_Pipe(actionCursor, actionX, actionY, 1, 0, (s8 *)actionText, NULL);
         deckCursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_00290A76, baseX + 0x5D8, top + 0x8A2,
                             0, 1, 0, 0, 0, 0, 1, 0, -1, 0x80);
     }
     deckX = baseX - 0xCE;
     deckY = top + 0x184;
-    cursor = text_001BC350(deckCursor, deckX, deckY, 1, 0, (s8 *)deckText, NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(deckCursor, deckX, deckY, 1, 0, (s8 *)deckText, NULL);
     cursor = lSzDuel_DrawWindow_ExIcon_Pipe(cursor, D_0029095E, baseX + 0x5D8, top + 0x8B4,
                         0, 1, 0, 0, 0, 0, state == 0 ? 1 : 0, 0, -1, 0x80);
     {
@@ -2670,15 +2629,6 @@ extern u8 D_002BE94C[];
 extern char D_002BEFCB[];
 extern char D_002BEFDB[];
 
-/* Draws `text` in the window font. */
-static inline s32 text_001BE5F0(s32 cursor, s32 x, s32 y, s32 align,
-                               s32 flags, s8 *text, void *color) {
-    extern s32 SzDuel_DrawWindow_Font_Pipe();
-    s32 length = func_0019BEF0((char *)text);
-    return SzDuel_DrawWindow_Font_Pipe(cursor, x, y, align, flags,
-                        length, text, color);
-}
-
 /* Draws the loading rectangle while a card picture loads. */
 static inline s32 loading_001BE5F0(s32 cursor, Packet_001BE5F0 *packet,
                                   s32 x, s32 y, u8 *data) {
@@ -2825,14 +2775,14 @@ s32 lSzDuel_DrawBuildDeck_Detail_Basic_Pipe(s32 out, s32 cardNo, s32 left, s32 t
             s32 c = cursor;
             s32 x = baseX + 0xDD;
             s32 y = top + 0x87;
-            cursor = text_001BE5F0(c, x, y, 0, 2, loadingText, &color);
+            cursor = SzDuel_DrawWindowText_Pipe(c, x, y, 0, 2, loadingText, &color);
         }
     }
     cursor = lSzDuel_DrawWindow_Frame_Pipe(cursor, -1, -1, 11, baseX + 0x98, top + 0x52, -0x8A, -0x8A, 1);
     textX = baseX + 0xDD;
     textY = top + 0xDE;
     func_0019B648(text, D_002BEFDB, cardNo);
-    cursor = text_001BE5F0(cursor, textX, textY, 1, 2, text, NULL);
+    cursor = SzDuel_DrawWindowText_Pipe(cursor, textX, textY, 1, 2, text, NULL);
     labelX = baseX + 0x1D;
     cursor = SzMsg_DrawX_Pipe(cursor, 1, labelX, top + 0x35, (s32)gSzDuel_aicolMsg, SzMsg_DrawRect_Pipe);
     x = boxX = baseX + 0x4E;
@@ -3679,14 +3629,9 @@ typedef struct Vec4_001C12B0 {
     f32 x, y, z, w;
 } Vec4_001C12B0;
 
-/* Absolute value. */
-static inline s32 abs_001C12B0(s32 value) {
-    return value >= 0 ? value : -value;
-}
-
 /* An analog stick value with its centre dead zone (48) taken out. */
 static inline s32 deadzone_001C12B0(s32 value) {
-    if (abs_001C12B0(value) >= 48) {
+    if (Abs(value) >= 48) {
         value -= value > 0 ? 48 : -48;
     } else {
         value = 0;

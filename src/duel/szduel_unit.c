@@ -455,14 +455,6 @@ s32 SzDuel_GetUnitDP(s32 side, s32 unit, s32 baseOnly) {
     return SzDuel_GetUnitDP2(lSzDuel_GetUnit(side, unit), baseOnly);
 }
 
-/* Clamps at 0. */
-static inline s32 lower_bound_001E03D0(s32 value) {
-    if (value > 0) {
-        return value;
-    }
-    return 0;
-}
-
 /* A unit's defence, 0..9999 (`baseOnly`: without its power-ups). */
 s32 SzDuel_GetUnitDP2(void *unitInfo, s32 baseOnly) {
     s32 value;
@@ -479,8 +471,8 @@ s32 SzDuel_GetUnitDP2(void *unitInfo, s32 baseOnly) {
     if (baseOnly == 0) {
         value += *(s16 *)((u8 *)unitInfo + 0x3A);
     }
-    if (lower_bound_001E03D0(value) < 9999) {
-        return lower_bound_001E03D0(value);
+    if (AtLeast0(value) < 9999) {
+        return AtLeast0(value);
     }
     return 9999;
 }

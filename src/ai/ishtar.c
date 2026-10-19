@@ -1755,20 +1755,6 @@ static inline u32 target_00125500(void *arg0, u8 which) {
     return *(u16 *)&source->targets;
 }
 
-/* This duelist's caution about hidden cards (an inline copy of its GetWarnHideLvl: by life points and monster
-   count). */
-static inline s32 penalty_00125500(s32 object) {
-    if (SzDuel_GetLP(object) > 1000) {
-        if (SzDuel_GetUnitMonsterCount(object) >= 3) {
-            return 500;
-        } else {
-            return 1000;
-        }
-    } else {
-        return 2000;
-    }
-}
-
 /* The task of a unit attacking (task `pTask`): its path to the goal, into `pInput`; -1 when it has none (`fFirst`
    = 1 for the unit's first-choice task). */
 s32 TaLogic_Ishtar_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInput, u8 fFirst) {
@@ -1818,7 +1804,7 @@ s32 TaLogic_Ishtar_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInpu
         output->mode = 6;
         output->target = sourceTarget;
         cost = TaLogic_GetUnitWarning(sourceX, sourceY, nSide, 2, 1,
-                            (u8)penalty_00125500(nSide));
+                            (u8)TaLogic_LifePenalty(nSide));
         if (cost >= SzDuel_GetUnitAP(source->position >> 8, source->position & 0xFF, 0)) {
             output->value = TaLogic_IsDefStyleUnit(source->position >> 8, source->position & 0xFF,
                                         output->target, 1, 0);
@@ -1837,7 +1823,7 @@ s32 TaLogic_Ishtar_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInpu
         s32 penalty;
         u16 position;
 
-        penalty = penalty_00125500(nSide);
+        penalty = TaLogic_LifePenalty(nSide);
         position = source->position;
         TaLogic_GetInvadeRoot(position >> 8, position & 0xFF, positions,
                       sourceX, sourceY, targetX = otherTarget & 0xFF,
@@ -1860,7 +1846,7 @@ s32 TaLogic_Ishtar_GetMinimumTask_AtkMission(void *pTask, s32 nSide, void *pInpu
                     forcedPosition->y = targetY;
                 } else {
                     s32 cost;
-                    s32 penalty = penalty_00125500(nSide);
+                    s32 penalty = TaLogic_LifePenalty(nSide);
                     current = &positions[i];
                     cost = TaLogic_GetUnitWarning(current->x, current->y, nSide, 2, 1,
                                         (u8)penalty);
@@ -2205,23 +2191,15 @@ s32 TaLogic_Ishtar_IsOpenUnit(s32 nSide, s32 nID, void *pInfo) {
     return 2;
 }
 
-/* The larger of the two values. */
-static inline s32 max_00126840(s32 a, s32 b) {
-    if (a < b) {
-        return b;
-    }
-    return a;
-}
-
 /* Whether unit (nSide, nID) may open while moving from (nX, nZ) to the square next to it, (gX, gZ). */
 s32 TaLogic005_IsOpenMoveUnit(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     s32 min_y;
     s32 min_x;
 
     min_y = nZ < gZ ? nZ : gZ;
-    gZ = max_00126840(gZ, nZ);
+    gZ = Max(gZ, nZ);
     min_x = nX < gX ? nX : gX;
-    gX = max_00126840(gX, nX);
+    gX = Max(gX, nX);
     if ((gX - min_x) + (gZ - min_y) != 2) {
         return 0;
     }

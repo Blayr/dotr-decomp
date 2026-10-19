@@ -362,14 +362,6 @@ int TaLogic_GetInputQueFromMinimumTask(void *pCtl_v, void *pTask_v, unsigned sho
 #undef MOVE_X
 #undef MOVE_Z
 
-/* The absolute value of `value`. */
-static inline s32 absolute_00276B60(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
 /* The first step for unit (nSide, nID) on (nX, nZ) toward goal (gX, gZ). */
 s32 TaLogic_GetQueueXY_Move1(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ) {
     extern s32 TaLogic_IsPassRoot();
@@ -380,7 +372,7 @@ s32 TaLogic_GetQueueXY_Move1(s32 nSide, s32 nID, s32 nX, s32 nZ, s32 gX, s32 gZ)
         (((gZ < nZ) ? nZ : gZ) - ((nZ < gZ) ? nZ : gZ)) == 1) {
         return 1;
     }
-    switch (absolute_00276B60(nX - gX)) {
+    switch (Abs(nX - gX)) {
     case 0:
         return 1;
     case 2:
@@ -1665,20 +1657,6 @@ void TaLogic_IsPassRoot(s32 nSide, s32 nID, s32 nX, s32 nZ,
     TaLogic_IsPassRoot2(SzDuel_GetUnit(nSide, nID), nX, nZ, gX, gZ, gUnitID);
 }
 
-/* The board distance between (x1, y1) and (x2, y2). */
-static inline s32 distance_002798C0(s32 y1, s32 x1, s32 y2, s32 x2) {
-    return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
-           (((x2 < x1) ? x1 : x2) - ((x1 < x2) ? x1 : x2));
-}
-
-/* The absolute value of `value`. */
-static inline s32 absolute_002798C0(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
 /* Whether a unit (record `pVarInfo`) can move from (nX, nZ) to (gX, gZ) this turn (fields, units in the way). */
 s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitID) {
     extern s32 Ta_IsVirus_Chk3();
@@ -1689,10 +1667,10 @@ s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitI
     if (pVarInfo == 0) {
         return 0;
     }
-    if (distance_002798C0(nX, nZ, gX, gZ) == 0) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_002798C0(nX, nZ, gX, gZ) == 1) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 1) {
         if ((SzDuel_GetField(gX, gZ) == 8 && !(flags & 0x10)) ||
             (SzDuel_GetField(gX, gZ) == 9 && Ta_IsVirus_Chk3(pVarInfo, gX, gZ) == 1)) {
             return 0;
@@ -1704,8 +1682,8 @@ s32 TaLogic_IsPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUnitI
             }
         }
         return 1;
-    } else if (distance_002798C0(nX, nZ, gX, gZ) == 2) {
-        delta = absolute_002798C0(nX - gX);
+    } else if (TaLogic_Distance(nX, nZ, gX, gZ) == 2) {
+        delta = Abs(nX - gX);
         switch (delta) {
         case 0: {
             s32 midpoint = (nZ + gZ) >> 1;
@@ -1759,10 +1737,10 @@ s32 TaLogic_IsRunPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUn
     if (pVarInfo == 0) {
         return 0;
     }
-    if (distance_002798C0(nX, nZ, gX, gZ) == 0) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_002798C0(nX, nZ, gX, gZ) == 1) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 1) {
         if ((SzDuel_GetField(gX, gZ) == 8 && !(flags & 0x10)) ||
             (SzDuel_GetField(gX, gZ) == 9 && Ta_IsVirus_Chk3(pVarInfo, gX, gZ) == 1)) {
             return 0;
@@ -1784,8 +1762,8 @@ s32 TaLogic_IsRunPassRoot2(s32 pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ, s32 gUn
             }
             return 1;
         }
-    } else if (distance_002798C0(nX, nZ, gX, gZ) == 2) {
-        delta = absolute_002798C0(nX - gX);
+    } else if (TaLogic_Distance(nX, nZ, gX, gZ) == 2) {
+        delta = Abs(nX - gX);
         switch (delta) {
         case 0:
             middle = (nZ + gZ) >> 1;
@@ -1955,12 +1933,6 @@ u8 *TaLogic_GetInvadeRootTree2(u8 *pTree, s32 pPrev, void *pVarInfo, s32 nX, s32
     return var_s6;
 }
 
-/* The board distance between (x1, y1) and (x2, y2). */
-static inline s32 distance_0027A710(s32 y1, s32 x1, s32 y2, s32 x2) {
-    return (((y2 < y1) ? y1 : y2) - ((y1 < y2) ? y1 : y2)) +
-           (((x2 < x1) ? x1 : x2) - ((x1 < x2) ? x1 : x2));
-}
-
 /* Whether a unit (record `pVarInfo`) can attack its way from (nX, nZ) to (gX, gZ). */
 s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
                   s32 *gUnitID, s32 fView, u8 Node0, u16 bWarnLvl) {
@@ -1972,10 +1944,10 @@ s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
     if (pVarInfo == NULL) {
         return 0;
     }
-    if (distance_0027A710(nX, nZ, gX, gZ) == 0) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 0) {
         return 1;
     }
-    if (distance_0027A710(nX, nZ, gX, gZ) == 1) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 1) {
         s32 cell;
         s32 y;
         s32 x;
@@ -2012,7 +1984,7 @@ s32 TaLogic_IsPassInvadeRoot2(void *pVarInfo, s32 nX, s32 nZ, s32 gX, s32 gZ,
             return 0;
         }
     }
-    if (distance_0027A710(nX, nZ, gX, gZ) == 2) {
+    if (TaLogic_Distance(nX, nZ, gX, gZ) == 2) {
         dy = nX - gX;
         dy = dy >= 0 ? dy : -dy;
         switch (dy) {
@@ -2207,14 +2179,6 @@ s32 TaLogic_GetMinGoalCount(u8 *pntNext) {
     return count;
 }
 
-/* The absolute value of `value`. */
-static inline s32 absolute_0027B010(s32 value) {
-    if (value >= 0) {
-        return value;
-    }
-    return -value;
-}
-
 /* Whether square (nX, nZ) is already on the path tree before depth `bDepth`. */
 s32 TaLogic_IsRootPast2(void *pTree, s32 nX, s32 nZ, s32 cX, s32 cZ, u8 bDepth) {
     s32 var_t1;
@@ -2241,7 +2205,7 @@ s32 TaLogic_IsRootPast2(void *pTree, s32 nX, s32 nZ, s32 cX, s32 cZ, u8 bDepth) 
     min_x = (nX < cX) ? nX : cX;
     max_x = (cX < nX) ? nX : cX;
     if (((max_x - min_x) + (var_t3 - var_t2)) == 2) {
-        var_t1 = absolute_0027B010(nX - cX);
+        var_t1 = Abs(nX - cX);
         switch (var_t1) {
         case 0:
             if ((nX == (temp_t4 & 0xF)) && (((s32) temp_t4 >> 4) == ((nZ + cZ) >> 1))) {
@@ -2499,11 +2463,6 @@ s32 TaLogic_GetMaxApUnit3(u16 *wUnitLst, s32 nSide) {
     return bestPos;
 }
 
-/* The smaller of `a` and `b`. */
-static inline s32 min_0027B9B0(s32 a, s32 b) {
-    return (a >= b + 1) ? b : a;
-}
-
 /* Whether unit `wUnit` can move at all (not bound, a free square nearby). */
 s32 TaLogic_IsUnitReadyMove(s32 wUnit) {
     s32 i;
@@ -2529,8 +2488,8 @@ s32 TaLogic_IsUnitReadyMove(s32 wUnit) {
     yMin = (pos >> 8) - 1;
     yMax = (pos >> 8) + 1;
     xMax = (pos & 0xFF) + 1;
-    for (; i <= min_0027B9B0(xMax, 6); i++) {
-        for (j = GetCap(0, yMin); j <= min_0027B9B0(yMax, 6); j++) {
+    for (; i <= MinSel(xMax, 6); i++) {
+        for (j = GetCap(0, yMin); j <= MinSel(yMax, 6); j++) {
             if ((((pos & 0xFF) > i ? (pos & 0xFF) : i) - ((pos & 0xFF) < i ? (pos & 0xFF) : i)) + (((pos >> 8) > j ? (pos >> 8) : j) - ((pos >> 8) < j ? (pos >> 8) : j)) == 1 &&
                 SzDuel_GetMapUnit(i, j) == 0) {
                 if (SzDuel_GetField(i, j) != 8 || (flags & 0x10)) {
