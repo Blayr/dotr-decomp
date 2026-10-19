@@ -1,4 +1,4 @@
-/* The duel screen, part 12 of 15: players, turns, summon power, hand phase, deck / graveyard / hand lists, life points. */
+/* The duel screen, part 9 of 12: players, turns, summon power, hand phase, deck / graveyard / hand lists, life points. */
 
 #include "common.h"
 

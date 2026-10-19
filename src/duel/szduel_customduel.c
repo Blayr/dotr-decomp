@@ -1,4 +1,4 @@
-/* The duel screen, part 6 of 15: custom duel set-up menus. */
+/* The duel screen, part 5 of 12: custom duel set-up menus. */
 
 #include "common.h"
 extern u8 duelIcons[]; /* original: gSzDuel_Icon */

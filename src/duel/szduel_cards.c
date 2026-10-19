@@ -1,4 +1,4 @@
-/* The duel screen, part 8 of 14: hand actions, turns, card sessions, card nodes, card drawing and cursors. */
+/* The duel screen, part 7 of 12: hand actions, turns, card sessions, card nodes, card drawing and cursors. Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 

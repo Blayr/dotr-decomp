@@ -1,4 +1,4 @@
-/* Campaign map: the campaign system and its events (Taku_*, TkCamp_*). */
+/* Campaign map, part 1 of 3: the campaign system and its events (Taku_*, TkCamp_*). */
 
 #include "common.h"
 #include "campaign.h"

@@ -1,4 +1,4 @@
-/* The duel screen, part 2 of 15: windows, hand cards, dialogs, the info panels, fonts, join fades. */
+/* The duel screen, part 2 of 12: windows, hand cards, dialogs, the info panels, fonts, join fades. */
 
 #include "common.h"
 

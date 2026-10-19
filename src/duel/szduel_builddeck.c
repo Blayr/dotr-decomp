@@ -1,4 +1,4 @@
-/* The duel screen, part 3 of 15: building a deck (sorting, passwords, reincarnation). */
+/* The duel screen, part 3 of 12: building a deck (sorting, passwords, reincarnation). */
 
 #include "common.h"
 

@@ -1,4 +1,4 @@
-/* The duel screen, part 15 of 15: busy flags, card position / rotation / scale / colour, pop-ups, the hand cursor. */
+/* The duel screen, part 12 of 12: busy flags, card position / rotation / scale / colour, pop-ups, opening the hand cursor. Its last three functions (the hand cursor's drawing and closing, SzDuel_SetIgnoreJudge) open battle/szbattle.c. */
 
 #include "common.h"
 

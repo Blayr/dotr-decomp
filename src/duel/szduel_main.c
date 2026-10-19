@@ -1,4 +1,4 @@
-/* The duel screen (SzDuel_*), part 1 of 15 of one original Konami file (szduel, 361 functions, cut here by feature): start-up, shutdown, the stage. */
+/* The duel screen (SzDuel_*), part 1 of 12 of one original Konami file (szduel, 361 functions, cut here by feature): start-up, shutdown, the stage. */
 
 #include "common.h"
 
@@ -7,11 +7,11 @@ void SzDuel_Initialize(void) {
     u8 *state = duelState.b;
     s32 x;
     s32 y;
-    u8 *cell;
+    MapInfo *cell;
     s32 group;
     s32 index;
-    u8 *entry;
-    u8 *row;
+    Unit *entry;
+    Unit *row;
 
     RhMem_FillMemory((s8 *)duelState.b, 0, 0xD70);
     SzDuel_InitCardRequest();
@@ -22,13 +22,13 @@ void SzDuel_Initialize(void) {
         do {
             cell = SzDuel_GetMapInfo(x, y);
             SzDuel_InitMapInfo(cell);
-            cell[0x16] = (y + x) % 10;
+            cell->field = (y + x) % 10;
             x++;
         } while (x < 7);
         y++;
     } while (y < 7);
 
-    row = duelUnits;
+    row = duelUnits[0];
     group = 0;
     do {
         index = 0;
@@ -36,10 +36,10 @@ void SzDuel_Initialize(void) {
         do {
             SzDuel_InitCardInfo(entry, -1);
             index++;
-            entry += 0x5C;
+            entry++;
         } while (index < 11);
         group++;
-        row += 0x3F4;
+        row += 11;
     } while (group < 3);
 
     state[0x33C] = 100;

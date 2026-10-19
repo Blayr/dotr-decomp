@@ -1,4 +1,4 @@
-/* The duel screen, part 11 of 15: the board squares, card records, unit requests, duel and map set-up. */
+/* The duel screen, part 8 of 12: the board squares, card records, unit requests, duel and map set-up. */
 
 #include "common.h"
 
@@ -242,7 +242,7 @@ void *SzDuel_GetCardInfo(s32 group, s32 index) {
     if (group < 0 || group >= 3 || index < 0 || index >= 11) {
         return NULL;
     }
-    return group * 0x3F4 + duelUnits + index * 0x5C;
+    return &duelUnits[group][index];
 }
 
 /* A board square's record, or NULL off the board. */

@@ -1,4 +1,4 @@
-/* The duel screen, part 5 of 15: card trading. */
+/* The duel screen, part 4 of 12: card trading. */
 
 #include "common.h"
 

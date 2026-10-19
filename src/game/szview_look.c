@@ -1,4 +1,4 @@
-/* The camera, part 2 of 2: look points, roll and camera motion (SzView_*). */
+/* The camera (SzView_*), part 2 of 2: look points, roll and camera motion. Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 

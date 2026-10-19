@@ -1,4 +1,4 @@
-/* Campaign map, part 2 of 3: going to a duel, who-is-talking text, cut scenes, status and icon windows (Taku_Camp_*). */
+/* Campaign map, part 2 of 3: going to a duel, who-is-talking text, cut scenes, status and icon windows (Taku_Camp_*). Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 #include "campaign.h"

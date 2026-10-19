@@ -1,4 +1,4 @@
-/* Campaign map, part 3 of 3: the enemy and terrain windows, the map's 3D polygons, TkCamp_Act (one frame of the campaign map), practice duels, help, card rewards. */
+/* Campaign map, part 3 of 3: the enemy and terrain windows, the map's 3D polygons, TkCamp_Act (one frame of the campaign map), practice duels, help, card rewards. Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 #include "campaign.h"

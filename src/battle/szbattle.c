@@ -1,4 +1,4 @@
-/* 3D battles (SzBattle_*). */
+/* 3D battles (SzBattle_*). The first three functions are the duel screen's (SzDuel_*): the battle functions after them match only with them in front. Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 

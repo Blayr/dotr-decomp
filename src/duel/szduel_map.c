@@ -1,4 +1,4 @@
-/* The duel screen, part 14 of 15: terrain, movable squares, square colours. */
+/* The duel screen, part 11 of 12: terrain, movable squares, square colours. */
 
 #include "common.h"
 
@@ -121,134 +121,29 @@ u8 SzDuel_GetMapMovable(s32 x, s32 y) {
     return cell->MapMovable;
 }
 
-struct DotrStateItemBits {
-    signed char unknown_bit_0 : 1;
-    signed char unknown_bit_1 : 1;
-    signed char unknown_bit_2 : 1;
-    signed char unknown_bit_3 : 1;
-    signed char unknown_bit_4 : 1;
-    signed char unknown_bit_5 : 1;
-    signed char unknown_bit_6 : 1;
-    signed char unknown_bit_7 : 1;
-};
-struct DotrStateItemPairs {
-    signed char unknown_bits_0_1 : 2;
-    signed char unknown_bits_2_3 : 2;
-    signed char unknown_bits_4_5 : 2;
-    signed char unknown_bits_6_7 : 2;
-};
-struct DotrStateItemFlags {
-    signed char unknown_bit_0 : 1;
-    signed char unknown_bit_1 : 1;
-    signed char unknown_bit_2 : 1;
-    signed char unknown_bit_3 : 1;
-    signed char unknown_bits_4_7 : 4;
-};
-struct DotrStateItemObject;
-struct DotrStateItemSource {
-    unsigned char unknown_00;
-    unsigned char unknown_01;
-    unsigned char unknown_02_low : 4;
-    unsigned char unknown_02_high : 4;
-    unsigned char unknown_03;
-    unsigned short unknown_04;
-    unsigned char unknown_06[2];
-    unsigned short unknown_08;
-    unsigned short unknown_0a;
-};
-struct DotrStateEntry8 {
-    int unknown_words[2];
-};
-struct DotrStateItem {
-    struct DotrStateItemSource *unknown_00;
-    struct DotrStateItemObject *unknown_04; 
-    struct DotrStateEntry8 unknown_08[5];
-    int unknown_30;
-    unsigned char unknown_34[4];
-    short unknown_38;
-    short unknown_3a;
-    unsigned short unknown_3c;
-    unsigned char unknown_3e;
-    unsigned char unknown_3f;
-    unsigned char unknown_40;
-    unsigned char unknown_41;
-    unsigned char unknown_42[2];
-    unsigned char unknown_44;
-    unsigned char unknown_45;
-    unsigned char unknown_46;
-    unsigned char unknown_47;
-    unsigned char unknown_48;
-    unsigned char unknown_49;
-    unsigned char unknown_4a;
-    unsigned char unknown_4b;
-    unsigned char unknown_4c[2];
-    unsigned char unknown_4e;
-    unsigned char unknown_4f;
-    unsigned char unknown_50;
-    unsigned char unknown_51;
-    unsigned char unknown_52;
-    unsigned char unknown_53;
-    unsigned char unknown_54;
-    unsigned char unknown_55;
-    struct DotrStateItemPairs unknown_56;
-    struct DotrStateItemBits unknown_57;
-    struct DotrStateItemFlags unknown_58;
-    unsigned char unknown_59[3];
-};
-typedef char DotrStateItemMustBe5c[(sizeof(struct DotrStateItem) == 0x5c) ? 1 : -1];
-struct DotrStateVector {
-    float x, y, z;
-    float unknown_w;
-};
-struct DotrStateCellQuad {
-    unsigned char unknown_0;
-    unsigned char unknown_1;
-    unsigned char unknown_2;
-    unsigned char unknown_3;
-};
-typedef int DotrStateWord;
-struct DotrStateCell {
-    DotrStateWord unknown_00;
-    struct DotrStateCellQuad unknown_04[4];
-    short unknown_14;
-    unsigned char unknown_16;
-    unsigned char unknown_17;
-    unsigned char unknown_18;
-    unsigned char unknown_19;
-    unsigned char unknown_1a;
-};
-typedef char DotrStateCellMustBe1c[(sizeof(struct DotrStateCell) == 0x1c) ? 1 : -1];
-struct DotrStateItemObject {
-    struct DotrStateVector unknown_00;
-    struct DotrStateVector unknown_10;
-    unsigned char unknown_20[0x10];
-    struct DotrStateVector unknown_30;
-    struct DotrStateCellQuad unknown_40;
-};
-extern struct DotrStateCell D_00318E60_b[7][7];
-struct DotrStateItem *func_001E36E0_b(int x, int y);
+Unit *func_001E36E0_b(int x, int y);
 /* A board square's record, or NULL off the board. */
-static inline struct DotrStateCell *cell_1e2570(int x, int y)
+static inline MapInfo *cell_1e2570(int x, int y)
 {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return 0;
     }
-    return &D_00318E60_b[y][x];
+    return &boardSquares[y][x];
 }
 /* Sets a square's summon-enable mark. */
 static inline void set_17(int x, int y, int value)
 {
-    struct DotrStateCell *c = cell_1e2570(x, y);
+    MapInfo *c = cell_1e2570(x, y);
     if (c != 0) {
-        c->unknown_17 = value;
+        c->MapMovable = value;
     }
 }
 /* A square's walk distance. */
 static inline int get_16(int x, int y)
 {
-    struct DotrStateCell *c = cell_1e2570(x, y);
+    MapInfo *c = cell_1e2570(x, y);
     if (c != 0) {
-        return c->unknown_16;
+        return c->field;
     }
     return -1;
 }
@@ -260,7 +155,7 @@ void lSzDuel_CalcMapSummonEnable(int side, int cx, int cy)
     int y;
     int ok;
     int n;
-    struct DotrStateItem *item;
+    Unit *item;
 
     for (y = 0; y < 7; y++) {
         for (x = 0; x < 7; x++) {
@@ -278,7 +173,7 @@ void lSzDuel_CalcMapSummonEnable(int side, int cx, int cy)
                 ok = 0;
             }
             if (item != 0) {
-                n = Ta_IsUnitControl(item->unknown_44, item->unknown_45);
+                n = Ta_IsUnitControl(item->team, item->slot);
                 if (n != side) {
                     ok = 0;
                 }
@@ -290,30 +185,24 @@ void lSzDuel_CalcMapSummonEnable(int side, int cx, int cy)
     }
 }
 
-typedef struct {
-    u8 pad[0x17];
-    u8 index;
-    u8 pad18[4];
-} Cell_001E27D0;
-
 /* A board square's record, or NULL off the board. */
-static inline Cell_001E27D0 *cell_001E27D0(s32 x, s32 y) {
+static inline MapInfo *cell_001E27D0(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E27D0 *)&boardSquares[y][x];
+    return &boardSquares[y][x];
 }
 
 /* Sets a square's walk distance. */
 static inline void set_001E27D0(s32 x, s32 y, s32 value) {
-    Cell_001E27D0 *cell = cell_001E27D0(x, y);
+    MapInfo *cell = cell_001E27D0(x, y);
     if (cell != NULL) {
-        cell->index = value;
+        cell->MapMovable = value;
     }
 }
 
 /* A square's record if (x, y) is on the board. */
-static inline Cell_001E27D0 *checked_001E27D0(s32 x, s32 y, Cell_001E27D0 *cell) {
+static inline MapInfo *checked_001E27D0(s32 x, s32 y, MapInfo *cell) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
@@ -321,18 +210,18 @@ static inline Cell_001E27D0 *checked_001E27D0(s32 x, s32 y, Cell_001E27D0 *cell)
 }
 
 /* Sets a square's walk mark. */
-static inline void set_walk_001E27D0(s32 x, s32 y, Cell_001E27D0 *p, s32 value) {
-    Cell_001E27D0 *cell = checked_001E27D0(x, y, p);
+static inline void set_walk_001E27D0(s32 x, s32 y, MapInfo *p, s32 value) {
+    MapInfo *cell = checked_001E27D0(x, y, p);
     if (cell != NULL) {
-        cell->index = value;
+        cell->MapMovable = value;
     }
 }
 
 /* A square's walk mark. */
-static inline s32 get_walk_001E27D0(s32 x, s32 y, Cell_001E27D0 *p) {
-    Cell_001E27D0 *cell = checked_001E27D0(x, y, p);
+static inline s32 get_walk_001E27D0(s32 x, s32 y, MapInfo *p) {
+    MapInfo *cell = checked_001E27D0(x, y, p);
     if (cell != NULL) {
-        return cell->index;
+        return cell->MapMovable;
     }
     return 0xFF;
 }
@@ -345,12 +234,12 @@ void lSzDuel_CalcMapMovable(s32 pathOnly, s32 isLeader, s32 side, s32 startX, s3
     u8 buffer1[0x40];
     s32 x;
     s32 y;
-    Cell_001E27D0 *p;
-    Cell_001E27D0 *row;
+    MapInfo *p;
+    MapInfo *row;
     s32 i;
 
     if (pathOnly != 0) {
-        row = (Cell_001E27D0 *)boardSquares;
+        row = boardSquares[0];
         y = 0;
         do {
             x = 0;
@@ -364,12 +253,12 @@ void lSzDuel_CalcMapMovable(s32 pathOnly, s32 isLeader, s32 side, s32 startX, s3
             row += 7;
         } while (y < 7);
     } else {
-        Cell_001E27D0 *p;
-        Cell_001E27D0 *row;
+        MapInfo *p;
+        MapInfo *row;
         s32 y;
         s32 x;
 
-        row = (Cell_001E27D0 *)boardSquares;
+        row = boardSquares[0];
         y = 0;
         do {
             x = 0;
@@ -391,33 +280,20 @@ void lSzDuel_CalcMapMovable(s32 pathOnly, s32 isLeader, s32 side, s32 startX, s3
     }
 }
 
-typedef struct Cell_001E2A60 {
-    u8 pad[0x16];
-    u8 terrain;
-    u8 distance;
-    u8 tail[4];
-} Cell_001E2A60;
-
-typedef struct Object_001E2A60 {
-    u8 pad[0x44];
-    u8 owner;
-    u8 state;
-} Object_001E2A60;
-
 /* A board square's record, or NULL off the board. */
-static inline Cell_001E2A60 *cell_001E2A60(s32 x, s32 y) {
+static inline MapInfo *cell_001E2A60(s32 x, s32 y) {
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return NULL;
     }
-    return (Cell_001E2A60 *)&boardSquares[y][x];
+    return &boardSquares[y][x];
 }
 
 /* A square's field type. */
 static inline s32 terrain_001E2A60(s32 x, s32 y) {
-    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    MapInfo *cell = cell_001E2A60(x, y);
     s32 terrain;
     if (cell != NULL) {
-        terrain = cell->terrain;
+        terrain = cell->field;
     } else {
         terrain = -1;
     }
@@ -426,18 +302,18 @@ static inline s32 terrain_001E2A60(s32 x, s32 y) {
 
 /* A square's walk distance (0xFF unreached). */
 static inline s32 distance_001E2A60(s32 x, s32 y) {
-    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    MapInfo *cell = cell_001E2A60(x, y);
     if (cell != NULL) {
-        return cell->distance;
+        return cell->MapMovable;
     }
     return 0xFF;
 }
 
 /* Sets a square's walk distance. */
 static inline void set_distance_001E2A60(s32 x, s32 y, s32 distance) {
-    Cell_001E2A60 *cell = cell_001E2A60(x, y);
+    MapInfo *cell = cell_001E2A60(x, y);
     if (cell != NULL) {
-        cell->distance = distance;
+        cell->MapMovable = distance;
     }
 }
 
@@ -456,7 +332,7 @@ static inline s32 visited_001E2A60(s32 x, s32 y, u8 *pathX, u8 *pathY, s32 count
 void lSzDuel_CalcMapMovableRecursive(s32 pathOnly, s32 isLeader, s32 side, s32 x, s32 y, s32 limit,
                    u8 *oldX, u8 *oldY, s32 oldCount, u8 *pathX, u8 *pathY,
                    s32 depth, s32 allowance) {
-    Object_001E2A60 *object;
+    Unit *object;
     s32 terrain;
     s32 i;
     s32 nextDepth;
@@ -464,7 +340,7 @@ void lSzDuel_CalcMapMovableRecursive(s32 pathOnly, s32 isLeader, s32 side, s32 x
     if (x < 0 || x >= 7 || y < 0 || y >= 7) {
         return;
     }
-    object = (Object_001E2A60 *)SzDuel_GetMapUnit(x, y);
+    object = (Unit *)SzDuel_GetMapUnit(x, y);
     terrain = terrain_001E2A60(x, y);
     if (depth > 0) {
         for (i = 0; i < oldCount; i++) {
@@ -473,11 +349,11 @@ void lSzDuel_CalcMapMovableRecursive(s32 pathOnly, s32 isLeader, s32 side, s32 x
             }
         }
         if (object != NULL) {
-            s32 owner = Ta_IsUnitControl(object->owner, object->state);
+            s32 owner = Ta_IsUnitControl(object->team, object->slot);
             if (isLeader != 0 && owner != side) {
                 return;
             }
-            if (object->state == 0 && object->owner == side) {
+            if (object->slot == 0 && object->team == side) {
                 return;
             }
         }
@@ -545,47 +421,21 @@ void SzDuel_SetMapColor(s32 x, s32 z, s32 value, s32 color, s32 blink) {
     SzDuel_SetMapColor2(x, z, value, color, blink, 1);
 }
 
-typedef struct {
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 a;
-} Color_001E3070;
-
-typedef struct {
-    u8 pad[0x44];
-    u8 kind;
-    u8 pad45[0x12];
-    s8 unused : 1;
-    s8 highlighted : 1;
-} Entity_001E3070;
-
-typedef struct {
-    Entity_001E3070 *entity;
-    Color_001E3070 color;
-    Color_001E3070 savedColor;
-    Color_001E3070 glow;
-    Color_001E3070 savedGlow;
-    u8 pad14[4];
-    s8 value;
-    u8 pad19[3];
-} Cell_001E3070;
-
 extern u16 D_00318118;
 
 /* Sets board square (x, z)'s colour value and colour; `blink` makes it pulse. */
 s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s32 redraw) {
-    Cell_001E3070 *cell;
+    MapInfo *cell;
     u8 inverse;
     u8 channel;
     s32 lit;
     s32 dim;
-    Entity_001E3070 *entity;
+    Unit *entity;
 
     if (x < 0 || x >= 7 || z < 0 || z >= 7) {
         cell = NULL;
     } else {
-        cell = (Cell_001E3070 *)&boardSquares[z][x];
+        cell = &boardSquares[z][x];
     }
 
     channel = (D_00318118 >> 8) & 0xFF;
@@ -594,46 +444,46 @@ s32 SzDuel_SetMapColor2(s32 x, s32 z, s32 colorValue, s32 newColor, s32 blink, s
         return 0;
     }
 
-    cell->value = colorValue;
+    cell->TargetSelectionHighlight = colorValue;
     if (newColor != 0) {
-        cell->color = *(Color_001E3070 *)newColor;
+        cell->TargetHighlight = *(Rgba *)newColor;
     } else {
-        cell->color.b = 0;
-        cell->color.g = 0;
-        cell->color.r = 0;
-        cell->color.a = 0;
+        cell->TargetHighlight.b = 0;
+        cell->TargetHighlight.g = 0;
+        cell->TargetHighlight.r = 0;
+        cell->TargetHighlight.a = 0;
     }
 
-    cell->glow.b = 0;
-    cell->glow.g = 0;
-    cell->glow.r = 0;
-    cell->glow.a = 0;
+    cell->TargetBorderOutline.b = 0;
+    cell->TargetBorderOutline.g = 0;
+    cell->TargetBorderOutline.r = 0;
+    cell->TargetBorderOutline.a = 0;
 
     if (redraw != 0) {
-        entity = cell->entity;
+        entity = cell->unit;
         if (entity != NULL) {
-            if (entity->highlighted) {
+            if (entity->status.fRevolt) {
                 lit = (channel * 0xFF) >> 7;
                 dim = (inverse * 0xFF) >> 7;
-                cell->glow.b = lit + dim;
-                cell->glow.g = dim;
-                cell->glow.r = dim;
-            } else if (entity->kind == 0) {
-                cell->glow.b = 0xFF;
-                cell->glow.g = 0;
-                cell->glow.r = 0;
+                cell->TargetBorderOutline.b = lit + dim;
+                cell->TargetBorderOutline.g = dim;
+                cell->TargetBorderOutline.r = dim;
+            } else if (entity->team == 0) {
+                cell->TargetBorderOutline.b = 0xFF;
+                cell->TargetBorderOutline.g = 0;
+                cell->TargetBorderOutline.r = 0;
             } else {
-                cell->glow.b = 0xFF;
-                cell->glow.g = 0xFF;
-                cell->glow.r = 0xFF;
+                cell->TargetBorderOutline.b = 0xFF;
+                cell->TargetBorderOutline.g = 0xFF;
+                cell->TargetBorderOutline.r = 0xFF;
             }
-            cell->glow.a = 0x80;
+            cell->TargetBorderOutline.a = 0x80;
         }
     }
 
     if (blink != 0) {
-        cell->savedColor = cell->color;
-        cell->savedGlow = cell->glow;
+        cell->Highlight = cell->TargetHighlight;
+        cell->BorderOutline = cell->TargetBorderOutline;
     }
 
     return 1;

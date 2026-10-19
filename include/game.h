@@ -57,17 +57,55 @@ typedef struct DuelHand {
     u8 count;
 } DuelHand;
 
-/* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
-   Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
-/* Board squares, units and the AI's task records. Names from batzpup's Ghidra project; the unit's layout is the
-   developers' own (the Japanese release's debug information for the AI files, whose names follow each field). */
+/* Board squares, units, cards and the AI's task records. Names from batzpup's Ghidra project; the unit's, the
+   card constants' and the card request's layouts are the developers' own (the Japanese release's debug
+   information for the AI files, whose names follow each field). */
 
-/* One unit record (duelUnits: [3][11], side 2 = the leaders' spare row; 0x5C bytes). */
+typedef struct Vec4i {
+    s32 x, y, z, w;
+} Vec4i;
+
+/* A colour in the GS's byte order. */
+typedef struct Rgba {
+    u8 r, g, b, a;
+} Rgba;
+
+/* A card's constant record (gSzDuel_CardConstInfo[card id]; 0x14 bytes). */
+typedef struct CardConstInfo {
+    u8 kind;                        /* 0x00 (bKind) */
+    u8 kindOfs;                     /* 0x01 (bKindOfs) */
+    u8 lvAttr;                      /* 0x02: attribute and level, 4 bits each (bAttr, bLevel) */
+    u8 deckCost;                    /* 0x03 (bDeckCost) */
+    u16 effectId;                   /* 0x04 (wEffIdx) */
+    u16 xaxId;                      /* 0x06 (wEffNo) */
+    u16 apWithFlags;                /* 0x08: attack, and flags fPermanent, fGetPasswd, fGetRecycle (wAP) */
+    u16 dpWithFlags;                /* 0x0A: defence, and flag fGetSlot (wDP) */
+    u8 password[8];                 /* 0x0C */
+} CardConstInfo;
+
+/* A card drawn in 3D (cardRequests[32], 0xA0 bytes): where and how, and the unit it shows. */
+typedef struct CardRequest {
+    Vec4f pos;                      /* 0x00 (pntPos) */
+    Vec4i rot;                      /* 0x10 (ivecRot) */
+    Vec4i look;                     /* 0x20 (ivecLook) */
+    Vec4f scale;                    /* 0x30 (vecScale) */
+    Rgba color;                     /* 0x40 (icolRgba) */
+    Rgba filter;                    /* 0x44 (icolFilter) */
+    u8 node[0x30];                  /* 0x48 (Node) */
+    void *nodePtr;                  /* 0x78 (pNode) */
+    void *work;                     /* 0x7C (pWork) */
+    u32 flags;                      /* 0x80: nMax, fBig, fLook, fScale, fColor, nNode, bFilterMode, fIgnore, fBusy */
+    u8 pad84[0x90 - 0x84];
+    struct Unit *unit;              /* 0x90: the unit it shows, or NULL (pVarInfo) */
+    u8 pad94[0xA0 - 0x94];
+} CardRequest;
+
+/* One unit record (duelUnits[3][11], side 2 = the leaders' spare row; 0x5C bytes). */
 typedef struct Unit {
-    void *constInfo;                /* 0x00: the card's constant record (pConstInfo) */
-    void *cardModel;                /* 0x04: its card request (pCardReq) */
+    CardConstInfo *constInfo;       /* 0x00: the card's constant record (pConstInfo) */
+    CardRequest *cardModel;         /* 0x04: the card drawn for it (pCardReq) */
     union {
-        struct { u32 type, data; } effects[5];
+        struct { s32 type, data; } effects[5];
         u16 leaderAbilities[20];
     } cardEffects;                  /* 0x08: monster effects, or a leader's abilities (aVarEffIdx) */
     s32 VisualRelated;              /* 0x30: its rotation (nRotY) */
@@ -100,27 +138,40 @@ typedef struct Unit {
     u8 ctlRateM;                    /* 0x53 (bCtlRateM) */
     u8 openRate;                    /* 0x54 (bOpenRate) */
     u8 defenseRate;                 /* 0x55 (bDefenseRate) */
-    u8 SomeStatusBitfield;          /* 0x56: flags nCtlFlipC, nCtlFlipM, nOpenFlip, nDefenseFlip */
-    u8 status;                      /* 0x57: flags fFinish, fRevolt, fOpen, fDefense, fOpenF, fDefenseF, fPickup,
-                                       fCardBusy */
-    u16 modelStatusFlags;           /* 0x58: flags fModelBusy, fCardColBusy, fHand, fCurse, nEffHandle */
-    u8 padding1;                    /* 0x5A */
-    u8 padding2;                    /* 0x5B */
+    struct {
+        s8 nCtlFlipC : 2;
+        s8 nCtlFlipM : 2;
+        s8 nOpenFlip : 2;
+        s8 nDefenseFlip : 2;
+    } SomeStatusBitfield;           /* 0x56 */
+    struct {
+        s8 fFinish : 1;
+        s8 fRevolt : 1;             /* controlled by the other side */
+        s8 fOpen : 1;               /* face up */
+        s8 fDefense : 1;
+        s8 fOpenF : 1;
+        s8 fDefenseF : 1;
+        s8 fPickup : 1;
+        s8 fCardBusy : 1;
+    } status;                       /* 0x57 */
+    struct {
+        s8 fModelBusy : 1;
+        s8 fCardColBusy : 1;
+        s8 fHand : 1;
+        s8 fCurse : 1;
+        s8 nEffHandle : 4;
+    } modelStatusFlags;             /* 0x58 */
+    u8 pad59[3];
 } Unit;
-
-/* A square's colour, in the GS's byte order. */
-typedef struct MapColor {
-    u8 r, g, b, a;
-} MapColor;
 
 /* One board square (boardSquares: [7][7], [row][column]; 0x1C bytes). batzpup's names; the four colours are
    grouped as the code uses them (SzDuel_CalcMapColor moves each current colour towards its target). */
 typedef struct MapInfo {
     Unit *unit;                     /* 0x00: the unit standing here, or NULL */
-    MapColor TargetHighlight;       /* 0x04: the square's colour to fade to */
-    MapColor Highlight;             /* 0x08: its colour now (a: its height) */
-    MapColor TargetBorderOutline;   /* 0x0C: the unit's glow to fade to */
-    MapColor BorderOutline;         /* 0x10: its glow now */
+    Rgba TargetHighlight;       /* 0x04: the square's colour to fade to */
+    Rgba Highlight;             /* 0x08: its colour now (a: its height) */
+    Rgba TargetBorderOutline;   /* 0x0C: the unit's glow to fade to */
+    Rgba BorderOutline;         /* 0x10: its glow now */
     s16 fieldRate;                  /* 0x14: the move highlight, -0x80..0x80 */
     u8 field;                       /* 0x16: the terrain (Field) */
     u8 MapMovable;                  /* 0x17: how far a unit can still walk from here (0xFF: not reached) */
@@ -158,6 +209,8 @@ typedef struct MinimumTask {
     u8 padding3[3];
 } MinimumTask;
 
+/* One side of the duel: the first 0x6A0 bytes of the duel state hold two of these, [0] and [1].
+   Card ids run 0..0x355 (SzDuel_AddDeck rejects others); 999 (0x3E7) marks an empty slot. */
 typedef struct DuelPlayer {
     UnitTask taskList[22];         /* 0x000: the computer opponent's plan, one task per unit */
     u16 inputQue[32];              /* 0x160: the pad inputs it queued (Input) */
@@ -181,7 +234,7 @@ typedef struct DuelPlayer {
     u8 pad33F[0x341 - 0x33F];
     u8 summonPower;                /* 0x341: 0..12 (SzDuel_CalcSummonPower) */
     u8 summonCharge;               /* 0x342 */
-    u8 pad343;
+    u8 unitsSummoned;              /* 0x343: the summon order the next unit gets (batzpup: NumberOfUnitsSummoned) */
     u8 destinyDraw;                /* 0x344: bits 0-3 destinyDrawTable entry, 4-6 bonus level, 7 used this duel */
     s8 cursorHeight;               /* 0x345: the cursor's height above the board (40 at the start) */
     struct {
@@ -533,7 +586,7 @@ extern u8 D_003503C0[];
 extern f32 gRhMath_adwSinTable[];
 
 
-extern u8 duelUnits[]; /* original: gSzDuel_aaVarInfo */
+extern Unit duelUnits[3][11]; /* [side][unit], side 2 the spare row; original: gSzDuel_aaVarInfo */
 
 
 

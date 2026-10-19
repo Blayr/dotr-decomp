@@ -1,4 +1,4 @@
-/* The camera (SzView_*). */
+/* The camera (SzView_*), part 1 of 2: create, act, fog and lights, requests, look vectors. */
 
 #include "common.h"
 

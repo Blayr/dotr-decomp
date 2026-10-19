@@ -1,4 +1,4 @@
-/* The duel screen, part 7 of 14: the custom duel's last menus, the map editor, drawing all cards, card requests, card control, unit drawing, and SzDuel_Act, the duel's state machine (one frame of a duel). */
+/* The duel screen, part 6 of 12: the custom duel's last menus, the map editor, drawing all cards, card requests, card control, unit drawing, and SzDuel_Act, the duel's state machine (one frame of a duel). Starts where it does for the compiler (see README, How the files are split). */
 
 #include "common.h"
 extern u8 duelIcons[]; /* original: gSzDuel_Icon */
