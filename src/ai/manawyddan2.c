@@ -359,49 +359,49 @@ void TaLogic021_CommandInvadeUnit(UnitTask *pTask) {
     if (mode == 0x10) {
         if ((result >> 8) == 6) {
             pTask->mission = 0xFFF;
-            pTask->dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->dwGoal;
+            pTask->goal.dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->goal.dwGoal;
         } else {
             pTask->mission = 0x10FF;
-            pTask->dwGoal = (((result & 0xFF) | 0x600) << 16) | *(u16 *)&pTask->dwGoal;
+            pTask->goal.dwGoal = (((result & 0xFF) | 0x600) << 16) | *(u16 *)&pTask->goal.dwGoal;
         }
     } else {
         if (mode == 0xF) {
             if ((result >> 8) == 0) {
                 pTask->mission = 0x10FF;
-                pTask->dwGoal = (((result & 0xFF) | 0x600) << 16) | *(u16 *)&pTask->dwGoal;
+                pTask->goal.dwGoal = (((result & 0xFF) | 0x600) << 16) | *(u16 *)&pTask->goal.dwGoal;
             } else {
                 pTask->mission = 0xFFF;
-                pTask->dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->dwGoal;
+                pTask->goal.dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->goal.dwGoal;
             }
         } else if ((result >> 8) < 4) {
             if ((result >> 8) == 0) {
                 pTask->mission = 0x10FF;
-                pTask->dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->dwGoal;
+                pTask->goal.dwGoal = ((result & 0xFF) << 16) | *(u16 *)&pTask->goal.dwGoal;
             } else {
                 index = result & 0xFF;
                 if (index == 3) {
                     pTask->mission = 0x6FF;
-                    pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x30000;
+                    pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | 0x30000;
                 } else if (index > 3) {
                     pTask->mission = 0x6FF;
-                    pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x60000;
+                    pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | 0x60000;
                 } else {
                     pTask->mission = 0x6FF;
-                    pTask->dwGoal = *(u16 *)&pTask->dwGoal;
+                    pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal;
                 }
             }
         } else if (SzDuel_GetMapUnit(3, 3) == 0) {
             pTask->mission = 0x6FF;
-            pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x03030000;
+            pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | 0x03030000;
         } else if (SzDuel_GetMapUnit(2, 3) == 0) {
             pTask->mission = 0x6FF;
-            pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x03020000;
+            pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | 0x03020000;
         } else if (SzDuel_GetMapUnit(2, 3) == 0) {
             pTask->mission = 0x6FF;
-            pTask->dwGoal = *(u16 *)&pTask->dwGoal | 0x03040000;
+            pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | 0x03040000;
         } else {
             pTask->mission = 0x6FF;
-            pTask->dwGoal = *(u16 *)&pTask->dwGoal | (SzDuel_GetUnitLoc((owner == 0) ? 1 : 0, 0) << 16);
+            pTask->goal.dwGoal = *(u16 *)&pTask->goal.dwGoal | (SzDuel_GetUnitLoc((owner == 0) ? 1 : 0, 0) << 16);
         }
     }
 }
@@ -1084,7 +1084,7 @@ typedef struct Point_00169FE0 {
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 destination_00169FE0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((UnitTask *)src)->dwGoal >> 16);
+        return (u16)(((UnitTask *)src)->goal.dwGoal >> 16);
     }
     return *(u16 *)((u8 *)src + 8);
 }
@@ -1226,15 +1226,6 @@ typedef struct Coord_0016A5C0 {
     u8 y : 4;
 } Coord_0016A5C0;
 
-typedef struct Unit_0016A5C0 {
-    u16 position;
-    u8 pad2[6];
-    union {
-        u32 packed;
-        u16 low;
-    } target;
-} Unit_0016A5C0;
-
 typedef struct Output_0016A5C0 {
     u16 position;
     u8 kind;
@@ -1247,7 +1238,7 @@ typedef struct Output_0016A5C0 {
 
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 target_0016A5C0(void *unit, s32 side) {
-    return side == 1 ? (u32)(u16)(((Unit_0016A5C0 *)unit)->target.packed >> 16) : (u32)((Unit_0016A5C0 *)unit)->target.low;
+    return side == 1 ? (u32)(u16)(((UnitTask *)unit)->goal.dwGoal >> 16) : (u32)((UnitTask *)unit)->goal.wGoal[0];
 }
 
 /* The smaller of the two values. */
@@ -1283,7 +1274,7 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void 
     s32 cell;
     s32 count;
 
-    initial = SzDuel_GetUnitLoc(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF);
+    initial = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     {
     s32 bestScore;
     s32 best;
@@ -1292,25 +1283,25 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void 
     s32 index;
     if (target_0016A5C0(pTask, side) == 0xFFFF) {
         if (initial == target_0016A5C0(pTask, side)) {
-            ((Output_0016A5C0 *)pInput)->position = ((Unit_0016A5C0 *)pTask)->position;
+            ((Output_0016A5C0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_0016A5C0 *)pInput)->kind = 6;
             ((Output_0016A5C0 *)pInput)->target = initial;
-            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
-            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, pTask);
+            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
+            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
             TaLogic_InitRogicControl(pTask, fFirst);
             return 0;
         }
     }
 
-    if (SzDuel_GetUnitStatus(((Unit_0016A5C0 *)pTask)->position >> 8,
-                      ((Unit_0016A5C0 *)pTask)->position & 0xFF, 4) != 0) {
-        if ((SzDuel_GetUnitKind(((Unit_0016A5C0 *)pTask)->position >> 8,
-                          ((Unit_0016A5C0 *)pTask)->position & 0xFF) >> 5) == 1 ||
-            (SzDuel_GetUnitKind(((Unit_0016A5C0 *)pTask)->position >> 8,
-                          ((Unit_0016A5C0 *)pTask)->position & 0xFF) >> 5) == 5) {
-            SzDuel_SetUnitStatus(((Unit_0016A5C0 *)pTask)->position >> 8,
-                          ((Unit_0016A5C0 *)pTask)->position & 0xFF, 0, 1);
-            ((Output_0016A5C0 *)pInput)->position = ((Unit_0016A5C0 *)pTask)->position;
+    if (SzDuel_GetUnitStatus(((UnitTask *)pTask)->ownerId >> 8,
+                      ((UnitTask *)pTask)->ownerId & 0xFF, 4) != 0) {
+        if ((SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8,
+                          ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 1 ||
+            (SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8,
+                          ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 5) {
+            SzDuel_SetUnitStatus(((UnitTask *)pTask)->ownerId >> 8,
+                          ((UnitTask *)pTask)->ownerId & 0xFF, 0, 1);
+            ((Output_0016A5C0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_0016A5C0 *)pInput)->kind = 14;
             return 0;
         }
@@ -1331,7 +1322,7 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void 
     if (cell < 0) {
         cell = 0xFFFF;
     }
-    TaLogic_GetRoot(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF,
+    TaLogic_GetRoot(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                  coords, initial & 0xFF, initial >> 8, target_0016A5C0(pTask, side) & 0xFF,
                  ((u32)target_0016A5C0(pTask, side)) >> 8, (u16)cell, 7);
     count = TaLogic_GetMinGoalCount((u8 *)coords);
@@ -1379,27 +1370,27 @@ s32 TaLogic_Manawyddan2_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void 
             candidate++;
         }
     } else {
-        ((Output_0016A5C0 *)pInput)->position = ((Unit_0016A5C0 *)pTask)->position;
+        ((Output_0016A5C0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_0016A5C0 *)pInput)->kind = 6;
             ((Output_0016A5C0 *)pInput)->target = initial;
-            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
-            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, pTask);
+            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
+            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
         TaLogic_InitRogicControl(pTask, fFirst);
         return 0;
     }
 
         if (best != 0xFF) {
-            ((Output_0016A5C0 *)pInput)->position = ((Unit_0016A5C0 *)pTask)->position;
+            ((Output_0016A5C0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_0016A5C0 *)pInput)->kind = 6;
             ((Output_0016A5C0 *)pInput)->target = (coords[best].y << 8) | coords[best].x;
-            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
-            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, pTask);
+            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
+            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
         } else {
-            ((Output_0016A5C0 *)pInput)->position = ((Unit_0016A5C0 *)pTask)->position;
+            ((Output_0016A5C0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
             ((Output_0016A5C0 *)pInput)->kind = 6;
             ((Output_0016A5C0 *)pInput)->target = initial;
-            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
-            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((Unit_0016A5C0 *)pTask)->position >> 8, ((Unit_0016A5C0 *)pTask)->position & 0xFF, pTask);
+            ((Output_0016A5C0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_0016A5C0 *)pInput)->target, nKind, 1);
+            ((Output_0016A5C0 *)pInput)->value = TaLogic_Manawyddan2_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
         }
         TaLogic_InitRogicControl(pTask, fFirst);
     }

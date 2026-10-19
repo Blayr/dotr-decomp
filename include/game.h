@@ -193,7 +193,10 @@ typedef struct UnitTask {
     u16 summonOrder;                /* 0x02 (wOrder) */
     u16 mission;                    /* 0x04: the task (TaskType) in its upper byte (wPurpose) */
     u8 pad06[2];
-    u32 dwGoal;                     /* 0x08: where to: (target << 16) | square, the halves as each task uses them */
+    union {
+        u32 dwGoal;                 /* the developers' dwGoal */
+        u16 wGoal[2];               /* its halves: [0] the square, [1] the target */
+    } goal;                         /* 0x08: where to: (target << 16) | square */
     u8 bCond : 2;                   /* 0x0C */
     u8 pad0D[3];
 } UnitTask;
@@ -1429,7 +1432,7 @@ DOTR_LAYOUT(UnitTask_ownerId, DOTR_OFFSETOF(UnitTask, ownerId) == 0x0);
 DOTR_LAYOUT(UnitTask_summonOrder, DOTR_OFFSETOF(UnitTask, summonOrder) == 0x2);
 DOTR_LAYOUT(UnitTask_mission, DOTR_OFFSETOF(UnitTask, mission) == 0x4);
 DOTR_LAYOUT(UnitTask_pad06, DOTR_OFFSETOF(UnitTask, pad06) == 0x6);
-DOTR_LAYOUT(UnitTask_dwGoal, DOTR_OFFSETOF(UnitTask, dwGoal) == 0x8);
+DOTR_LAYOUT(UnitTask_goal, DOTR_OFFSETOF(UnitTask, goal) == 0x8);
 DOTR_LAYOUT(UnitTask_pad0D, DOTR_OFFSETOF(UnitTask, pad0D) == 0xD);
 DOTR_LAYOUT(MinimumTask, sizeof(MinimumTask) == 0x14);
 DOTR_LAYOUT(MinimumTask_unitOwnerId, DOTR_OFFSETOF(MinimumTask, unitOwnerId) == 0x0);

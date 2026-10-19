@@ -1314,9 +1314,9 @@ typedef struct {
 /* The task's target square: the second half-word when `mode` is 1, else the first. */
 static inline u32 position_00156FC0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((UnitTask *)src)->dwGoal >> 16);
+        return (u16)(((UnitTask *)src)->goal.dwGoal >> 16);
     }
-    return (u16)((UnitTask *)src)->dwGoal;
+    return (u16)((UnitTask *)src)->goal.dwGoal;
 }
 
 /* Whether the first square is nearer to (x, y) than the second. */
@@ -1601,15 +1601,6 @@ typedef struct Coord_00157A50 {
     u8 y : 4;
 } Coord_00157A50;
 
-typedef struct Unit_00157A50 {
-    u16 position;
-    u8 pad2[6];
-    union {
-        u32 packed;
-        u16 low;
-    } target;
-} Unit_00157A50;
-
 typedef struct Output_00157A50 {
     u16 position;
     u8 kind;
@@ -1622,7 +1613,7 @@ typedef struct Output_00157A50 {
 
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 target_00157A50(void *unit, s32 side) {
-    return side == 1 ? (u32)(u16)(((Unit_00157A50 *)unit)->target.packed >> 16) : (u32)((Unit_00157A50 *)unit)->target.low;
+    return side == 1 ? (u32)(u16)(((UnitTask *)unit)->goal.dwGoal >> 16) : (u32)((UnitTask *)unit)->goal.wGoal[0];
 }
 
 /* The smaller of the two values. */
@@ -1658,7 +1649,7 @@ s32 TaLogic_JasperDice_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *
     s32 cell;
     s32 count;
 
-    initial = SzDuel_GetUnitLoc(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF);
+    initial = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     {
         s32 bestScore;
         s32 best;
@@ -1667,21 +1658,21 @@ s32 TaLogic_JasperDice_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *
         s32 index;
         if (target_00157A50(pTask, side) == 0xFFFF) {
             if (initial == target_00157A50(pTask, side)) {
-                ((Output_00157A50 *)pInput)->position = ((Unit_00157A50 *)pTask)->position;
+                ((Output_00157A50 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00157A50 *)pInput)->kind = 6;
                 ((Output_00157A50 *)pInput)->target = initial;
-                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
-                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, pTask);
+                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
+                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             }
         }
 
-        if (SzDuel_GetUnitStatus(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, 4) != 0) {
-            if ((SzDuel_GetUnitKind(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF) >> 5) == 1 ||
-                (SzDuel_GetUnitKind(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF) >> 5) == 5) {
-                SzDuel_SetUnitStatus(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, 0, 1);
-                ((Output_00157A50 *)pInput)->position = ((Unit_00157A50 *)pTask)->position;
+        if (SzDuel_GetUnitStatus(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 0, 1);
+                ((Output_00157A50 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00157A50 *)pInput)->kind = 14;
                 return 0;
             }
@@ -1703,11 +1694,11 @@ s32 TaLogic_JasperDice_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *
             cell = 0xFFFF;
         }
         if (nMode == 1) {
-            TaLogic_GetInvadeRoot(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF,
+            TaLogic_GetInvadeRoot(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                          coords, initial & 0xFF, initial >> 8, target_00157A50(pTask, side) & 0xFF,
                          target_00157A50(pTask, side) >> 8, 0xFFFF, 0, 30, (u16)TaLogic_JasperDice_GetWarnHideLvl(nSide));
         } else {
-            TaLogic_GetRoot(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF,
+            TaLogic_GetRoot(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                          coords, initial & 0xFF, initial >> 8, target_00157A50(pTask, side) & 0xFF,
                          target_00157A50(pTask, side) >> 8, (u16)cell, 7);
         }
@@ -1756,27 +1747,27 @@ s32 TaLogic_JasperDice_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *
                     candidate++;
                 }
             } else {
-                ((Output_00157A50 *)pInput)->position = ((Unit_00157A50 *)pTask)->position;
+                ((Output_00157A50 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00157A50 *)pInput)->kind = 6;
                 ((Output_00157A50 *)pInput)->target = initial;
-                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
-                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, pTask);
+                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
+                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             }
 
             if (best != 0xFF) {
-                ((Output_00157A50 *)pInput)->position = ((Unit_00157A50 *)pTask)->position;
+                ((Output_00157A50 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00157A50 *)pInput)->kind = 6;
                 ((Output_00157A50 *)pInput)->target = (coords[best].y << 8) | coords[best].x;
-                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
-                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, pTask);
+                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
+                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
             } else {
-                ((Output_00157A50 *)pInput)->position = ((Unit_00157A50 *)pTask)->position;
+                ((Output_00157A50 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00157A50 *)pInput)->kind = 6;
                 ((Output_00157A50 *)pInput)->target = initial;
-                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
-                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((Unit_00157A50 *)pTask)->position >> 8, ((Unit_00157A50 *)pTask)->position & 0xFF, pTask);
+                ((Output_00157A50 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00157A50 *)pInput)->target, nKind, 0);
+                ((Output_00157A50 *)pInput)->value = TaLogic_JasperDice_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
             }
             TaLogic_InitRogicControl(pTask, fFirst);
         }

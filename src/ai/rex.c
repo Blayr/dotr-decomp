@@ -158,7 +158,7 @@ s32 TaLogic_Rex_CommandUnit(UnitTask *pCtl) {
             key = pCtl->ownerId;
             if (key != 0xFFFF) {
                 if ((key & 0xFF) == 0) {
-                    if ((s32)pCtl->dwGoal == -1) {
+                    if ((s32)pCtl->goal.dwGoal == -1) {
                         if (TaLogic_IsAttackedNow((s32)key >> 8, key & 0xFF, 0) == 1) {
                             if (SzDuel_InqHandPhase((s32)(pCtl->ownerId) >> 8) == 1) {
                                 pCtl->mission = 0x50A;

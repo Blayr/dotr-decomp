@@ -1617,7 +1617,7 @@ typedef struct Coord_0010FFF0 {
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 target_0010FFF0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((UnitTask *)src)->dwGoal >> 16);
+        return (u16)(((UnitTask *)src)->goal.dwGoal >> 16);
     }
     return *(u16 *)((u8 *)src + 8);
 }

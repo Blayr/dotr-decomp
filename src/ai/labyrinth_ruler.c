@@ -154,7 +154,7 @@ s32 TaLogic_LabyrinthRuler_CommandUnit(void *pCtl) {
             value = data->ownerId;
             if (value != 0xFFFF) {
                 if ((value & 0xFF) == 0) {
-                    if (*(s32 *)&data->dwGoal == -1) {
+                    if (*(s32 *)&data->goal.dwGoal == -1) {
                         if (TaLogic_IsAttackedNow((s32)value >> 8, value & 0xFF, 0) == 1) {
                             if (SzDuel_InqHandPhase((s32)data->ownerId >> 8) == 1) {
                                 data->mission = 0x50A;
@@ -163,11 +163,11 @@ s32 TaLogic_LabyrinthRuler_CommandUnit(void *pCtl) {
                             }
                         } else if (SzDuel_InqHandPhase((s32)data->ownerId >> 8) == 1) {
                             data->mission = 0xA06;
-                            data->dwGoal = (*(s32 *)&data->dwGoal & 0xFFFF0000) |
+                            data->goal.dwGoal = (*(s32 *)&data->goal.dwGoal & 0xFFFF0000) |
                                 (SzDuel_GetUnitLoc(temp == 0 ? 1 : 0, 0) & 0xFF);
                         } else {
                             data->mission = 0x6FF;
-                            data->dwGoal = *(u16 *)&*(s32 *)&data->dwGoal |
+                            data->goal.dwGoal = *(u16 *)&*(s32 *)&data->goal.dwGoal |
                                 ((SzDuel_GetUnitLoc(temp == 0 ? 1 : 0, 0) & 0xFF) << 16);
                         }
                     }

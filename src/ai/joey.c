@@ -1167,7 +1167,7 @@ typedef struct Point_001526D0 {
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 destination_001526D0(void *src, u8 mode) {
     if (mode == 1) {
-        return (u16)(((UnitTask *)src)->dwGoal >> 16);
+        return (u16)(((UnitTask *)src)->goal.dwGoal >> 16);
     }
     return *(u16 *)((u8 *)src + 8);
 }
@@ -1326,15 +1326,6 @@ typedef struct Coord_00152CD0 {
     u8 y : 4;
 } Coord_00152CD0;
 
-typedef struct Unit_00152CD0 {
-    u16 position;
-    u8 pad2[6];
-    union {
-        u32 packed;
-        u16 low;
-    } target;
-} Unit_00152CD0;
-
 typedef struct Output_00152CD0 {
     u16 position;
     u8 kind;
@@ -1347,7 +1338,7 @@ typedef struct Output_00152CD0 {
 
 /* The task's target square: the second half-word when the second argument is 1, else the first. */
 static inline u32 target_00152CD0(void *unit, s32 side) {
-    return side == 1 ? (u32)(u16)(((Unit_00152CD0 *)unit)->target.packed >> 16) : (u32)((Unit_00152CD0 *)unit)->target.low;
+    return side == 1 ? (u32)(u16)(((UnitTask *)unit)->goal.dwGoal >> 16) : (u32)((UnitTask *)unit)->goal.wGoal[0];
 }
 
 /* The smaller of the two values. */
@@ -1384,7 +1375,7 @@ s32 TaLogic_Joey_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *pInput
     u8 status;
 
     status = TaLogic015_IsActiveMode();
-    initial = SzDuel_GetUnitLoc(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF);
+    initial = SzDuel_GetUnitLoc(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF);
     {
         s32 bestScore;
         s32 best;
@@ -1393,21 +1384,21 @@ s32 TaLogic_Joey_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *pInput
         s32 index;
         if (target_00152CD0(pTask, side) == 0xFFFF) {
             if (initial == target_00152CD0(pTask, side)) {
-                ((Output_00152CD0 *)pInput)->position = ((Unit_00152CD0 *)pTask)->position;
+                ((Output_00152CD0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00152CD0 *)pInput)->kind = 6;
                 ((Output_00152CD0 *)pInput)->target = initial;
-                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
-                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, pTask);
+                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
+                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             }
         }
 
-        if (SzDuel_GetUnitStatus(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, 4) != 0) {
-            if ((SzDuel_GetUnitKind(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF) >> 5) == 1 ||
-                (SzDuel_GetUnitKind(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF) >> 5) == 5) {
-                SzDuel_SetUnitStatus(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, 0, 1);
-                ((Output_00152CD0 *)pInput)->position = ((Unit_00152CD0 *)pTask)->position;
+        if (SzDuel_GetUnitStatus(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 4) != 0) {
+            if ((SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 1 ||
+                (SzDuel_GetUnitKind(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF) >> 5) == 5) {
+                SzDuel_SetUnitStatus(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, 0, 1);
+                ((Output_00152CD0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00152CD0 *)pInput)->kind = 14;
                 return 0;
             }
@@ -1428,7 +1419,7 @@ s32 TaLogic_Joey_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *pInput
         if (cell < 0) {
             cell = 0xFFFF;
         }
-        TaLogic_GetRoot(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF,
+        TaLogic_GetRoot(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF,
                      coords, initial & 0xFF, initial >> 8, target_00152CD0(pTask, side) & 0xFF,
                      target_00152CD0(pTask, side) >> 8, (u16)cell, 7);
         count = TaLogic_GetMinGoalCount((u8 *)coords);
@@ -1476,27 +1467,27 @@ s32 TaLogic_Joey_GetMinimumTask_MoveMission(void *pTask, s32 nSide, void *pInput
                     candidate++;
                 }
             } else {
-                ((Output_00152CD0 *)pInput)->position = ((Unit_00152CD0 *)pTask)->position;
+                ((Output_00152CD0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00152CD0 *)pInput)->kind = 6;
                 ((Output_00152CD0 *)pInput)->target = initial;
-                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
-                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, pTask);
+                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
+                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
                 TaLogic_InitRogicControl(pTask, fFirst);
                 return 0;
             }
 
             if (best != 0xFF) {
-                ((Output_00152CD0 *)pInput)->position = ((Unit_00152CD0 *)pTask)->position;
+                ((Output_00152CD0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00152CD0 *)pInput)->kind = 6;
                 ((Output_00152CD0 *)pInput)->target = (coords[best].y << 8) | coords[best].x;
-                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
-                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, pTask);
+                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
+                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
             } else {
-                ((Output_00152CD0 *)pInput)->position = ((Unit_00152CD0 *)pTask)->position;
+                ((Output_00152CD0 *)pInput)->position = ((UnitTask *)pTask)->ownerId;
                 ((Output_00152CD0 *)pInput)->kind = 6;
                 ((Output_00152CD0 *)pInput)->target = initial;
-                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
-                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((Unit_00152CD0 *)pTask)->position >> 8, ((Unit_00152CD0 *)pTask)->position & 0xFF, pTask);
+                ((Output_00152CD0 *)pInput)->flag = TaLogic_IsDefStyleUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, ((Output_00152CD0 *)pInput)->target, nKind, 0);
+                ((Output_00152CD0 *)pInput)->value = TaLogic_Joey_IsOpenUnit(((UnitTask *)pTask)->ownerId >> 8, ((UnitTask *)pTask)->ownerId & 0xFF, pTask);
             }
             TaLogic_InitRogicControl(pTask, fFirst);
         }

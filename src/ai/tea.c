@@ -160,7 +160,7 @@ s32 TaLogic_Tea_CommandUnit(u8 *pCtl) {
         if (SzDuel_GetUnitStatus(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF, 0) == 0) {
             if (((UnitTask *)pCtl)->ownerId != 0xFFFF) {
                 if ((((UnitTask *)pCtl)->ownerId & 0xFF) == 0) {
-                    if (*(s32 *)&((UnitTask *)pCtl)->dwGoal == -1) {
+                    if (*(s32 *)&((UnitTask *)pCtl)->goal.dwGoal == -1) {
                         if (TaLogic_IsAttackedNow(((UnitTask *)pCtl)->ownerId >> 8, ((UnitTask *)pCtl)->ownerId & 0xFF, 0) == 1) {
                             if (SzDuel_InqHandPhase(((UnitTask *)pCtl)->ownerId >> 8) == 1) {
                                 ((UnitTask *)pCtl)->mission = 0x50A;

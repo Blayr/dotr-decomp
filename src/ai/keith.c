@@ -158,7 +158,7 @@ s32 TaLogic_Keith_CommandUnit(UnitTask *pCtl) {
         if (SzDuel_GetUnitStatus(pCtl->ownerId >> 8, pCtl->ownerId & 0xFF, 0) == 0) {
             if (pCtl->ownerId != 0xFFFF) {
                 if ((pCtl->ownerId & 0xFF) == 0) {
-                    if ((s32)pCtl->dwGoal == -1) {
+                    if ((s32)pCtl->goal.dwGoal == -1) {
                         if (TaLogic_IsAttackedNow(pCtl->ownerId >> 8, pCtl->ownerId & 0xFF, 0) == 1) {
                             if (SzDuel_InqHandPhase(pCtl->ownerId >> 8) == 1) {
                                 pCtl->mission = 0x50A;
