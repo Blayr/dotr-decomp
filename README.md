@@ -121,7 +121,8 @@ them. His structs for a unit, a board square and the computer opponent's tasks (
 `MinimumTask`, the first part of `DuelPlayer`, which he calls `LogicData`) are in `include/game.h`, the unit's
 layout checked against the developers' own debug information, and his enumerations (terrain, attributes,
 duelists, map places, cut scenes, card ids, ...) in `include/enums.h`. Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
-in `build/main.map`. Thanks to batzpup for them.
+in `build/main.map`. Names, structs and enums from batzpup's Ghidra project, used with his permission.
+Thanks to batzpup.
 
 ## License
 
