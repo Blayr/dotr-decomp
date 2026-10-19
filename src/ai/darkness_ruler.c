@@ -2106,7 +2106,7 @@ s32 TaLogic007_IsRevivePlay(s32 nSide) {
     extern s32 SzDuel_GetGraveCount();
     s32 i;
     s32 entry;
-    u8 *state;
+    CardConstInfo *state;
     u32 *info;
 
     if (SzDuel_GetUnitSpellCount(nSide) >= 5) {
@@ -2117,7 +2117,7 @@ s32 TaLogic007_IsRevivePlay(s32 nSide) {
         if ((TaHand_GetCardKind(entry) >> 5) != 0) {
             state = SzDuel_GetCardConstInfo(entry);
             info = TaHand_GetCardEffect(entry, 0);
-            if ((info != NULL) && (state == NULL) && (state[3] >= 0xF) &&
+            if ((info != NULL) && (state == NULL) && (state->deckCost >= 0xF) &&
                 (SzDuel_GetUnitSpellCount(nSide) < 5) && ((*info >> 8) != 0x14)) {
                 return (nSide << 0x10) | i;
             }

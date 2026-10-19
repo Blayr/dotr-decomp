@@ -674,9 +674,9 @@ s32 TaLogic_GetFollowNearUnit(s32 nX, s32 nZ, void *nUnitLst, s32 bChase, s32 sK
                                 var_fp = ((var_a1 - var_v1) + (var_a0 - var_v0_2)) & 0xFF;
                                 bChase = temp_s2 & 0xFF;
                             } else if (temp_s2 == temp_v0_6) {
-                                temp_v0_7 = SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(*(u16 *)var_s4 >> 8, *(u16 *)var_s4 & 0xFF))[3];
+                                temp_v0_7 = SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(*(u16 *)var_s4 >> 8, *(u16 *)var_s4 & 0xFF))->deckCost;
                                 spA0 = (s32) temp_v0_7;
-                                if ((s32) SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(var_s3 >> 8, var_s3 & 0xFF))[3] < spA0) {
+                                if ((s32) SzDuel_GetCardConstInfo(SzDuel_GetUnitCardNo(var_s3 >> 8, var_s3 & 0xFF))->deckCost < spA0) {
                                     y2 = loc >> 8;
                                     var_s3 = *(u16 *)var_s4;
                                     if (nZ < y2) {

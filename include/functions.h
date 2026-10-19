@@ -666,7 +666,7 @@ s32 SzDuel_FinishCardSession_Pipe(s32 packet);
 s32 SzDuel_FinishWindowSession_Pipe(s32 packet);
 s32 SzDuel_FreeCardRequest(void *request);
 s32 SzDuel_GetCamDist(s32 card);
-u8 *SzDuel_GetCardConstInfo(s32 card);
+CardConstInfo *SzDuel_GetCardConstInfo(s32 card);
 void *SzDuel_GetCardControl(s32 index);
 void *SzDuel_GetCardInfo(s32 group, s32 index);
 s32 SzDuel_GetCardNode(void *card, s32 withShadow);

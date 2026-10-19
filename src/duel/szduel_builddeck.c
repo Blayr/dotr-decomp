@@ -1037,8 +1037,8 @@ s32 lSzDuel_ClassCmp(u16 *a, u16 *b) {
     s64 keyB;
     s64 keyA;
     s32 cardB;
-    u8 *infoA;
-    u8 *infoB;
+    CardConstInfo *infoA;
+    CardConstInfo *infoB;
 
     cardB = *b;
     infoA = SzDuel_GetCardConstInfo(*a);
@@ -1090,17 +1090,17 @@ s32 lSzDuel_APCmp(u16 *a, u16 *b) {
     s32 keyB;
     s32 keyA;
     s32 cardB;
-    u8 *infoA;
-    u8 *infoB;
+    CardConstInfo *infoA;
+    CardConstInfo *infoB;
 
     cardB = *b;
     infoA = SzDuel_GetCardConstInfo(*a);
     infoB = SzDuel_GetCardConstInfo(cardB);
     keyA = -1;
     if (infoA != NULL) {
-        keyA = *(u16 *)(infoA + 8) & 0x1FFF;
+        keyA = infoA->apWithFlags & 0x1FFF;
     }
-    keyB = (infoB != NULL) ? (*(u16 *)(infoB + 8) & 0x1FFF) : -1;
+    keyB = (infoB != NULL) ? (infoB->apWithFlags & 0x1FFF) : -1;
     if (keyA < keyB) {
         keyB = 1;
     } else {
@@ -1115,18 +1115,18 @@ s32 lSzDuel_DPCmp(u16 *a, u16 *b) {
     s32 keyA;
     s32 result;
     s32 cardB;
-    u8 *infoA;
-    u8 *infoB;
+    CardConstInfo *infoA;
+    CardConstInfo *infoB;
 
     cardB = *b;
     infoA = SzDuel_GetCardConstInfo(*a);
     infoB = SzDuel_GetCardConstInfo(cardB);
     keyA = -1;
     if (infoA != NULL) {
-        keyA = *(u16 *)(infoA + 0xA) & 0x1FFF;
+        keyA = infoA->dpWithFlags & 0x1FFF;
     }
     if (infoB != NULL) {
-        keyB = *(u16 *)(infoB + 0xA) & 0x1FFF;
+        keyB = infoB->dpWithFlags & 0x1FFF;
     } else {
         keyB = -1;
     }
@@ -1140,8 +1140,8 @@ s32 lSzDuel_DPCmp(u16 *a, u16 *b) {
 
 /* Compares two cards by attribute. */
 s32 lSzDuel_AttrCmp(u16 *a, u16 *b) {
-    u8 *card0;
-    u8 *card1;
+    CardConstInfo *card0;
+    CardConstInfo *card1;
     s32 rank0;
     s32 rank1;
     s32 cardId1;
@@ -1152,10 +1152,10 @@ s32 lSzDuel_AttrCmp(u16 *a, u16 *b) {
     rank0 = 0x7FFFFFFF;
     rank1 = 0x7FFFFFFF;
     if (card0 != NULL) {
-        rank0 = SzDuel_Kind2Attr((s32) card0[0] >> 5, card0[2] & 0xF);
+        rank0 = SzDuel_Kind2Attr((s32) card0->kind >> 5, card0->lvAttr & 0xF);
     }
     if (card1 != NULL) {
-        rank1 = SzDuel_Kind2Attr((s32) card1[0] >> 5, card1[2] & 0xF);
+        rank1 = SzDuel_Kind2Attr((s32) card1->kind >> 5, card1->lvAttr & 0xF);
     }
     if (rank1 < rank0) {
         return 1;
@@ -1182,8 +1182,8 @@ s32 lSzDuel_LevelCmp(u16 *a, u16 *b) {
     s64 keyB;
     s64 keyA;
     s32 cardB;
-    u8 *infoA;
-    u8 *infoB;
+    CardConstInfo *infoA;
+    CardConstInfo *infoB;
     s32 result;
 
     cardB = *b;
@@ -1206,19 +1206,19 @@ s32 lSzDuel_DeckCostCmp(u16 *a, u16 *b) {
     s64 keyB;
     s64 keyA;
     s32 cardB;
-    u8 *infoA;
-    u8 *infoB;
+    CardConstInfo *infoA;
+    CardConstInfo *infoB;
 
     cardB = *b;
     infoA = SzDuel_GetCardConstInfo(*a);
     infoB = SzDuel_GetCardConstInfo(cardB);
     if (infoA != NULL) {
-        keyA = (s32) infoA[3];
+        keyA = (s32) infoA->deckCost;
     } else {
         keyA = 0x7FFFFFFF;
     }
     if (infoB != NULL) {
-        keyB = (s32) infoB[3];
+        keyB = (s32) infoB->deckCost;
     } else {
         keyB = 0x7FFFFFFF;
     }
@@ -1261,24 +1261,24 @@ s32 lSzDuel_CardColorCmp(u16 *a, u16 *b) {
     s32 type0;
     s32 type1;
     s32 id1;
-    u8 *card0;
-    u8 *card1;
+    CardConstInfo *card0;
+    CardConstInfo *card1;
     s32 result;
 
     id1 = *b;
     card0 = SzDuel_GetCardConstInfo(*a);
     card1 = SzDuel_GetCardConstInfo(id1);
 
-    type0 = card0 != NULL ? card0[0] >> 5 : 0x7FFFFFFFLL;
-    type1 = card1 != NULL ? card1[0] >> 5 : 0x7FFFFFFFLL;
+    type0 = card0 != NULL ? card0->kind >> 5 : 0x7FFFFFFFLL;
+    type1 = card1 != NULL ? card1->kind >> 5 : 0x7FFFFFFFLL;
 
     if (type0 != 0x7FFFFFFFLL) {
-        if (type0 != 0 || *(u16 *)(card0 + 4) == 0xFFFF) {
+        if (type0 != 0 || card0->effectId == 0xFFFF) {
             type0 += 6;
         }
     }
     if (type1 != 0x7FFFFFFFLL) {
-        if (type1 != 0 || *(u16 *)(card1 + 4) == 0xFFFF) {
+        if (type1 != 0 || card1->effectId == 0xFFFF) {
             type1 += 6;
         }
     }
@@ -3060,7 +3060,7 @@ s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y)
     int row;
     int col;
     int id;
-    u8 *info;
+    CardConstInfo *info;
     unsigned char alpha;
     int n;
     int type;
@@ -3149,8 +3149,8 @@ s32 lSzDuel_DrawBuildDeck_Library_Pipe(s32 cursor, int x, int y)
                 alpha = 48;
             }
             if (alpha) {
-                type = SzDuel_Kind2Type(info[0] >> 5);
-                if (type == 0 && *(u16 *)(info + 4) != 0xffff) {
+                type = SzDuel_Kind2Type(info->kind >> 5);
+                if (type == 0 && info->effectId != 0xffff) {
                     type = 4;
                 }
                 cur = lSzDuel_DrawWindow_ExIcon_Pipe(cur, duelIcons + (type + 220) * 10, gx,

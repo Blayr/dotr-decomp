@@ -855,7 +855,7 @@ s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
     s32 side;
     Deck_002154E0 *deck;
     Entry_002154E0 *entry;
-    u8 *card;
+    CardConstInfo *card;
     s32 slot;
 
     if (profileZeroSide == player) {
@@ -887,7 +887,7 @@ s32 SzData_PushDeck(s32 player, s32 deck_index, s32 card_id) {
     if (card == NULL) {
         return 0;
     }
-    deck->cost += card[3];
+    deck->cost += card->deckCost;
     deck->cards[slot] = card_id;
     entry->deck = deck_index;
     return 1;
@@ -907,7 +907,7 @@ s32 SzData_PullDeck(s32 player, s32 deck, s32 pullCard) {
     u16 *slot;
     s32 cardId;
     s32 side;
-    u8 *info;
+    CardConstInfo *info;
 
     if (profileZeroSide == player) {
         side = 0;
@@ -930,7 +930,7 @@ s32 SzData_PullDeck(s32 player, s32 deck, s32 pullCard) {
     if (info == NULL) {
         return 0;
     }
-    *(u16 *)(hand + 0x52) -= info[3];
+    *(u16 *)(hand + 0x52) -= info->deckCost;
     *slot = 0x3E7;
     card->state = 3;
     return 1;
@@ -1110,7 +1110,7 @@ s32 SzData_CalcDeckCost(s32 player, s32 deckNo) {
     s32 i;
     u16 *card;
     s32 side;
-    u8 *data;
+    CardConstInfo *data;
 
     if (profileZeroSide == player) {
         side = 0;
@@ -1127,7 +1127,7 @@ s32 SzData_CalcDeckCost(s32 player, s32 deckNo) {
     do {
         data = SzDuel_GetCardConstInfo(*card);
         if (data != NULL) {
-            deck->total += data[3];
+            deck->total += data->deckCost;
         }
         i++;
         card++;

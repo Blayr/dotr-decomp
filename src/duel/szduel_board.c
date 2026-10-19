@@ -176,7 +176,7 @@ void SzDuel_InitCardInfo(void *info, s32 card) {
     }
     if (card >= 0 && card < 0x356) {
         state->id = card;
-        state->record = SzDuel_GetCardConstInfo(card);
+        state->record = (u8 *)SzDuel_GetCardConstInfo(card);
         state->field3E = state->record[0];
         state->field3F = state->record[2] & 0xF;
         index = *(u16 *)(state->record + 4);
@@ -198,9 +198,9 @@ void SzDuel_InitCardInfo(void *info, s32 card) {
 }
 
 /* The constant data (20 bytes) of card `card`, or NULL for a bad id. */
-u8 *SzDuel_GetCardConstInfo(s32 card) {
+CardConstInfo *SzDuel_GetCardConstInfo(s32 card) {
     extern u8 gSzDuel_CardConstInfo[];
-    u8 *ret;
+    CardConstInfo *ret;
 
     if (card == 0x29F) {
         card = 0x3E7;
@@ -208,7 +208,7 @@ u8 *SzDuel_GetCardConstInfo(s32 card) {
     if (card < 0 || card >= 0x356) {
         ret = NULL;
     } else {
-        ret = &gSzDuel_CardConstInfo[card * 0x14];
+        ret = (CardConstInfo *)&gSzDuel_CardConstInfo[card * 0x14];
     }
     return ret;
 }

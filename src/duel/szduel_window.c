@@ -569,7 +569,7 @@ s32 SzDuel_DrawDialog_Pipe(s32 packetStart) {
             packet = lSzDuel_DrawWindow_Icon_Pipe(packet, D_00290AB2, 0x88B, y + 0x85C, 0, 1, 0, 0, 1, 0, -1);
             for (i = 0, w = y + 0xBB; i < 5 && start + i < end; w += 0x18, i++) {
                 id = list[start + i];
-                entry = SzDuel_GetCardConstInfo(id);
+                entry = (u8 *)SzDuel_GetCardConstInfo(id);
                 if (entry != NULL) {
                     msg = *entry >> 5;
                     value = *entry & 0x1F;

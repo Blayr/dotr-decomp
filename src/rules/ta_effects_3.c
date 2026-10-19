@@ -4655,7 +4655,7 @@ s32 Ta_GetSummonRev(s32 nSide, s32 cNo) {
     u8 *cardConstInfo;
     u8 temp_s1;
 
-    cardConstInfo = SzDuel_GetCardConstInfo(cNo);
+    cardConstInfo = (u8 *)SzDuel_GetCardConstInfo(cNo);
     if (cardConstInfo == NULL) {
         return 0;
     }
@@ -5267,7 +5267,7 @@ u32 TaHand_GetCardAPDP(s32 nCardNo) {
 
 /* Whether card `nCardNo` has an effect. */
 s32 TaHand_IsCardEffect(s32 nCardNo) {
-    u8 *p;
+    CardConstInfo *p;
 
     if (nCardNo == 0x3E7) {
         return 0;
@@ -5276,8 +5276,8 @@ s32 TaHand_IsCardEffect(s32 nCardNo) {
     if (p == NULL) {
         return 0;
     }
-    if ((p[0] >> 5) == 0) {
-        if (*(u16 *)(p + 4) == 0xFFFF) {
+    if ((p->kind >> 5) == 0) {
+        if (p->effectId == 0xFFFF) {
             return 2;
         }
         return 1;
@@ -5303,7 +5303,7 @@ s32 TaHand_GetCardKind(s32 nCardNo) {
     if (nCardNo == 0x3E7) {
         return 0U;
     }
-    cardConstInfo = SzDuel_GetCardConstInfo(nCardNo);
+    cardConstInfo = (u8 *)SzDuel_GetCardConstInfo(nCardNo);
     if (cardConstInfo == NULL) {
         return 0U;
     }
