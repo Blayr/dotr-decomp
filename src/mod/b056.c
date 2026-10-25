@@ -715,7 +715,64 @@ static s32 func_01E01E30_b056(Game_b056_01E01E30 *g, Obj_b056_01E01E30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b056", func_01E01FC0_b056);
+/* shape b056:01E01FC0, 119 insns: a yellow flicker spark on the current model: placed within 40 of the model on each axis,
+   frame 15 growing by 7 while fading; alpha up by 0x38 to 0x70 for 2 frames, then down by 13; rises 2 and turns 10 a frame */
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 pad2C[6];
+    s16 t;
+    u8 pad34[2];
+    s16 state;
+    s16 h38;
+    s16 ang;
+} Obj_b056_01E01FC0;
+
+static s32 func_01E01FC0_b056(void *arg0, Obj_b056_01E01FC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern s16 func_001A22C0(f32);
+    f32 v[8];
+    f32 *pv;
+    s32 m;
+
+    m = func_001F5380();
+    pv = &v[4];
+    func_001F5F90(m, pv);
+    if (o->state == 1) {
+        o->x = func_001A22C0((pv[0] + (f32)(func_0019A5C8() % 80)) - 40.0f);
+        o->y = func_001A22C0((v[5] + (f32)(func_0019A5C8() % 80)) - 40.0f);
+        o->z = func_001A22C0((v[6] + (f32)(func_0019A5C8() % 80)) - 40.0f);
+        o->state = 2;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0x40, 0x40, 0);
+    } else {
+        func_001076F0(o->c0, 0x20, 0x20, 0);
+    }
+    o->h38 = 0xF;
+    if (o->t < 2) {
+        if (o->c0[3] < 0x70) {
+            o->c0[3] += 0x38;
+        }
+    } else {
+        if (o->c0[3] > 0xE) {
+            o->c0[3] -= 0xD;
+        } else {
+            o->state = 0;
+        }
+        o->h38 += 7;
+    }
+    o->t++;
+    o->y += 2;
+    o->ang += 0xA;
+    return 0;
+}
 
 /* shape b056:01E021A0, 142 insns: b056:01E023E0 family scene light (ctx+0x3730) at the camera's x/z: kind 0 brightens red by 12 and green by 3 to 128, height 110, level +0.1 below 1.0 then switches to kind 1; kind 1 dims them by 12 / 3 to 20 / 9 and the level by 0.1 above 0.0, then back to kind 0; off and ended at scene count 305 */
 

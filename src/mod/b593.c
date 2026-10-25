@@ -1019,7 +1019,60 @@ static s32 func_01E028B0_b593(void *arg0, Obj_b593_01E028B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E029F0_b593);
+/* shape b593:01E029F0, 120 insns, 1 copy (B593_OBJ_MOVE_9_): a grey puff, size 15..24 growing 1 a tick, random spot and turn, rising 5..14 a tick; fades by 11 after 10..17 frames */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 speed;
+    u8 pad10[0x10];
+    s32 x;
+    s32 y;
+    s32 z;
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 tick;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Obj_b593_01E029F0;
+
+static s32 func_01E029F0_b593(s32 arg0, Obj_b593_01E029F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 10 + 15;
+        o->h56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->x = func_0019A5C8() % 0xFFFF;
+        o->y = func_0019A5C8() % 0xFFFF;
+        o->z = func_0019A5C8() % 0xFFFF;
+        o->h50 = func_0019A5C8() % 30 + 10;
+        o->h5A = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 10 + 5;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 8 + 10;
+        o->state = 2;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->size += 1.0f;
+    o->h50 += o->speed;
+    o->tick++;
+    return 0;
+}
 
 /* shape b593:01E02BD0, 142 insns: b593:01E02250's spark, size 15..34, red or blue-white, height 50..249 falling 15..34 a tick while above 0 */
 

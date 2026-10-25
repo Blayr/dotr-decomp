@@ -980,7 +980,75 @@ static s32 func_01E02C10_b771(Ctx_b771_01E02C10 *g, Obj_b771_01E02C10 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E02FD0_b771);
+/* shape b771:01E02FD0, 120 insns: a glow that fades in by 0x40 over its first four ticks and, once the scene count
+   passes 485, fades out by 11; size 10 x the scene scale on its first tick (stored twice), then 8 x the scale; its
+   second colour blinks green (0x80, 0xFF, 0x80) on odd ticks, paler (0x80, 0xC0, 0x80) on even; rises 3 a tick
+   after count 400 */
+
+typedef struct {
+    u8 pad0[0xA8E4];
+    f32 scale;
+    u8 padA8E8[0xA92E - 0xA8E8];
+    s16 count;
+} Ctx_b771_01E02FD0;
+
+typedef struct {
+    u8 pad0[0x34];
+    f32 h;
+    u8 pad38[0x10];
+    f32 w;
+    f32 size;
+    u8 pad50[2];
+    s16 h52;
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Obj_b771_01E02FD0;
+
+static s32 func_01E02FD0_b771(Ctx_b771_01E02FD0 *g, Obj_b771_01E02FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 10.0f * g->scale;
+        o->size = 10.0f * g->scale;
+        func_001076F0(o->col1, 0x80, 0x80, 0x80);
+        func_001076F0(o->col0, 0x80, 0xFF, 0x80);
+        o->h52 = 0;
+        o->h5A = 10;
+        o->h5C = 10;
+        o->h = 30.0f;
+        o->mode = 2;
+        o->col1[3] = 0;
+    }
+    if (o->t < 4) {
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 0x40;
+        }
+    } else if (g->count > 485) {
+        if (o->col1[3] > 12) {
+            o->col1[3] -= 11;
+        } else {
+            o->mode = 0;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col0, 0x80, 0xFF, 0x80);
+    } else {
+        func_001076F0(o->col0, 0x80, 0xC0, 0x80);
+    }
+    o->size = 8.0f * g->scale;
+    o->w = 8.0f * g->scale;
+    if (g->count > 400) {
+        o->h += 3.0f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b771:01E031B0, 31 insns: variant of b402:01E02C50 (func_001F7170(3, ...), stops after 0x23 ticks) */
 
