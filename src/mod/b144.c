@@ -1284,7 +1284,59 @@ static s32 func_01E02B50_b144(s32 arg0, Obj_b144_01E02B50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b144", func_01E02C40_b144);
+/* shape b144:01E02C40, 122 insns: on start a random size 1..4, frame 0..3, colour C0/70/70, random spin, speed 2..21
+   with an extra 2..9, heading, h8 1..8 and life 2..4; full alpha while young, then fades by 11 and stops;
+   the speed grows by its extra and the tick climbs */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    s16 h8;
+    u8 padA[4];
+    s16 accel;
+    u8 pad10[0x10];
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    u8 pad4C[4];
+    s16 speed;
+    u8 pad52[2];
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+} Obj_b144_01E02C40;
+
+static s32 func_01E02C40_b144(void *w, Obj_b144_01E02C40 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 4 + 1;
+        o->frame = func_0019A5C8() % 4;
+        func_001076F0(o->c0, 0xC0, 0x70, 0x70);
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->speed = func_0019A5C8() % 20 + 2;
+        o->accel = func_0019A5C8() % 8 + 2;
+        o->ang = func_0019A5C8() % 360;
+        o->h8 = func_0019A5C8() % 8 + 1;
+        o->life = func_0019A5C8() % 3 + 2;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0x80;
+    } else if (o->c0[3] > 0xC) {
+        o->c0[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    o->speed += o->accel;
+    o->t++;
+    return 0;
+}
 
 /* shape b144:01E02E30, 62 insns: a blue-white growing flash: set up once (f48 6, f30 1.5, size 5 growing by 4 a frame),
    fades in by 0x40 to 0x80 for 4 frames, then out by 9 until it ends */
