@@ -1605,7 +1605,108 @@ static s32 func_01E04690_b582(Pool_b582_01E04690 *o, s32 a, s32 b) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E047C0_b582);
+/* OVL_WARM */
+
+/* shape b582:01E047C0, 210 insns: a red (0xFF, 0x20, 0x20) line strip into the given packet (2 vertices, solid end
+   and clear end): the scene colour data (ctx+0x35B4) is set up first (mode 9 when ctx+0x35F2 is set); four segments
+   from the anchor (an+0x0): the first stretched by 4x (0x20, 0x26, 0x24), the others offset by the per-segment x/z
+   (an+0x14 / an+0x1A) and stretched by 3x; depth in ctx+0x35CC, drawn into ctx+0x35BC */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b582_01E047C0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b582_01E047C0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    struct {
+        Rgbaq_b582_01E047C0 c;
+        u64 x : 16;
+        u64 y : 16;
+        u64 z : 24;
+        u64 f : 8;
+    } v[2];
+} Pkt_b582_01E047C0;
+
+typedef struct {
+    u8 pad0[0x35B4];
+    u8 rgb[8];
+    s32 ot;
+    u8 pad35C0[0x35CC - 0x35C0];
+    f32 depth;
+    u8 pad35D0[0x35F2 - 0x35D0];
+    s16 mode;
+} Obj_b582_01E047C0;
+
+typedef struct {
+    Vec4f pos;
+    u8 pad10[4];
+    s16 dx[3];
+    s16 dz[3];
+    s16 h20;
+    u8 pad22[2];
+    s16 h24;
+    s16 h26;
+} Line_b582_01E047C0;
+
+static void func_01E047C0_b582(Obj_b582_01E047C0 *o, Line_b582_01E047C0 *an, Pkt_b582_01E047C0 *p) {
+    extern void func_00107EC0(void *, s32, s32);
+    extern Rgbaq_b582_01E047C0 func_00107740(void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern Col_b582_01E047C0 D_01E05790_b582;
+    Col_b582_01E047C0 c = D_01E05790_b582;
+    Vec4f q[4];
+    s32 i;
+
+    if (o->mode == 0) {
+        func_00107EC0(o->rgb, 0, 0);
+    } else {
+        func_00107EC0(o->rgb, 0, 9);
+    }
+    p->count = 0x11;
+    p->tag = 4;
+    p->regs = 0x4141;
+    p->pad = 0;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    p->v[1].c.q = 1.0f;
+    p->v[0].c.q = 1.0f;
+    p->v[0].f = 0;
+    p->v[1].f = 0;
+    c.a = 0xFF;
+    p->v[0].c = func_00107740(&c);
+    c.a = 0;
+    p->v[1].c = func_00107740(&c);
+    for (i = 0; i < 4; i++) {
+        if (i == 0) {
+            q[0] = an->pos;
+            q[1] = an->pos;
+            q[1].y += an->h26;
+            q[1].x += an->h20 * 4;
+            q[1].z += an->h24 * 4;
+        } else {
+            q[0] = an->pos;
+            q[1] = an->pos;
+            q[0].x += an->dx[i - 1];
+            q[0].z += an->dz[i - 1];
+            q[1].x += an->dx[i - 1];
+            q[1].z += an->dz[i - 1];
+            q[1].y += an->h26;
+            q[1].x += an->h20 * 3;
+            q[1].z += an->h24 * 3;
+        }
+        if (func_00205630(q, 0x70000000, 0, p, &o->depth) != 0) {
+            func_002075F0(p, o->ot, (u32)o->depth);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E04B10_b582);
 

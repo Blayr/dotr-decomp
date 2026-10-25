@@ -1372,7 +1372,74 @@ static void func_01E03D60_b089(Scn_b089_01E03D60 *g, Obj_b089_01E03D60 *o) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E040E0_b089);
+/* shape b089:01E040E0, 148 insns: c035:01E013A0 family two-layer sprite: texture 0xA (scene texture 0x74) in the setup pass; the draw pass draws it, then again with texture 0x14 and the second scene texture (0x70) at half alpha */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_b089_01E040E0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+} Fx_b089_01E040E0;
+
+typedef struct {
+    u8 pad0[0x70];
+    s32 tex2;
+    s32 tex;
+} Scene_b089_01E040E0;
+
+static void func_01E040E0_b089(Scene_b089_01E040E0 *g, Fx_b089_01E040E0 *o, void *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    f32 rm[4];
+    f32 m[16];
+    s32 rot[4];
+    s32 v;
+    v = (s32)func_00207500();
+    {
+    extern Col_b089_01E040E0 D_01E04C80_b089;
+    Col_b089_01E040E0 c = D_01E04C80_b089;
+
+    if (lit == 0) {
+        func_00106080(rm, 0xA, o->h34, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_00205C40((s32)rot);
+    pos.x = o->x + o->dx / 10;
+    pos.y = o->y + o->dy / 10;
+    pos.z = o->z + o->dz / 10;
+    func_00108EF0(m, 0, rot, &pos);
+    func_00108CE0(quad, o->size, o->size);
+    func_00108F90(quad, p, m, v);
+    func_00106080(rm, 0x14, o->h34, rm);
+    func_00108500(p, rm, 0);
+    c = *(Col_b089_01E040E0 *)o->col;
+    c.a >>= 1;
+    func_00107790(p, &c, 0);
+    func_00208700(p, g->tex2, 1);
+    func_00108CE0(quad, o->size, o->size);
+    func_00108F90(quad, p, m, v);
+    }
+}
 
 /* shape b089:01E04330, 155 insns: c022:01E01850 family flat ring segment: one quad between angles o->h3A and +20 at radius o->h38, built at the object (turned by its rotation); blend switches to 0x42 after 16 ticks; the setup pass sets two colours (texture 0x9C, scene texture at ctx+0xAC) */
 

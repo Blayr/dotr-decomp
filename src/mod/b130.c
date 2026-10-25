@@ -952,4 +952,82 @@ static void func_01E02730_b130(Scene_b130_01E02730 *g, Fx_b130_01E02730 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E028E0_b130);
+/* shape b130:01E028E0, 187 insns: b159:01E01B30 family ring of 6 segments (35 degrees each, 60 apart from 0x3A) at radius 0x38 from the centre, drawn twice per segment: texture 0x97 in the object's colour, then 0x96 in dark blue (0x20, 0x20, 0x40) at the object's alpha; mode 0 sets texture 0x9C and the scene texture (ctx+0x10C) */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[8];
+    u8 pad30[4];
+    s16 page;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Obj_b130_01E028E0;
+
+typedef struct W_c2_func_01E028E0_b130 {
+    u8 v[4];
+} W_c2_func_01E028E0_b130;
+
+static void func_01E028E0_b130(u8 *ctx, Obj_b130_01E028E0 *o, void *pkt, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_001A23B0(f32);
+    Vec4f q[4];
+    Vec4f pos;
+    f32 m[16];
+    u8 td[0x10];
+    extern W_c2_func_01E028E0_b130 D_01E02C00_b130;
+    W_c2_func_01E028E0_b130 c2_w = D_01E02C00_b130;
+    s32 i;
+    s16 a;
+    s16 k;
+
+    a = 0;
+    if (mode == 0) {
+        func_00106080(td, 0x9C, o->page, td);
+        func_00109270(pkt, 0, 0);
+        func_00108500(pkt, td, 0);
+        func_00208700(pkt, *(void **)(ctx + 0x10C), 1);
+        return;
+    }
+    pos.x = o->x;
+    pos.y = o->y;
+    pos.z = o->z;
+    func_00108EF0(m, NULL, o->rot, &pos);
+    q[0].y = 0.0f;
+    q[1].y = 0.0f;
+    q[2].y = 0.0f;
+    q[3].y = 0.0f;
+    for (i = 0; i < 6; i++) {
+        k = o->ang + a;
+        q[2].x = o->size * func_00108030(ctx + 0x3B60, k, 1);
+        q[2].z = o->size * func_00108030(ctx + 0x3B60, k, 0);
+        q[0].x = 0.0f;
+        q[0].z = 0.0f;
+        k = o->ang + 35 + a;
+        q[3].x = o->size * func_00108030(ctx + 0x3B60, k, 1);
+        q[3].z = o->size * func_00108030(ctx + 0x3B60, k, 0);
+        q[1].x = 0.0f;
+        q[1].z = 0.0f;
+        func_00107790(pkt, o->col, 0);
+        func_00106080(td, 0x97, o->page, td);
+        func_00108500(pkt, td, 1);
+        if (func_00205630((s32)q, 0x70000000, (s32)m, (s32)pkt, (f32 *)(ctx + 0x3B34)) != 0) {
+            func_002075F0((s32)pkt, *(s32 *)(ctx + 0x3B0C), func_001A23B0(*(f32 *)(ctx + 0x3B34)));
+        }
+        c2_w.v[3] = o->col[3];
+        func_00107790(pkt, c2_w.v, 0);
+        func_00106080(td, 0x96, o->page, td);
+        func_00108500(pkt, td, 0);
+        if (func_00205630((s32)q, 0x70000000, (s32)m, (s32)pkt, (f32 *)(ctx + 0x3B34)) != 0) {
+            func_002075F0((s32)pkt, *(s32 *)(ctx + 0x3B0C), func_001A23B0(*(f32 *)(ctx + 0x3B34)));
+        }
+        a += 60;
+    }
+}

@@ -42,7 +42,103 @@ static void func_01E00080_c601(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c601", func_01E00120_c601);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b013:01E001A0, 205 insns, 40 copies: set up an 8-point effect outline (scale, aspect from the model's
+   texture or size, one of two local point tables or random points) */
+
+typedef struct Model_b013_01E001A0 {
+    u8 pad0[4];
+    s16 w;
+    s16 h;
+    f32 fw;
+    f32 fh;
+    u8 pad10[0x28];
+    s32 tex;
+} Model_b013_01E001A0;
+
+typedef struct Fx_b013_01E001A0 {
+    s32 kind;
+    u8 pad4[4];
+    s32 type;
+    f32 scale;
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    Vec4f v[8];
+} Fx_b013_01E001A0;
+
+#pragma optimization_level 3
+typedef struct W_ta_func_01E00120_c601 {
+    Vec4f v[8];
+} W_ta_func_01E00120_c601;
+
+typedef struct W_tb_func_01E00120_c601 {
+    Vec4f v[8];
+} W_tb_func_01E00120_c601;
+
+static s32 func_01E00120_c601(Model_b013_01E001A0 *m, Fx_b013_01E001A0 *o, s32 kind, f32 scale) {
+    f32 sx;
+    f32 sy;
+    s32 i;
+
+    o->f18 = 0.0f;
+    o->f14 = 0.0f;
+    o->f10 = 0.0f;
+    o->scale = scale / 2.0f;
+    o->kind = kind;
+    if (func_00104520(m->tex, 0) != 0) {
+        if (m->w > m->h) {
+            sx = 1.0f;
+            sy = (f32)m->h / (f32)m->w;
+        } else if (m->w < m->h) {
+            sx = (f32)m->h / (f32)m->w;
+            sy = 1.0f;
+        } else {
+            sx = sy = 1.0f;
+        }
+    } else {
+        if (!(m->fw <= m->fh)) {
+            sy = m->fh / m->fw;
+            sx = 1.0f;
+        } else if (m->fw < m->fh) {
+            sx = m->fh / m->fw;
+            sy = 1.0f;
+        } else {
+            sx = sy = 1.0f;
+        }
+    }
+    if (o->type != 3) {
+        if (o->type == 5 || o->type == 6) {
+            extern W_ta_func_01E00120_c601 D_01E03180_c601;
+            W_ta_func_01E00120_c601 ta_w = D_01E03180_c601;
+
+            for (i = 0; i < 8; i++) {
+                o->v[i].x = sx * (o->scale * ta_w.v[i].x);
+                o->v[i].y = sy * (o->scale * ta_w.v[i].y);
+                o->v[i].z = o->scale * ta_w.v[i].z;
+            }
+        } else {
+            extern W_tb_func_01E00120_c601 D_01E03200_c601;
+            W_tb_func_01E00120_c601 tb_w = D_01E03200_c601;
+
+            for (i = 0; i < 8; i++) {
+                o->v[i].x = sx * (o->scale * tb_w.v[i].x);
+                o->v[i].y = sy * (o->scale * tb_w.v[i].y);
+                o->v[i].z = o->scale * tb_w.v[i].z;
+            }
+        }
+    } else {
+        for (i = 0; i < 8; i++) {
+            o->v[i].x = func_0019A5C8() % 30 - 15;
+            o->v[i].y = o->scale;
+            o->v[i].z = func_0019A5C8() % 30 - 15;
+        }
+    }
+    return 0;
+}
+#pragma optimization_level reset
 
 /* func_00205440 is called unprototyped here */
 

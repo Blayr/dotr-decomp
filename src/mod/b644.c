@@ -904,7 +904,67 @@ static s32 func_01E036E0_b644(s32 ot __attribute__((aligned(8))), Beam_b101_01E0
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b644", func_01E03E90_b644);
+/* shape b025:01E03CF0, 103 insns, 9 copies: set up a particle object: 6 corner offsets from a local table sized
+   by the object's width/height, then each particle gets a random start (-rand() % 0x2000, rand() % 0x10000) */
+
+typedef struct V4_b025_01E03CF0 {
+    f32 x, y, z, w;
+} V4_b025_01E03CF0;
+
+typedef struct Part_b025_01E03CF0 {
+    s32 a;
+    s32 b;
+    s32 c;
+    u8 col;
+    u8 padD;
+    s16 age;
+} Part_b025_01E03CF0;
+
+typedef struct Obj_b025_01E03CF0 {
+    s32 kind;
+    u8 pad4[7];
+    u8 col;
+    u8 padC[0x14];
+    V4_b025_01E03CF0 v[6];
+    Part_b025_01E03CF0 *parts;
+    f32 h;
+    f32 w;
+    u8 pad8C[0xE];
+    s16 count;
+} Obj_b025_01E03CF0;
+
+typedef struct W_tbl_func_01E03E90_b644 {
+    V4_b025_01E03CF0 v[6];
+} W_tbl_func_01E03E90_b644;
+
+static s32 func_01E03E90_b644(Obj_b025_01E03CF0 *o, s32 kind) {
+    extern s32 func_0019A5C8();
+    extern W_tbl_func_01E03E90_b644 D_01E05700_b644;
+    W_tbl_func_01E03E90_b644 tbl_w = D_01E05700_b644;
+    s32 i;
+
+    tbl_w.v[0].x = -o->w / 2.0f;
+    tbl_w.v[0].y = o->h;
+    tbl_w.v[1].x = -o->w / 2.0f;
+    tbl_w.v[2].y = o->h;
+    tbl_w.v[4].x = o->w / 2.0f;
+    tbl_w.v[4].y = o->h;
+    tbl_w.v[5].x = o->w / 2.0f;
+    o->kind = kind;
+    for (i = 0; i < 6; i++) {
+        o->v[i].x = tbl_w.v[i].x;
+        o->v[i].y = tbl_w.v[i].y;
+        o->v[i].z = tbl_w.v[i].z;
+    }
+    for (i = 0; i < o->count; i++) {
+        o->parts[i].a = -func_0019A5C8() % 0x2000;
+        o->parts[i].b = func_0019A5C8() % 0x10000;
+        o->parts[i].c = 0;
+        o->parts[i].age = 0;
+        o->parts[i].col = o->col;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b644", func_01E04030_b644);
 

@@ -1034,7 +1034,62 @@ static s32 func_01E03420_b628(Obj_b000_01E03A30 *obj, Pt_b000_01E03A30 *pts, f32
 
 INCLUDE_ASM("asm/nonmatchings/mod/b628", func_01E03570_b628);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b628", func_01E03F30_b628);
+/* shape b087:01E03B30, 87 insns, 9 copies: set up a ribbon sprite object (scale, 4 corner offsets from a local
+   table sized by the object's widths/heights, 16 or 64 evenly spread angles) */
+
+typedef struct V4_b087_01E03B30 {
+    f32 x, y, z, w;
+} V4_b087_01E03B30;
+
+typedef struct Rnd_b087_01E03B30 {
+    s32 a, b, c, d;
+} Rnd_b087_01E03B30;
+
+typedef struct Obj_b087_01E03B30 {
+    s32 kind;
+    s32 model;
+    s32 pad8;
+    f32 scale;
+    s32 pad10[4];
+    f32 w0;
+    f32 w1;
+    f32 h0;
+    f32 h1;
+    V4_b087_01E03B30 v[4];
+    Rnd_b087_01E03B30 r[64];
+} Obj_b087_01E03B30;
+
+typedef struct W_tbl_func_01E03F30_b628 {
+    V4_b087_01E03B30 v[4];
+} W_tbl_func_01E03F30_b628;
+
+static s32 func_01E03F30_b628(Obj_b087_01E03B30 *obj, s32 kind, f32 scale) {
+    extern W_tbl_func_01E03F30_b628 D_01E05500_b628;
+    W_tbl_func_01E03F30_b628 tbl_w = D_01E05500_b628;
+    s32 flag;
+    s32 n;
+    s32 i;
+
+    tbl_w.v[0].x = -obj->w0;
+    tbl_w.v[0].y = obj->h0 + obj->h1;
+    tbl_w.v[1].y = obj->h0 + obj->h1;
+    tbl_w.v[2].x = -obj->w1;
+    tbl_w.v[2].y = obj->h1;
+    tbl_w.v[3].y = obj->h1;
+    flag = func_00104520(obj->model, 0x1F);
+    obj->scale = scale;
+    obj->kind = kind;
+    n = flag ? 0x10 : 0x40;
+    for (i = 0; i < 4; i++) {
+        obj->v[i].x = obj->scale * tbl_w.v[i].x;
+        obj->v[i].y = obj->scale * tbl_w.v[i].y;
+        obj->v[i].z = obj->scale * tbl_w.v[i].z;
+    }
+    for (i = 0; i < n; i++) {
+        obj->r[i].b = 0x10000 / n * i;
+    }
+    return 0;
+}
 
 /* shape b087:01E03C90, 387 insns, 9 copies (b000:01E03420 with the corner list 16 bytes later): draws a textured sprite quad: n rotations of its 4 corner points,
    UV (texel) or ST coordinates from the sprite rect, depth-sorted unless flag 0x13/0x12.

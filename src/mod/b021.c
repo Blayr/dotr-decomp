@@ -353,7 +353,103 @@ static s32 func_01E003D0_b021(s32 obj, Spr_b000_01E02A30 *s, Part_b000_01E02A30 
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b021", func_01E00C60_b021);
+/* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
+
+/* shape b013:01E001A0, 205 insns, 40 copies: set up an 8-point effect outline (scale, aspect from the model's
+   texture or size, one of two local point tables or random points) */
+
+typedef struct Model_b013_01E001A0 {
+    u8 pad0[4];
+    s16 w;
+    s16 h;
+    f32 fw;
+    f32 fh;
+    u8 pad10[0x28];
+    s32 tex;
+} Model_b013_01E001A0;
+
+typedef struct Fx_b013_01E001A0 {
+    s32 kind;
+    u8 pad4[4];
+    s32 type;
+    f32 scale;
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    u8 pad1C[4];
+    Vec4f v[8];
+} Fx_b013_01E001A0;
+
+#pragma optimization_level 3
+typedef struct W_ta_func_01E00C60_b021 {
+    Vec4f v[8];
+} W_ta_func_01E00C60_b021;
+
+typedef struct W_tb_func_01E00C60_b021 {
+    Vec4f v[8];
+} W_tb_func_01E00C60_b021;
+
+static s32 func_01E00C60_b021(Model_b013_01E001A0 *m, Fx_b013_01E001A0 *o, s32 kind, f32 scale) {
+    f32 sx;
+    f32 sy;
+    s32 i;
+
+    o->f18 = 0.0f;
+    o->f14 = 0.0f;
+    o->f10 = 0.0f;
+    o->scale = scale / 2.0f;
+    o->kind = kind;
+    if (func_00104520(m->tex, 0) != 0) {
+        if (m->w > m->h) {
+            sx = 1.0f;
+            sy = (f32)m->h / (f32)m->w;
+        } else if (m->w < m->h) {
+            sx = (f32)m->h / (f32)m->w;
+            sy = 1.0f;
+        } else {
+            sx = sy = 1.0f;
+        }
+    } else {
+        if (!(m->fw <= m->fh)) {
+            sy = m->fh / m->fw;
+            sx = 1.0f;
+        } else if (m->fw < m->fh) {
+            sx = m->fh / m->fw;
+            sy = 1.0f;
+        } else {
+            sx = sy = 1.0f;
+        }
+    }
+    if (o->type != 3) {
+        if (o->type == 5 || o->type == 6) {
+            extern W_ta_func_01E00C60_b021 D_01E05F00_b021;
+            W_ta_func_01E00C60_b021 ta_w = D_01E05F00_b021;
+
+            for (i = 0; i < 8; i++) {
+                o->v[i].x = sx * (o->scale * ta_w.v[i].x);
+                o->v[i].y = sy * (o->scale * ta_w.v[i].y);
+                o->v[i].z = o->scale * ta_w.v[i].z;
+            }
+        } else {
+            extern W_tb_func_01E00C60_b021 D_01E05F80_b021;
+            W_tb_func_01E00C60_b021 tb_w = D_01E05F80_b021;
+
+            for (i = 0; i < 8; i++) {
+                o->v[i].x = sx * (o->scale * tb_w.v[i].x);
+                o->v[i].y = sy * (o->scale * tb_w.v[i].y);
+                o->v[i].z = o->scale * tb_w.v[i].z;
+            }
+        }
+    } else {
+        for (i = 0; i < 8; i++) {
+            o->v[i].x = func_0019A5C8() % 30 - 15;
+            o->v[i].y = o->scale;
+            o->v[i].z = func_0019A5C8() % 30 - 15;
+        }
+    }
+    return 0;
+}
+#pragma optimization_level reset
 
 /* func_00205440 is called unprototyped here */
 
@@ -1453,4 +1549,57 @@ static s32 func_01E03F30_b021(s32 ot __attribute__((aligned(8))), Trail_b021_01E
 
 INCLUDE_ASM("asm/nonmatchings/mod/b021", func_01E04320_b021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b021", func_01E05D00_b021);
+/* OVL_CFLAGS: -O1,p */
+
+/* shape b021:01E05D00, 99 insns: for every free card slot (16 of 0x30 bytes) pick a random pair of neighbours from the 30-entry id table and fetch their resources (func_001F5560: ids 29, 25, 38 and the two picks) */
+
+typedef struct {
+    u8 pad0[0x18];
+    s16 used;
+    u8 pad1A[0x16];
+} Slot_b021_01E05D00;
+
+typedef struct {
+    u8 pad0[0x80];
+    Slot_b021_01E05D00 slot[16];
+    u8 pad380[0x3624 - 0x380];
+    s32 a;
+    s32 b;
+    s32 r0;
+    s32 r1;
+    s32 r2;
+    s32 r3;
+    s32 r4;
+} Ctx_b021_01E05D00;
+
+#pragma optimization_level 1
+typedef struct W_ids_func_01E05D00_b021 {
+    u8 v[30];
+} W_ids_func_01E05D00_b021;
+
+static void func_01E05D00_b021(Ctx_b021_01E05D00 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5560(s32, s32, s32);
+    extern W_ids_func_01E05D00_b021 D_01E06040_b021;
+    W_ids_func_01E05D00_b021 ids_w = D_01E06040_b021;
+    s32 i;
+    s32 n;
+
+    for (i = 0; i < 16; i++) {
+        if (g->slot[i].used == 0) {
+            g->a = func_0019A5C8() % 30;
+            n = g->a + 1;
+            if (n < 30) {
+                g->b = n;
+            } else {
+                g->b = 0;
+            }
+            g->r0 = func_001F5560(func_001F53A0(), 0x1D, 1);
+            g->r1 = func_001F5560(func_001F53A0(), 0x19, 0);
+            g->r2 = func_001F5560(func_001F53A0(), 0x26, 0);
+            g->r3 = func_001F5560(func_001F53A0(), ids_w.v[g->a], 0);
+            g->r4 = func_001F5560(func_001F53A0(), ids_w.v[g->b], 0);
+        }
+    }
+}
+#pragma optimization_level reset
