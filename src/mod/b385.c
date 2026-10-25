@@ -98,7 +98,39 @@ static s32 func_01E00120_b385(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b385", func_01E00250_b385);
+typedef struct {
+    f32 x, y, z;
+} P3_b364_01E02A90;
+
+typedef struct {
+    s32 id;
+    u8 pad4[8];
+    f32 r;
+    u8 pad10[0x10];
+    P3_b364_01E02A90 p[16][32];
+} Dome_b364_01E02A90;
+
+static s32 func_01E00250_b385(Dome_b364_01E02A90 *o, s32 id, f32 r) {
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    s32 i;
+    s32 j;
+    f32 a;
+    f32 b;
+
+    o->id = id;
+    o->r = r;
+    for (i = 0; i < 16; i++) {
+        a = r * func_0020B480(0x4000 - i * 0x888);
+        b = r * func_0020B550(0x4000 - i * 0x888);
+        for (j = 0; j < 32; j++) {
+            o->p[i][j].z = a * func_0020B480(j * 0x800);
+            o->p[i][j].x = a * func_0020B550(j * 0x800);
+            o->p[i][j].y = b;
+        }
+    }
+    return 0;
+}
 
 /* shape b364:01E02B80, 434 insns, 2 copies: draws a textured cylinder-like grid of 15 x 32 quads from a 16 x 32 point mesh
    (each column wrapping to the last one), texture spread over the grid; corners' visibility flagged on the object
