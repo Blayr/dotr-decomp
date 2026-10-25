@@ -894,7 +894,41 @@ static s32 func_01E01F00_b364(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b364", func_01E02A90_b364);
+/* shape b364:01E02A90, 60 insns, 2 copies: build a 16 x 32 point hemisphere of radius r (rings every 0x888 from the pole, 32 points 0x800 apart) */
+
+typedef struct {
+    f32 x, y, z;
+} P3_b364_01E02A90;
+
+typedef struct {
+    s32 id;
+    u8 pad4[8];
+    f32 r;
+    u8 pad10[0x10];
+    P3_b364_01E02A90 p[16][32];
+} Dome_b364_01E02A90;
+
+static s32 func_01E02A90_b364(Dome_b364_01E02A90 *o, s32 id, f32 r) {
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    s32 i;
+    s32 j;
+    f32 a;
+    f32 b;
+
+    o->id = id;
+    o->r = r;
+    for (i = 0; i < 16; i++) {
+        a = r * func_0020B480(0x4000 - i * 0x888);
+        b = r * func_0020B550(0x4000 - i * 0x888);
+        for (j = 0; j < 32; j++) {
+            o->p[i][j].z = a * func_0020B480(j * 0x800);
+            o->p[i][j].x = a * func_0020B550(j * 0x800);
+            o->p[i][j].y = b;
+        }
+    }
+    return 0;
+}
 
 /* shape b364:01E02B80, 434 insns, 2 copies: draws a textured cylinder-like grid of 15 x 32 quads from a 16 x 32 point mesh
    (each column wrapping to the last one), texture spread over the grid; corners' visibility flagged on the object

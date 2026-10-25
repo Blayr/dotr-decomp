@@ -552,7 +552,53 @@ done:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E028F0_c021);
+/* shape c021:01E028F0, 64 insns: takes the first free of 65 effect slots (0x94 bytes), marks it with its index + 1,
+   colours both from the context at alpha 0 and hooks c021:01E03EA0 with the given argument */
+
+typedef struct {
+    u8 pad0[0x70];
+    void *cb;
+    s32 arg;
+    u8 pad78[4];
+    u8 c7C[4];
+    u8 c80[4];
+    s16 active;
+    u8 pad86[0xE];
+} Ent_c021_01E028F0;
+
+typedef struct {
+    u8 pad0[0x120];
+    Ent_c021_01E028F0 ents[65];
+    u8 pad[0x357C - 0x120 - 65 * 0x94];
+    u8 r, g, b;
+} Mgr_c021_01E028F0;
+
+static void func_01E028F0_c021(Mgr_c021_01E028F0 *m, s32 arg) {
+    extern void c021_01E03EA0(void);
+    extern void func_00106CC0(void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+    Ent_c021_01E028F0 *e;
+
+    for (i = 0; i < 65; i++) {
+        if (m->ents[i].active == 0) {
+            func_00106CC0(&m->ents[i], 0x94);
+            m->ents[i].active = i + 1;
+            e = &m->ents[i];
+            goto found;
+        }
+    }
+    e = 0;
+found:
+    if (e != 0) {
+        func_001076F0(e->c7C, m->r, m->g, m->b);
+        e->c7C[3] = 0;
+        func_001076F0(e->c80, m->r, m->g, m->b);
+        e->c80[3] = 0;
+        e->arg = arg;
+        e->cb = (void *)c021_01E03EA0;
+    }
+}
 
 typedef struct {
     f32 x, y, z, w;

@@ -1325,7 +1325,90 @@ static s32 func_01E02EB0_b080(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E02F00_b080);
+/* shape b080:01E02F00, 97 insns: a scrolling full-screen sprite: one grey sprite across the screen, shifted sideways
+   by the scene scroll (0x2CD0), its texture window 0..0.625 x 0..0.875; drawn in its own draw context */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Col_b080_01E02F00;
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b080_01E02F00;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b080_01E02F00 p;
+} Vtx_b080_01E02F00;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Col_b080_01E02F00 c;
+    Vtx_b080_01E02F00 v[2];
+    u64 tail;
+} Pkt_b080_01E02F00;
+
+typedef struct {
+    u8 pad0000[0x2CD0];
+    f32 scroll;
+} Scene_b080_01E02F00;
+
+static inline void tag_b080_01E02F00(Pkt_b080_01E02F00 *p, s32 count, s32 tag, u64 regs) {
+    p->count = count;
+    p->tag = tag;
+    p->regs = regs;
+    p->pad = 0;
+}
+
+static s32 func_01E02F00_b080(Scene_b080_01E02F00 *g) {
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Pkt_b080_01E02F00 pkt __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s32 s;
+    s16 h;
+
+    s = func_00207F60();
+    h = g->scroll;
+    tag_b080_01E02F00((Pkt_b080_01E02F00 *)(u32)&pkt, 0x26, 5, 0x42421);
+    pkt.c.r = 0x80;
+    pkt.c.g = 0x80;
+    pkt.c.b = 0x80;
+    pkt.c.a = 0x80;
+    pkt.c.q = 1.0f;
+    pkt.v[0].p.x = (h + 0x6C0) * 16 - 8;
+    pkt.v[0].p.y = 0x71F8;
+    pkt.v[0].p.z = 0xFFFFFF;
+    pkt.v[0].p.f = 0;
+    pkt.v[1].p.x = (h + 0x940) * 16 - 8;
+    pkt.v[1].p.y = 0x8DF8;
+    pkt.v[1].p.z = 0xFFFFFF;
+    pkt.v[1].p.f = 0;
+    pkt.v[0].s = 0.0f;
+    pkt.v[0].t = 0.0f;
+    pkt.v[1].s = 0.625f;
+    pkt.v[1].t = 0.875f;
+    func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    func_002075F0(&pkt, 0, 0);
+    func_00207FD0(s, func_00207500(), 0);
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b080", func_01E03090_b080);
 

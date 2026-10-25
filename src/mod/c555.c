@@ -45,7 +45,59 @@ static void func_01E00080_c555(Pkt_c555_01E00080 *p, Col_c555_01E00080 *c) {
     p->v[2].f = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c555", func_01E00120_c555);
+/* shape c555:01E00120, 56 insns: colour four vertices of a packet from a (b, g, r, a) colour, q 1.0: the first two
+   dimmed by k eighths of the alpha (0 when k is 0), the last two by k + 1 eighths */
+
+typedef struct {
+    u8 b, g, r, a;
+} Col_c555_01E00120;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 xyz;
+} Vtx_c555_01E00120;
+
+typedef struct {
+    u8 head[0x10];
+    Vtx_c555_01E00120 v[4];
+} Pkt_c555_01E00120;
+
+static void func_01E00120_c555(Pkt_c555_01E00120 *p, Col_c555_01E00120 *c, s32 k) {
+    s32 s;
+    u8 t;
+
+    s = c->a >> 3;
+    p->v[0].r = c->r;
+    p->v[0].g = c->g;
+    p->v[0].b = c->b;
+    if (k == 0) {
+        p->v[0].a = 0;
+    } else {
+        p->v[0].a = c->a - k * s;
+    }
+    p->v[0].q = 1.0f;
+    p->v[1].r = c->r;
+    p->v[1].g = c->g;
+    p->v[1].b = c->b;
+    if (k == 0) {
+        p->v[1].a = 0;
+    } else {
+        p->v[1].a = c->a - k * s;
+    }
+    p->v[1].q = 1.0f;
+    p->v[2].r = c->r;
+    p->v[2].g = c->g;
+    p->v[2].b = c->b;
+    t = s + k * s;
+    p->v[2].a = c->a - t;
+    p->v[2].q = 1.0f;
+    p->v[3].r = c->r;
+    p->v[3].g = c->g;
+    p->v[3].b = c->b;
+    p->v[3].a = c->a - t;
+    p->v[3].q = 1.0f;
+}
 
 /* shape b000:01E00100, 38 insns, 169 copies: one colour into the four vertices of a quad (q = 1.0) */
 
