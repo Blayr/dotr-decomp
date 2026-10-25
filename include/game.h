@@ -1330,7 +1330,7 @@ extern char gSzDuel_aicolMsg[];
 /* Layout guard: the size and member offsets the PS2 build (Metrowerks) gives each game struct above. The game's data
    sits in PS2 memory at fixed addresses, so another compiler (the PC port's) must lay these out the same way: if one
    differs, the array size goes negative and the build stops. EE GCC (the Sony library files) never uses them. */
-#if !(defined(__GNUC__) && defined(__mips__))
+#if !(defined(__GNUC__) && defined(__mips__)) && !defined(M2CTX) && !defined(PERMUTER)
 #ifdef __MWERKS__
 #define DOTR_OFFSETOF(T, m) ((u32)&((T *)0)->m)
 #else
