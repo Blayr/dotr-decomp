@@ -5,12 +5,12 @@ C source that compiles to the exact bytes of the retail executable and of the ga
 
 This repository contains no game data. You need your own copy of the game to build anything.
 
-## Status (15 October 2026)
+## Status (26 October 2026)
 
 | | Functions in C | Code in C |
 |---|---|---|
 | Main executable (`SLUS_205.15`) | 3,463 of 3,463 (100.0%) | 100.0% of 1.5 MB |
-| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,191 of 8,620 (71.8%) | 43.3% of 11.6 MB |
+| Code modules (`DATA/BMODULE.MRG`, `CMODULE.MRG`, `MMODULE.MRG`) | 6,615 of 8,620 (76.7%) | 48.6% of 11.6 MB |
 
 - `make check` rebuilds the whole executable and all 762 module files and compares them byte for byte with the
   originals. A function counts as done only when its C is in that build and the check passes.
@@ -46,6 +46,14 @@ None of the compilers are included.
 The scripts currently assume our local toolchain layout (`~/decomp/toolchain`, see `config.mk` and `tools/cc.sh`),
 set up by [decomp-kit](https://github.com/kira-502/decomp-kit), which also reads the disc image; expect to adapt a
 few paths.
+
+## Contributing with an AI agent
+
+The code modules are the open work: 2,005 functions are still assembly. [AGENTS.md](AGENTS.md) is a complete guide
+for an AI coding agent (setup from zero, the work loop for one function, the rules that bite, how to send work back);
+[docs/TODO-MODULES.md](docs/TODO-MODULES.md) lists what is left, smallest first, with the hard ones marked, and
+[docs/MATCHING-TIPS.md](docs/MATCHING-TIPS.md) collects the tricks that made functions match. Human contributors:
+the same files, plus [CONTRIBUTING.md](CONTRIBUTING.md) for names and fixes.
 
 ## PC port
 
@@ -123,6 +131,10 @@ layout checked against the developers' own debug information, and his enumeratio
 duelists, map places, cut scenes, card ids, ...) in `include/enums.h`. Every other name of his is a linker alias (`config/ghidra_names.txt`), so the names his project uses link and show
 in `build/main.map`. Names, structs and enums from batzpup's Ghidra project, used with his permission.
 Thanks to batzpup.
+
+## Credits
+
+- Blayr: module matching.
 
 ## License
 
