@@ -1108,7 +1108,132 @@ static void func_01E02560_c056(Game_c056_01E02560 *g, Ring_c056_01E02560 *an, Pk
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E02790_c056);
+/* shape c056:01E02790 (PAINT_PA17), 276 insns, 1 copy: three segments of a ring around a parent: mode 0 sets the
+   material (frame 0x97; the outer colour from the parent's, or its own with alpha 0 when there is none; the inner one
+   its own, or with alpha 0 unless flagged); otherwise for each of three segments (100 apart) the outer edge follows
+   the parent's ring (its angle less 15, radius and height) or its own, the inner edge its own ring, and the segment is
+   sent at the scene depth */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c056_01E02790;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c056_01E02790;
+
+typedef struct {
+    u8 pad0[0x10];
+    Rgbaq_c056_01E02790 c10;
+    u8 pad18[0x10];
+    Rgbaq_c056_01E02790 c28;
+    u8 pad30[0x10];
+    Rgbaq_c056_01E02790 c40;
+    u8 pad48[0x10];
+    Rgbaq_c056_01E02790 c58;
+} Pkt_c056_01E02790;
+
+typedef struct Fx_c056_01E02790 {
+    Vec4f q[4];
+    u8 pad40[0x50];
+    struct Fx_c056_01E02790 *parent;
+    s32 w94;
+    u8 pad98[8];
+    f32 fA0;
+    u8 padA4[6];
+    s16 hAA;
+    Col_c056_01E02790 col;
+    Col_c056_01E02790 col2;
+    u8 padB4[6];
+    s16 ang;
+} Fx_c056_01E02790;
+
+typedef struct {
+    u8 pad0[0x40];
+    f32 m40[16];
+    u8 pad80[0x4C];
+    s32 tex;
+    u8 padD0[0x43B8];
+    s32 ot;
+    u8 pad448C[0x1C];
+    f32 depth;
+    u8 pad44AC[0x24];
+    u8 sin[1];
+} Scene_c056_01E02790;
+
+static void func_01E02790_c056(Scene_c056_01E02790 *g, Fx_c056_01E02790 *o, Pkt_c056_01E02790 *pk, s32 mode) {
+    extern Col_c056_01E02790 D_01E05400_c056;
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_c056_01E02790 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Col_c056_01E02790 c;
+    f32 rm[4];
+    s32 i;
+    Fx_c056_01E02790 *p;
+    s16 a;
+
+    p = o->parent;
+    a = 0;
+    c = D_01E05400_c056;
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(pk, 0, 0);
+        if (p == NULL) {
+            c = o->col;
+            c.a = 0;
+            pk->c10 = func_00107740(&c);
+            pk->c40 = func_00107740(&c);
+        } else {
+            pk->c10 = func_00107740(&p->col2);
+            pk->c40 = func_00107740(&p->col2);
+        }
+        if (o->w94 != 0) {
+            pk->c28 = func_00107740(&o->col2);
+            pk->c58 = func_00107740(&o->col2);
+        } else {
+            c = o->col2;
+            c.a = 0;
+            pk->c28 = func_00107740(&c);
+            pk->c58 = func_00107740(&c);
+        }
+        func_00108500(pk, rm, 0);
+        func_00208700(pk, g->tex, 1);
+        return;
+    }
+    for (i = 0; i < 3; i++) {
+        if (p != NULL) {
+            o->q[0].x = p->hAA * func_00108030(g->sin, p->ang + a - 15, 1);
+            o->q[0].z = p->hAA * func_00108030(g->sin, p->ang + a - 15, 0);
+            o->q[2].x = o->q[0].x;
+            o->q[2].z = o->q[0].z;
+        } else {
+            o->q[0].x = o->hAA * func_00108030(g->sin, o->ang + a, 1);
+            o->q[0].z = o->hAA * func_00108030(g->sin, o->ang + a, 0);
+            o->q[2].x = o->q[0].x;
+            o->q[2].z = o->q[0].z;
+        }
+        o->q[1].x = o->hAA * func_00108030(g->sin, o->ang - 15 + a, 1);
+        o->q[1].z = o->hAA * func_00108030(g->sin, o->ang - 15 + a, 0);
+        o->q[3].x = o->q[1].x;
+        o->q[3].z = o->q[1].z;
+        if (p != NULL) {
+            o->q[2].y = p->q[1].y - p->fA0;
+        } else {
+            o->q[2].y = o->q[0].y - o->fA0;
+        }
+        o->q[3].y = o->q[0].y - o->fA0;
+        if (func_00205630(o, 0x70000000, g->m40, pk, &g->depth) != 0) {
+            func_002075F0(pk, g->ot, (u32)g->depth);
+        }
+        a += 100;
+    }
+}
 
 /* shape c056:01E02BE0, 139 insns: a ring of twelve flat quads: mode 0 sets the four corner colours (two of each of
    the effect's colours); otherwise the quad's inner edge sits at the centre (y 10) and its outer corners sweep a
@@ -1809,7 +1934,128 @@ static s32 func_01E04900_c056(G_c056_01E04900 *g, Obj_c056_01E04900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E04CF0_c056);
+/* shape c056:01E04CF0, 188 insns: c056:01E03DA0 family hovering ring: bobs 2 along a 6-a-tick sine (func_001A6A88) at 0x4/0x14, shrinks 0xA8 to 10 and 0xA0 to 10, then 0xAA to 12; once shrunk sinks 4 to 50 fading both alphas by 15, then frees itself (clearing its owner's 0x90); on wait 1 hands itself to the scene light (0x448C, level 90, 70, colour 100/80/50) and from scene time 19 spawns c056:01E01490; early (count < 16) it calls func_00106BC0, before time 21 grows 0xA8/0xAA by 3 until func_00106B90 says done, after that fades in by 19 to 100 */
+
+typedef struct {
+    u8 pad0[0x84];
+    f32 f84;
+    u8 pad88[0x4478 - 0x88];
+    s32 timer;
+    u8 pad447C[7];
+    u8 c4483;
+    u8 pad4484[8];
+    void *owner;
+    u8 pad4490[0x44B8 - 0x4490];
+    s16 h44B8;
+    s16 h44BA;
+    u8 pad44BC[6];
+    s16 count;
+} Scene_c056_01E04CF0;
+
+typedef struct {
+    u8 pad0[0x90];
+    s32 w90;
+} Own_c056_01E04CF0;
+
+typedef struct {
+    u8 pad0[4];
+    f32 y;
+    u8 pad8[0xC];
+    f32 y14;
+    u8 pad18[0x7C];
+    Own_c056_01E04CF0 *own;
+    u8 pad98[8];
+    f32 fA0;
+    s16 hA4;
+    u8 padA6[2];
+    s16 hA8;
+    s16 hAA;
+    u8 colAC[4];
+    u8 colB0[4];
+    u8 padB4[6];
+    s16 ang;
+    u8 padBC[2];
+    s16 wait;
+} Fx_c056_01E04CF0;
+
+extern void c056_01E01490(Scene_c056_01E04CF0 *, s32 (*)(Scene_c056_01E04CF0 *, Fx_c056_01E04CF0 *));
+
+#pragma opt_propagation off
+
+static s32 func_01E04CF0_c056(Scene_c056_01E04CF0 *g, Fx_c056_01E04CF0 *o) {
+    f32 w;
+    extern f32 func_001A6A88(f32);
+    extern void func_00107EA0(void *, f32, f32, f32);
+    extern void func_00106BC0(void *, s32, s32);
+    extern s32 func_00106B90(void *, s32, s32);
+
+    o->ang += 6;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    o->y14 = o->y = o->y + 2.0f * func_001A6A88(3.1415927f * o->ang / 180.0f);
+    if (o->hA8 > 10) {
+        o->hA8 -= 2;
+    }
+    if (o->fA0 > 10.0f) {
+        o->fA0 -= 2.0f;
+    }
+    if (o->hAA > 12) {
+        o->hAA -= 2;
+    } else if (o->y > 50.0f) {
+        o->y14 = o->y = o->y - 4.0f;
+        if (o->colAC[3] > 16) {
+            o->colAC[3] -= 15;
+        }
+        if (o->colB0[3] > 16) {
+            o->colB0[3] -= 15;
+        }
+    } else {
+        if (o->own != NULL) {
+            if (o->own != NULL) {
+                o->own->w90 = 0;
+            }
+            o->hA4 = 0;
+        }
+        o->hA4 = 0;
+    }
+    if (o->wait == 1) {
+        g->owner = o;
+        g->h44BA = 90;
+        g->f84 = 70.0f;
+        g->c4483 = 0;
+        g->h44B8 = 100;
+        w = 80.0f;
+        func_00107EA0(g, 100.0f, w, 50.0f);
+        if (g->timer > 18) {
+            c056_01E01490(g, func_01E04CF0_c056);
+        }
+    }
+    if (g->count < 16) {
+        func_00106BC0(o, 15, 0x80);
+    } else if (g->timer < 21) {
+        o->hA8 += 3;
+        o->hAA += 3;
+        if (func_00106B90(o, 14, 15) != 0) {
+            o->hA4 = 0;
+        }
+    } else if (o->hAA > 12) {
+        if (o->colAC[3] < 100) {
+            o->colAC[3] += 19;
+        }
+        if (o->colB0[3] < 100) {
+            o->colB0[3] += 19;
+        }
+    }
+    if (o->wait != 0) {
+        o->wait--;
+    }
+    if (g->timer < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}
+#pragma opt_propagation reset
 
 /* shape c056:01E04FE0, 252 insns: a climber on the scene path (g+0x4270, 0x18-byte points from +0x118): its turn
    0xBA grows by 6 + g->h44C2 % 10 (mod 360); the first path point above it sets its two frames through

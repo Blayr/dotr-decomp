@@ -1,6 +1,87 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c015", func_01E00080_c015);
+/* shape c015:01E00080, 122 insns: the module's step: on its first tick picks the scene colour by kind (3/4 purple,
+   1 green, 5 teal, 0 orange, else green; 0x44BC = 3, 1, 0 or 2), sizes 16/20, spawns c015:01E004B0 with
+   c015:01E00270 at height 8, then a grey (0x40) c015:01E00560 at height 15; before tick 10 it calls func_00107180, and
+   while 0x4478 is below 10 func_00107370 with 0.15 */
+
+typedef struct {
+    u8 pad0[0x80];
+    f32 x, y, z;
+    u8 pad8C[0x4478 - 0x8C];
+    s32 n4478;
+    u8 pad447C[4];
+    u8 rgba[4];
+    u8 pad4484[0x449C - 0x4484];
+    f32 w;
+    f32 h;
+    u8 pad44A4[0x44BC - 0x44A4];
+    s16 col;
+    s16 kind;
+    u8 pad44C0[2];
+    s16 t;
+} Scene_c015_01E00080;
+
+static s32 func_01E00270_c015();
+static void func_01E004B0_c015();
+static void func_01E00560_c015();
+
+static void func_01E00080_c015(Scene_c015_01E00080 *s) {
+    extern void func_00107180(s32, s32, s32, s32);
+    extern void func_00107370(s32, s32, f32);
+    extern s32 func_001F5380(void);
+
+    s->t++;
+    if (s->t == 1) {
+        s->x = 0.0f;
+        s->y = 8.0f;
+        s->z = 0.0f;
+        if (s->kind == 3 || s->kind == 4) {
+            s->rgba[0] = 0xA9;
+            s->rgba[1] = 0x21;
+            s->rgba[2] = 0x5A;
+            s->col = 3;
+        } else if (s->kind == 1 || s->kind == 5) {
+            if (s->kind == 1) {
+                s->rgba[0] = 0;
+                s->rgba[1] = 0x7B;
+                s->rgba[2] = 0x42;
+            } else if (s->kind == 5) {
+                s->rgba[0] = 0x52;
+                s->rgba[1] = 0x7B;
+                s->rgba[2] = 0xA5;
+            }
+            s->col = 1;
+        } else if (s->kind == 0) {
+            s->rgba[0] = 0xDE;
+            s->rgba[1] = 0xA5;
+            s->rgba[2] = 0x4A;
+            s->col = 0;
+        } else {
+            s->rgba[0] = 0;
+            s->rgba[1] = 0x7B;
+            s->rgba[2] = 0x42;
+            s->col = 2;
+        }
+        s->w = 16.0f;
+        s->h = 20.0f;
+        s->rgba[3] = 0;
+        func_01E004B0_c015(s, func_01E00270_c015);
+        s->rgba[0] = 0x40;
+        s->rgba[1] = 0x40;
+        s->rgba[2] = 0x40;
+        s->x = 0.0f;
+        s->y = 15.0f;
+        s->z = 0.0f;
+        func_01E00560_c015(s, func_01E00270_c015);
+    }
+    if (s->t < 10) {
+        func_00107180(func_001F5380(), 0, 0, 1);
+    }
+    if (s->n4478 < 10) {
+        func_00107370(func_001F5380(), 0, 0.15f);
+    }
+}
 
 /* shape c015:01E00270, 25 insns: while the game's step (0x44C2) is below 8 the alpha grows by 0x16 (below 0xB0);
    while the counter at 0x4478 is below 10 it fades by 0x1E, then the effect stops */

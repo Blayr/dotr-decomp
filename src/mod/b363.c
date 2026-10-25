@@ -1073,7 +1073,94 @@ static s32 func_01E046A0_b363(s32 arg0, Fx_b363_01E046A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E04880_b363);
+/* shape b363:01E04880, 182 insns, 1 copy: B363_OBJ_MOVE_40_: on start sets the colours, size and life by kind (kind 2
+   also rolls three random angles); fades in by 0x40 while young, then out by 11 and ends; kind 1 follows the scene's
+   point, kind 2 grows; colour blinks every other tick; kinds 0/1 spin */
+
+typedef struct Game_b363_01E04880 {
+    u8 pad0[0xDE50];
+    Vec4f pos;
+} Game_b363_01E04880;
+
+typedef struct Obj_b363_01E04880 {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[8];
+    Vec4f pos;
+    s32 rot[3];
+    u8 pad2C[0x1C];
+    f32 size;
+    f32 h4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 w5A;
+    s16 w5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b363_01E04880;
+
+static s32 func_01E04880_b363(Game_b363_01E04880 *g, Obj_b363_01E04880 *o) {
+    extern void func_001076F0();
+    extern s32 func_0019A5C8();
+    extern void func_00205C40();
+
+    if (o->mode == 1) {
+        if (o->kind == 0) {
+            o->size = 550.0f;
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            o->life = 15;
+        } else if (o->kind == 1) {
+            o->size = 80.0f;
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            o->life = 25;
+        } else if (o->kind == 2) {
+            o->size = 80.0f;
+            func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+            func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+            o->rot[0] = func_0019A5C8() % 0xFFFF;
+            o->rot[1] = func_0019A5C8() % 0xFFFF;
+            o->rot[2] = func_0019A5C8() % 0xFFFF;
+            o->life = 10;
+        }
+        o->w5A = 15;
+        o->w5C = 15;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t < o->life) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 1) {
+        o->pos = g->pos;
+    }
+    if (o->kind == 2) {
+        o->size += 8.0f;
+        o->h4C += (o->size - 2.0f) / 3.0f;
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col2, 0xFF, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col2, 0xC0, 0x70, 0x70);
+    }
+    if (o->kind != 2) {
+        func_00205C40(o->rot);
+        o->rot[0] += 0x4000;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b363:01E04B60, 82 insns: b283:01E036C0 twin (white, or blue/teal for kind 1): in by 18 up to 0x80 for 22 ticks, then out by 4 and ends */
 

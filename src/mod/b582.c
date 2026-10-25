@@ -1609,7 +1609,104 @@ INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E047C0_b582);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E04B10_b582);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b582", func_01E04E60_b582);
+/* shape b582:01E04E60, 191 insns, 1 copy: a 25 x 40 field of flat sprites (spacing twice the size, centred) lifted by 20 x the
+   cosine of the object's angle 0x3A, each row bobbing by 10 x the cosine of a phase that steps 6 per row; blend by
+   flags >> 4 (0 = 0x48, 1 = 0x44, else 0x42). Calls the module's sprite-UV helper (shape b003:01E00080). */
+
+typedef struct Uv_b582_01E04E60 {
+    f32 u, v;
+} Uv_b582_01E04E60;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b582_01E04E60 uv;
+} Pk_b582_01E04E60;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot;
+    u8 pad84[4];
+    void *tex;
+    u8 pad8C[8];
+    u8 rect[0x2A];
+    s16 page;
+    u8 padC0[0x18];
+    u8 trig[1];
+} Obj_b582_01E04E60;
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 phase;
+    u8 padC[0x1C];
+    u8 col[4];
+    u8 pad2C[0xC];
+    s16 size;
+    s16 ang;
+} Field_b582_01E04E60;
+
+#pragma opt_propagation off
+
+static void func_01E04E60_b582(Obj_b582_01E04E60 *obj, Field_b582_01E04E60 *o, Pk_b582_01E04E60 *pk, s32 flags) {
+    extern void func_00108D20(void *, f32, f32);
+    extern void func_00107070(void *, s32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 m[16];
+    f32 depth[4];
+    Uv_b582_01E04E60 uv;
+    s32 sel;
+    s16 j;
+    s16 i;
+    s16 w;
+    s16 d;
+    s16 hx;
+    s16 hz;
+    s16 a;
+    f32 lift;
+    f32 h;
+    f32 x;
+
+    pk->flags = 0x24;
+    pk->size = 9;
+    pk->regs = ((u64)4 << 32) | 0x24242421;
+    pk->pad4 = 0;
+    sel = flags >> 4;
+    pk->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(pk, ((u64)0x80 << 32) | 0x48);
+    } else if (sel == 1) {
+        func_002086D0(pk, ((u64)0x80 << 32) | 0x44);
+    } else {
+        func_002086D0(pk, ((u64)0x80 << 32) | 0x42);
+    }
+    func_00107740(&uv, o->col);
+    pk->uv = uv;
+    func_01E00080_b582((void *)pk, (void *)obj->rect, obj->page);
+    func_00208700(pk, obj->tex, 1);
+    w = (o->size * 25) >> 1;
+    d = (o->size * 40) >> 1;
+    lift = 20.0f * func_00108030(obj->trig, o->ang, 0);
+    hx = w;
+    hz = d;
+    a = o->phase;
+    for (j = 0; j < 40; j++) {
+        h = -1.0f + 10.0f * func_00108030(obj->trig, a, 0);
+        for (i = 0; i < 25; i++) {
+            func_00108D20(m, o->size, o->size);
+            x = (f32)(i * (o->size * 2) - hx);
+            func_00107070(m, 0, x + lift);
+            func_00107070(m, 2, (f32)(j * (o->size * 2) - hz));
+            func_00107070(m, 1, h);
+            if (func_00205630((s32)m, 0x70000000, 0, (s32)pk, depth) != 0) {
+                func_002075F0((s32)pk, obj->ot, func_001A23B0(depth[0]));
+            }
+        }
+        a += 6;
+    }
+}
+#pragma opt_propagation reset
 
 /* shape b582:01E05160, 193 insns (h1 reads size through a cast so its load is not merged with h0's and the maths is not sunk past the call): a 25 x 40 grid of sprites (the module's static UV helper, shape b003:01E00080), each 0x38 wide and 2x0x38 apart, centred on the object, pushed 30*sin(0x3A) back, its height -10 + 20*sin(row angle) with the row angle starting at 0xA + 60 and stepping 6 */
 

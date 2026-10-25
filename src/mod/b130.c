@@ -747,7 +747,152 @@ static void func_01E01CC0_b130(u8 *ctx, Obj_b053_01E022F0 *o, void *pkt, s32 mod
 
 INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E01E60_b130);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b130", func_01E022D0_b130);
+/* shape b130:01E022D0, 278 insns, 1 copy: B130PAINT_RAIN5: mode 0 sets the drawing state (a 0x96 matrix from angle 0x34,
+   colour, texture 0x10C, vertex alphas 0); otherwise draws two rings of 18 quads (inner radius size-10, outer size,
+   20 apart, a random start angle) stepping back along the line between the scene's two joint points (from the
+   object once the scene clock passes 40) */
+
+typedef struct Uv_b130_01E022D0 {
+    f32 u, v;
+} Uv_b130_01E022D0;
+
+typedef struct Pkt_b130_01E022D0 {
+    u16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Uv_b130_01E022D0 uv;
+    struct {
+        u8 pad0[0xF];
+        u8 a;
+    } v[4];
+} Pkt_b130_01E022D0;
+
+typedef struct Fx_b130_01E022D0 {
+    s16 x, y, z;
+    u8 pad6[0xA];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 col[0xC];
+    s16 h34;
+    u8 pad36[2];
+    s16 size;
+    s16 ang;
+} Fx_b130_01E022D0;
+
+typedef struct Game_b130_01E022D0 {
+    u8 pad0[0x10C];
+    s32 tex;
+    u8 pad110[0x3B0C - 0x110];
+    s32 ot;
+    u8 pad3B10[0x3B34 - 0x3B10];
+    f32 depth;
+    u8 pad3B38[0x3B48 - 0x3B38];
+    s16 j0;
+    u8 pad3B4A[2];
+    s16 j1;
+    u8 pad3B4E[0x3B5C - 0x3B4E];
+    s16 clock;
+    u8 pad3B5E[2];
+    u8 trig[1];
+} Game_b130_01E022D0;
+
+static void func_01E022D0_b130(Game_b130_01E022D0 *g, Fx_b130_01E022D0 *o, Pkt_b130_01E022D0 *p, s32 mode) {
+    extern void func_00106080();
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    extern void func_00108EF0();
+    extern f32 func_00108030();
+    extern s32 func_0019A5C8();
+    extern s32 func_00205630();
+    extern void func_002075F0();
+    extern void func_00208700();
+    extern void func_00107740();
+    Vec4f quad[4];
+    f32 pos[4];
+    f32 m[16];
+    f32 rm[4];
+    f32 a[4];
+    f32 b[4];
+    Uv_b130_01E022D0 uv;
+    s32 k;
+    s32 j;
+    s16 i;
+    s16 r;
+    s16 t;
+    f32 c;
+    f32 s;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 *pb;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x96, o->h34, rm);
+        p->count = 0x24;
+        p->tag = 9;
+        p->regs = ((u64)4 << 32) | 0x24242421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->uv.v = 0;
+        p->v[0].a = 0;
+        p->v[1].a = 0;
+        p->v[2].a = 0;
+        p->v[3].a = 0;
+        func_00107740(&uv, o->col);
+        p->uv = uv;
+        func_01E00150_b130((void *)p, (void *)rm, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_001F5620(func_001F53A0(), g->j0, a);
+    func_001F5620(func_001F53A0(), g->j1, pb = (f32 *)(u32)b);
+    dx = a[0] - pb[0];
+    dy = a[1] - b[1];
+    dz = a[2] - b[2];
+    quad[0].y = 0;
+    quad[1].y = 0;
+    quad[2].y = 0;
+    quad[3].y = 0;
+    dx /= 14.0f;
+    dy /= 14.0f;
+    dz /= 14.0f;
+    for (k = 1; k < 3; k++) {
+        if (g->clock > 40) {
+            pos[0] = o->x - dx * k;
+            pos[1] = o->y - dy * k;
+            pos[2] = o->z - dz * k;
+        } else {
+            pos[0] = a[0] - dx * k;
+            pos[1] = a[1] - dy * k;
+            pos[2] = a[2] - dz * k;
+        }
+        func_00108EF0(m, NULL, o->rot, pos);
+        i = 0;
+        r = func_0019A5C8() % 360;
+        for (j = 0; j < 18; j++) {
+            t = r + (o->ang + i);
+            c = func_00108030(g->trig, t, 1);
+            s = func_00108030(g->trig, t, 0);
+            quad[2].x = c * o->size;
+            quad[2].z = s * o->size;
+            quad[0].x = c * (o->size - 10);
+            quad[0].z = s * (o->size - 10);
+            t = r + (o->ang + 20 + i);
+            c = func_00108030(g->trig, t, 1);
+            s = func_00108030(g->trig, t, 0);
+            quad[3].x = c * o->size;
+            quad[3].z = s * o->size;
+            quad[1].x = c * (o->size - 10);
+            quad[1].z = s * (o->size - 10);
+            if (func_00205630(quad, 0x70000000, m, p, &g->depth)) {
+                func_002075F0(p, g->ot, func_001A23B0(g->depth));
+            }
+            i += 20;
+        }
+    }
+}
 
 /* shape b130:01E02730, 106 insns: mode 0 sets the drawing state (a 0x99 matrix from its angle 0x34, colour, the scene
    texture 0x10C); otherwise draws the effect as a camera-facing square of its size 0x38: camera rotation, world matrix (scale 0.1) at its position offset by

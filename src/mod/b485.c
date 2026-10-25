@@ -729,7 +729,122 @@ static s32 func_01E01A60_b485(Game_b485_01E01A60 *g, Obj_b485_01E01A60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b485", func_01E01BC0_b485);
+/* shape b485:01E01BC0, 287 insns: B485_OBJ_MOVE_4_: a smoke puff: set up once (radius 5..24, kind 0..3, x/z jitter
+   +-8, spin -8..7, rise -0.25..0.24, grey, angles random) aimed from its point on the ring around the model to it over
+   30 ticks; fades in by 0x15 to 0x80 until its life (70..109) runs out, then out by 9; grows 0.3 a tick for 20 ticks,
+   drifts for 10 more, then circles the ring by its spin; frame +1 every other tick */
+
+typedef struct {
+    u8 pad00[6];
+    s16 life;
+    s16 frame;
+    s16 frame4;
+    u8 pad0C[2];
+    s16 spin;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 vx;
+    f32 vy;
+    u8 pad38[4];
+    f32 vz;
+    u8 pad40[8];
+    f32 scale;
+    f32 r;
+    u8 pad50[4];
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 a;
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b485_01E01BC0;
+
+typedef struct {
+    u8 pad00[0x44C4];
+    s16 joint;
+    u8 pad44C6[0x46FC - 0x44C6];
+    u8 trig[1];
+} Game_b485_01E01BC0;
+
+static s32 func_01E01BC0_b485(Game_b485_01E01BC0 *g, Obj_b485_01E01BC0 *o) {
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s32, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    f32 p[4];
+    f32 q[4];
+    f32 d;
+
+    if (o->mode == 1) {
+        o->frame = 0;
+        o->frame4 = o->frame * 4;
+        o->scale = 0.0f;
+        o->r = 5.0f + (func_0019A5C8() >> 4) % 20;
+        o->kind = (func_0019A5C8() >> 4) % 4;
+        d = func_0019A5C8() % 160 - 80;
+        d /= 10.0f;
+        o->x += d;
+        d = func_0019A5C8() % 160 - 80;
+        d /= 10.0f;
+        o->z += d;
+        o->spin = func_0019A5C8() % 16 - 8;
+        o->vy = (func_0019A5C8() >> 4) % 40 - 20;
+        o->vy = o->vy / 80.0f;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->mode = 2;
+        o->a = func_0019A5C8() % 360;
+        o->ang = func_0019A5C8() % 360;
+        func_001F5F90(func_001F5380(), p);
+        p[0] += o->r * func_00108030(g->trig, o->ang, 1);
+        p[2] += o->r * func_00108030(g->trig, o->ang, 0);
+        func_001F5620(func_001F53A0(), g->joint, q);
+        o->vz = (p[2] - o->z) / 30.0f;
+        o->vx = (p[0] - o->x) / 30.0f;
+        o->life = (func_0019A5C8() >> 4) % 40 + 70;
+    }
+    if (o->t < o->life) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x15;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t < 20) {
+        o->y += o->vy;
+        o->frame++;
+        o->frame4 = o->frame * 4;
+        o->scale += 0.3f;
+        o->z += o->vz;
+        o->x += o->vx;
+    } else if (o->t < 30) {
+        o->z += o->vz;
+        o->x += o->vx;
+    } else {
+        func_001F5F90(func_001F5380(), p);
+        p[0] += o->r * func_00108030(g->trig, o->ang, 1);
+        p[2] += o->r * func_00108030(g->trig, o->ang, 0);
+        o->x = p[0];
+        o->z = p[2];
+        o->ang += o->spin;
+        if (o->t % 2 == 1) {
+            o->frame++;
+            o->frame4 = o->frame * 4;
+        }
+    }
+    func_00205C40((s32)&o->rot);
+    o->t++;
+    o->a += 2;
+    return 0;
+}
 
 /* shape b191:01E02600, 148 insns: a blue spark at a random position: f48 10..19 (+1 per tick), variant 0..3, f50
    10..29, random f5A, spin 10..21, f8 1..8, life 2..4; alpha 0x80 during the life, then fades by 11 and stops;

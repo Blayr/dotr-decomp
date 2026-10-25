@@ -1352,4 +1352,99 @@ INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E03DB0_b430);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E04470_b430);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E04A50_b430);
+/* shape b430:01E04A50, 284 insns: builds a 20 x 18 jagged ring field: ring i at radius growing 15 a ring (then
+   shrinking 5 past ring 9, random 25..39 on rings 1..14, clamped 0..100, 0 on the first and the last two) every 20
+   degrees; then jitters each ring by a random shift and a random spread; then random heights from -160 by 16 */
+
+typedef struct {
+    u8 pad0[0x1CD4];
+    f32 x[20][18];
+    f32 z[20][18];
+    f32 y[20][18];
+} Map_b430_01E04A50;
+
+static void func_01E04A50_b430(Map_b430_01E04A50 *g) {
+    s32 i;
+    s32 j;
+    s16 ang;
+    s16 rad;
+    s16 w;
+    s16 size;
+    s16 dx;
+    s16 dy;
+    s16 rx;
+    s16 ry;
+    s16 h;
+    f32 a;
+
+    ang = 0;
+    rad = 0;
+    for (i = 0; i < 20; i++) {
+        for (j = 0; j < 18; j++) {
+            a = 3.1415927f * ang / 180.0f;
+            g->x[i][j] = rad * func_001A6898(a);
+            g->y[i][j] = rad * func_001A6A88(a);
+            ang += 20;
+        }
+        ang = 0;
+        if (i < 9) {
+            rad += 15;
+        } else {
+            rad -= 5;
+        }
+        if (i > 0 && i < 15) {
+            rad = func_0019A5C8() % 15 + 25;
+        }
+        if (rad >= 100) {
+            rad = 100;
+        }
+        if (rad <= 0) {
+            rad = 0;
+        }
+        if (i == 0 || i >= 18) {
+            rad = 0;
+        }
+    }
+    w = 1;
+    for (i = 0; i < 20; i++) {
+        dx = func_0019A5C8() % 10 - 5;
+        dy = func_0019A5C8() % 10 - 5;
+        size = w;
+        for (j = 0; j < 18; j++) {
+            rx = func_0019A5C8() % size;
+            ry = func_0019A5C8() % size;
+            g->x[i][j] += dx + (rx - (size >> 1));
+            g->y[i][j] += dy + (ry - (size >> 1));
+        }
+        if (i < 10) {
+            if (size < 30) {
+                w += 3;
+            }
+            if (i >= 2) {
+                w = func_0019A5C8() % 10 + 2;
+            }
+        } else {
+            if (size > 8) {
+                w -= 7;
+            }
+            if (i < 18) {
+                w = func_0019A5C8() % 10 + 2;
+            }
+        }
+        if (i == 18) {
+            w = 1;
+        }
+        if (w <= 0) {
+            w = 1;
+        }
+    }
+    h = -160;
+    for (i = 0; i < 20; i++) {
+        for (j = 0; j < 18; j++) {
+            g->z[i][j] = h + func_0019A5C8() % 20 - 10;
+        }
+        if (i < 19) {
+            h += 16;
+        }
+    }
+}

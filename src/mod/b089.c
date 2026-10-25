@@ -468,7 +468,73 @@ static s32 func_01E014C0_b089(Scene_b089_01E014C0 *g, Fx_b089_01E014C0 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E016D0_b089);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E01BA0_b089);
+/* shape b089:01E01BA0, 123 insns: a white spark on scene point h3B76: random spin words, size 14..23; alpha in by 16 up
+   to 0xA0 for 10 ticks, then out by 19 and ends; placed at the point, its height lowered by twice the sine of the
+   camera's angle */
+
+typedef struct {
+    u8 pad0[0x3B76];
+    s16 point;
+    u8 pad3B78[0x14];
+    u8 sin[4];
+} Game_b089_01E01BA0;
+
+typedef struct {
+    s16 x;
+    s16 pad2;
+    s16 y;
+    u8 pad6[0xA];
+    s32 r10;
+    s32 r14;
+    s32 r18;
+    u8 pad1C[0xC];
+    u8 c28[4];
+    u8 c2C[4];
+    u8 pad30[2];
+    s16 t;
+    u8 pad34[2];
+    s16 mode;
+    s16 size;
+} Obj_b089_01E01BA0;
+
+static s32 func_01E01BA0_b089(Game_b089_01E01BA0 *g, Obj_b089_01E01BA0 *o) {
+    extern s32 func_001F53A0();
+    extern void func_001F5620(s32, s32, f32 *);
+    extern void func_001F6160(s32, s32 *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s32, s32);
+    f32 pos[4];
+    s32 cam[4];
+    s16 a;
+
+    func_001F5620(func_001F53A0(), g->point, pos);
+    if (o->mode == 1) {
+        func_001076F0(o->c28, 0x80, 0x80, 0x80);
+        func_001076F0(o->c2C, 0x80, 0x80, 0x80);
+        o->r10 = func_0019A5C8() % 0xFFFF;
+        o->r14 = func_0019A5C8() % 0xFFFF;
+        o->r18 = func_0019A5C8() % 0xFFFF;
+        o->size = func_0019A5C8() % 10 + 14;
+        o->mode = 2;
+        o->c28[3] = 0;
+        o->c2C[3] = 0;
+    }
+    if (o->t < 10) {
+        if (o->c28[3] < 0xA0) {
+            o->c28[3] += 0x10;
+        }
+    } else if (o->c28[3] > 0x14) {
+        o->c28[3] -= 0x13;
+    } else {
+        o->mode = 0;
+    }
+    o->t++;
+    func_001F6160(func_001F53A0(), cam);
+    a = 2.0f * -func_00108030(g->sin, (s16)(cam[1] / 180.0f) - 180, 1);
+    o->x = pos[0];
+    o->y = pos[2] - a;
+    return 0;
+}
 
 typedef struct {
     u8 pad0000[0x3B8C];

@@ -460,7 +460,129 @@ static void func_01E00FE0_b406(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b406", func_01E01590_b406);
+/* shape b406:01E01590, 288 insns, 1 copy (B406_W_S): the module's scene step: counts frames; the effect point follows
+   joint A's x and joint B's z (from frame 100 it drifts 0.08 / 4.5 a frame toward the side the scene faces), copied to
+   the second point until 133 and taking B's height until 183; until 191 two glints at joints B and C, from 171 the
+   spawn point follows it with sparks until 250 and a radius growing 10 to 800; one-off spawns at 75, 100, 133, 170 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x7240];
+    Vec4f pt;
+    Vec4f pt2;
+    u8 pad74C0[0x180];
+    f32 radius;
+    u8 pad7644[0x10];
+    s16 jointB;
+    s16 jointC;
+    s16 jointA;
+    u8 pad765A[0x28];
+    s16 kind;
+    u8 pad7684[2];
+    s16 side;
+    u8 pad7688[2];
+    s16 frame;
+} Scene_b406_01E01590;
+
+static void func_01E01590_b406(Scene_b406_01E01590 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    extern s32 func_01E03640_b406();
+    extern s32 func_01E01A10_b406();
+    extern s32 func_01E01BC0_b406();
+    extern s32 func_01E01DA0_b406();
+    extern s32 func_01E022D0_b406();
+    extern s32 func_01E027F0_b406();
+    extern s32 func_01E02980_b406();
+    extern s32 func_01E02B80_b406();
+    extern s32 func_01E02CF0_b406();
+    extern s32 b406_01E02630();
+    Vec4f a;
+    Vec4f b[2];
+
+    g->frame++;
+    func_001F5620(func_001F53A0(), g->jointA, &a);
+    func_001F5620(func_001F53A0(), g->jointB, b);
+    g->pt.x = a.x;
+    if (g->frame < 100) {
+        g->pt.z = b[0].z;
+    } else if (g->frame < 133) {
+        if (g->side != 0) {
+            g->pt.z -= 0.08f;
+        } else {
+            g->pt.z += 0.08f;
+        }
+    } else if (g->frame < 170) {
+        if (g->side != 0) {
+            g->pt.z -= 4.5f;
+        } else {
+            g->pt.z += 4.5f;
+        }
+    }
+    if (g->frame < 133) {
+        g->pt2 = g->pt;
+    }
+    if (g->frame < 183) {
+        g->pt.y = b[0].y;
+    }
+    if (g->frame < 191) {
+        func_001F5620(func_001F53A0(), g->jointB, &g->pos);
+        func_01E03640_b406(g, func_01E01A10_b406, 0);
+        func_001F5620(func_001F53A0(), g->jointC, &g->pos);
+        func_01E03640_b406(g, func_01E01A10_b406, 0);
+    }
+    if (g->frame > 170) {
+        g->pos = g->pt;
+        if (g->frame < 250) {
+            func_01E03640_b406(g, func_01E01BC0_b406, 0);
+        }
+        if (g->radius < 800.0f) {
+            g->radius += 10.0f;
+        }
+    }
+    if (g->frame == 170) {
+        g->pos = g->pt;
+        func_01E03640_b406(g, func_01E02B80_b406, 0);
+        func_01E03640_b406(g, func_01E02B80_b406, 0);
+        func_01E03640_b406(g, func_01E01DA0_b406, 0);
+        func_01E03640_b406(g, func_01E01DA0_b406, 0);
+        func_01E03640_b406(g, func_01E01DA0_b406, 0);
+        func_01E03640_b406(g, func_01E01DA0_b406, 0);
+        func_01E03640_b406(g, func_01E01DA0_b406, 0);
+    }
+    if (g->frame == 100) {
+        g->kind = 0;
+        func_01E03640_b406(g, func_01E02980_b406, 0);
+        g->kind = 1;
+    }
+    if (g->frame == 75) {
+        g->kind = 0;
+        func_01E03640_b406(g, func_01E027F0_b406, 0);
+        g->kind = 1;
+        func_01E03640_b406(g, func_01E027F0_b406, 0);
+    }
+    if (g->frame == 133) {
+        func_01E03640_b406(g, b406_01E02630, 0);
+        g->kind = 0;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+        g->kind = 1;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+        g->kind = 2;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+        g->kind = 3;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+        g->kind = 4;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+        g->kind = 5;
+        func_01E03640_b406(g, func_01E022D0_b406, 0);
+    }
+    if (g->frame == 170) {
+        g->kind = 0;
+        func_01E03640_b406(g, func_01E02CF0_b406, 0);
+        g->kind = 1;
+    }
+}
 
 /* shape b084:01E01A20, 107 insns, 2 copies: a grey glint: set up once (size 10, frame 4, random turn on all axes, angle
    10..59, speed 1..3, life 1..3); fades in for its life, then out (b225:01E026A0 family, 0x58-state layout) */

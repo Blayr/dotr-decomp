@@ -257,4 +257,116 @@ static s32 func_01E00460_c514(s32 id, Model_b013_01E004E0 *m, Fx_b013_01E004E0 *
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c514", func_01E01040_c514);
+/* shape c514:01E01040, 161 insns: c514's scene manager: with a scene id (>= 0) it clears and sets up the scene (60-frame
+   countdown, a 30-frame hold, texture 15, the module's sprite rect and grey colour, scale 0.9, the start point); otherwise
+   it steps the scene and its sprite; while the fade-out bit (31) is clear the sprite grows by 0.0125 and fades in by 16
+   to 0x80 (then sets bit 31); with bit 31 it counts the hold down (bit 30 when it runs out); with bit 30 it grows by 0.05
+   and fades out by 16, returning 8 once gone; it returns 8 when the countdown runs out */
+
+typedef struct {
+    f32 sc[3];
+    u8 padC[0x14];
+    Vec4f v20;
+    u8 pad30[0x40];
+    s16 r[8];
+    u8 pad80[0x20];
+    f32 fA0;
+    u8 col[4];
+    s32 wA8;
+    u8 padAC[0xC];
+    s16 hB8;
+    s16 hBA;
+    s16 hBC;
+    s16 hBE;
+    s16 hC0;
+    s16 hC2;
+    u8 padC4[0xC];
+    s32 vD0[4];
+    u8 padE0[0x90];
+    u32 flags;
+    s32 count;
+    s32 id;
+    s32 hold;
+} Scene_c514_01E01040;
+
+extern void c514_01E00120(void *, void *, s32, f32);
+extern void c514_01E00460(s32, void *, void *, void *);
+
+#pragma opt_propagation off
+
+static s32 func_01E01040_c514(Scene_c514_01E01040 *g0, s32 id) {
+    Scene_c514_01E01040 *g = g0;
+    extern void func_00195108(void *, s32);
+    extern void func_00103890(void *);
+    extern void func_00103260(void *, s32);
+    extern void func_001F53B0(s32, void *);
+    extern void func_00103920(void *, f32, f32);
+    extern s32 func_00104520(s32, s32);
+    s32 t[4];
+    s32 ot;
+
+    ot = (s32)func_00207500();
+    if (id >= 0) {
+        func_00195108(g, 0x180);
+        func_00103890(g);
+        g->flags = 0;
+        g->count = 60;
+        g->id = id;
+        g->hold = 30;
+        func_00103260(t, 15);
+        g->fA0 = 1.0f;
+        g->wA8 = 0x80001;
+        g->r[0] = 0;
+        g->r[1] = 0;
+        g->r[2] = 0x3B;
+        g->r[3] = 0x20;
+        g->r[4] = 0xB0;
+        g->r[5] = 0;
+        g->r[6] = 0x100;
+        g->r[7] = 0x100;
+        g->hB8 = 0;
+        g->hBA = 1;
+        g->hBE = 1;
+        g->hC2 = 999;
+        g->hC0 = 0;
+        g->hBC = g->hBE - 1;
+        g->vD0[2] = 1;
+        c514_01E00120(g->r, g->vD0, t[0], 200.0f);
+        g->col[0] = g->col[1] = g->col[2] = 0x80;
+        g->col[3] = 0;
+        g->sc[0] = g->sc[1] = g->sc[2] = 0.9f;
+        func_001F53B0(0, &g->v20);
+        return 0;
+    }
+    func_00103920(g, 0.0f, 0.0f);
+    c514_01E00460(ot, g->r, g->vD0, g);
+    if (!func_00104520(g->flags, 0x1F)) {
+        g->sc[0] = g->sc[1] = g->sc[2] += 0.0125f;
+        if (g->col[3] < 0x80) {
+            g->col[3] += 16;
+        } else {
+            g->col[3] = 0x80;
+            g->flags |= 0x80000000;
+        }
+    }
+    if (func_00104520(g->flags, 0x1F)) {
+        g->hold--;
+    }
+    if (g->hold < 0) {
+        g->flags |= 0x40000000;
+    }
+    if (func_00104520(g->flags, 0x1E)) {
+        g->sc[0] = g->sc[1] = g->sc[2] += 0.05f;
+        if (g->col[3] > 16) {
+            g->col[3] -= 16;
+        } else {
+            g->col[3] = 0;
+            return 8;
+        }
+    }
+    if (--g->count <= 0) {
+        return 8;
+    }
+    return 0;
+}
+#pragma opt_propagation reset

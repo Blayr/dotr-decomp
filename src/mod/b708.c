@@ -652,4 +652,111 @@ static s32 func_01E022D0_b708(Scene_b280_01E02530 *s, s32 fn, s32 arg) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E02420_b708);
+/* shape b708:01E02420, 262 insns: draws a ring of 18 segments (20 table steps each) between an inner and an outer
+   radius around a position (passed by value), the inner edge raised to the data's height; blend from flags >> 4,
+   depth mode flags & 0xF (b082:01E00920 family) */
+
+typedef struct {
+    u8 pad00[0x80];
+    s32 ot;
+    u8 pad84[0x54];
+    u8 table[1];
+} Obj_b708_01E02420;
+
+typedef struct {
+    u8 pad00[0x20];
+    Vec4f rot;
+    u8 pad30[4];
+    f32 height;
+    u8 pad38[0x10];
+    f32 inner;
+    f32 outer;
+    u8 pad50[0x0A];
+    s16 step;
+    u8 pad5C[4];
+    u8 mode0[4];
+    u8 mode1[4];
+} Data_b708_01E02420;
+
+static void func_01E02420_b708(Obj_b708_01E02420 *o, Data_b708_01E02420 *data, s32 flags, Vec4f pos) {
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 m[16];
+    f32 depth[4];
+    u8 packet[0x90];
+    s32 i;
+    f32 inner;
+    s16 j;
+    s16 alpha;
+    f32 outer;
+    u8 *pkt;
+    s32 a;
+    s32 mode;
+
+    pkt = packet;
+    j = 0;
+    func_00107990(pkt, data->mode0, 2);
+    func_00107990(pkt, data->mode1, 1);
+    func_001092E0(pkt, 0);
+    func_001094F0(pkt);
+    alpha = flags >> 4;
+    if (alpha == 0) {
+        func_002086D0(pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(pkt, ((s64)alpha << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    scale.x = 0.1f;
+    t.x = pos.x;
+    scale.y = 0.1f;
+    t.y = pos.y;
+    scale.z = 0.1f;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, &data->rot, &t);
+    mode = flags & 0xF;
+    i = 0;
+    quad[0].y = data->height;
+    quad[1].y = data->height;
+    quad[2].y = 0.0f;
+    quad[3].y = 0.0f;
+    inner = data->inner;
+    outer = data->outer;
+    do {
+        if (i == 0) {
+            a = data->step + j;
+            quad[0].x = inner * func_00108030(o->table, a, 1);
+            quad[0].z = inner * func_00108030(o->table, a, 0);
+            quad[2].x = outer * func_00108030(o->table, a, 1);
+            quad[2].z = outer * func_00108030(o->table, a, 0);
+            a = j + 20;
+            quad[1].x = inner * func_00108030(o->table, a, 1);
+            quad[1].z = inner * func_00108030(o->table, a, 0);
+            quad[3].x = outer * func_00108030(o->table, a, 1);
+            quad[3].z = outer * func_00108030(o->table, a, 0);
+        } else {
+            quad[0] = quad[1];
+            quad[2] = quad[3];
+            a = j + 20;
+            quad[1].x = inner * func_00108030(o->table, a, 1);
+            quad[1].z = inner * func_00108030(o->table, a, 0);
+            quad[3].x = outer * func_00108030(o->table, a, 1);
+            quad[3].z = outer * func_00108030(o->table, a, 0);
+        }
+        if (mode == 0) {
+            if (func_00205630(quad, 0x70000000, m, pkt, depth) != 0) {
+                func_002075F0(pkt, o->ot, (u32)depth[0]);
+            }
+        } else if (mode == 1) {
+            if (func_00205630(quad, 0x70000000, m, pkt, depth) != 0) {
+                func_00109380(pkt, 1);
+                func_002075F0(pkt, o->ot, 0);
+            }
+        }
+        j += 20;
+        i++;
+    } while (i < 18);
+}

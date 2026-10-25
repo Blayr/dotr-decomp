@@ -635,8 +635,230 @@ static void func_01E01AE0_c030(Ctx_c030_01E01AE0 *g, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E01D00_c030);
+/* shape c030:01E01D00 (C030PAINT_RAIN4), 281 insns, 1 copy: c030:01E02170's ring segments in four steps (the scene's
+   step table at 0x2F2) and 35 wide, with the corner colours from its own colour: the outer one's alpha from the
+   parent's inner colour (or its own), the inner one with its inner alpha; heights follow the parent and itself */
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E02170_c030);
+typedef struct {
+    u8 r, g, b, a;
+} Col_c030_01E01D00;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c030_01E01D00;
+
+typedef struct {
+    u8 pad0[0x10];
+    Rgbaq_c030_01E01D00 c10;
+    u8 pad18[0x10];
+    Rgbaq_c030_01E01D00 c28;
+    u8 pad30[0x10];
+    Rgbaq_c030_01E01D00 c40;
+    u8 pad48[0x10];
+    Rgbaq_c030_01E01D00 c58;
+} Pkt_c030_01E01D00;
+
+typedef struct Fx_c030_01E01D00 {
+    Vec4f q[4];
+    u8 pad40[0x10];
+    struct Fx_c030_01E01D00 *parent;
+    u8 pad54[0xC];
+    Col_c030_01E01D00 col;
+    Col_c030_01E01D00 col2;
+    u8 pad68[2];
+    s16 hA;
+    s16 hC;
+    u8 pad6E[4];
+    s16 ang;
+} Fx_c030_01E01D00;
+
+typedef struct {
+    u8 pad0[0x40];
+    f32 m40[16];
+    u8 pad80[0x4C];
+    s32 tex;
+    u8 padD0[0x2C];
+    s32 ot;
+    u8 pad100[0x48];
+    f32 depth;
+    u8 pad14C[0xC];
+    u8 sin[0x2F2 - 0x158];
+    s16 step[4];
+} Scene_c030_01E01D00;
+
+static void func_01E01D00_c030(Scene_c030_01E01D00 *g, Fx_c030_01E01D00 *o, Pkt_c030_01E01D00 *pk, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_c030_01E01D00 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 rm[4];
+    Col_c030_01E01D00 c;
+    s32 i;
+    Fx_c030_01E01D00 *p;
+    s16 a;
+    s16 t;
+
+    p = o->parent;
+    a = 0;
+    if (mode == 0) {
+        func_00106080(rm, 0x9C, 0, rm);
+        func_00109270(pk, 0, 0);
+        func_00108500(pk, rm, 1);
+        func_00208700(pk, g->tex, 1);
+    } else {
+        for (i = 0; i < 4; i++) {
+            if (p != NULL) {
+                t = a + p->ang;
+                q[0].x = p->hC * func_00108030(g->sin, t, 1);
+                q[0].z = p->hC * func_00108030(g->sin, t, 0);
+                t = a + p->ang + 35;
+                q[1].x = p->hC * func_00108030(g->sin, t, 1);
+                q[1].z = p->hC * func_00108030(g->sin, t, 0);
+                o->q[0].y = p->q[1].y;
+                q[1].y = q[0].y = p->q[1].y;
+            } else {
+                t = a;
+                q[0].x = o->hA * func_00108030(g->sin, t + o->ang, 1);
+                q[0].z = o->hA * func_00108030(g->sin, t + o->ang, 0);
+                q[1].x = o->hA * func_00108030(g->sin, t + o->ang + 35, 1);
+                q[1].z = o->hA * func_00108030(g->sin, t + o->ang + 35, 0);
+            }
+            t = a + o->ang;
+            q[2].x = o->hC * func_00108030(g->sin, t, 1);
+            q[2].z = o->hC * func_00108030(g->sin, t, 0);
+            t = a + o->ang + 35;
+            q[3].x = o->hC * func_00108030(g->sin, t, 1);
+            q[3].z = o->hC * func_00108030(g->sin, t, 0);
+            q[3].y = q[2].y = o->q[1].y;
+            if (p == NULL) {
+                c.a = o->col.a;
+            } else {
+                c.a = p->col2.a;
+            }
+            c.r = o->col.r;
+            c.g = o->col.g;
+            c.b = o->col.b;
+            pk->c10 = func_00107740(&c);
+            pk->c28 = func_00107740(&c);
+            c.a = o->col2.a;
+            pk->c40 = func_00107740(&c);
+            pk->c58 = func_00107740(&c);
+            if (func_00205630(q, 0x70000000, g->m40, pk, &g->depth) != 0) {
+                func_002075F0(pk, g->ot, (u32)g->depth);
+            }
+            a += g->step[i];
+        }
+    }
+}
+
+/* shape c030:01E02170 (C030PAINT_RAIN5), 279 insns, 1 copy: c056:01E02790's ring segments without the material's
+   colours: mode 0 only binds the scene texture; otherwise (frame 0x9C) for each of three segments (25 apart) the outer
+   edge follows the parent's ring (its angle, radius 0x6C, height) or its own (radius 0x6A, one angle), the inner edge
+   its own ring, both colours go through the scene's slot colour, the heights bob 30 + 30 sin(y - 180), and the segment
+   is sent at the scene depth */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c030_01E02170;
+
+typedef struct Fx_c030_01E02170 {
+    Vec4f q[4];
+    u8 pad40[0x10];
+    struct Fx_c030_01E02170 *parent;
+    u8 pad54[0xC];
+    Col_c030_01E02170 col;
+    Col_c030_01E02170 col2;
+    u8 pad68[2];
+    s16 hA;
+    s16 hC;
+    u8 pad6E[4];
+    s16 ang;
+} Fx_c030_01E02170;
+
+typedef struct {
+    u8 pad0[0x40];
+    f32 m40[16];
+    u8 pad80[0x4C];
+    s32 tex;
+    u8 padD0[0x2C];
+    s32 ot;
+    u8 pad100[0x48];
+    f32 depth;
+    u8 pad14C[0xC];
+    u8 sin[0x2FC - 0x158];
+    Col_c030_01E02170 col[3];
+} Scene_c030_01E02170;
+
+static void func_01E02170_c030(Scene_c030_01E02170 *g, Fx_c030_01E02170 *o, void *pk, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 rm[4];
+    s32 i;
+    Fx_c030_01E02170 *p;
+    s16 a;
+    s16 t;
+
+    p = o->parent;
+    a = 0;
+    if (mode == 0) {
+        func_00109270(pk, 0, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+    func_00106080(rm, 0x9C, 0, rm);
+    func_00108500(pk, rm, 1);
+    for (i = 0; i < 3; i++) {
+        if (p != NULL) {
+            t = a + p->ang;
+            q[0].x = p->hC * func_00108030(g->sin, t, 1);
+            q[0].z = p->hC * func_00108030(g->sin, t, 0);
+            t = a + p->ang + 20;
+            q[1].x = p->hC * func_00108030(g->sin, t, 1);
+            q[1].z = p->hC * func_00108030(g->sin, t, 0);
+            o->q[0].y = p->q[1].y;
+        } else {
+            t = a;
+            q[0].x = o->hA * func_00108030(g->sin, t + o->ang, 1);
+            q[0].z = o->hA * func_00108030(g->sin, t + o->ang, 0);
+            q[1].x = o->hA * func_00108030(g->sin, t + o->ang, 1);
+            q[1].z = o->hA * func_00108030(g->sin, t + o->ang, 0);
+        }
+        t = a + o->ang;
+        q[2].x = o->hC * func_00108030(g->sin, t, 1);
+        q[2].z = o->hC * func_00108030(g->sin, t, 0);
+        t = a + o->ang + 20;
+        q[3].x = o->hC * func_00108030(g->sin, t, 1);
+        q[3].z = o->hC * func_00108030(g->sin, t, 0);
+        if (p == NULL) {
+            g->col[i].a = o->col.a;
+        } else {
+            g->col[i].a = p->col2.a;
+        }
+        func_00107790(pk, &g->col[i], 1);
+        g->col[i].a = o->col2.a;
+        func_00107790(pk, &g->col[i], 2);
+        q[0].y = 30.0f + 30.0f * func_00108030(g->sin, (s32)(o->q[0].y - 180.0f), 1);
+        q[1].y = q[0].y;
+        q[2].y = 30.0f + 30.0f * func_00108030(g->sin, (s16)(o->q[1].y - 180.0f), 1);
+        q[3].y = q[2].y;
+        if (func_00205630(q, 0x70000000, g->m40, pk, &g->depth) != 0) {
+            func_002075F0(pk, g->ot, (u32)g->depth);
+        }
+        a += 25;
+    }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E02600_c030);

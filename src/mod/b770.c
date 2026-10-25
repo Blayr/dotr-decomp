@@ -794,7 +794,65 @@ static s32 func_01E01F60_b770(s32 arg0, Fx_b770_01E01F60 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b770", func_01E020F0_b770);
+/* shape b770:01E020F0 (B770_OBJ_MOVE_6_), 122 insns, 1 copy: a white mote: speed 3.0 (10.0 for kind 1), spin
+   rand % 4, size 100..249 growing by 2..6 a tick (9..20 for kind 1), bright (0xFF) for 3..7 ticks then fades by 8
+   until it stops */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 f8;
+    s16 fA;
+    s16 fC;
+    s16 fE;
+    u8 pad10[0x38];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    u8 pad52[2];
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b770_01E020F0;
+
+static s32 func_01E020F0_b770(void *g, Fx_b770_01E020F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 3.0f;
+        if (o->f50 == 1) {
+            o->f48 = 10.0f;
+        }
+        o->f56 = func_0019A5C8() % 4;
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+        o->fA = func_0019A5C8() % 8;
+        o->fC = o->f50;
+        o->f50 = func_0019A5C8() % 150 + 100;
+        o->fE = func_0019A5C8() % 5 + 2;
+        if (o->fC == 1) {
+            o->fE = func_0019A5C8() % 12 + 9;
+        }
+        o->f8 = func_0019A5C8() % 35;
+        o->f6 = func_0019A5C8() % 5 + 3;
+        o->f5A = func_0019A5C8() % 3;
+        o->mode = 2;
+    }
+    if (o->tick < o->f6) {
+        o->col[3] = 0x80;
+    } else if (o->col[3] > 9) {
+        o->col[3] -= 8;
+    } else {
+        o->mode = 0;
+    }
+    if (o->tick != 0) {
+        o->f50 += o->fE;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b394:01E01AA0, 108 insns: a grey spark: f48 4 (+2 per tick), fA -7..7, fC = the old f50, f50 0, spin 5..12
    (9..20 when fC was 1), f8 0..34, life 3..7; alpha 0x80 during the life, then fades by 8; f50 grows by the spin

@@ -810,7 +810,82 @@ static s32 func_01E02190_b235(s32 unused, Obj_b235_01E02190 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E02370_b235);
+/* shape b235:01E02370, 124 insns: a glow sliding between two model joints: on start size 15 + 5 per kind, colours 24/24/24
+   and 48/16/32, alpha up by 19 to 0xC0 for 140 frames, then down by 9 until it ends; each frame it sits on joint 0 and moves
+   a tenth of the way to joint 1 per kind step, and spins by 0x4000 */
+
+typedef struct {
+    u8 pad0[0xB244];
+    s16 j0;
+    s16 j1;
+} Game_b235_01E02370;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0x28];
+    f32 size;
+    s16 kind;
+    s16 f52;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b235_01E02370;
+
+#pragma opt_propagation off
+
+static s32 func_01E02370_b235(Game_b235_01E02370 *g, Obj_b235_01E02370 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_00205C40(void *);
+    f32 d[3];
+    f32 k;
+
+    if (o->state == 1) {
+        k = o->kind;
+        o->size = 15.0f + 5.0f * k;
+        func_001076F0(o->c0, 0x18, 0x18, 0x18);
+        func_001076F0(o->c1, 0x30, 0x10, 0x20);
+        o->f52 = 0;
+        o->w = 0xA;
+        o->h = 0xA;
+        o->state = 2;
+        o->c1[3] = 0;
+    }
+    if (o->t < 0x8C) {
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 0x13;
+        }
+    } else if (o->c1[3] > 0xA) {
+        o->c1[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    func_001F5620(func_001F53A0(), g->j0, &o->x);
+    func_001F5620(func_001F53A0(), g->j1, d);
+    d[0] = (d[0] - o->x) / 10.0f;
+    d[1] = (d[1] - o->y) / 10.0f;
+    d[2] = (d[2] - o->z) / 10.0f;
+    k = o->kind;
+    o->x += d[0] * k;
+    o->y += d[1] * k;
+    o->z += d[2] * k;
+    func_00205C40(&o->rot);
+    o->rot += 0x4000;
+    o->t++;
+    return 0;
+}
+#pragma opt_propagation reset
 
 /* shape b235:01E02560, 96 insns: a red-grey expanding ring: sizes 11 growing by 10 with the outer one four times it, random angle
    and turn, rise 15..44 growing by 20; alpha up by 0x60 for 4 frames, then down by 19 until it ends */

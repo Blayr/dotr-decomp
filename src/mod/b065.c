@@ -566,7 +566,124 @@ INCLUDE_ASM("asm/nonmatchings/mod/b065", func_01E016C0_b065);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b065", func_01E01BA0_b065);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b065", func_01E01DB0_b065);
+/* shape b065:01E01DB0, 290 insns: B065_OBJ_MOVE_6_: a flashing ring by kind (0 green, 1 pale green, 2 red; colours
+   swap on odd scene frames), size 140 growing by 35..42.9 a tick (kinds 1, 2 also rise), full alpha for 8 or 10 ticks
+   then fading by 11 */
+
+typedef struct {
+    u8 pad00[6];
+    s16 life;
+    u8 pad08[0x1C];
+    s32 rot;
+    u8 pad28[8];
+    f32 f30;
+    f32 rise;
+    f32 grow;
+    u8 pad3C[0xC];
+    f32 size;
+    f32 inner;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b065_01E01DB0;
+
+typedef struct {
+    u8 pad[0xB2BA];
+    s16 frame;
+} Game_b065_01E01DB0;
+
+static s32 func_01E01DB0_b065(Game_b065_01E01DB0 *g, Obj_b065_01E01DB0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->size = 140.0f;
+        o->inner = o->size - 58.0f;
+        if (o->kind == 0) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x80, 0xC0, 0x80);
+                func_001076F0(o->col, 8, 8, 8);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x80, 0xFF, 0x80);
+                func_001076F0(o->col, 0x38, 0x38, 0x38);
+            }
+            o->life = 8;
+        }
+        if (o->kind == 1) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x60, 0x80, 0x60);
+                func_001076F0(o->col, 8, 8, 8);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x40, 0xFF, 0x40);
+                func_001076F0(o->col, 0x38, 0x38, 0x38);
+            }
+            o->rise = 10.0f;
+            o->life = 10;
+        }
+        if (o->kind == 2) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x50, 0x30, 0x30);
+                func_001076F0(o->col, 8, 8, 8);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x60, 0x28, 0x28);
+                func_001076F0(o->col, 0x20, 0x20, 0x20);
+            }
+            o->rise = 10.0f;
+            o->life = 10;
+        }
+        if (o->kind == 0) {
+            o->h5A = 10;
+            o->h5C = 10;
+        }
+        if (o->kind == 1) {
+            o->h5A = 10;
+            o->h5C = 3;
+        }
+        if (o->kind == 2) {
+            o->h5A = 60;
+            o->h5C = 60;
+        }
+        o->grow = func_0019A5C8() % 80 + 350;
+        o->grow = o->grow / 10.0f;
+        o->f30 = 350.0f;
+        o->f30 = o->f30 / 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->rot = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->t < o->life) {
+        o->col2[3] = 0x80;
+    } else if (o->col2[3] > 12) {
+        o->col2[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->size += o->grow;
+        o->inner = 0.4f * o->size;
+    }
+    if (o->kind == 1) {
+        o->size += o->grow;
+        o->inner = 0.7f * o->size;
+        o->rise += o->grow;
+    }
+    if (o->kind == 2) {
+        o->size += o->grow;
+        o->inner = 0.7f * o->size;
+        o->rise += o->grow;
+    }
+    o->t++;
+    return 0;
+}
 
 /* func_00108030 really takes an s16 angle (functions.h says s32): hide that prototype */
 

@@ -523,7 +523,123 @@ static void func_01E01400_b570(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
 
 INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E016C0_b570);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E01C30_b570);
+/* shape b570:01E01C30, 284 insns: a magenta puff on the world's trail: on start a random size 12..23, colour 80/10/FF,
+   claims trail point a30 at its spot (x less 0.7), random heading, speed 2..6, h8, life 37..61 and the reach between
+   the two models' joints; fades in until its life (or tick 314), then out; follows the second model's depth and sinks
+   0.02 a tick; frame and size climb every other tick, random spin, heading swings by the speed's parity */
+
+typedef struct {
+    u8 pad0[0x9914];
+    f32 x[200];
+    f32 y[204];
+    s16 j0;
+    s16 j1;
+} World_b570_01E01C30;
+
+typedef struct {
+    u8 pad0[2];
+    s16 x;
+    s16 y;
+    s16 life;
+    s16 h8;
+    s16 idx;
+    s16 reach;
+    s16 speed;
+    s32 r10;
+    s32 r14;
+    s32 r18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 a30;
+    s16 t;
+    s16 frame;
+    s16 state;
+    s16 size;
+    s16 ang;
+} Puff_b570_01E01C30;
+
+static s32 func_01E01C30_b570(World_b570_01E01C30 *w, Puff_b570_01E01C30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f a;
+    Vec4f b[2];
+    Vec4f *pb;
+
+    if (o->state == 1) {
+        o->size = func_0019A5C8() % 12 + 12;
+        o->frame = 0;
+        func_001076F0(o->col, 0x80, 0x10, 0xFF);
+        o->idx = o->a30;
+        w->x[o->idx] = o->x;
+        w->y[o->idx] = o->y;
+        w->x[o->idx] -= 0.7f;
+        o->a30 = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->speed = func_0019A5C8() % 5 + 2;
+        o->h8 = func_0019A5C8() % 35;
+        o->life = func_0019A5C8() % 25 + 37;
+        func_001F5620(func_001F53A0(), w->j0, &a);
+        func_001F5620(func_001F53A0(), w->j1, pb = b);
+        o->reach = pb->x - a.x;
+        o->state = 2;
+    }
+    if (o->t < o->life) {
+        if (o->t < 314) {
+            if (o->col[3] <= 0x80) {
+                o->col[3] += 0x40;
+            }
+        }
+    } else if (o->t < 314) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t > 314) {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    if (o->t != 0) {
+        if (o->size < 60) {
+            o->size += 2;
+        }
+    }
+    func_001F5F90(func_001F5380(), &a);
+    func_001F5F90(func_001F53A0(), b);
+    if (o->t != 0) {
+        a.z -= b[0].z;
+        a.z /= 70.0f;
+        w->y[o->idx] += a.z;
+    }
+    w->x[o->idx] -= 0.02f;
+    if (o->t % 2 == 1) {
+        if (o->frame < 5) {
+            o->frame++;
+        }
+    }
+    o->a30 += o->speed;
+    if (o->t % 2 == 1) {
+        o->size += 3;
+    }
+    o->r10 = func_0019A5C8() % 360;
+    o->r14 = func_0019A5C8() % 360;
+    if (o->speed % 2 == 1) {
+        o->ang += 2;
+    } else {
+        o->ang -= 2;
+    }
+    o->r18 = func_0019A5C8() % 360;
+    o->t++;
+    return 0;
+}
 
 /* shape b570:01E020A0, 107 insns: on start 0x38 = 20, variant 0, colour 0x70 grey, 0xA keeps the old 0x30, 0x30 = 0, speed
    5..9 (0xE), 0x8 0..24, hold 30..39 (0x6), random 0x3A, 0xC = 0; alpha grows by 0x20 (below 0x40) during the

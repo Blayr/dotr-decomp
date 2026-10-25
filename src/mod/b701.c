@@ -1286,7 +1286,73 @@ static s32 func_01E027B0_b701(Ctx_b701_01E027B0 *g, Fx_b701_01E027B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b701", func_01E029F0_b701);
+/* shape b701:01E029F0, 122 insns: b564:01E02230 with the light at 0xDF80: a scene light: on start colour/size
+   128/4/2/0, height 0/120/0 and the object's position as floats; its strength rises by 0.2 up to 1 (then the phase
+   flips) and falls by 0.1 until it ends; func_001F6C10 gets the light (or 0 once ended); it also ends when the
+   light's done flag is 1 */
+
+typedef struct {
+    f32 a[4];
+    f32 pos[3];
+    u8 pad1C[4];
+    f32 b[3];
+    u8 pad2C[0x2D4];
+    s32 done;
+} Light_b701_01E029F0;
+
+typedef struct {
+    u8 pad0[0xDF80];
+    Light_b701_01E029F0 light;
+} Game_b701_01E029F0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0x2A];
+    s16 f50;
+    u8 pad32[4];
+    s16 mode;
+} Fx_b701_01E029F0;
+
+static s32 func_01E029F0_b701(Game_b701_01E029F0 *g, Fx_b701_01E029F0 *o) {
+    extern void func_001F6C10(void *);
+
+    if (o->mode == 1) {
+        g->light.a[0] = 128.0f;
+        g->light.a[1] = 4.0f;
+        g->light.a[2] = 2.0f;
+        g->light.a[3] = 0.0f;
+        g->light.b[0] = 0.0f;
+        g->light.b[1] = 120.0f;
+        g->light.b[2] = 0.0f;
+        g->light.pos[0] = o->x;
+        g->light.pos[1] = o->y;
+        g->light.pos[2] = o->z;
+        o->mode = 2;
+        o->f50 = 0;
+    }
+    if (o->f50 == 0) {
+        if (g->light.b[2] < 1.0f) {
+            g->light.b[2] += 0.2f;
+        } else {
+            o->f50 = 1;
+        }
+    } else if (g->light.b[2] > 0.1f) {
+        g->light.b[2] -= 0.1f;
+    } else {
+        o->mode = 0;
+    }
+    if (o->mode == 0) {
+        func_001F6C10(0);
+    } else {
+        func_001F6C10(&g->light);
+    }
+    if (g->light.done == 1) {
+        o->mode = 0;
+    }
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

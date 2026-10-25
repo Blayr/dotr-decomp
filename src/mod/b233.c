@@ -1806,4 +1806,116 @@ static void func_01E04890_b233(u8 *self, Obj_b233_01E04890 *obj, Pk_b233_01E0489
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b233", func_01E04A70_b233);
+/* shape b233:01E04A70, 208 insns: a sprite sheet hung on scene segment h30 (ctx+0x31B0, 32 bytes: two points): the
+   packet takes texture 0x9B at frame h34, the object's colour and the scene texture (UV through the module's
+   b008:01E00080 helper); a quad of height h38 / 10 from the segment's first point to its second, the far edge pushed
+   by h8/hA/hC thirds of the segment; depth-tested into ctx+0x393C and drawn twice */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b233_01E04A70;
+
+typedef struct {
+    f32 u, v;
+} Uv_b233_01E04A70;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b233_01E04A70 uv;
+    u64 pad18;
+    Xyz_b233_01E04A70 v[4];
+} Pk_b233_01E04A70;
+
+typedef struct {
+    Vec4f a;
+    Vec4f b;
+} Seg_b233_01E04A70;
+
+typedef struct {
+    u8 pad0[0x2EC];
+    void *tex;
+    u8 pad2F0[0x31B0 - 0x2F0];
+    Seg_b233_01E04A70 seg[39];
+    u8 pad3690[0x393C - 0x3690];
+    s32 ot;
+} Ctx_b233_01E04A70;
+
+typedef struct {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h30;
+    u8 pad32[2];
+    s16 h34;
+    u8 pad36[2];
+    s16 h38;
+} Obj_b233_01E04A70;
+
+static void func_01E04A70_b233(Ctx_b233_01E04A70 *g, Obj_b233_01E04A70 *o, Pk_b233_01E04A70 *p) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    f32 depth[4];
+    u8 td[0x10];
+    Uv_b233_01E04A70 uv;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 h;
+
+    func_00207500();
+    func_00106080(td, 0x9B, o->h34, td);
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    p->uv.v = 0.0f;
+    p->v[0].fog = 0;
+    p->v[1].fog = 0;
+    p->v[2].fog = 0;
+    p->v[3].fog = 0;
+    func_00107740(&uv, o->col);
+    p->uv = uv;
+    func_01E00150_b233((Pk_b008_01E00080 *)p, (Rect_b008_01E00080 *)td, 0);
+    func_00208700(p, g->tex, 1);
+    h = o->h38;
+    h /= 10.0f;
+    func_00108CE0(q, 0.0f, h);
+    dx = (g->seg[o->h30].b.x - g->seg[o->h30].a.x) / 3.0f;
+    dy = (g->seg[o->h30].b.y - g->seg[o->h30].a.y) / 3.0f;
+    dz = (g->seg[o->h30].b.z - g->seg[o->h30].a.z) / 3.0f;
+    dx *= o->h8;
+    dy *= o->hA;
+    dz *= o->hC;
+    q[0].x += g->seg[o->h30].a.x;
+    q[0].y += g->seg[o->h30].a.y;
+    q[0].z += g->seg[o->h30].a.z;
+    q[2].x += g->seg[o->h30].a.x;
+    q[2].y += g->seg[o->h30].a.y;
+    q[2].z += g->seg[o->h30].a.z;
+    q[1].x += g->seg[o->h30].b.x + dx;
+    q[1].y += g->seg[o->h30].b.y + dy;
+    q[1].z += g->seg[o->h30].b.z + dz;
+    q[3].x += g->seg[o->h30].b.x + dx;
+    q[3].y += g->seg[o->h30].b.y + dy;
+    q[3].z += g->seg[o->h30].b.z + dz;
+    if (func_00205630(q, 0x70000000, 0, p, depth) != 0) {
+        func_002075F0(p, g->ot, func_001A23B0(depth[0]));
+        func_002075F0(p, g->ot, func_001A23B0(depth[0]));
+    }
+}

@@ -273,7 +273,101 @@ static s32 func_01E003A0_c027(Scene_c027_01E003A0 *g, Node_c027_01E003A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c027", func_01E00660_c027);
+/* shape c027:01E00660, 147 insns: c027's scene manager: with a scene id (>= 0) it clears the scene, builds the sine table
+   for 0..90 degrees, keeps the id, sets the 44-frame countdown and loads texture 15; otherwise it runs the module's step,
+   every live node's update callback, spins the shared rotation, and draws every live node twice with the camera point
+   (func_001F9D30) and scale 0.5/0.2/0.5; it returns 8 once the countdown runs out */
+
+typedef struct Node_c027_01E00660 {
+    u8 pad0[0x58];
+    void (*draw)(void *, struct Node_c027_01E00660 *, void *, s32);
+    void (*update)(void *, struct Node_c027_01E00660 *);
+    u8 pad60[8];
+    s16 used;
+    u8 pad6A[0x12];
+} Node_c027_01E00660;
+
+typedef struct {
+    u8 m0[0x40];
+    u8 m[0x40];
+    u8 pad80[0x10];
+    s32 tex[16];
+    s32 rot[4];
+    f32 sc[4];
+    Node_c027_01E00660 node[70];
+    s32 count;
+    u8 pad22DC[8];
+    s32 ot;
+    u8 pad22E8[0x70];
+    s16 id;
+    u8 pad235A[0x4A];
+    f32 sintab[91];
+} Scene_c027_01E00660;
+
+static s32 func_01E00660_c027(s32 arg0, s32 id) {
+    Scene_c027_01E00660 *g = (Scene_c027_01E00660 *)arg0;
+    extern void func_00195108(void *, s32);
+    extern void c027_01E00080(Scene_c027_01E00660 *, s32);
+    extern f32 func_001A6A88(f32);
+    extern s32 func_00202BF0(s32, s32);
+    extern f32 *func_001F9D30(s32);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    s32 n;
+    f32 v[4];
+    u8 buf[0x90];
+    void (*draw)(void *, Node_c027_01E00660 *, void *, s32);
+    s32 i;
+
+    n = 0;
+    g->ot = (s32)func_00207500();
+    if (id >= 0) {
+        func_00195108(g, 0x2510);
+        for (; n < 91; n++) {
+            g->sintab[n] = func_001A6A88(3.1415927f * n / 180.0f);
+        }
+        g->id = id;
+        g->count = 44;
+        for (i = 15; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        return 0;
+    }
+    c027_01E00080(g, 0);
+    for (i = 0; i < 70; i++) {
+        if (g->node[i].used != 0) {
+            if (g->node[i].update != 0) {
+                g->node[i].update(g, &g->node[i]);
+            }
+        }
+    }
+    v[0] = v[1] = v[2] = 0.0f;
+    v[1] = 50.0f;
+    *(Vec4f *)v = *(Vec4f *)func_001F9D30(0);
+    func_00205C40((s32)g->rot);
+    g->rot[0] += 0x4000;
+    g->sc[1] = 0.2f;
+    g->sc[0] = 0.5f;
+    g->sc[2] = 0.5f;
+    for (i = 0; i < 70; i++) {
+        if (g->node[i].used != 0) {
+            n++;
+            func_0020EB40(g->m);
+            func_0020C940(g, g->sc, g->rot, v);
+            func_0020BC00(g->m, g);
+            draw = g->node[i].draw;
+            if (draw != 0) {
+                draw(g, &g->node[i], buf, 0);
+                draw(g, &g->node[i], buf, 1);
+            }
+        }
+    }
+    if (--g->count <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape c027:01E008B0, 123 insns: take the first free node of 70 (0x7C bytes at ctx+0xF0), mark it with its index + 1,
    colour both from the scene colour at ctx+0x22DC, clear 0x72/0x74, random turns 0..179 and 0..359, three random

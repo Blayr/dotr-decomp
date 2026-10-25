@@ -133,7 +133,144 @@ static s32 func_01E005C0_c059(Ctx_c059_01E005C0 *c, s32 arg1, s32 ch) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E006D0_c059);
+/* shape c059:01E006D0, 278 insns: steer one c059 card toward its slot: state 0 slides it in x/z until both are within 5
+   (counting arrivals), lifts it to 30, then aims it at the centre; state 1 eases it in until 7 from the centre, then
+   state 2 lifts it to 130 and fades it near the centre; the card's model follows its point and the camera's turn */
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[4];
+    f32 dx;
+    u8 pad14[4];
+    f32 dz;
+    u8 pad1C[4];
+    s32 rot[4];
+    s32 ax;
+    s32 ay;
+    u8 pad38[4];
+    s32 f3C;
+    u8 pad40[0x10];
+    f32 vx;
+    f32 vy;
+    f32 vz;
+    u8 pad5C[4];
+    u8 col[4];
+    s32 state;
+} Card_c059_01E006D0;
+
+typedef struct {
+    u8 pad0[0x29B0];
+    Vec4f slot[0xF];
+    u8 pad2AA0[2];
+    s16 step;
+    u8 pad2AA4[0x8C];
+    u8 table[0x17C];
+    s32 ch[4];
+    s32 arrived;
+} Scene_c059_01E006D0;
+
+static s32 func_01E006D0_c059(Scene_c059_01E006D0 *g, Card_c059_01E006D0 *o, s32 idx) {
+    extern s32 func_001F5AF0(s32);
+    extern f32 func_001A6C60(f32);
+    extern void func_00107130(void *, void *, s32);
+    extern void func_00107B90(f32 *, f32 *, void *, void *);
+    extern void func_001F5DE0(s32, void *);
+    extern void func_00108950(void *, void *, s32, void *);
+    extern void func_001F5B70(s32, void *);
+    extern void func_00205C40();
+    extern void func_001F5C40(s32, void *);
+    s32 r[4];
+    Vec4f v;
+    Vec4f p;
+    f32 dx;
+    f32 dz;
+    s32 ch;
+    s16 n;
+    f32 d;
+
+    ch = g->ch[idx];
+    n = 0;
+    dx = 0.0f;
+    dz = 0.0f;
+    if (func_001F5AF0(ch) != 0) {
+        d = func_001A6C60((o->x + o->dx) * (o->x + o->dx) + (o->z + o->dz) * (o->z + o->dz));
+        func_00107130(o, &v, 1);
+        if (o->state == 0) {
+            func_00107B90(&dx, &dz, o, &g->slot[idx]);
+            if (dx > 5.0f) {
+                o->dx += o->vx;
+            } else {
+                n++;
+                g->arrived++;
+            }
+            if (dz > 5.0f) {
+                o->dz += o->vz;
+            } else {
+                n++;
+                g->arrived++;
+            }
+            if (o->y < 30.0f) {
+                o->y += o->vy / 5.0f;
+            } else if (n == 2) {
+                g->arrived++;
+                o->vx = -(o->x + o->dx) / 35.0f;
+                o->vz = -(o->z + o->dz) / 35.0f;
+            }
+        } else if (o->state == 2) {
+            if (o->y < 130.0f) {
+                o->y += o->vy;
+            }
+            if (d < 45.0f) {
+                if (o->col[3] > 8) {
+                    o->col[3] -= 7;
+                } else {
+                    o->col[3] = 0;
+                }
+                func_001F5DE0(ch, o->col);
+            }
+        }
+        v.x += o->dx;
+        v.z += o->dz;
+        if (o->state == 1) {
+            if (d > 7.0f) {
+                o->dx += o->vx / 2.0f;
+                o->dz += o->vz / 2.0f;
+            } else {
+                o->state = 2;
+            }
+            func_00108950(&v, o->rot, 0, g->table);
+            o->rot[1] += 6;
+        }
+        func_00107130(&p, &v, 0);
+        func_001F5B70(ch, &p);
+        if (o->state > 0) {
+            func_00205C40(r);
+            func_001F5C40(ch, r);
+        } else if (o->rot[3] == 0.0f) {
+            func_00205C40(r);
+            if (r[1] > o->ay) {
+                o->ay += 0x800;
+            } else {
+                o->ay -= 0x800;
+                o->f3C = 1;
+            }
+            if (r[0] > o->ax) {
+                o->ax += 0x300;
+            } else {
+                o->ax -= 0x300;
+            }
+            func_001F5C40(ch, &o->ax);
+        } else {
+            func_00205C40(r);
+            func_001F5C40(ch, r);
+        }
+        if (g->step > 0x67) {
+            o->col[3] = 0;
+            func_001F5DE0(ch, o->col);
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c059", func_01E00B30_c059);
 

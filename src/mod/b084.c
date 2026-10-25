@@ -460,7 +460,130 @@ static void func_01E00FE0_b084(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b084", func_01E01590_b084);
+/* shape b084:01E01590, 291 insns: the b084 module's event step (B084_W_S): counts ticks; tracks two model points
+   (ctx+0x7658, +0x7654): x from the first, height from the second until 220; depth follows the second until 153, then
+   drifts 0.08 a tick until 170 and 4.5 a tick until 210 (direction by 0x7686); keeps a copy until 170; before 191
+   sparks b084:01E01A20 at both hands (0x7654, 0x7656); from 211 b084:01E01BD0 at the point until 290 and the far value
+   grows by 10 to 800; one-shot spawns at 75, 116, 170 and 210 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x74A0 - 0x260];
+    Vec4f a;
+    Vec4f b;
+    u8 pad74C0[0x7640 - 0x74C0];
+    f32 far;
+    u8 pad7644[0x7654 - 0x7644];
+    s16 id54;
+    s16 id56;
+    s16 id58;
+    u8 pad765A[0x7682 - 0x765A];
+    s16 slot;
+    u8 pad7684[2];
+    s16 flag;
+    u8 pad7688[2];
+    s16 timer;
+} Ctx_b084_01E01590;
+
+static void func_01E01590_b084(Ctx_b084_01E01590 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_01E03610_b084();
+    extern s32 func_01E01A20_b084();
+    extern s32 func_01E01BD0_b084();
+    extern s32 func_01E01DB0_b084();
+    extern s32 func_01E022E0_b084();
+    extern s32 func_01E02640_b084();
+    extern s32 func_01E02800_b084();
+    extern s32 func_01E02990_b084();
+    extern s32 func_01E02B90_b084();
+    extern s32 func_01E02D00_b084();
+    Vec4f v1;
+    Vec4f v2[2];
+
+    g->timer++;
+    func_001F5620(func_001F53A0(), g->id58, &v1);
+    func_001F5620(func_001F53A0(), g->id54, v2);
+    g->a.x = v1.x;
+    if (g->timer < 153) {
+        g->a.z = v2[0].z;
+    } else if (g->timer < 170) {
+        if (g->flag != 0) {
+            g->a.z -= 0.08f;
+        } else {
+            g->a.z += 0.08f;
+        }
+    } else if (g->timer < 210) {
+        if (g->flag != 0) {
+            g->a.z -= 4.5f;
+        } else {
+            g->a.z += 4.5f;
+        }
+    }
+    if (g->timer < 170) {
+        g->b = g->a;
+    }
+    if (g->timer < 220) {
+        g->a.y = v2[0].y;
+    }
+    if (g->timer < 191) {
+        func_001F5620(func_001F53A0(), g->id54, &g->pos);
+        func_01E03610_b084(g, func_01E01A20_b084, 0);
+        func_001F5620(func_001F53A0(), g->id56, &g->pos);
+        func_01E03610_b084(g, func_01E01A20_b084, 0);
+    }
+    if (g->timer > 210) {
+        g->pos = g->a;
+        if (g->timer < 290) {
+            func_01E03610_b084(g, func_01E01BD0_b084, 0);
+        }
+        if (g->far < 800.0f) {
+            g->far += 10.0f;
+        }
+    }
+    if (g->timer == 210) {
+        g->pos = g->a;
+        func_01E03610_b084(g, func_01E02B90_b084, 0);
+        func_01E03610_b084(g, func_01E02B90_b084, 0);
+        func_01E03610_b084(g, func_01E01DB0_b084, 0);
+        func_01E03610_b084(g, func_01E01DB0_b084, 0);
+        func_01E03610_b084(g, func_01E01DB0_b084, 0);
+        func_01E03610_b084(g, func_01E01DB0_b084, 0);
+        func_01E03610_b084(g, func_01E01DB0_b084, 0);
+    }
+    if (g->timer == 116) {
+        g->slot = 0;
+        func_01E03610_b084(g, func_01E02990_b084, 0);
+        g->slot = 1;
+        func_01E03610_b084(g, func_01E02990_b084, 0);
+    }
+    if (g->timer == 75) {
+        g->slot = 0;
+        func_01E03610_b084(g, func_01E02800_b084, 0);
+        g->slot = 1;
+        func_01E03610_b084(g, func_01E02800_b084, 0);
+    }
+    if (g->timer == 170) {
+        func_01E03610_b084(g, func_01E02640_b084, 0);
+        g->slot = 0;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+        g->slot = 1;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+        g->slot = 2;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+        g->slot = 3;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+        g->slot = 4;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+        g->slot = 5;
+        func_01E03610_b084(g, func_01E022E0_b084, 0);
+    }
+    if (g->timer == 210) {
+        g->slot = 0;
+        func_01E03610_b084(g, func_01E02D00_b084, 0);
+    }
+}
 
 /* shape b084:01E01A20, 107 insns, 2 copies: a grey glint: set up once (size 10, frame 4, random turn on all axes, angle
    10..59, speed 1..3, life 1..3); fades in for its life, then out (b225:01E026A0 family, 0x58-state layout) */

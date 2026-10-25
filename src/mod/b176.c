@@ -510,6 +510,153 @@ static s32 func_01E039D0_b176(void *arg0, s32 ot, s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b176", func_01E03EF0_b176);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b176", func_01E049A0_b176);
+/* shape b176:01E049A0, 259 insns (b176_setBst): sets up the four blade sparks of blade `n` (1-based) for `mode`:
+   0 keeps only their low nibble, 1 starts them (kind 0x9F, joints from the scene's joint table: odd blades 2/3,
+   even blades 2/1; size 10/18, red 0x80/0x10/0x10), 2 resizes to 18/10 with alpha 0x80, 3 to 80/15 with alpha 0xC0;
+   mode 3 on blades 1 and 3 also starts the blade's trail (0x48 bytes, kind 0x18) at the first spark's joint A,
+   aimed at its joint B */
+
+typedef struct {
+    u8 b0;
+    u8 pad1[3];
+    u8 b4;
+    u8 pad5[2];
+    u8 b7;
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 ja;
+    u8 jb;
+    u8 padD[3];
+    f32 f10;
+    f32 size;
+    u8 pad18[4];
+    f32 f1C;
+    f32 f20;
+    u8 col[4];
+    u8 col2[4];
+    u8 pad2C[0x20];
+} Spark_b176_01E049A0;
+
+typedef struct {
+    u8 b0[4];
+    u8 b4;
+    u8 b5;
+    u8 pad6;
+    u8 b7;
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 padB;
+    f32 f0C;
+    f32 f10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    u8 col[4];
+    u8 col2[4];
+    Vec4f pos;
+    f32 dir[4];
+    u8 pad48[0];
+} Trail_b176_01E049A0;
+
+typedef struct {
+    u8 pad0[4];
+    s32 model;
+    u8 jt[(0x12F4 - 8) / 4][4];
+    Trail_b176_01E049A0 tr[3];
+    Spark_b176_01E049A0 sp[16];
+} Scene_b176_01E049A0;
+
+#pragma optimization_level 2
+
+static void func_01E049A0_b176(Scene_b176_01E049A0 *g, s32 n, s32 mode) {
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_00101940(void *, void *);
+    Vec4f p;
+    f32 d[4];
+    s32 i;
+    s32 k;
+
+    for (i = 0; i < 4; i++) {
+        k = i + (n - 1) * 4;
+        switch (mode) {
+        case 0:
+            g->sp[k].b0 &= 0xF;
+            break;
+        case 1:
+            func_00101AD0(&g->sp[k], 0x9F, 0, 0xF);
+            g->sp[k].b0 = 0x9F - i * 4;
+            g->sp[k].b4 = 2;
+            g->sp[k].b7 = 3;
+            g->sp[k].b8 = 1;
+            g->sp[k].bA = 0x20;
+            g->sp[k].b9 = 7;
+            if (n & 1) {
+                g->sp[k].ja = g->jt[n + 1][0];
+                g->sp[k].jb = g->jt[n + 2][0];
+            } else {
+                g->sp[k].ja = g->jt[n + 1][0];
+                g->sp[k].jb = g->jt[n][0];
+            }
+            g->sp[k].size = 18.0f;
+            g->sp[k].f10 = 10.0f;
+            g->sp[k].f1C = g->sp[k].size / 16.0f;
+            g->sp[k].f20 = 1.05f;
+            g->sp[k].col[1] = 0x10;
+            g->sp[k].col[2] = 0x10;
+            g->sp[k].col[0] = 0x80;
+            g->sp[k].col[3] = 0;
+            g->sp[k].col2[0] = 0x80;
+            g->sp[k].col2[1] = 0x80;
+            g->sp[k].col2[2] = 0x80;
+            g->sp[k].col2[3] = 0x80;
+            break;
+        case 2:
+            g->sp[k].size = 18.0f;
+            g->sp[k].f10 = 10.0f;
+            g->sp[k].col2[3] = 0x80;
+            g->sp[k].f1C = g->sp[k].size / 16.0f;
+            break;
+        case 3:
+            g->sp[k].size = 80.0f;
+            g->sp[k].f10 = 15.0f;
+            g->sp[k].col2[3] = 0xC0;
+            g->sp[k].f1C = g->sp[k].size / 16.0f;
+            break;
+        }
+    }
+    if (mode == 3 && (n == 1 || n == 3)) {
+        func_00101AD0(&g->tr[n - 1], 0x18, 0, 0xFF);
+        g->tr[n - 1].b4 = 0;
+        g->tr[n - 1].b5 = 0;
+        g->tr[n - 1].b7 = 9;
+        g->tr[n - 1].b8 = 0;
+        g->tr[n - 1].bA = 0;
+        g->tr[n - 1].b9 = 0;
+        g->tr[n - 1].f0C = 4.0f;
+        g->tr[n - 1].f10 = 0.5f;
+        g->tr[n - 1].f14 = 0.9f;
+        g->tr[n - 1].f18 = 0.0f;
+        g->tr[n - 1].f1C = 0.1f;
+        g->tr[n - 1].col[0] = 0x80;
+        g->tr[n - 1].col[1] = 0x80;
+        g->tr[n - 1].col[2] = 0x80;
+        g->tr[n - 1].col[3] = 0xC0;
+        g->tr[n - 1].col2[1] = 0x10;
+        g->tr[n - 1].col2[2] = 0x10;
+        g->tr[n - 1].col2[0] = 0x80;
+        g->tr[n - 1].col2[3] = 0;
+        func_001F5620(g->model, g->sp[(n - 1) * 4].ja, &p);
+        g->tr[n - 1].pos = p;
+        func_001F5620(g->model, g->sp[(n - 1) * 4].jb, &p);
+        d[0] = g->tr[n - 1].pos.x - p.x;
+        d[1] = g->tr[n - 1].pos.y - p.y;
+        d[2] = g->tr[n - 1].pos.z - p.z;
+        func_00101940(d, g->tr[n - 1].dir);
+    }
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b176", func_01E04DB0_b176);

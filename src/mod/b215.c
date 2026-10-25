@@ -339,7 +339,97 @@ static void func_01E00D30_b215(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E01090_b215);
+/* shape b215:01E01090 (B215_W_S), 281 insns, 1 copy: the b215 module's event step: counts ticks; every third tick
+   below 235 spawns b215:01E02540; at 1 two b215:01E01500 (flags 0 and 1), b215:01E02390, b215:01E02B70 and
+   b215:01E022A0; at 141 b215:01E01A70 and b215:01E02140; from 141 the two ripple radii grow (by 1.5 to 50, by 0.75 to
+   80); below 142 two b215:01E01EA0 a tick around joint 0xA028 at height 30 (+-30, +-10 up); from 141 to 255 two
+   b215:01E01FF0 a tick around the unit at height 30, spread by the ripple radius */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x9FC0 - 0x260];
+    f32 rx;
+    f32 rz;
+    u8 pad9FC8[0xA028 - 0x9FC8];
+    s16 joint;
+    u8 padA02A[0xA038 - 0xA02A];
+    s16 unit;
+    u8 padA03A[0xE66E - 0xA03A];
+    s16 flag;
+    u8 padE670[6];
+    s16 timer;
+} Ctx_b215_01E01090;
+
+static void func_01E01090_b215(Ctx_b215_01E01090 *g) {
+    extern s32 b215_01E01500(void);
+    extern s32 b215_01E01A70(void);
+    extern s32 b215_01E01EA0(void);
+    extern s32 b215_01E01FF0(void);
+    extern s32 b215_01E02140(void);
+    extern s32 b215_01E022A0(void);
+    extern s32 b215_01E02390(void);
+    extern s32 b215_01E02540(void);
+    extern s32 b215_01E02B70(void);
+    extern void b215_01E03930(Ctx_b215_01E01090 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 r;
+
+    g->timer++;
+    if (g->timer % 3 == 1 && g->timer < 235) {
+        b215_01E03930(g, b215_01E02540, 0);
+    }
+    if (g->timer == 1) {
+        g->flag = 0;
+        b215_01E03930(g, b215_01E01500, 0);
+        g->flag = 1;
+        b215_01E03930(g, b215_01E01500, 0);
+        b215_01E03930(g, b215_01E02390, 0);
+        b215_01E03930(g, b215_01E02B70, 0);
+    }
+    if (g->timer == 141) {
+        g->flag = 0;
+        b215_01E03930(g, b215_01E01A70, 0);
+        b215_01E03930(g, b215_01E02140, 0);
+    }
+    if (g->timer == 1) {
+        b215_01E03930(g, b215_01E022A0, 0);
+    }
+    if (g->timer >= 141) {
+        if (g->rz < 50.0f) {
+            g->rz += 1.5f;
+        }
+        if (g->rx < 80.0f) {
+            g->rx += 0.75f;
+        }
+    }
+    if (g->timer < 142) {
+        for (i = 0; i < 2; i++) {
+            func_001F5620(func_001F53A0(), g->joint, &g->pos);
+            g->pos.y = 30.0f;
+            g->pos.x += func_0019A5C8() % 60 - 30;
+            g->pos.z += func_0019A5C8() % 60 - 30;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            b215_01E03930(g, b215_01E01EA0, 0);
+        }
+    }
+    if (g->timer >= 141 && g->timer < 256) {
+        for (i = 0; i < 2; i++) {
+            func_001F5620(func_001F5380(), g->unit, &g->pos);
+            g->pos.y = 30.0f;
+            r = g->rx;
+            if (r < 2) {
+                r = 2;
+            }
+            g->pos.x += func_0019A5C8() % r - (r >> 1);
+            g->pos.z += func_0019A5C8() % r - (r >> 1);
+            b215_01E03930(g, b215_01E01FF0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E01500_b215);
 

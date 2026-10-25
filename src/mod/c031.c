@@ -346,4 +346,143 @@ static void func_01E00B90_c031(Scene_c031_01E00B90 *g, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c031", func_01E00D00_c031);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c031", func_01E01950_c031);
+/* shape c031:01E01950, 289 insns: a raindrop quad in two passes (b004:01E01A00 style): with lit 0 it sets up the
+   packet (rect 0x5A frame 1, colours 0x38 top and 0x3C bottom, scene texture 0xC4); otherwise it builds the scene
+   matrix at the player's point, and draws a 20 x 20 quad 30 deep at the drop's corner picked by 0x52 (0..3), three
+   times, depth in 0x3C4 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c031_01E01950;
+
+typedef struct {
+    Rgbaq_c031_01E01950 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c031_01E01950;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c031_01E01950 v[4];
+} Pkt_c031_01E01950;
+
+typedef struct {
+    f32 x, y;
+    u8 pad8[0x30];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad40[0x12];
+    s16 corner;
+} Drop_c031_01E01950;
+
+typedef struct {
+    u8 pad0[0xC4];
+    s32 tex;
+    u8 padC8[0x2B0];
+    s32 ot;
+    u8 pad37C[0x48];
+    f32 depth;
+} Scene_c031_01E01950;
+
+static void func_01E01950_c031(Scene_c031_01E01950 *g, Drop_c031_01E01950 *o, Pkt_c031_01E01950 *p, s32 lit) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern Rgbaq_c031_01E01950 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern void func_001F5BD0(s32, void *);
+    extern s32 func_001F5380(void);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    Vec4f q[4];
+    f32 rm[4];
+    f32 m[16];
+    f32 m2[16];
+    s32 rot[4];
+    Vec4f pos;
+    Vec4f pt;
+    s32 i;
+    s32 j;
+
+    if (lit == 0) {
+        func_00106080(rm, 0x5A, 1, rm);
+        p->count = 0x34;
+        p->tag = 0xC;
+        p->regs = 0x421421421421ULL;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0xB0 << 32) | 0x48);
+        p->v[0].c = func_00107740(o->col);
+        p->v[1].c = func_00107740(o->col);
+        p->v[2].c = func_00107740(o->col2);
+        p->v[3].c = func_00107740(o->col2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        pos = *(Vec4f *)func_001F9D30(0);
+        func_0020EB40(m);
+        func_00205C40((s32)rot);
+        func_001F5BD0(func_001F5380(), &pt);
+        pos.x = pt.x;
+        pos.y = pt.y;
+        pos.z = pt.z;
+        func_0020C940(m2, 0, rot, &pos);
+        func_0020BC00(m, m2);
+        func_00106DD0(&pos, 0.0f, 10.0f, 0.0f);
+        for (i = 0; i < 1; i++) {
+            if (o->corner == 0) {
+                q[0].x = o->x + -20.0f;
+                q[0].y = pos.y + (o->y + 20.0f);
+                q[1].x = o->x;
+                q[1].y = pos.y + (o->y + 20.0f);
+                q[2].x = o->x + -20.0f;
+                q[2].y = o->y + pos.y;
+                q[3].x = o->x;
+                q[3].y = o->y + pos.y;
+            } else if (o->corner == 1) {
+                q[0].x = o->x + 20.0f;
+                q[0].y = pos.y + (o->y + 20.0f);
+                q[1].x = o->x;
+                q[1].y = pos.y + (o->y + 20.0f);
+                q[2].x = o->x + 20.0f;
+                q[2].y = o->y + pos.y;
+                q[3].x = o->x;
+                q[3].y = o->y + pos.y;
+            } else if (o->corner == 2) {
+                q[0].x = o->x + -20.0f;
+                q[0].y = pos.y + (o->y + -20.0f);
+                q[1].x = o->x;
+                q[1].y = pos.y + (o->y + -20.0f);
+                q[2].x = o->x + -20.0f;
+                q[2].y = o->y + pos.y;
+                q[3].x = o->x;
+                q[3].y = o->y + pos.y;
+            } else if (o->corner == 3) {
+                q[0].x = o->x + 20.0f;
+                q[0].y = pos.y + (o->y + -20.0f);
+                q[1].x = o->x;
+                q[1].y = pos.y + (o->y + -20.0f);
+                q[2].x = o->x + 20.0f;
+                q[2].y = o->y + pos.y;
+                q[3].x = o->x;
+                q[3].y = o->y + pos.y;
+            }
+            q[0].z = 30.0f;
+            q[2].z = 30.0f;
+            q[3].z = 30.0f;
+            q[1].z = 30.0f;
+            for (j = 0; j < 3; j++) {
+                if (func_00205630(q, 0x70000000, m, p, &g->depth) != 0) {
+                    func_002075F0(p, g->ot, (u32)g->depth);
+                }
+            }
+        }
+    }
+}

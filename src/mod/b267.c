@@ -1292,7 +1292,112 @@ static void func_01E02C70_b267(Game_b267_01E02C70 *g, Obj_b267_01E02C70 *o, void
 
 INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E02F20_b267);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b267", func_01E033C0_b267);
+/* shape b267:01E033C0, 284 insns, 1 copy: a six-panel ring wall: mode 0 builds the packet (texture page 20 frame from
+   the object, its colour, the scene texture); otherwise it stands the ring up (turned -0x4000 or 0x4000 by the camera's
+   side) at the object's point plus a tenth of its speed, and draws six panels 60 apart, 34 wide, from height h to
+   h + 25, the top edge one unit wider */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 dx, dy, dz;
+    u8 padE[0x1A];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 h;
+    u8 pad32[2];
+    s16 sub;
+    u8 pad36[2];
+    s16 r;
+    s16 ang;
+} Obj_b267_01E033C0;
+
+typedef struct {
+    u8 pad0[0x320];
+    void *tex;
+    u8 pad324[0x3E34 - 0x324];
+    u8 sin[1];
+} Scene_b267_01E033C0;
+
+static void func_01E033C0_b267(Scene_b267_01E033C0 *g, Obj_b267_01E033C0 *o, void *pk, s32 mode) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F6160(s32, void *);
+    extern void func_00106080(void *, s32, s16, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_00109380(void *, s32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    Vec4f pos;
+    s16 rect[8];
+    f32 m[16];
+    f32 depth[4];
+    s32 rot[4];
+    s32 cam[4];
+    s32 ot;
+    s32 side;
+    s16 i;
+    s16 a;
+    s16 t;
+    f32 d;
+
+    ot = (s32)func_00207500();
+    func_001F6160(func_001F53A0(), cam);
+    side = (s16)(cam[1] / 180.0f);
+    a = 0;
+    if (mode == 0) {
+        func_00106080(rect, 0x14, o->sub, rect);
+        func_00109270(pk, 0, 0);
+        func_00107790(pk, o->col, 0);
+        func_00108500(pk, rect, 0);
+        func_00208700(pk, g->tex, 1);
+    } else {
+        func_00205C40((s32)rot);
+        rot[1] = 0;
+        if (side != 0) {
+            rot[0] = -0x4000;
+        } else {
+            rot[0] = 0x4000;
+        }
+        d = o->dx;
+        d /= 10.0f;
+        pos.x = o->x;
+        pos.x += d;
+        d = o->dy;
+        d /= 10.0f;
+        pos.y = o->y;
+        pos.y += d;
+        pos.z = o->dz;
+        d /= 10.0f;
+        pos.z = o->z;
+        pos.z += d;
+        func_00108EF0(m, NULL, rot, &pos);
+        for (i = 0; i < 6; i++) {
+            t = a;
+            q[0].y = o->h;
+            q[0].x = o->r * func_00108030(g->sin, o->ang + t, 0);
+            q[0].z = o->r * func_00108030(g->sin, o->ang + t, 1);
+            q[1].y = o->h;
+            q[1].x = o->r * func_00108030(g->sin, t + (o->ang + 34), 0);
+            q[1].z = o->r * func_00108030(g->sin, t + (o->ang + 34), 1);
+            q[2].y = o->h + 25;
+            q[2].x = (o->r + 1) * func_00108030(g->sin, t + o->ang, 0);
+            q[2].z = (o->r + 1) * func_00108030(g->sin, t + o->ang, 1);
+            q[3].y = o->h + 25;
+            q[3].x = (o->r + 1) * func_00108030(g->sin, t + (o->ang + 34), 0);
+            q[3].z = (o->r + 1) * func_00108030(g->sin, t + (o->ang + 34), 1);
+            if (func_00205630(q, 0x70000000, m, pk, depth) != 0) {
+                func_00109380(pk, 1);
+                func_002075F0(pk, ot, 0);
+            }
+            a += 60;
+        }
+    }
+}
 
 /* shape b267:01E03830, 145 insns: b117:01E02C00 family sprite draw: texture 0x14 (0x50 and the second scene texture for callback b267:01E01610), position + speed/10 in integers, scaled 0.1 */
 

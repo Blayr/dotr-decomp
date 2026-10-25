@@ -2,7 +2,123 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E00080_c022);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c022", func_01E00750_c022);
+/* shape c022:01E00750, 274 insns, 1 copy (C022_OBJ_MOVE_1_): a rising ribbon segment: grows its top (f1C) by 8 up to
+   220 and pulls its bottom (f20) after it (8 a tick in state 0, 5 later) while the gap is over 20; in state 100 fades
+   both alphas by 9 and dies; past height 80 an idle segment counts down, then climbs its bottom and hands state 100 to
+   its link; turns both angles by its speed, bobs 70 + 25 sine, fades in by 15 under scene frame 40 and out above 200 */
+
+typedef struct Seg_c022_01E00750 {
+    u8 pad0[4];
+    f32 speed;
+    u8 pad8[0xC];
+    struct Seg_c022_01E00750 *link;
+    u8 pad18[4];
+    f32 top;
+    f32 bottom;
+    f32 bob;
+    u8 pad28[3];
+    u8 a0;
+    u8 pad2C[3];
+    u8 a1;
+    s16 state;
+    s16 alive;
+    s16 ang0;
+    s16 ang1;
+    s16 hold;
+    s16 phase;
+    s16 wait;
+} Seg_c022_01E00750;
+
+typedef struct {
+    u8 pad0[0x3A48];
+    s16 frame;
+} Scene_c022_01E00750;
+
+static s32 func_01E00750_c022(Scene_c022_01E00750 *g, Seg_c022_01E00750 *o) {
+    extern f32 func_001A6A88(f32);
+    Seg_c022_01E00750 *link;
+
+    link = o->link;
+    if (o->state == 0) {
+        if (o->top < 220.0f) {
+            o->top += 8.0f;
+        }
+        if (o->top - o->bottom > 20.0f) {
+            o->bottom += 8.0f;
+        }
+    } else if (o->state == 100) {
+        if (o->a0 > 10) {
+            o->a0 -= 9;
+        }
+        if (o->a1 > 10) {
+            o->a1 -= 9;
+        } else {
+            o->alive = 0;
+        }
+    } else if (o->top > 80.0f && o->hold == 0) {
+        if (o->wait == 0) {
+            o->bottom += 8.0f;
+            if (o->top < o->bottom) {
+                o->state = 100;
+                if (link != NULL) {
+                    link->state = 100;
+                }
+            }
+        } else {
+            o->wait--;
+            if (o->hold == 0) {
+                if (o->top < 220.0f) {
+                    o->top += 8.0f;
+                }
+                if (o->top - o->bottom > 20.0f) {
+                    o->bottom += 5.0f;
+                }
+            }
+        }
+    } else if (o->hold == 0) {
+        if (o->top < 220.0f) {
+            o->top += 8.0f;
+        }
+        if (o->top - o->bottom > 20.0f) {
+            o->bottom += 5.0f;
+        }
+    }
+    o->ang0 = o->ang0 + o->speed;
+    o->ang1 = o->ang1 + o->speed;
+    o->phase += 5;
+    if (o->hold == 0) {
+        o->bob = 70.0f + 25.0f * func_001A6A88(3.1415927f * o->phase / 180.0f);
+        o->phase += 15;
+    }
+    if (o->ang0 >= 360) {
+        o->ang0 %= 360;
+    }
+    if (o->ang1 >= 360) {
+        o->ang1 %= 360;
+    }
+    if (o->phase >= 360) {
+        o->ang0 %= 360;
+    }
+    if (g->frame < 40) {
+        if (o->a0 < 0x40) {
+            o->a0 += 15;
+        }
+        if (o->a1 < 0x40) {
+            o->a1 += 15;
+        }
+    }
+    if (o->top > 200.0f) {
+        if (o->a0 > 10) {
+            o->a0 -= 9;
+        }
+        if (o->a1 > 10) {
+            o->a1 -= 9;
+        } else {
+            o->alive = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape c022:01E00BA0, 52 insns: c056:01E04780 family two-alpha sprite: in by 32/16 while the scene value is under 8, out by 15 from 36, ends when the counter is under 3 */
 

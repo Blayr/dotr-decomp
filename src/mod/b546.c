@@ -547,7 +547,125 @@ static void func_01E01510_b546(Scene_b546_01E01510 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b546", func_01E01730_b546);
+/* shape b546:01E01730, 279 insns, 1 copy (B546_OBJ_MOVE_2_): a falling flake: on start size 5, white, random drift
+   (x/z -50..49 / 150, spin), rising 2.2 then aimed from joint to model over 30 ticks, random turns; in by 64 up to
+   0x80 for 40 ticks, then out by 9; grows to 15, blinks grey; at its burst tick it spawns two sparks
+   (b546:01E01B90, b546:01E01D80) at its spot and ends; held at tick 90 once the scene count passes 250 */
+
+typedef struct {
+    s16 rx;
+    s16 ry;
+    s16 rz;
+    u8 pad6[2];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    f32 vx;
+    f32 vy;
+    f32 vz;
+    f32 f3C;
+    u8 pad40[0x12];
+    s16 burst;
+    s16 tick;
+    s16 h56;
+    s16 state;
+    s16 turn;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b546_01E01730;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xC5D0];
+    s16 joint;
+    u8 padC832[0x34];
+    s16 count;
+} Scene_b546_01E01730;
+
+static s32 func_01E01730_b546(Scene_b546_01E01730 *g, Obj_b546_01E01730 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    extern void func_001F5F90(s32, Vec4f *);
+    extern void b546_01E01B90();
+    extern void b546_01E01D80();
+    extern void b546_01E027F0();
+    Vec4f a;
+    Vec4f b;
+    f32 f;
+
+    if (o->state == 1) {
+        o->w = 5;
+        o->h = 5;
+        o->h56 = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->vy = func_0019A5C8() % 100 - 50;
+        o->vx = func_0019A5C8() % 100 - 50;
+        o->vy /= 150.0f;
+        o->vx /= 150.0f;
+        o->f3C = func_0019A5C8() % 80 - 40;
+        o->f3C /= 10.0f;
+        o->vz = 2.2f;
+        f = (func_0019A5C8() >> 4) % 50 - 25;
+        f /= 20.0f;
+        o->pos.y += f;
+        o->h5C = func_0019A5C8() % 360;
+        func_00205C40((s32)o->rot);
+        o->rz = func_0019A5C8() % 0x800 - 0x400;
+        o->ry = func_0019A5C8() % 0x800 - 0x400;
+        o->rx = func_0019A5C8() % 0x800 - 0x400;
+        o->turn = func_0019A5C8() % 360;
+        o->rot[0] = func_0019A5C8() % 0x4000 - 0x2000;
+        o->rot[1] = 0x4000;
+        o->burst = (func_0019A5C8() >> 4) % 5 + 30;
+        func_001F5620(func_001F53A0(), g->joint, &a);
+        func_001F5F90(func_001F5380(), &b);
+        o->vz = (b.z - a.z) / 30.0f;
+    }
+    if (o->tick < 40) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x40;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (o->tick != 0) {
+        o->pos.z += o->vz;
+        o->pos.x += o->vx;
+        o->pos.y += o->vy - 0.1f;
+        if (o->w < 15) {
+            o->w++;
+        }
+        if (o->h < 15) {
+            o->h++;
+        }
+    }
+    if (o->tick == o->burst) {
+        g->pos = o->pos;
+        b546_01E027F0(g, b546_01E01B90, 0);
+        b546_01E027F0(g, b546_01E01D80, 0);
+        o->state = 0;
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->col, 0x70, 0x70, 0x70);
+    }
+    o->tick++;
+    if (g->count > 250) {
+        o->tick = 90;
+    }
+    o->turn += 40;
+    return 0;
+}
 
 /* shape b546:01E01B90, 119 insns: a red/white blinking spark (size 8, frame 4, angle 10..29, spin 4..10, size 1..8) held 20..22 ticks at 0xC0, then out by 11 and ends; held at tick 30 while the scene count is under 35 */
 

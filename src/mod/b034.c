@@ -1606,7 +1606,117 @@ INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E054C0_b034);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E05A90_b034);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E06010_b034);
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b034_01E06010;
+
+typedef struct {
+    s16 a, b;
+} Pair_b034_01E06010;
+
+typedef struct {
+    u8 pad0[0xA870];
+    Vec_b034_01E06010 pos;
+    Vec_b034_01E06010 tab[8];
+    u8 padA900[0xC];
+    s32 tex;
+    u8 padA910[0x10];
+    f32 radius;
+    f32 extra;
+    u8 padA928[0xC];
+    f32 h[6];
+    u8 padA94C[0xA9E4 - 0xA94C];
+    Pair_b034_01E06010 pair[6];
+    u8 padA9FC[6];
+    s16 height;
+    s16 rings;
+    u8 padAA06[8];
+    s16 flag;
+    u8 padAA10[0xAD14 - 0xAA10];
+    u8 trig[4];
+} Scene_b034_01E06010;
+
+typedef struct {
+    u8 pad0[0x60];
+    u8 col[4];
+} Obj_b034_01E06010;
+
+extern void b034_01E06CF0(Vec_b034_01E06010 *, Vec_b034_01E06010 *, Vec_b034_01E06010 *, f32, f32);
+
+static void func_01E06010_b034(Scene_b034_01E06010 *g, Obj_b034_01E06010 *o, void *p) {
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_001091B0(void *, void *, void *);
+    extern void func_00195108(void *, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec_b034_01E06010 quad[2];
+    Vec_b034_01E06010 pos;
+    Vec_b034_01E06010 out;
+    f32 depth[4];
+    f32 m[16];
+    s32 rot[4];
+    s16 ang[2];
+    s16 i;
+    s16 j;
+    s16 k;
+    f32 d;
+    f32 r;
+
+    rot[0] = 0;
+    rot[2] = 0;
+    if (g->flag != 0) {
+        rot[1] = 0;
+    } else {
+        rot[1] = 0x8000;
+    }
+    pos.x = g->pos.x;
+    pos.y = g->pos.y;
+    pos.z = g->pos.z;
+    func_00108EF0(m, NULL, rot, &pos);
+    func_001091B0(p, o->col, o->col);
+    for (i = 0; i < 6; i++) {
+        d = g->height;
+        func_00195108(quad, 0x20);
+        d -= g->h[i];
+        if (d > 10.0f) {
+            d = 10.0f;
+        }
+        if (g->height > g->h[i]) {
+            quad[0] = g->tab[g->pair[i].a];
+            quad[1] = g->tab[g->pair[i].b];
+            b034_01E06CF0(&out, &quad[0], &quad[1], 10.0f, d);
+            quad[1].x = out.x;
+            quad[1].y = out.y;
+            quad[1].z = out.z;
+        }
+        if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+            func_002075F0(p, g->tex, (u32)depth[0]);
+        }
+    }
+    func_00195108(quad, 0x20);
+    ang[0] = -90;
+    ang[1] = -90;
+    for (i = 0; i < g->rings; i++) {
+        for (k = 0; k < 2; k++) {
+            if (k) {
+                r = g->radius + g->extra;
+            } else {
+                r = g->radius;
+            }
+            for (j = 0; j < 2; j++) {
+                quad[j].z = r * func_00108030(g->trig, -ang[k], 0);
+                quad[j].x = r * func_00108030(g->trig, -ang[k], 1);
+                if (!j) {
+                    ang[k] += 5;
+                }
+            }
+            if (func_00205630(quad, 0x70000000, m, p, depth) != 0) {
+                func_002075F0(p, g->tex, (u32)depth[0]);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b034", func_01E06420_b034);
 
