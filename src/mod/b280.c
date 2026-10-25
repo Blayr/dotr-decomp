@@ -425,7 +425,7 @@ typedef struct {
     s16 t;
 } Scene_b280_01E012D0;
 
-static void func_01E012D0_b280(Scene_b280_01E012D0 *g) {
+static void func_01E012D0_b280(Scene_b280_01E012D0 *g, s32 unused) {
     extern void b280_01E015D0(void);
     extern void b280_01E01AA0(void);
     extern s32 b280_01E02530(Scene_b280_01E012D0 *, s32, s32);
