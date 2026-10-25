@@ -1,6 +1,78 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/b053", func_01E00080_b053);
+/* shape b053:01E00080, 102 insns: draws an object twice, mirrored: takes its colours, clears a 0x20-byte range block and sets
+   its low and high edges from the object (low, low + span, neither below 0), then builds a matrix from the object turn and the
+   given point and draws with it; the second pass negates the turn */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b053_01E00080;
+
+typedef struct {
+    f32 x, y, z;
+} V3_b053_01E00080;
+
+typedef struct {
+    s32 x, y, z, w;
+} R4_b053_01E00080;
+
+typedef struct {
+    f32 f0;
+    f32 lo;
+    u8 pad8[0xC];
+    f32 hi;
+    u8 pad18[8];
+} Rng_b053_01E00080;
+
+typedef struct {
+    u8 pad0[2];
+    s16 lo;
+    u8 pad4[2];
+    s16 span;
+    u8 pad8[8];
+    R4_b053_01E00080 rot;
+    u8 pad20[8];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b053_01E00080;
+
+static void func_01E00080_b053(s32 arg0, Obj_b053_01E00080 *o, void *arg2, V4_b053_01E00080 *pt) {
+    extern void func_001091B0(void *, void *, void *);
+    extern void func_00195108(void *, s32);
+    extern void func_00108EF0(void *, s32, void *, void *);
+    extern void func_00109050(void *, void *, void *, s32);
+    V4_b053_01E00080 a;
+    Rng_b053_01E00080 r;
+    V4_b053_01E00080 b;
+    R4_b053_01E00080 rot;
+    f32 m[16];
+    s32 i;
+
+    a = *pt;
+    b.x = a.x;
+    b.y = a.y;
+    b.z = a.z;
+    func_001091B0(arg2, o->c0, o->c1);
+    func_00195108(&r, 0x20);
+    r.lo = o->lo;
+    r.hi = r.lo + o->span;
+    if (r.lo < 0.0f) {
+        r.lo = 0.0f;
+    }
+    if (r.hi < 0.0f) {
+        r.hi = 0.0f;
+    }
+    rot = o->rot;
+    for (i = 0; i < 2; i++) {
+        if (i == 1) {
+            rot.x *= -1;
+            rot.y *= -1;
+            rot.z *= -1;
+        }
+        func_00108EF0(m, 0, &rot, &b);
+        func_00109050(&r, arg2, m, arg0);
+    }
+}
 
 /* OVL_CFLAGS: -O3,p -sdatathreshold 0 -relax_pointers */
 
