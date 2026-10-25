@@ -1354,7 +1354,69 @@ static s32 func_01E02F70_b632(s32 arg0, Fx_b632_01E02F70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b632", func_01E03100_b632);
+/* shape b632:01E03100 (B632_OBJ_MOVE_10_), 120 insns, 1 copy: a grey (0x80) mote: speed 3.0, kind 4, random start
+   angles, life 300..649 shrinking by 10..29 a tick, frame 1..8, bright (0x60) for 2..4 ticks then fades by 11 until
+   it stops; each tick it follows the unit the game names at +0x5BE4 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    s16 f8;
+    u8 padA[4];
+    s16 fE;
+    u8 f10[0x10];
+    s32 pos[3];
+    u8 pad2C[0x1C];
+    f32 f48;
+    u8 pad4C[4];
+    s16 f50;
+    s16 f52;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    u8 pad5C[4];
+    u8 col[4];
+} Fx_b632_01E03100;
+
+typedef struct {
+    u8 pad[0x5BE4];
+    s16 unit;
+} Game_b632_01E03100;
+
+static s32 func_01E03100_b632(Game_b632_01E03100 *g, Fx_b632_01E03100 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0();
+    extern s32 func_001F5620(s32, s32, void *);
+
+    if (o->mode == 1) {
+        o->f48 = 3.0f;
+        o->f56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->pos[0] = func_0019A5C8() % 0xFFFF;
+        o->pos[1] = func_0019A5C8() % 0xFFFF;
+        o->pos[2] = func_0019A5C8() % 0xFFFF;
+        o->f52 = 1;
+        o->f50 = func_0019A5C8() % 350 + 300;
+        o->f5A = func_0019A5C8() % 360;
+        o->fE = func_0019A5C8() % 20 + 10;
+        o->f8 = func_0019A5C8() % 8 + 1;
+        o->f6 = func_0019A5C8() % 3 + 2;
+        o->mode = 2;
+    }
+    if (o->tick < o->f6) {
+        o->col[3] = 0x60;
+    } else if (o->col[3] > 12) {
+        o->col[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    o->f52++;
+    o->f50 -= o->fE;
+    o->tick++;
+    func_001F5620(func_001F53A0(), g->unit, o->f10);
+    return 0;
+}
 
 /* shape b632:01E032E0, 90 insns: b529:01E02240 family: a white/red glow of random size 15..64, spun 0x4000 a tick, its second colour blinking red: in by 48 up to 0x60 for 2 ticks, then out by 11 and ends */
 
