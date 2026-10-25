@@ -840,7 +840,51 @@ static s32 func_01E024C0_b026(Trail_b025_01E007C0 *o, Vec4f *p1, Vec4f *p2) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b026", func_01E02610_b026);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b026", func_01E02E10_b026);
+typedef struct V4_b000_01E032C0 {
+    f32 x, y, z, w;
+} V4_b000_01E032C0;
+
+typedef struct Rnd_b000_01E032C0 {
+    s32 a, b, c, d;
+} Rnd_b000_01E032C0;
+
+typedef struct Obj_b000_01E032C0 {
+    s32 kind;
+    s32 model;
+    s32 pad8;
+    f32 scale;
+    s32 pad10[4];
+    V4_b000_01E032C0 v[4];
+    Rnd_b000_01E032C0 r[64];
+} Obj_b000_01E032C0;
+
+typedef struct Tbl_b000_01E032C0 {
+    V4_b000_01E032C0 v[4];
+} Tbl_b000_01E032C0;
+
+static s32 func_01E02E10_b026(Obj_b000_01E032C0 *obj, s32 kind, f32 scale) {
+    extern Tbl_b000_01E032C0 D_01E05780_b026;
+    Tbl_b000_01E032C0 tbl = D_01E05780_b026;
+    s32 flag;
+    s32 n;
+    s32 i;
+
+    flag = func_00104520(obj->model, 0x1F);
+    obj->scale = scale;
+    obj->kind = kind;
+    n = flag ? 0x10 : 0x40;
+    for (i = 0; i < 4; i++) {
+        obj->v[i].x = obj->scale * tbl.v[i].x;
+        obj->v[i].y = obj->scale * tbl.v[i].y;
+        obj->v[i].z = obj->scale * tbl.v[i].z;
+    }
+    for (i = 0; i < n; i++) {
+        obj->r[i].a = func_0019A5C8() % 0x10000;
+        obj->r[i].b = func_0019A5C8() % 0x10000;
+        obj->r[i].c = func_0019A5C8() % 0x10000;
+    }
+    return 0;
+}
 
 /* shape b000:01E03420, 387 insns, 68 copies: draws a textured sprite quad: n rotations of its 4 corner points,
    UV (texel) or ST coordinates from the sprite rect, depth-sorted unless flag 0x13/0x12.
