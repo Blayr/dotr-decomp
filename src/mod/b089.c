@@ -1395,7 +1395,70 @@ static void func_01E04330_b089(Ctx_b089_01E04330 *g, Fx_b089_01E04330 *o, void *
 
 INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E045A0_b089);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E04770_b089);
+/* shape b089:01E04770, 92 insns, 1 copy: draws a thin rain strip: mode 0 builds the packet (texture page 10 frame from
+   the object, its colour, the scene texture); other modes turn it at random, place it at the object's point lifted by a
+   tenth of its rise, make a 3 by len strip with its lower corners at height 0 and draw it */
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[4];
+    s16 rise;
+    u8 padC[0x1C];
+    u8 c0[4];
+    u8 pad2C[8];
+    s16 sub;
+    u8 pad36[2];
+    s16 len;
+} Obj_b089_01E04770;
+
+typedef struct {
+    u8 pad0[0x74];
+    void *tex;
+} Game_b089_01E04770;
+
+#pragma opt_propagation off
+
+static void func_01E04770_b089(Game_b089_01E04770 *g, Obj_b089_01E04770 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s16, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00108F90(void *, void *, void *, s32);
+    Vec4f quad[4];
+    Vec4f pos;
+    s16 rect[8];
+    f32 m[16];
+    s32 rot[4];
+    s32 ot;
+    f32 r;
+    f32 w;
+
+    ot = (s32)func_00207500();
+    if (mode == 0) {
+        func_00106080(rect, 0xA, o->sub, rect);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->c0, 0);
+        func_00108500(p, rect, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        func_00205C40((s32)rot);
+        pos.x = o->x;
+        pos.y = o->y;
+        pos.z = o->z;
+        r = o->rise;
+        r /= 10.0f;
+        pos.y += r;
+        func_00108EF0(m, NULL, rot, &pos);
+        w = 3.0f;
+        func_00108CE0(quad, w, o->len);
+        quad[2].y = 0.0f;
+        quad[3].y = 0.0f;
+        func_00108F90(quad, p, m, ot);
+    }
+}
+#pragma opt_propagation reset
 
 /* shape b089:01E048E0, 199 insns (MAP_IN): builds a 12x12 point sphere at ctx+0x12F0 (ring radius 20 * sin of
    90, 120, ... degrees, 30 degrees between points; height 20 * sin of the row angle), then copies it to

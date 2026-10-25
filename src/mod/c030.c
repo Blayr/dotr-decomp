@@ -267,7 +267,59 @@ static s32 func_01E00E30_c030(Scene_c030_01E00E30 *g, Seg_c030_01E00E30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c030", func_01E01110_c030);
+/* shape c030:01E01110, 98 insns, 1 copy (C030_CARD_EAREY_1): sets up 22 models (0..10 and 256..266): random speed 1..5, frame 5..12, turn 256..6399 and
+   tilt -1024..1023; the current model gets its flag set if it has one; each model present takes its position and turn */
+
+typedef struct {
+    f32 pos[8];
+    f32 rot[2];
+    s32 frame;
+    u8 pad2C[8];
+    s32 turn;
+    s32 tilt;
+    u8 pad3C[0x18];
+    f32 speed;
+    u8 pad58[0x18];
+} Ent_c030_01E01110;
+
+typedef struct {
+    u8 pad0[0x22B0];
+    Ent_c030_01E01110 ents[22];
+} Ctx_c030_01E01110;
+
+static void func_01E01110_c030(Ctx_c030_01E01110 *ctx) {
+    extern s32 func_001F5380();
+    extern s32 func_001F5AF0(s32);
+    extern f32 func_001F5970(s32, s32);
+    extern s32 func_001F5EC0(s32);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F6210(s32, void *);
+    s16 i;
+    Ent_c030_01E01110 *e;
+    s32 id;
+
+    func_001F5380(ctx);
+    for (i = 0; i < 0x16; i++) {
+        id = i;
+        if (id > 10) {
+            id += 0xF5;
+        }
+        e = &ctx->ents[i];
+        e->speed = (func_0019A5C8() % 26 + 9) / 6;
+        e->frame = func_0019A5C8() % 8 + 5;
+        e->turn = func_0019A5C8() % 6144 + 0x100;
+        e->tilt = func_0019A5C8() % 0x800 - 0x400;
+        if (id == func_001F5380()) {
+            if (func_001F5AF0(id) != 0) {
+                func_001F5970(id, 1);
+            }
+        }
+        if (func_001F5EC0(id) != 0) {
+            func_001F5F90(id, e->pos);
+            func_001F6210(id, e->rot);
+        }
+    }
+}
 
 /* shape c030:01E012A0, 155 insns: c030's camera step for one view (id, or id + 245 past 10): when that view is the active
    one and is live, from scene time 15 it lowers the view's height by 4 (not below 0) and slides its depth by a 24th of

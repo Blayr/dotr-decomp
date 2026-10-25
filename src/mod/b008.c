@@ -199,7 +199,71 @@ static void func_01E004D0_b008(Obj_b008_01E004D0 *o, Spr_b008_01E004D0 *s, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b008", func_01E00A50_b008);
+/* shape b008:01E00A50, 119 insns: the module's spawn step: sets the scene colour to red, ticks the timer; every tenth
+   frame from 54 to 100 it spawns a pair of b008:01E012A0 puffs at the second joint once the scene stage reaches 63, and
+   a pair of b008:01E00FB0 puffs once it reaches 66 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 px, py, pz;
+    u8 pad2DC[0x3950 - 0x2DC];
+    s32 stage;
+    u8 rgba[4];
+    u8 pad3958[0x40];
+    s16 joint0;
+    s16 joint1;
+    u8 pad399C[0x14];
+    s16 idx;
+    u8 pad39B2[4];
+    s16 t;
+} Scene_b008_01E00A50;
+
+static s32 func_01E00FB0_b008();
+static s32 func_01E012A0_b008();
+static s32 func_01E01EB0_b008();
+
+static void func_01E00A50_b008(Scene_b008_01E00A50 *s) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 a[4];
+    f32 b[4];
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t >= 0x36 && s->stage > 0x3E) {
+        if (s->t % 10 == 1 && s->t < 0x65) {
+            f32 *p;
+
+            func_001F5620(func_001F53A0(), s->joint0, a);
+            func_001F5620(func_001F53A0(), s->joint1, p = (f32 *)(u32)b);
+            s->px = p[0];
+            s->py = b[1];
+            s->pz = b[2];
+            s->idx = 0;
+            func_01E01EB0_b008(s, func_01E012A0_b008, 0);
+            s->idx = 1;
+            func_01E01EB0_b008(s, func_01E012A0_b008, 0);
+        }
+    }
+    if (s->t >= 0x36 && s->stage > 0x41) {
+        if (s->t % 10 == 1 && s->t < 0x65) {
+            f32 *p;
+
+            func_001F5620(func_001F53A0(), s->joint0, a);
+            func_001F5620(func_001F53A0(), s->joint1, p = (f32 *)(u32)b);
+            s->px = p[0];
+            s->py = b[1];
+            s->pz = b[2];
+            s->idx = 0;
+            func_01E01EB0_b008(s, func_01E00FB0_b008, 0);
+            s->idx = 1;
+            func_01E01EB0_b008(s, func_01E00FB0_b008, 0);
+        }
+    }
+}
 
 /* shape b008:01E00C30 (B008_OBJ_MOVE_2_), 222 insns: b008:01E00FB0's puff with other numbers: grey 0x40 (kind 0) or
    dark red (0x50, 0x10, 0x10), size 30 growing 3, hold 45..54, alpha up by 0x2A below 0x80; closes a 40th (a 50th
