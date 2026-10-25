@@ -623,7 +623,124 @@ static void func_01E01880_b082(Scn_b082_01E01880 *w) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b082", func_01E01A50_b082);
+/* shape b082:01E01A50, 282 insns (B082_OBJ_MOVE_2_): on start size 10..59 (and +15), frame 0..7, kind 0..2, grey,
+   copies its position into its point slot (0x4470 + 16 x 0x50) and picks a drift (-25..24)/15 per axis and a heading;
+   fades in by 0x2A (both alphas) until tick 95, then out by 14; grows 0x52 for 20 ticks, bobs 0x5C by 4; at tick 100
+   it moves the scene spawn point to the slot plus drift x growth (bobbing 4 x sin) and spawns three b082:01E01EC0 and
+   three b082:01E02250; from tick 64 the heading turns 4 and the slot sinks 0.5 and moves 5 in z by the scene side */
+
+typedef struct {
+    u8 pad0[0xD8];
+    u8 sin[4];
+    u8 padDC[0x250 - 0xDC];
+    f32 px, py, pz;
+    u8 pad25C[0x4470 - 0x25C];
+    Vec4f pt[1];
+    u8 pad4480[0x4C6E - 0x4480];
+    s16 side;
+} Game_b082_01E01A50;
+
+typedef struct {
+    u8 pad0[8];
+    s16 size;
+    s16 size2;
+    u8 padC[2];
+    s16 frame;
+    f32 x, y, z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 dx, dy, dz;
+    u8 pad3C[0x14];
+    s16 slot;
+    s16 grow;
+    s16 t;
+    s16 kind;
+    s16 mode;
+    s16 head;
+    s16 bob;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b082_01E01A50;
+
+static s32 func_01E01EC0_b082();
+static s32 func_01E02250_b082();
+static s32 func_01E02FF0_b082();
+
+static s32 func_01E01A50_b082(Game_b082_01E01A50 *g, Obj_b082_01E01A50 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 k;
+
+    if (o->mode == 1) {
+        o->size = func_0019A5C8() % 50 + 10;
+        o->size2 = o->size + 15;
+        o->frame = func_0019A5C8() % 8;
+        o->kind = func_0019A5C8() % 3;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        g->pt[o->slot].x = o->x;
+        g->pt[o->slot].y = o->y;
+        g->pt[o->slot].z = o->z;
+        o->dx = func_0019A5C8() % 50 - 25;
+        o->dy = func_0019A5C8() % 50 - 25;
+        o->dz = func_0019A5C8() % 50 - 25;
+        o->dx /= 15.0f;
+        o->dy /= 15.0f;
+        o->dz /= 15.0f;
+        o->mode = 2;
+        o->head = func_0019A5C8() % 360;
+        o->col2[3] = 0;
+    }
+    if (o->t < 95) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x2A;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 0x2A;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->t < 20) {
+        o->grow++;
+    }
+    o->bob += 4;
+    func_00205C40((s32)o->rot);
+    if (o->t == 100) {
+        k = o->grow;
+        g->px = g->pt[o->slot].x + o->dx * k;
+        g->py = g->pt[o->slot].y + o->dy * k + 4.0f * func_00108030(g->sin, o->bob, 1);
+        g->pz = g->pt[o->slot].z + o->dz * k;
+        func_01E02FF0_b082(g, func_01E01EC0_b082, 0);
+        func_01E02FF0_b082(g, func_01E01EC0_b082, 0);
+        func_01E02FF0_b082(g, func_01E01EC0_b082, 0);
+        func_01E02FF0_b082(g, func_01E02250_b082, 0);
+        func_01E02FF0_b082(g, func_01E02250_b082, 0);
+        func_01E02FF0_b082(g, func_01E02250_b082, 0);
+    }
+    o->t++;
+    if (o->t > 63) {
+        o->head += 4;
+        if (o->head >= 360) {
+            o->head %= 360;
+        }
+        if (g->side != 0) {
+            g->pt[o->slot].z -= 5.0f;
+        } else {
+            g->pt[o->slot].z += 5.0f;
+        }
+        g->pt[o->slot].y -= 0.5f;
+    }
+    return 0;
+}
 
 /* shape b082:01E01EC0, 100 insns, 2 copies: a grey spark: set up once (size 20, random frame, keeps its old angle, new angle
    10..59, speed 16..45, life 3..7); full for its life, then fades out; turns by its speed (b225:01E026A0 family, 0x58-state layout) */

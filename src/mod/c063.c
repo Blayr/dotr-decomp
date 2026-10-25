@@ -1153,7 +1153,168 @@ static s32 func_01E03430_c063(Game_c063_01E03430 *g, Obj_c063_01E03430 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c063", func_01E035E0_c063);
+/* shape c063:01E035E0, 337 insns: a spiralling streak (B737_OBJ_MOVE_10_): set up once at size 100, grey, height 30,
+   radius 100 on its angle (sine table ctx+0x6E3C), its 13-point trail (ctx+0x5AB0, slot 0x50) filled; fades in by 19
+   to 0xC0 before tick 300, then out by 14; rises 6 a tick (5 up to ctx+0x5A84 after scene tick 626) while the
+   radius shrinks 2.6 to 0 (then jumps to tick 400) and the angle turns 20 (slots 0..7) or 10 a tick, sign by slot;
+   follows the player (0x6C36 picks the 85 offset side); sparks c063:01E02F40 / c063:01E029C0 on odd ticks by slot;
+   flashes 0xC0 / 0xFF; pushes its point into the trail */
+
+typedef struct {
+    Vec4f v[13];
+} Trail_c063_01E035E0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x5A84 - 0x260];
+    f32 top;
+    u8 pad5A88[0x5AB0 - 0x5A88];
+    Trail_c063_01E035E0 trail[20];
+    u8 pad6AF0[0x6C36 - 0x6AF0];
+    s16 h6C36;
+    u8 pad6C38[2];
+    s16 h6C3A;
+    u8 pad6C3C[0x6E3C - 0x6C3C];
+    u8 sin[4];
+} Ctx_c063_01E035E0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 len;
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    f32 r;
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    s16 flip;
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Streak_c063_01E035E0;
+
+static s32 func_01E035E0_c063(Ctx_c063_01E035E0 *g, Streak_c063_01E035E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(s32, s32, s32);
+    extern void func_001F1FD0(s32, void *);
+    extern void func_01E00080_c063();
+    extern void c063_01E05750();
+    extern s32 func_01E029C0_c063();
+    extern s32 func_01E02F40_c063();
+    Vec4f v;
+    Vec4f *p;
+    s16 i;
+
+    if (o->state == 1) {
+        o->w = 100;
+        o->h = 100;
+        o->flip = func_0019A5C8() % 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        o->state = 2;
+        o->col2[3] = 0;
+        o->f48 = 13.0f;
+        o->r = 100.0f;
+        o->pos.y = 30.0f;
+        o->pos.z = o->r * func_00108030((s32)g->sin, o->ang, 0);
+        o->pos.x = o->r * func_00108030((s32)g->sin, o->ang, 1);
+        p = g->trail[o->idx].v;
+        for (i = 0; i < 13; i++) {
+            p[i].x = o->pos.x;
+            p[i].y = o->pos.y;
+            p[i].z = o->pos.z;
+        }
+    }
+    if (o->t < 300) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 19;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 19;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->state = 0;
+        }
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        }
+    }
+    if (o->flip != 0) {
+        o->flip = 0;
+    } else {
+        o->flip = 1;
+    }
+    if (o->t != 0) {
+        if (g->h6C3A > 625) {
+            if (g->top > o->pos.y) {
+                o->pos.y += 5.0f;
+            }
+        } else {
+            o->pos.y += 6.0f;
+        }
+        o->pos.z = o->r * func_00108030((s32)g->sin, o->ang, 0);
+        o->pos.x = o->r * func_00108030((s32)g->sin, o->ang, 1);
+        if (o->r > 0.0f) {
+            o->r -= 2.6f;
+        } else {
+            o->t = 400;
+        }
+        if (o->idx < 8) {
+            if (o->idx % 2 != 0) {
+                o->ang += 20;
+            } else {
+                o->ang -= 20;
+            }
+        } else {
+            if (o->idx % 2 != 0) {
+                o->ang += 10;
+            } else {
+                o->ang -= 10;
+            }
+        }
+    }
+    func_001F1FD0(32, &v);
+    if (g->h6C36 != 0) {
+        o->pos.z += v.z - 85.0f;
+    } else {
+        o->pos.z += 85.0f + v.z;
+    }
+    o->pos.x += v.x;
+    if (o->t < 300) {
+        g->pos = o->pos;
+        if (o->t % 2 == 1) {
+            if (o->idx % 2 == 1 && o->t > 5) {
+                c063_01E05750(g, func_01E02F40_c063, 0);
+            }
+            if (o->idx % 2 == 0 && o->t > 5) {
+                c063_01E05750(g, func_01E029C0_c063, 0);
+            }
+        }
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    }
+    func_01E00080_c063(&g->trail[o->idx].v[12], 13, 0, &o->pos);
+    func_00205C40((s32)o->rot);
+    if (o->t != 0 && o->len < 12) {
+        o->len++;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape c063:01E03B30, 157 insns: a flash ring's step, kind 0 or 1 (0x50): on start (state 1) it sets the colours
    (0x80 grey or 0xC0 grey over 0x20), copies the kind to 0x0E, takes the camera turn plus 0x4000 and radius 800 or

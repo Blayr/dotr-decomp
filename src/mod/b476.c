@@ -371,7 +371,162 @@ static Vec_b018_01E00EE0 func_01E00E70_b476(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E012B0_b476);
+/* shape b476:01E012B0, 321 insns (PAINT_Fragment_9): b046:01E01A60 with the camera turn: draws obj->count (0 = 20)
+   sprites of the definition's size along a curve read from three s8 tables (0x64 apart), each turned by the camera
+   rotation / 180 (negated x and y) and the definition's angles, world matrix at the object's position turned by the
+   definition's angles; mode 0 = depth from the projection, 1 = far z, 2 = -1 */
+
+typedef struct {
+    u8 pad0[0x20];
+    Vec4f pos;
+    u8 pad30[0x50];
+    s32 f80;
+    u8 pad84[4];
+    void *f88;
+    u8 pad8C[8];
+    u8 f94[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 fBE;
+    u8 padC0[0x18];
+    u8 fD8[4];
+} Obj_b476_01E012B0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 tab;
+    u8 padA[6];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+} Def_b476_01E012B0;
+
+typedef struct {
+    union {
+        struct {
+            u64 x : 16;
+            u64 y : 16;
+            u64 z : 24;
+            u64 fog : 8;
+        } b;
+        struct {
+            u8 pad[7];
+            u8 fog;
+        } h;
+    } xyz;
+    u64 reg;
+} Xyz_b476_01E012B0;
+
+typedef struct {
+    f32 u, v;
+} Uv_b476_01E012B0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b476_01E012B0 uv;
+    u64 pad18;
+    Xyz_b476_01E012B0 v[4];
+    u64 pad60[6];
+} Pk_b476_01E012B0;
+
+typedef struct {
+    u64 tag;
+    Pk_b476_01E012B0 pk;
+} Buf_b476_01E012B0;
+
+static void func_01E00150_b476();
+
+static void func_01E012B0_b476(Obj_b476_01E012B0 *obj, Def_b476_01E012B0 *def, s32 mode, s8 *base) {
+    f32 m2[4][4];
+    Vec4f pos;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 rot[4];
+    Buf_b476_01E012B0 buf;
+    Uv_b476_01E012B0 uv;
+    s16 i;
+    Pk_b476_01E012B0 *p;
+    s16 n;
+    s32 h;
+    s8 *t;
+    f32 f;
+    f32 r;
+    extern void func_00108EF0();
+    extern void func_00109100();
+
+    func_00207500();
+    p = &buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    buf.pk.uv.v = 0.0f;
+    buf.pk.v[0].xyz.h.fog = 0;
+    buf.pk.v[1].xyz.h.fog = 0;
+    buf.pk.v[2].xyz.h.fog = 0;
+    buf.pk.v[3].xyz.h.fog = 0;
+    func_00107740(&uv, def->tex);
+    buf.pk.uv = uv;
+    func_01E00150_b476(p, obj->f94, obj->fBE);
+    func_00208700(p, obj->f88, 1);
+    n = (obj->count != 0) ? obj->count : (s16)20;
+    s.x = 0.1f;
+    s.y = 0.1f;
+    s.z = 0.1f;
+    func_00205C40((s32)rot);
+    pos.x = obj->pos.x;
+    pos.y = obj->pos.y;
+    pos.z = obj->pos.z;
+    rot[1] /= 180;
+    rot[1] = -rot[1];
+    rot[0] /= 180;
+    rot[0] = -rot[0];
+    func_00108EF0(m, &s, def->rot, &pos);
+    for (i = 0; i < n; i++) {
+        r = def->size;
+        func_00108CE0(m2, r, r);
+        func_00109100(m2, rot, 0, obj->fD8);
+        func_00109100(m2, rot, 1, obj->fD8);
+        t = base + i;
+        h = i >> 1;
+        f = t[def->tab];
+        f /= 20.0f;
+        func_00107070(m2, 0, f * (def->scale + h));
+        f = t[def->tab + 100];
+        f /= 20.0f;
+        func_00107070(m2, 1, f * (def->scale + h));
+        f = t[def->tab + 180];
+        f /= 20.0f;
+        func_00107070(m2, 2, f * (def->scale + h));
+        func_00109100(m2, def->rot, 0, obj->fD8);
+        func_00109100(m2, def->rot, 1, obj->fD8);
+        func_00109100(m2, def->rot, 2, obj->fD8);
+        if (mode == 0) {
+            if (func_00205630((s32)m2, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+            }
+        } else if (mode == 1) {
+            if (func_00205630((s32)m2, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                p->v[0].xyz.b.z = p->v[1].xyz.b.z = p->v[2].xyz.b.z = p->v[3].xyz.b.z = 0xFFFFFF;
+                func_002075F0((s32)p, obj->f80, 0);
+            }
+        } else if (mode == 2) {
+            if (func_00205630((s32)m2, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                func_002075F0((s32)p, obj->f80, -1);
+            }
+        }
+    }
+}
 
 /* shape b476:01E017C0, 251 insns, 2 copies: a ring of 9 textured quads (radius size to size+20, 2 wide, 40 apart) turned on
    all three axes by the sprite's angles; side 0 draws only the quads behind (x < 0), side 1 only those in
@@ -472,7 +627,155 @@ static void func_01E017C0_b476(Obj_b476_01E017C0 *o, Ring_b476_01E017C0 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b476", func_01E01BB0_b476);
+/* shape b476:01E01BB0, 283 insns (IWScatteredLine4): b046:01E01A60 with the camera turn: draws obj->count (0 = 20)
+   sprites of the definition's size along a curve read from three s8 tables (0x64 apart), each turned by the camera
+   rotation / 180 (negated x and y) and then by the definition's angles on three axes, at the definition's position;
+   mode 0 draws only quads whose first corner x is below 0, else only those above 0 */
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    void *f88;
+    u8 pad8C[8];
+    u8 f94[0x24];
+    s16 count;
+    u8 padBA[0x1E];
+    u8 fD8[4];
+} Obj_b476_01E01BB0;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[2];
+    s16 tab;
+    u8 padA[6];
+    s32 rot[4];
+    u8 pad20[8];
+    u8 tex[8];
+    s16 scale;
+    u8 pad32[6];
+    s16 size;
+} Def_b476_01E01BB0;
+
+typedef struct {
+    union {
+        struct {
+            u64 x : 16;
+            u64 y : 16;
+            u64 z : 24;
+            u64 fog : 8;
+        } b;
+        struct {
+            u8 pad[7];
+            u8 fog;
+        } h;
+    } xyz;
+    u64 reg;
+} Xyz_b476_01E01BB0;
+
+typedef struct {
+    f32 u, v;
+} Uv_b476_01E01BB0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b476_01E01BB0 uv;
+    u64 pad18;
+    Xyz_b476_01E01BB0 v[4];
+    u64 pad60[6];
+} Pk_b476_01E01BB0;
+
+typedef struct {
+    u64 tag;
+    Pk_b476_01E01BB0 pk;
+} Buf_b476_01E01BB0;
+
+static void func_01E00150_b476();
+
+static void func_01E01BB0_b476(Obj_b476_01E01BB0 *obj, Def_b476_01E01BB0 *def, s8 *base, s32 mode) {
+    f32 m2[4][4];
+    Vec4f pos;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 rot[4];
+    Buf_b476_01E01BB0 buf;
+    Uv_b476_01E01BB0 uv;
+    s16 i;
+    Pk_b476_01E01BB0 *p;
+    s16 n;
+    s32 h;
+    s8 *t;
+    f32 f;
+    f32 r;
+    extern void func_00108EF0();
+    extern void func_00109100();
+
+    func_00207500();
+    p = &buf.pk;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+    buf.pk.uv.v = 0.0f;
+    buf.pk.v[0].xyz.h.fog = 0;
+    buf.pk.v[1].xyz.h.fog = 0;
+    buf.pk.v[2].xyz.h.fog = 0;
+    buf.pk.v[3].xyz.h.fog = 0;
+    func_00107740(&uv, def->tex);
+    buf.pk.uv = uv;
+    func_01E00150_b476(p, obj->f94, 0);
+    func_00208700(p, obj->f88, 1);
+    n = (obj->count != 0) ? obj->count : (s16)20;
+    s.x = 0.1f;
+    s.y = 0.1f;
+    s.z = 0.1f;
+    func_00205C40((s32)rot);
+    pos.x = def->x;
+    pos.y = def->y;
+    pos.z = def->z;
+    func_00108EF0(m, &s, 0, &pos);
+    rot[1] /= 180;
+    rot[0] /= 180;
+    rot[1] = -rot[1];
+    rot[0] = -rot[0];
+    for (i = 0; i < n; i++) {
+        r = def->size;
+        func_00108CE0(m2, r, r);
+        func_00109100(m2, rot, 0, obj->fD8);
+        func_00109100(m2, rot, 1, obj->fD8);
+        t = base + i;
+        h = i >> 1;
+        f = t[def->tab];
+        f /= 20.0f;
+        func_00107070(m2, 0, f * (def->scale + h));
+        f = t[def->tab + 100];
+        f /= 20.0f;
+        func_00107070(m2, 1, f * (def->scale + h));
+        f = t[def->tab + 180];
+        f /= 20.0f;
+        func_00107070(m2, 2, f * (def->scale + h));
+        func_00109100(m2, def->rot, 0, obj->fD8);
+        func_00109100(m2, def->rot, 1, obj->fD8);
+        func_00109100(m2, def->rot, 2, obj->fD8);
+        if (mode == 0) {
+            if (m2[0][0] < 0.0f) {
+                if (func_00205630((s32)m2, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                    func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+                }
+            }
+        } else if (m2[0][0] > 0.0f) {
+            if (func_00205630((s32)m2, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+            }
+        }
+    }
+}
 
 /* shape b046:01E01A60, 283 insns, 10 copies: draws obj->count (0 = 20) sprites along a curve read from three s8
    tables (0x64 apart), each turned on three axes by the definition's angles; mode 0 = depth from the

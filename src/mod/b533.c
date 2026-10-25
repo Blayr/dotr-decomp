@@ -508,7 +508,117 @@ static void func_01E01110_b533(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b533", func_01E01660_b533);
+/* shape b533:01E01660, 421 insns: B533_W_S, the effect scene's step (b522:01E01D30 form): counts the frame (0xB2B8);
+   frame 1 spawns 0x1E02AD0; frame 82 on each of joints 0xB244..0xB24A spawns 0x1E01D00 and five each of 0x1E023C0
+   and 0x1E02630, then 0x1E022F0; before 101 each joint gets 0x1E01DF0 and 0x1E02090 a frame; frames 34..90 one
+   0x1E02890 on joints 0xB24C / 0xB24E (side 0), frames 34 and 90 ten each (side 1) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB244 - 0x260];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    s16 j4;
+    s16 j5;
+    u8 padB250[0xB2B0 - 0xB250];
+    s16 side;
+    u8 padB2B2[6];
+    s16 t;
+} Scene_b533_01E01660;
+
+static void func_01E01660_b533(Scene_b533_01E01660 *g) {
+    extern void b533_01E01D00(void);
+    extern void b533_01E01DF0(void);
+    extern void b533_01E02090(void);
+    extern void b533_01E022F0(void);
+    extern void b533_01E023C0(void);
+    extern void b533_01E02630(void);
+    extern void b533_01E02890(void);
+    extern void b533_01E02AD0(void);
+    extern void b533_01E034E0(Scene_b533_01E01660 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 1) {
+        b533_01E034E0(g, b533_01E02AD0, 0);
+    }
+    if (g->t == 82) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b533_01E034E0(g, b533_01E01D00, 0);
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E023C0, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E02630, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        b533_01E034E0(g, b533_01E01D00, 0);
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E023C0, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E02630, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j2, &g->pos);
+        b533_01E034E0(g, b533_01E01D00, 0);
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E023C0, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E02630, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j3, &g->pos);
+        b533_01E034E0(g, b533_01E01D00, 0);
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E023C0, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            b533_01E034E0(g, b533_01E02630, 0);
+        }
+        b533_01E034E0(g, b533_01E022F0, 0);
+    }
+    if (g->t < 101) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b533_01E034E0(g, b533_01E01DF0, 0);
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        b533_01E034E0(g, b533_01E01DF0, 0);
+        func_001F5620(func_001F53A0(), g->j2, &g->pos);
+        b533_01E034E0(g, b533_01E01DF0, 0);
+        func_001F5620(func_001F53A0(), g->j3, &g->pos);
+        b533_01E034E0(g, b533_01E01DF0, 0);
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b533_01E034E0(g, b533_01E02090, 0);
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        b533_01E034E0(g, b533_01E02090, 0);
+        func_001F5620(func_001F53A0(), g->j2, &g->pos);
+        b533_01E034E0(g, b533_01E02090, 0);
+        func_001F5620(func_001F53A0(), g->j3, &g->pos);
+        b533_01E034E0(g, b533_01E02090, 0);
+    }
+    if (g->t >= 34 && g->t < 91) {
+        g->side = 0;
+        func_001F5620(func_001F53A0(), g->j4, &g->pos);
+        b533_01E034E0(g, b533_01E02890, 0);
+        func_001F5620(func_001F53A0(), g->j5, &g->pos);
+        b533_01E034E0(g, b533_01E02890, 0);
+    }
+    if (g->t == 34 || g->t == 90) {
+        g->side = 1;
+        func_001F5620(func_001F53A0(), g->j4, &g->pos);
+        for (i = 0; i < 10; i++) {
+            b533_01E034E0(g, b533_01E02890, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j5, &g->pos);
+        for (i = 0; i < 10; i++) {
+            b533_01E034E0(g, b533_01E02890, 0);
+        }
+    }
+}
 
 /* shape b533:01E01D00, 59 insns: constant variant of b415:01E022B0 (0xE->0xB, 220.0f->70.0f) */
 

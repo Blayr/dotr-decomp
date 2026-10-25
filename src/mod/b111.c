@@ -552,7 +552,123 @@ static void func_01E012C0_b111(Obj_b016_01E00920 *obj, Cam_b016_01E00920 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b111", func_01E01870_b111);
+/* shape b111:01E01870, 304 insns: the b111 module's event step (B111_W_S): counts ticks; on odd ticks 1..69 it
+   takes the hand point (ctx+0x44D4) twice, cycling the slot counter 0x4504 (0..119); 1..340 b111:01E024F0 at the
+   hand (and b111:01E022F0 from 210); 141..220 b111:01E026B0 at the other model's point (0x44E4); at 132 and 215
+   b111:01E02A10; at 185 b111:01E02860 at the other point (into 0x4470); 186..214 the point 0x4470 closes a 30th of
+   the gap between the two models a tick, b111:01E02BE0 there; 341..345 b111:01E02DE0 at five joints */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f pt;
+    u8 pad4480[0x44D4 - 0x4480];
+    s16 joint[6];
+    u8 pad44E0[4];
+    s16 other;
+    u8 pad44E6[0x4502 - 0x44E6];
+    s16 slot;
+    s16 next;
+    u8 pad4506[4];
+    s16 timer;
+} Ctx_b111_01E01870;
+
+static void func_01E01870_b111(Ctx_b111_01E01870 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b111_01E03670();
+    extern s32 b111_01E022F0();
+    extern s32 b111_01E024F0();
+    extern s32 b111_01E026B0();
+    extern s32 b111_01E02860();
+    extern s32 b111_01E02A10();
+    extern s32 b111_01E02BE0();
+    extern s32 b111_01E02DE0();
+    Vec4f a;
+    Vec4f b;
+    f32 *p;
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    if (g->timer > 0 && g->timer < 71 && g->timer % 2 == 1) {
+        if (g->timer < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->joint[0], &g->pos);
+            g->slot = g->next;
+            g->next++;
+            if (g->next >= 120) {
+                g->next = 0;
+            }
+        }
+    }
+    if (g->timer > 0 && g->timer < 341) {
+        func_001F5620(func_001F53A0(), g->joint[0], &g->pos);
+        g->slot = 0;
+        b111_01E03670(g, b111_01E024F0, 0);
+        if (g->timer >= 210) {
+            b111_01E03670(g, b111_01E022F0, 0);
+        }
+    }
+    if (g->timer >= 141 && g->timer < 221) {
+        func_001F5620(func_001F5380(), g->other, &g->pos);
+        g->slot = 1;
+        b111_01E03670(g, b111_01E026B0, 0);
+    }
+    if (g->timer == 132) {
+        func_001F5620(func_001F53A0(), g->joint[0], &g->pos);
+        g->slot = 0;
+        b111_01E03670(g, b111_01E02A10, 0);
+    }
+    if (g->timer == 185) {
+        func_001F5620(func_001F5380(), g->other, &g->pt);
+        b111_01E03670(g, b111_01E02860, 0);
+    }
+    if (g->timer > 185 && g->timer < 215) {
+        func_001F5620(func_001F53A0(), g->joint[0], &a);
+        func_001F5620(func_001F5380(), g->other, p = (f32 *)(u32)&b);
+        g->pt.x += (a.x - p[0]) / 30.0f;
+        g->pt.y += (a.y - b.y) / 30.0f;
+        g->pt.z += (a.z - b.z) / 30.0f;
+        g->pos = g->pt;
+        b111_01E03670(g, b111_01E02BE0, 0);
+    } else if (g->timer >= 215) {
+        if (g->timer == 215) {
+            func_001F5620(func_001F53A0(), g->joint[0], &g->pos);
+            g->slot = 1;
+            b111_01E03670(g, b111_01E02A10, 0);
+        }
+        if (g->timer < 341) {
+            func_001F5620(func_001F53A0(), g->joint[0], &g->pt);
+        }
+    }
+    if (g->timer == 341) {
+        func_001F5620(func_001F53A0(), g->joint[1], &g->pos);
+        b111_01E03670(g, b111_01E02DE0, 0);
+    }
+    if (g->timer == 342) {
+        func_001F5620(func_001F53A0(), g->joint[2], &g->pos);
+        b111_01E03670(g, b111_01E02DE0, 0);
+    }
+    if (g->timer == 343) {
+        func_001F5620(func_001F53A0(), g->joint[3], &g->pos);
+        b111_01E03670(g, b111_01E02DE0, 0);
+    }
+    if (g->timer == 344) {
+        func_001F5620(func_001F53A0(), g->joint[4], &g->pos);
+        b111_01E03670(g, b111_01E02DE0, 0);
+    }
+    if (g->timer == 345) {
+        func_001F5620(func_001F53A0(), g->joint[5], &g->pos);
+        b111_01E03670(g, b111_01E02DE0, 0);
+    }
+}
 
 /* shape b111:01E01D30, 268 insns: b149:01E01770 cousin: size 10, grey 0x80, random frame 0..6, turn, spin and hA 0..7,
    height from 0 growing by 15 up to its limit 100..449 while it fades in by 0x20 for 147 ticks, then fades by 8 and

@@ -677,7 +677,98 @@ static void func_01E01A60_b527(Obj_b046_01E01A60 *obj, Def_b046_01E01A60 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b527", func_01E01ED0_b527);
+/* shape b527:01E01ED0, 348 insns: the b527 module's event step (B527_W_S): scene colour (0x80, 0, 0, 0); counts
+   ticks (ctx+0x365A); at 25 and 26 eight b527:01E025C0 at each of two joints (0x363C, 0x363E) jittered by -1..0; at
+   54 and 67 fifteen at two more joints (0x3640, 0x3642) jittered -5..4 / -1..0 / -5..4; at 78 at the fifth joint
+   (0x3644) it marks 0x3656 and spawns 15 b527:01E02770, one b527:01E02A90, 10 b527:01E02D70, 12 b527:01E02440,
+   b527:01E029B0 and b527:01E032F0 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3614 - 0x260];
+    u8 col[4];
+    u8 pad3618[0x363C - 0x3618];
+    s16 joint[5];
+    u8 pad3646[0x3656 - 0x3646];
+    s16 h3656;
+    u8 pad3658[2];
+    s16 timer;
+} Ctx_b527_01E01ED0;
+
+static void func_01E01ED0_b527(Ctx_b527_01E01ED0 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b527_01E041E0();
+    extern s32 func_01E025C0_b527();
+    extern s32 func_01E02440_b527();
+    extern s32 func_01E02770_b527();
+    extern s32 func_01E029B0_b527();
+    extern s32 func_01E02A90_b527();
+    extern s32 func_01E02D70_b527();
+    extern s32 func_01E032F0_b527();
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 25 || g->timer == 26) {
+        func_001F5620(func_001F53A0(), g->joint[0], &v);
+        g->pos.x = v.x + func_0019A5C8() % 2 - 1.0f;
+        g->pos.y = v.y + func_0019A5C8() % 2 - 1.0f;
+        g->pos.z = v.z + func_0019A5C8() % 2 - 1.0f;
+        for (i = 0; i < 8; i++) {
+            b527_01E041E0(g, func_01E025C0_b527, 0);
+        }
+        func_001F5620(func_001F53A0(), g->joint[1], &v);
+        g->pos.x = v.x + func_0019A5C8() % 2 - 1.0f;
+        g->pos.y = v.y + func_0019A5C8() % 2 - 1.0f;
+        g->pos.z = v.z + func_0019A5C8() % 2 - 1.0f;
+        for (i = 0; i < 8; i++) {
+            b527_01E041E0(g, func_01E025C0_b527, 0);
+        }
+    }
+    if (g->timer == 54 || g->timer == 67) {
+        func_001F5620(func_001F53A0(), g->joint[2], &v);
+        g->pos.x = v.x + func_0019A5C8() % 10 - 5.0f;
+        g->pos.y = v.y + func_0019A5C8() % 2 - 1.0f;
+        g->pos.z = v.z + func_0019A5C8() % 10 - 5.0f;
+        for (i = 0; i < 15; i++) {
+            b527_01E041E0(g, func_01E025C0_b527, 0);
+        }
+        func_001F5620(func_001F53A0(), g->joint[3], &v);
+        g->pos.x = v.x + func_0019A5C8() % 10 - 5.0f;
+        g->pos.y = v.y + func_0019A5C8() % 2 - 1.0f;
+        g->pos.z = v.z + func_0019A5C8() % 10 - 5.0f;
+        for (i = 0; i < 15; i++) {
+            b527_01E041E0(g, func_01E025C0_b527, 0);
+        }
+    }
+    if (g->timer == 78) {
+        func_001F5620(func_001F53A0(), g->joint[4], &v);
+        g->pos.x = v.x;
+        g->pos.y = v.y;
+        g->pos.z = v.z;
+        g->h3656 = 1;
+        for (i = 0; i < 15; i++) {
+            b527_01E041E0(g, func_01E02770_b527, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            b527_01E041E0(g, func_01E02A90_b527, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b527_01E041E0(g, func_01E02D70_b527, 0);
+        }
+        for (i = 0; i < 12; i++) {
+            b527_01E041E0(g, func_01E02440_b527, 0);
+        }
+        b527_01E041E0(g, func_01E029B0_b527, 0);
+        b527_01E041E0(g, func_01E032F0_b527, 0);
+    }
+}
 
 /* shape b124:01E01500, 93 insns, 3 copies: step of a drifting spark: on state 1 picks a random phase, angle, speed and
    lifetime and a grey colour; full alpha while young, then fades by 15 until it ends; drifts by its speed. */

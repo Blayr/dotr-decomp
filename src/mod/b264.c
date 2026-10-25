@@ -1108,7 +1108,108 @@ static s32 func_01E03450_b264(s32 arg0, Fx_b264_01E03450 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b264", func_01E035B0_b264);
+/* shape b264:01E035B0, 316 insns: B264_OBJ_MOVE_10_, a wandering spark per slot (index h50): on start it sits on start
+   point idx % 6 with its 20-point trail filled there, speed (3..127)/10 at a random heading, 3..17 frames of full
+   alpha; it grows for 7 frames then shrinks, blinks white/grey, jitters -40..39 and drifts by heading + jitter / 12,
+   pushing its point into the trail for the first 7 frames */
+
+typedef struct {
+    u8 pad0[0x7030];
+    Vec4f trail[77][20];
+    u8 pad6FF0[0xD430 - 0x7030 - 77 * 0x140];
+    Vec4f pos[(0xDCF0 - 0xD430) / 16];
+    Vec4f start[6];
+    u8 padDD50[0xE0C4 - 0xDD50];
+    u8 ang[4];
+} Game_b264_01E035B0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 size;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f jit;
+    u8 pad40[8];
+    f32 f48;
+    f32 speed;
+    s16 idx;
+    s16 kind;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 head;
+    u8 pad5C[4];
+    u8 col[4];
+} Obj_b264_01E035B0;
+
+static s32 func_01E035B0_b264(Game_b264_01E035B0 *g, Obj_b264_01E035B0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s32, s32);
+    s16 i;
+    Vec4f *p;
+    Vec4f *q;
+
+    if (o->state == 1) {
+        o->size = 1;
+        o->col[3] = 0;
+        o->kind = o->idx % 6;
+        g->pos[o->idx].x = 0.0f;
+        g->pos[o->idx].y = 0.0f;
+        g->pos[o->idx].z = 0.0f;
+        o->jit.x = g->start[o->kind].x;
+        o->jit.y = g->start[o->kind].y;
+        o->jit.z = g->start[o->kind].z;
+        q = &g->pos[o->idx];
+        p = g->trail[o->idx];
+        for (i = 0; i < 20; i++) {
+            p->x = q->x;
+            p->y = q->y;
+            p->z = q->z;
+            p++;
+        }
+        o->f48 = 200.0f;
+        o->f48 /= 10.0f;
+        o->speed = func_0019A5C8() % 125 + 3;
+        o->speed /= 10.0f;
+        o->head = (func_0019A5C8() >> 4) % 360;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->t < 7) {
+        if (o->size < 15) {
+            o->size++;
+        }
+    } else if (o->size > 0) {
+        o->size--;
+    }
+    if (o->t < o->life) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    o->jit.x = func_0019A5C8() % 80 - 40;
+    o->jit.y = func_0019A5C8() % 80 - 40;
+    o->jit.z = func_0019A5C8() % 80 - 40;
+    if (o->t != 0) {
+        g->pos[o->idx].x += o->speed * func_00108030(g->ang, o->head, 1);
+        g->pos[o->idx].y += o->speed * func_00108030(g->ang, o->head, 0);
+        g->pos[o->idx].x += o->jit.x / 12.0f;
+        g->pos[o->idx].y += o->jit.y / 12.0f;
+        g->pos[o->idx].z += o->jit.z / 12.0f;
+    }
+    if (o->t < 7) {
+        func_01E00080_b264(&g->trail[o->idx][19], 20, 0, &g->pos[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b264:01E03AA0, 215 insns: b016:01E02B40's full-screen sprite through the scene's packet (ctx+0xDE68), in the
    object's colour (red 0xC0 at start, flickering 0xC0 / 0xB0 past scene time 78), its texture window inset by 0x8

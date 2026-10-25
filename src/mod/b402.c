@@ -1322,4 +1322,155 @@ static s32 func_01E034C0_b402(Obj_b402_01E034C0 *obj, s32 arg1, s32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b402", func_01E03600_b402);
+/* shape b402:01E03600, 307 insns: b016:01E014F0's band drawer with a wobble: every edge point is pushed out by 12
+   (kind 0) or 20 (kind 1) times the sine of the object's wobble angle (reset to 0, stepped 20/40 a band; table at
+   o+0x4720), bands start at o->ang0, scale from cam+0x38, plain blend */
+
+
+typedef struct Cam_b402_01E03600 {
+    u8 pad0[0x20];
+    Vec4f pos;
+    u8 pad30[8];
+    f32 sc;
+    u8 pad3C[0xC];
+    f32 w0;
+    f32 w1;
+    s16 kind;
+    u8 pad52[8];
+    s16 step;
+    s16 n;
+    u8 pad5E[2];
+    u8 uv0[4];
+    u8 uv1[4];
+} Cam_b402_01E03600;
+
+typedef struct Obj_b402_01E03600 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 rect[0x24];
+    s16 count;
+    u8 padBA[4];
+    s16 fBE;
+    u8 padC0[0x450C - 0xC0];
+    s16 wob;
+    s16 ang0;
+    u8 pad4510[0x4720 - 0x4510];
+    u8 table[0x10];
+} Obj_b402_01E03600;
+
+typedef struct Uv_b402_01E03600 {
+    f32 u, v;
+} Uv_b402_01E03600;
+
+typedef struct Vtx_b402_01E03600 {
+    Uv_b402_01E03600 st;
+    u64 rgba;
+    u64 xyz;
+} Vtx_b402_01E03600;
+
+typedef struct Pk_b402_01E03600 {
+    u8 hdr[0x10];
+    Vtx_b402_01E03600 v[4];
+    u8 pad70[0x20];
+} Pk_b402_01E03600;
+
+static void func_01E03600_b402(Obj_b402_01E03600 *o, Cam_b402_01E03600 *cam, s32 flags, Vec4f c) {
+    extern f32 func_00108030(void *table, s16 angle, s32 axis);
+    extern void func_00108EF0();
+    extern s32 func_00109270();
+    f32 h;
+    s32 i;
+    s16 k;
+    s32 n;
+    s32 idx;
+    s16 ang;
+    f32 w0;
+    Pk_b402_01E03600 *p;
+    f32 w1;
+
+    Vec4f pts[4];
+    Vec4f a;
+    Vec4f s;
+    f32 m[4][4];
+    f32 out[4];
+    Pk_b402_01E03600 pk;
+    Uv_b402_01E03600 uv0;
+    Uv_b402_01E03600 uv1;
+    Uv_b402_01E03600 uv2;
+    Uv_b402_01E03600 uv3;
+
+    p = &pk;
+    n = cam->n;
+    ang = 0;
+    func_00107990(p, cam->uv0, 2);
+    func_00107990(p, cam->uv1, 1);
+    func_00109270(p, 0, 0);
+    func_00107790(p, cam->uv0, 0);
+    func_00108500(p, o->rect, 0);
+    func_00208700(p, (void *)o->f88, 1);
+    func_00107740(&uv0, cam->uv0);
+    pk.v[0].st = uv0;
+    func_00107740(&uv1, cam->uv1);
+    pk.v[2].st = uv1;
+    func_00107740(&uv2, cam->uv0);
+    pk.v[1].st = uv2;
+    func_00107740(&uv3, cam->uv1);
+    pk.v[3].st = uv3;
+    s.x = cam->sc;
+    s.y = cam->sc;
+    s.z = cam->sc;
+    a.x = c.x;
+    a.y = c.y;
+    a.z = c.z;
+    func_00108EF0(m, &s, &cam->pos, &a);
+    pts[0].y = 0.0f;
+    pts[1].y = 0.0f;
+    pts[2].y = 0.0f;
+    pts[3].y = 0.0f;
+    w0 = cam->w0;
+    w1 = cam->w1;
+    o->wob = 0;
+    ang = o->ang0;
+    for (i = 0; i < o->count; i++) {
+        k = ang;
+        idx = cam->step + k;
+        if (cam->kind == 0) {
+            h = 12.0f * func_00108030(o->table, o->wob, 0);
+        } else if (cam->kind == 1) {
+            h = 20.0f * func_00108030(o->table, o->wob, 0);
+        }
+        if (cam->kind == 0) {
+            o->wob += 20;
+        } else if (cam->kind == 1) {
+            o->wob += 40;
+        }
+        pts[0].x = h + w0 * func_00108030(o->table, idx, 1);
+        pts[0].z = h + w0 * func_00108030(o->table, idx, 0);
+        pts[2].x = h + w1 * func_00108030(o->table, idx, 1);
+        pts[2].z = h + w1 * func_00108030(o->table, idx, 0);
+        if (cam->kind == 0) {
+            h = 12.0f * func_00108030(o->table, o->wob, 0);
+        } else if (cam->kind == 1) {
+            h = 20.0f * func_00108030(o->table, o->wob, 0);
+        }
+        idx = k + (cam->step + (s16)n);
+        pts[1].x = h + w0 * func_00108030(o->table, idx, 1);
+        pts[1].z = h + w0 * func_00108030(o->table, idx, 0);
+        pts[3].x = h + w1 * func_00108030(o->table, idx, 1);
+        pts[3].z = h + w1 * func_00108030(o->table, idx, 0);
+        if ((flags & 0xF) == 0) {
+            if (func_00205630((s32)pts, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                func_002075F0((s32)p, o->f80, func_001A23B0(out[0]));
+            }
+        } else if ((flags & 0xF) == 1) {
+            if (func_00205630((s32)pts, 0x70000000, (s32)m, (s32)p, out) != 0) {
+                func_00109380(p, 1);
+                func_002075F0((s32)p, o->f80, 0);
+            }
+        }
+        ang += cam->step;
+    }
+}

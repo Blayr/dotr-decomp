@@ -387,7 +387,92 @@ static void func_01E00CE0_b503(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b503", func_01E01240_b503);
+/* shape b503:01E01240, 319 insns: B503_W_S, the effect scene's step (b522:01E01D30 form): colour 0x80,0,0,0, counts
+   the frame (0x32B6); in frames 51..89, 111..129 and 153..264 (153..274 for the second) except every 10th+1, two
+   0x1E01740 jittered 5 around joint 0x329C, and one 0x1E01AB0 a step toward or away by the flag 0x32B2; frames
+   131..274 look the joints up again every 10th+1 frame, else sit on joint 0x32AA and spawn 0x1E01E00 on odd frames;
+   frames 149..274 spawn 0x1E02150 jittered 15 around it on even frames */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3274 - 0x260];
+    u8 col[4];
+    u8 pad3278[0x329C - 0x3278];
+    s16 j;
+    u8 pad329E[0x32AA - 0x329E];
+    s16 jk;
+    u8 pad32AC[0x32B2 - 0x32AC];
+    s16 flag;
+    u8 pad32B4[2];
+    s16 t;
+} Scene_b503_01E01240;
+
+static void func_01E01240_b503(Scene_b503_01E01240 *g) {
+    extern void b503_01E01740(void);
+    extern void b503_01E01AB0(void);
+    extern void b503_01E01E00(void);
+    extern void b503_01E02150(void);
+    extern void b503_01E02A20(Scene_b503_01E01240 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F54E0(s32);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (((g->t > 50 && g->t < 90) || (g->t > 110 && g->t < 130) || (g->t > 152 && g->t < 265)) && g->t % 10 != 1) {
+        func_001F5620(func_001F53A0(), g->j, &v);
+        for (i = 0; i < 2; i++) {
+            g->pos.x = v.x + func_0019A5C8() % 10 - 5.0f;
+            g->pos.y = v.y + func_0019A5C8() % 10 - 5.0f;
+            g->pos.z = v.z;
+            b503_01E02A20(g, b503_01E01740, 0);
+        }
+    }
+    if (((g->t > 50 && g->t < 90) || (g->t > 110 && g->t < 130) || (g->t > 152 && g->t < 275)) && g->t % 10 != 1) {
+        func_001F5620(func_001F53A0(), g->j, &v);
+        g->pos.x = v.x;
+        g->pos.y = v.y + func_0019A5C8() % 10 - 5.0f;
+        if (g->flag != 0) {
+            g->pos.z = 1.0f + v.z + func_0019A5C8() % 10 - 5.0f;
+        } else {
+            g->pos.z = v.z - 1.0f + func_0019A5C8() % 10 - 5.0f;
+        }
+        b503_01E02A20(g, b503_01E01AB0, 0);
+    }
+    if (g->t > 130 && g->t < 275) {
+        if (g->t % 10 == 1) {
+            g->j = func_001F5560(func_001F53A0(), 0x11, 1);
+            func_001F54E0(func_001F5380());
+            func_0019A5C8();
+            g->jk = func_001F5560(func_001F5380(), 1, 1);
+        } else {
+            func_001F5620(func_001F5380(), g->jk, &v);
+            g->pos.x = v.x;
+            g->pos.y = v.y;
+            g->pos.z = v.z;
+            if (g->t % 2 == 1) {
+                b503_01E02A20(g, b503_01E01E00, 0);
+            }
+        }
+    }
+    if (g->t > 148 && g->t < 275 && g->t % 10 != 1) {
+        func_001F5620(func_001F5380(), g->jk, &v);
+        g->pos.x = v.x + func_0019A5C8() % 30 - 15.0f;
+        g->pos.y = v.y + func_0019A5C8() % 30 - 15.0f;
+        g->pos.z = v.z + func_0019A5C8() % 30 - 15.0f;
+        if (g->t % 2 == 0) {
+            b503_01E02A20(g, b503_01E02150, 0);
+        }
+    }
+}
 
 /* shape b503:01E01740, 220 insns: b503:01E01E00's glow with rise 7..16, the scene count threshold 280, and a
    sideways drift h4 of -6 or +6 a tick by the scene flag (ctx+0x32B2) */

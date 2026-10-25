@@ -389,7 +389,112 @@ static void func_01E00AF0_b588(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b588", func_01E00E60_b588);
+/* shape b588:01E00E60 (B588_W_S), 293 insns, 1 copy: the b588 module's event step: scene colour red 0x80; counts
+   ticks; at 205 (joint 0xA94E) and 220 (joint 0xA950) two b588:01E025F0 at 45 and 135 degrees, b588:01E02500 and 20
+   each of b588:01E01B10 and b588:01E01D00; from 131 to 170 two b588:01E01EF0 and b588:01E015B0 on joint 0xA94C; from
+   90 to 125 two b588:01E02270 there; at 129 twenty b588:01E01300 there; from 40 to 90 two b588:01E01920 on joint
+   0xA952, lowered 7 and pushed 5 along z (back when the game value at 0xA96A is set) */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0xA904 - 0x2E0];
+    u8 col[4];
+    u8 padA908[0xA94C - 0xA908];
+    s16 jC;
+    s16 jA;
+    s16 jB;
+    s16 jD;
+    u8 padA954[0xA95E - 0xA954];
+    s16 ang;
+    u8 padA960[6];
+    s16 flag;
+    u8 padA968[2];
+    s16 v;
+    s16 timer;
+} Ctx_b588_01E00E60;
+
+static void func_01E00E60_b588(Ctx_b588_01E00E60 *g) {
+    extern s32 b588_01E01300(void);
+    extern s32 b588_01E015B0(void);
+    extern s32 b588_01E01920(void);
+    extern s32 b588_01E01B10(void);
+    extern s32 b588_01E01D00(void);
+    extern s32 b588_01E01EF0(void);
+    extern s32 b588_01E02270(void);
+    extern s32 b588_01E02500(void);
+    extern s32 b588_01E025F0(void);
+    extern void b588_01E030A0(Ctx_b588_01E00E60 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 205) {
+        func_001F5620(func_001F53A0(), g->jA, &g->pos);
+        g->ang = 45;
+        g->flag = 0;
+        b588_01E030A0(g, b588_01E025F0, 0);
+        g->ang = 135;
+        g->flag = 1;
+        b588_01E030A0(g, b588_01E025F0, 0);
+        b588_01E030A0(g, b588_01E02500, 0);
+        for (i = 0; i < 20; i++) {
+            b588_01E030A0(g, b588_01E01B10, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b588_01E030A0(g, b588_01E01D00, 0);
+        }
+    }
+    if (g->timer == 220) {
+        func_001F5620(func_001F53A0(), g->jB, &g->pos);
+        g->ang = 135;
+        g->flag = 0;
+        b588_01E030A0(g, b588_01E025F0, 0);
+        g->ang = 45;
+        g->flag = 1;
+        b588_01E030A0(g, b588_01E025F0, 0);
+        b588_01E030A0(g, b588_01E02500, 0);
+        for (i = 0; i < 20; i++) {
+            b588_01E030A0(g, b588_01E01B10, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b588_01E030A0(g, b588_01E01D00, 0);
+        }
+    }
+    if (g->timer >= 131 && g->timer < 171) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pos);
+        b588_01E030A0(g, b588_01E01EF0, 0);
+        b588_01E030A0(g, b588_01E01EF0, 0);
+        b588_01E030A0(g, b588_01E015B0, 0);
+    }
+    if (g->timer >= 90 && g->timer < 126) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pos);
+        b588_01E030A0(g, b588_01E02270, 0);
+        b588_01E030A0(g, b588_01E02270, 0);
+    }
+    if (g->timer == 129) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pos);
+        for (i = 0; i < 20; i++) {
+            b588_01E030A0(g, b588_01E01300, 0);
+        }
+    }
+    if (g->timer >= 40 && g->timer < 91) {
+        func_001F5620(func_001F53A0(), g->jD, &g->pos);
+        g->pos.y -= 7.0f;
+        if (g->v != 0) {
+            g->pos.z -= 5.0f;
+        } else {
+            g->pos.z += 5.0f;
+        }
+        b588_01E030A0(g, b588_01E01920, 0);
+        b588_01E030A0(g, b588_01E01920, 0);
+    }
+}
 
 /* shape b588:01E01300, 171 insns: a purple (0x80, 0x40, 0xFF) square flake (size 50 growing 1, kind 2..4, angle 0..359, frame 0..3) drifting (-50..49)/60 per axis and tumbling by random spins; alpha up by 0x40 to 0x80 for 8 ticks, then down by 4 */
 

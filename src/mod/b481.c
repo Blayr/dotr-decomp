@@ -810,7 +810,120 @@ static void func_01E01CF0_b481(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b481", func_01E020F0_b481);
+/* shape b481:01E020F0, 358 insns: the b481 scene's script: on tick 36 two 02690 (at 45 and 135 degrees, numbered 0/1)
+   at joint 5 levelled to the model, a 02820, fifteen 02AE0 and a 02D40; on tick 30 a 03230 and a 02EB0; on ticks
+   30..38 ten 02F70 split over joints 4..7; on ticks 29 and 32 a fan of eighteen 02910 (20 degrees apart, stepping
+   down) at each of joints 0/1 and 2/3 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCB44 - 0x260];
+    s16 j[8];
+    u8 padCB54[0x4E];
+    s16 ang;
+    u8 padCBA4[0xC];
+    s16 ring;
+    u8 padCBB2[6];
+    s16 tick;
+} Ctx_b481_01E020F0;
+
+static void func_01E020F0_b481(Ctx_b481_01E020F0 *g) {
+    extern s32 b481_01E02690();
+    extern s32 b481_01E02820();
+    extern s32 b481_01E02910();
+    extern s32 b481_01E02AE0();
+    extern s32 b481_01E02D40();
+    extern s32 b481_01E02EB0();
+    extern s32 b481_01E02F70();
+    extern s32 b481_01E03230();
+    extern void b481_01E04590(Ctx_b481_01E020F0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f v[2];
+    s16 d;
+    s16 l;
+    s16 c;
+    s16 k;
+    s16 b;
+    s16 j;
+    s16 a;
+    s16 i;
+
+    g->tick++;
+    if (g->tick == 36) {
+        func_001F5620(func_001F53A0(), g->j[5], &g->pos);
+        func_001F5F90(func_001F5380(), v);
+        g->pos.x = v[0].x;
+        g->pos.z = v[0].z;
+        g->ang = 45;
+        g->ring = 0;
+        b481_01E04590(g, b481_01E02690, 0);
+        g->ang = 135;
+        g->ring = 1;
+        b481_01E04590(g, b481_01E02690, 0);
+        b481_01E04590(g, b481_01E02820, 0);
+        for (i = 0; i < 15; i++) {
+            b481_01E04590(g, b481_01E02AE0, 0);
+        }
+        b481_01E04590(g, b481_01E02D40, 0);
+    }
+    if (g->tick == 30) {
+        g->ring = 0;
+        b481_01E04590(g, b481_01E03230, 0);
+        b481_01E04590(g, b481_01E02EB0, 0);
+    }
+    if (g->tick >= 30 && g->tick < 39) {
+        func_001F5620(func_001F53A0(), g->j[4], &g->pos);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+        func_001F5620(func_001F53A0(), g->j[5], &g->pos);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+        func_001F5620(func_001F53A0(), g->j[6], &g->pos);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+        func_001F5620(func_001F53A0(), g->j[7], &g->pos);
+        b481_01E04590(g, b481_01E02F70, 0);
+        b481_01E04590(g, b481_01E02F70, 0);
+    }
+    if (g->tick == 29) {
+        func_001F5620(func_001F53A0(), g->j[0], &g->pos);
+        for (i = 0, a = 0; i < 18; i++) {
+            g->ang = a;
+            g->pos.y -= 1.0f;
+            b481_01E04590(g, b481_01E02910, 0);
+            a += 20;
+        }
+        func_001F5620(func_001F53A0(), g->j[1], &g->pos);
+        for (j = 0, b = 0; j < 18; j++) {
+            g->ang = b;
+            g->pos.y -= 1.0f;
+            b481_01E04590(g, b481_01E02910, 0);
+            b += 20;
+        }
+    }
+    if (g->tick == 32) {
+        func_001F5620(func_001F53A0(), g->j[2], &g->pos);
+        for (k = 0, c = 0; k < 18; k++) {
+            g->ang = c;
+            g->pos.y -= 1.0f;
+            b481_01E04590(g, b481_01E02910, 0);
+            c += 20;
+        }
+        func_001F5620(func_001F53A0(), g->j[3], &g->pos);
+        for (l = 0, d = 0; l < 18; l++) {
+            g->ang = d;
+            g->pos.y -= 1.0f;
+            b481_01E04590(g, b481_01E02910, 0);
+            d += 20;
+        }
+    }
+}
 
 /* shape b481:01E02690, 97 insns: c062:01E033E0 family shock wave (lilac/purple, scale 6, 18 wide): kind 0 from 1000 growing 40, kind 1 from 250 growing 20, kind 2 400 fixed; in by 64 up to 0x80 for 4 ticks, then out by 9 and ends */
 

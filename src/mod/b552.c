@@ -387,7 +387,88 @@ static void func_01E00CE0_b552(Obj_b003_01E00EA0 *obj, Def_b003_01E00EA0 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b552", func_01E01240_b552);
+/* shape b552:01E01240, 278 insns: the module's spawn step: scene colour red, ticks the timer; from tick 69 to 199
+   (except every tenth) it spawns two b552:01E016A0 glows jittered 5 around joint A, one b552:01E01A10 glow 3 above or
+   below it, and b552:01E020B0 glows jittered 15 around joint B; from tick 91, on every tenth tick it picks new joints
+   (A from 0x11, B from 1), otherwise a b552:01E01D60 speck at joint B */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x3274 - 0x25C];
+    u8 rgba[4];
+    u8 pad3278[0x329C - 0x3278];
+    s16 jointA;
+    u8 pad329E[0x32AA - 0x329E];
+    s16 jointB;
+    u8 pad32AC[0x32B2 - 0x32AC];
+    s16 up;
+    u8 pad32B4[2];
+    s16 t;
+} Scene_b552_01E01240;
+
+static s32 func_01E016A0_b552();
+static s32 func_01E01A10_b552();
+static s32 func_01E01D60_b552();
+static s32 func_01E020B0_b552();
+static s32 func_01E02CD0_b552();
+
+static void func_01E01240_b552(Scene_b552_01E01240 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F54E0(s32);
+    f32 p[4];
+    s32 i;
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t > 0x44 && s->t <= 0xC7 && s->t % 10 != 1) {
+        func_001F5620(func_001F53A0(), s->jointA, p);
+        for (i = 0; i < 2; i++) {
+            s->px = p[0] + func_0019A5C8() % 10 - 5.0f;
+            s->py = p[1] + func_0019A5C8() % 10 - 5.0f;
+            s->pz = p[2];
+            func_01E02CD0_b552(s, func_01E016A0_b552, 0);
+        }
+    }
+    if (s->t > 0x44 && s->t <= 0xC7 && s->t % 10 != 1) {
+        func_001F5620(func_001F53A0(), s->jointA, p);
+        s->px = p[0];
+        s->py = p[1] + func_0019A5C8() % 10 - 5.0f;
+        if (s->up != 0) {
+            s->pz = p[2] + 3.0f + func_0019A5C8() % 10 - 5.0f;
+        } else {
+            s->pz = p[2] - 3.0f + func_0019A5C8() % 10 - 5.0f;
+        }
+        func_01E02CD0_b552(s, func_01E01A10_b552, 0);
+    }
+    if (s->t > 0x5A && s->t <= 0xC7) {
+        if (s->t % 10 == 1) {
+            s->jointA = func_001F5560(func_001F53A0(), 0x11, 1);
+            func_001F54E0(func_001F5380());
+            func_0019A5C8();
+            s->jointB = func_001F5560(func_001F5380(), 1, 1);
+        } else {
+            func_001F5620(func_001F5380(), s->jointB, p);
+            s->px = p[0];
+            s->py = p[1];
+            s->pz = p[2];
+            func_01E02CD0_b552(s, func_01E01D60_b552, 0);
+        }
+    }
+    if (s->t > 0x44 && s->t <= 0xC7 && s->t % 10 != 1) {
+        func_001F5620(func_001F5380(), s->jointB, p);
+        s->px = p[0] + func_0019A5C8() % 30 - 15.0f;
+        s->py = p[1] + func_0019A5C8() % 30 - 15.0f;
+        s->pz = p[2] + func_0019A5C8() % 30 - 15.0f;
+        func_01E02CD0_b552(s, func_01E020B0_b552, 0);
+    }
+}
 
 /* shape b552:01E016A0, 220 insns: b503:01E01E00's glow with rise 7..16, the scene count threshold 210, and a
    sideways drift h4 of -6 or +6 a tick by the scene flag (ctx+0x32B2) */

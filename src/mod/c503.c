@@ -259,6 +259,202 @@ static s32 func_01E00120_c503(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c503", func_01E00CB0_c503);
+/* shape c503:01E00CB0, 349 insns: the module's main: on start clears the 0x260 context, 90 ticks, the scene camera's
+   channel/id, the light, 16 sparks around (0, 5, 0) and the board at the camera's point, then saves the scene's three
+   camera vectors; each tick fades the scene in (or out once flag 31 is set), draws the board, shakes the camera by
+   +-1 on even/odd ticks, and from tick 61 puts the camera back (ends 8 once faded out); 2 at tick 20, 8 at the end */
+
+typedef struct {
+    f32 x, y, z;
+    s16 hAC;
+    s16 hAE;
+} Part_c503_01E00CB0;
+
+typedef struct {
+    Vec4f *eye;
+    Vec4f *at;
+    Vec4f *up;
+    f32 *fov;
+    u8 m[0x10];
+    Vec4f eye0;
+    Vec4f at0;
+    Vec4f up0;
+} Cam_c503_01E00CB0;
+
+typedef struct {
+    u8 pad000[0x20];
+    u8 board[0x50];
+    s32 light;
+    s32 kind;
+    u8 col[4];
+    f32 f7C;
+    f32 x, y, z;
+    s32 w8C;
+    u8 pad90[4];
+    s16 h94;
+    s16 h96;
+    s16 h98;
+    s16 h9A;
+    s16 h9C;
+    s16 h9E;
+    Part_c503_01E00CB0 part[16];
+    s16 n;
+    u8 pad1A2[4];
+    s16 h1A6;
+    s16 h1A8;
+    s16 step;
+    s16 h1AC;
+    s16 h1AE;
+    s16 h1B0;
+    u8 pad1B2[0xE];
+    Cam_c503_01E00CB0 cam;
+    u8 pad210[0x30];
+    s32 timer;
+    s32 t;
+    s32 code;
+    s32 flags;
+    s32 ch;
+    s32 id;
+    s32 w258;
+    s32 fade;
+} Ctx_c503_01E00CB0;
+
+static s32 func_01E00CB0_c503(s32 arg0, s32 code) {
+    Ctx_c503_01E00CB0 *g = (Ctx_c503_01E00CB0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern s32 func_001F5380(void);
+    extern void func_00103890(void *);
+    extern void func_00103260(s32 *, s32);
+    extern void func_001E10F0(s32, s32, s32, void *);
+    extern Vec4f *func_001F9AD0(s32);
+    extern Vec4f *func_001F9D30(s32);
+    extern Vec4f *func_001FAD10(s32);
+    extern f32 *func_001FAF60(s32);
+    extern void func_001FAFB0(s32, void *);
+    extern void func_001039A0(void *);
+    extern void func_001E23A0(s32, s32, s32);
+    extern s32 func_00103500(s32 *, s32, s32);
+    extern s32 func_00103350(s32 *, s32, s32);
+    extern void func_001E2220(s32, s32, s32);
+    extern void func_001F9D80(s32, Vec4f *);
+    extern void func_001F9B20(s32, Vec4f *);
+    extern void func_001FAD60(s32, Vec4f *);
+    extern s32 func_00103470(void *, u32, s32);
+    extern void c503_01E00120();
+    Vec4f sc;
+    s32 ot;
+    s32 l;
+    s32 i;
+
+    ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x260);
+        g->timer = 90;
+        g->t = 0;
+        g->code = code;
+        g->flags = 0;
+        g->ch = func_001F5380() & 0xFF;
+        g->id = func_001F5380() >> 8;
+        g->w258 = 8;
+        g->fade = 0;
+        func_00103890(g);
+        func_00103260(&l, 15);
+        g->light = l;
+        g->kind = 0x85;
+        g->x = 0.0f;
+        g->y = 5.0f;
+        g->z = 0.0f;
+        g->w8C = 0;
+        g->h98 = 0xF0;
+        g->h9A = 0;
+        g->h94 = 0x10;
+        g->h96 = 0x10;
+        g->h9C = 0x100;
+        g->h9E = 0x100;
+        g->f7C = 10.0f;
+        g->n = 16;
+        g->step = 3;
+        g->h1AC = 1;
+        g->h1B0 = 8;
+        g->h1A6 = 30;
+        g->h1A8 = 20;
+        g->col[2] = 0x70;
+        g->col[1] = 0x60;
+        g->col[0] = 0x40;
+        g->col[3] = 0x40;
+        for (i = 0; i < g->n; i++) {
+            g->part[i].x = g->x + (func_0019A5C8() % 20 - 10);
+            g->part[i].y = g->y + (func_0019A5C8() % 20 - 10);
+            g->part[i].z = g->z + (func_0019A5C8() % 20 - 10);
+            g->part[i].hAE = -g->step * i;
+            g->part[i].hAC = 0;
+            g->h1AE = g->h1B0 - 1;
+        }
+        func_001E10F0(g->ch, g->id, 0, g->board);
+        if (&g->cam != NULL) {
+            g->cam.eye = func_001F9AD0(0);
+            g->cam.at = func_001F9D30(0);
+            g->cam.up = func_001FAD10(0);
+            g->cam.fov = func_001FAF60(0);
+            func_001FAFB0(0, g->cam.m);
+            g->cam.eye0 = *g->cam.eye;
+            g->cam.at0 = *g->cam.at;
+            g->cam.up0 = *g->cam.up;
+        }
+        return 0;
+    }
+    func_001039A0(g);
+    func_001E23A0(g->ch, g->id, g->fade);
+    if (func_00104520(g->flags, 0x1F) == 0) {
+        if (func_00103500(&g->fade, -0x80, 4) == 0) {
+            g->flags |= 0x80000000;
+            func_001E2220(g->ch, g->id, g->w258);
+        }
+    } else if (func_00103350(&g->fade, 0, 4) == 0) {
+        g->flags |= 0x40000000;
+    }
+    sc.z = 1.01f;
+    sc.y = 1.01f;
+    sc.x = 1.01f;
+    c503_01E00120(ot, g, &g->light, &sc);
+    if (g->t % 2 == 0) {
+        g->cam.at->x = 1.0f + g->cam.at0.x;
+        g->cam.at->y = 1.0f + g->cam.at0.y;
+        g->cam.at->z = 1.0f + g->cam.at0.z;
+        func_001F9D80(0, g->cam.at);
+    } else {
+        g->cam.at->x = g->cam.at0.x - 1.0f;
+        g->cam.at->y = g->cam.at0.y - 1.0f;
+        g->cam.at->z = g->cam.at0.z - 1.0f;
+        func_001F9D80(0, g->cam.at);
+    }
+    if (g->t > 60) {
+        g->cam.eye->x = g->cam.eye0.x;
+        g->cam.eye->y = g->cam.eye0.y;
+        g->cam.eye->z = g->cam.eye0.z;
+        func_001F9B20(0, g->cam.eye);
+        g->cam.at->x = g->cam.at0.x;
+        g->cam.at->y = g->cam.at0.y;
+        g->cam.at->z = g->cam.at0.z;
+        func_001F9D80(0, g->cam.at);
+        g->cam.up->x = g->cam.up0.x;
+        g->cam.up->y = g->cam.up0.y;
+        g->cam.up->z = g->cam.up0.z;
+        func_001FAD60(0, g->cam.up);
+        if (func_00103470(&g->col[3], 0, 2) == 0 && func_00104520(g->flags, 0x1E) != 0) {
+            return 8;
+        }
+    }
+    g->t++;
+    g->timer--;
+    if (g->t == 20) {
+        return 2;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c503", func_01E01280_c503);

@@ -886,7 +886,137 @@ static s32 func_01E02460_b771(s32 arg0, Mote_b771_01E02460 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b771", func_01E026F0_b771);
+/* shape b771:01E026F0, 326 insns (B771_OBJ_MOVE_9_): a green swirl band: on start its height is the scene base plus
+   2..7, a random heading and turn side, radius the scene scale, and its two trails (0x280-byte slots at 0x4470, 20
+   points each) filled with the start point (the second 30 degrees back and height / 10 up); fades in by 0x15 for 10
+   ticks, then out by 9; each tick the heading turns 12 and both trails take a new point (b034:01E00080), the colour
+   blinks green, the band count grows to 18 and from tick 5 it rises 1.5 */
+
+typedef struct {
+    Vec4f a[20];
+    Vec4f b[20];
+} Trail_b771_01E026F0;
+
+typedef struct {
+    u8 pad0[0x4470];
+    Trail_b771_01E026F0 slot[1];
+    u8 pad46F0[0xA8E4 - 0x46F0];
+    f32 scale;
+    u8 padA8E8[0xA922 - 0xA8E8];
+    s16 base;
+    u8 padA924[0xAB30 - 0xA924];
+    u8 sin[4];
+} Game_b771_01E026F0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 n;
+    s16 h8;
+    s16 h;
+    u8 padC[0x28];
+    f32 y;
+    u8 pad38[0x10];
+    f32 r;
+    u8 pad4C[4];
+    s16 idx;
+    s16 dir;
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 ang;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b771_01E026F0;
+
+static s32 func_01E00080_b771();
+
+static s32 func_01E026F0_b771(Game_b771_01E026F0 *g, Obj_b771_01E026F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f v;
+    f32 f;
+    f32 r;
+    s16 h;
+    Vec4f *p;
+    s16 i;
+
+    if (o->mode == 1) {
+        h = g->base + (func_0019A5C8() % 6 + 2);
+        o->h = h;
+        f = h;
+        f /= 10.0f;
+        func_001076F0(o->col2, 0xFF, 0xFF, 0xFF);
+        v.y = 0.0f;
+        o->ang = (func_0019A5C8() >> 4) % 360;
+        o->dir = (func_0019A5C8() >> 4) % 2;
+        r = g->scale;
+        o->r = r;
+        v.z = r * func_00108030(g->sin, o->ang, 0);
+        v.x = r * func_00108030(g->sin, o->ang, 1);
+        for (i = 0, p = g->slot[o->idx].a; i < 19; i++, p++) {
+            p->x = v.x;
+            p->y = v.y;
+            p->z = v.z;
+        }
+        v.z = r * func_00108030(g->sin, o->ang - 30, 0);
+        v.x = r * func_00108030(g->sin, o->ang - 30, 1);
+        v.y = f;
+        for (i = 0, p = g->slot[o->idx].b; i < 19; i++, p++) {
+            p->x = v.x;
+            p->y = v.y;
+            p->z = v.z;
+        }
+        o->n = 2;
+        o->col[3] = 0;
+        o->h8 = 0;
+        o->h56 = 0;
+        o->mode = 2;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0x15;
+        }
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    f = o->h + o->y;
+    f /= 10.0f;
+    if (o->dir != 0) {
+        o->ang += 12;
+    } else {
+        o->ang -= 12;
+    }
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    v.y = o->h8 + o->y;
+    r = o->r;
+    v.z = r * func_00108030(g->sin, o->ang, 0);
+    v.x = r * func_00108030(g->sin, o->ang, 1);
+    func_01E00080_b771(&g->slot[o->idx].a[19], 20, 0, &v);
+    v.y = o->y + (f + o->h8);
+    v.z = r * func_00108030(g->sin, o->ang - 30, 0);
+    v.x = r * func_00108030(g->sin, o->ang - 30, 1);
+    func_01E00080_b771(&g->slot[o->idx].b[19], 20, 0, &v);
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0x20, 0x50, 0x20);
+    } else {
+        func_001076F0(o->col, 0x10, 0x40, 0x10);
+    }
+    if (o->t != 0) {
+        if (o->n < 18) {
+            o->n++;
+        }
+    }
+    if (o->t > 4) {
+        o->y += 1.5f;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b771:01E02C10, 240 insns: b144:01E02030's ember in green (0x50, 0xC0, 0x50) on the tracked point
    (ctx+0xA8F8): kind 0 size 2..6, kind 1 size 6..10; before scene count 280 kind 0 sits 50..149 up rising 5..24 and

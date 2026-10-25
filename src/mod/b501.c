@@ -561,7 +561,149 @@ static void func_01E01ED0_b501(Obj_b112_01E00B60 *o, Ring_b112_01E00B60 *s, s32 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b501", func_01E02370_b501);
+/* shape b501:01E02370, 335 insns: B501_W_S, the scene script: black-red tint, counts the scene frame (0x2B5E) and
+   spawns the module's movers on it: 12 pairs at both tracked joints on frame 34 and one pair a frame on 34..40 (and
+   12 more at one joint each on frames 53 / 55), a trail point at the third joint (ring of 50 at 0x2410) with two
+   movers on frames 90..120 (and a third every fourth frame) or one on 50..58, the turning angle (-8 a frame), the
+   two on frame 49, six on frame 3 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    f32 px, py, pz;
+    u8 pad025C[0x2410 - 0x25C];
+    Vec4f pts[50];
+    u8 pad2730[0x2B14 - 0x2730];
+    u8 col[4];
+    u8 pad2B18[0x2B3C - 0x2B18];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    u8 pad2B42[0xC];
+    s16 h4E;
+    s16 ang;
+    u8 pad2B52[2];
+    s16 kind;
+    u8 pad2B56[4];
+    s16 idx;
+    u8 pad2B5C[2];
+    s16 frame;
+} Ctx_b501_01E02370;
+
+static void func_01E02370_b501(Ctx_b501_01E02370 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b501_01E04690();
+    extern s32 b501_01E028B0();
+    extern s32 b501_01E02D10();
+    extern s32 b501_01E02DE0();
+    extern s32 b501_01E02FE0();
+    extern s32 b501_01E03130();
+    extern s32 b501_01E03310();
+    extern s32 b501_01E03530();
+    extern s32 b501_01E03680();
+    extern s32 b501_01E03800();
+    extern s32 b501_01E03880();
+    f32 v[8];
+    s16 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->frame++;
+    if (g->frame == 20) {
+        b501_01E04690(g, b501_01E03800, 0);
+    }
+    if (g->frame == 90) {
+        b501_01E04690(g, b501_01E03880, 0);
+    }
+    if (g->frame == 34) {
+        for (i = 0; i < 12; i++) {
+            func_001F5620(func_001F53A0(), g->j0, v);
+            g->px = v[0];
+            g->py = v[1];
+            g->pz = v[2];
+            b501_01E04690(g, b501_01E03680, 0);
+            func_001F5620(func_001F53A0(), g->j1, v);
+            g->px = v[0];
+            g->py = v[1];
+            g->pz = v[2];
+            b501_01E04690(g, b501_01E03680, 0);
+        }
+    }
+    if (g->frame >= 34 && g->frame < 41) {
+        g->kind = 1;
+        func_001F5620(func_001F53A0(), g->j0, v);
+        g->px = v[0];
+        g->py = v[1];
+        g->pz = v[2];
+        b501_01E04690(g, b501_01E03680, 0);
+        func_001F5620(func_001F53A0(), g->j1, v);
+        g->px = v[0];
+        g->py = v[1];
+        g->pz = v[2];
+        b501_01E04690(g, b501_01E03680, 0);
+    }
+    if (g->frame == 53 || g->frame == 55) {
+        g->kind = 0;
+        for (i = 0; i < 12; i++) {
+            if (g->frame == 53) {
+                func_001F5620(func_001F53A0(), g->j0, v);
+                g->px = v[0];
+                g->py = v[1];
+                g->pz = v[2];
+                b501_01E04690(g, b501_01E03680, 0);
+            }
+            if (g->frame == 55) {
+                func_001F5620(func_001F53A0(), g->j1, v);
+                g->px = v[0];
+                g->py = v[1];
+                g->pz = v[2];
+                b501_01E04690(g, b501_01E03680, 0);
+            }
+        }
+    }
+    if (g->frame >= 90 && g->frame < 121) {
+        func_001F5620(func_001F53A0(), g->j2, &g->pts[g->idx]);
+        g->kind = g->idx;
+        g->h4E = g->ang;
+        b501_01E04690(g, b501_01E03530, 0);
+        b501_01E04690(g, b501_01E02DE0, 0);
+        g->idx++;
+        if (g->idx >= 50) {
+            g->idx = 0;
+        }
+        if (g->frame % 4 == 1) {
+            b501_01E04690(g, b501_01E02D10, 0);
+        }
+    }
+    if (g->frame >= 50 && g->frame < 59) {
+        func_001F5620(func_001F53A0(), g->j2, &g->pts[g->idx]);
+        g->kind = g->idx;
+        g->h4E = g->ang;
+        b501_01E04690(g, b501_01E02FE0, 0);
+        g->idx++;
+        if (g->idx >= 50) {
+            g->idx = 0;
+        }
+    }
+    g->ang -= 8;
+    if (g->ang < -359) {
+        g->ang %= 360;
+    }
+    if (g->frame == 49) {
+        b501_01E04690(g, b501_01E03310, 0);
+    }
+    if (g->frame == 49) {
+        b501_01E04690(g, b501_01E028B0, 0);
+    }
+    if (g->frame == 3) {
+        for (i = 0; i < 6; i++) {
+            g->kind = i;
+            b501_01E04690(g, b501_01E03130, 0);
+        }
+    }
+}
 
 /* shape b501:01E028B0, 92 insns: on start colour (0x20, 0x20, 0xF0), the game's 9 trail points (0x2930) all set to
    model point 0x2B46, 0x6 = 8, alpha 0, 0xA 44..60, 0x8 5..12, random 0x3A, 0x38 = 5; alpha 0xC0 for 11 ticks, then

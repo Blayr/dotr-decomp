@@ -488,9 +488,261 @@ static void func_01E01410_b574(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E015E0_b574);
+/* shape b574:01E015E0, 333 insns: the b574 module's event step (B574_W_S): counts ticks (ctx+0xDA98); until 289 the
+   point 0xD930 follows the model (0xD9C8); at 290 it sets a 75-tick glide (y, z) toward the other model (0xD9D8) and
+   glides until 363; 125..300 pairs of b574:01E01B20 (turn k*10 and +180, slots k and k+36) for k up to 35; 365..400
+   two b574:01E02A70 a tick (slot counter 0..79); at 220 two b574:01E02720; 364..400 b574:01E02550 twice and
+   b574:01E02910 at the point; 290..400 b574:01E03080 and b574:01E03240; at 290 b574:01E02070 and ten b574:01E02170 */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E01B20_b574);
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xD930 - 0x260];
+    Vec4f p;
+    u8 padD940[0x20];
+    Vec4f d;
+    u8 padD970[0xD9C8 - 0xD970];
+    s16 id;
+    u8 padD9CA[0xE];
+    s16 id2;
+    u8 padD9DA[0xDA7A - 0xD9DA];
+    s16 k;
+    u8 padDA7C[2];
+    s16 ang;
+    u8 padDA80[2];
+    s16 m;
+    u8 padDA84[0xC];
+    s16 slot;
+    u8 padDA92[6];
+    s16 timer;
+} Ctx_b574_01E015E0;
+
+static void func_01E015E0_b574(Ctx_b574_01E015E0 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_01E03D70_b574();
+    extern s32 b574_01E01B20();
+    extern s32 func_01E02070_b574();
+    extern s32 func_01E02170_b574();
+    extern s32 func_01E02550_b574();
+    extern s32 func_01E02720_b574();
+    extern s32 func_01E02910_b574();
+    extern s32 b574_01E02A70();
+    extern s32 func_01E03080_b574();
+    extern s32 func_01E03240_b574();
+    Vec4f v[2];
+    s16 i;
+
+    g->timer++;
+    if (g->timer < 290) {
+        func_001F5620(func_001F53A0(), g->id, &g->p);
+    } else {
+        if (g->timer == 290) {
+            func_001F5620(func_001F5380(), g->id2, v);
+            g->d.z = (v[0].z - g->p.z) / 75.0f;
+            g->d.y = (v[0].y - g->p.y) / 75.0f;
+        }
+        if (g->timer < 364) {
+            g->p.z += g->d.z;
+            g->p.y += g->d.y;
+        }
+    }
+    if (g->timer >= 125 && g->timer < 301) {
+        if (g->k < 36) {
+            g->ang = g->k * 10;
+            g->slot = g->k;
+            func_01E03D70_b574(g, b574_01E01B20, 0);
+            g->ang = g->k * 10 + 180;
+            g->slot = g->k + 36;
+            func_01E03D70_b574(g, b574_01E01B20, 0);
+            g->k++;
+        }
+    }
+    if (g->timer > 364 && g->timer < 401) {
+        for (i = 0; i < 2; i++) {
+            g->slot = g->m;
+            func_01E03D70_b574(g, b574_01E02A70, 0);
+            g->m++;
+            if (g->m >= 80) {
+                g->m = 0;
+            }
+        }
+    }
+    if (g->timer == 220) {
+        g->slot = 0;
+        func_01E03D70_b574(g, func_01E02720_b574, 0);
+        g->slot = 36;
+        func_01E03D70_b574(g, func_01E02720_b574, 0);
+    }
+    if (g->timer >= 364 && g->timer < 401) {
+        g->pos = g->p;
+        g->slot = 0;
+        func_01E03D70_b574(g, func_01E02550_b574, 0);
+        func_01E03D70_b574(g, func_01E02550_b574, 0);
+        func_01E03D70_b574(g, func_01E02910_b574, 0);
+    }
+    if (g->timer >= 290 && g->timer < 401) {
+        g->pos = g->p;
+        g->slot = 0;
+        func_01E03D70_b574(g, func_01E03080_b574, 0);
+        func_01E03D70_b574(g, func_01E03240_b574, 0);
+    }
+    if (g->timer == 290) {
+        g->pos = g->p;
+        g->slot = 0;
+        func_01E03D70_b574(g, func_01E02070_b574, 0);
+        for (i = 0; i < 10; i++) {
+            func_01E03D70_b574(g, func_01E02170_b574, 0);
+        }
+    }
+}
+
+/* shape b574:01E01B20, 339 insns: a petal of the ring (B574_OBJ_MOVE_2_): set up once at 60 x 60, grey, mode 0 / 2 /
+   4 by slot thirds (36 each), random size 4..6; fades in by 12 to 0xC0 before tick 30, out by 11 after scene tick
+   400; from tick 30 every 10th tick the hue phase (0..5) steps and shifts the two colours by 5; while the scene runs
+   it shrinks or grows width/height by 2.5 through modes 0..5; after scene tick 290 it spins both turns by 0x300,
+   direction by slot third */
+
+typedef struct {
+    u8 pad0[0xDA98];
+    s16 timer;
+} Ctx_b574_01E01B20;
+
+typedef struct {
+    u8 pad0[6];
+    s16 phase;
+    s16 size;
+    u8 padA[0x16];
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 w;
+    f32 h;
+    s16 slot;
+    s16 mode;
+    s16 t;
+    s16 h56;
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+    u8 col2[4];
+} Petal_b574_01E01B20;
+
+static s32 func_01E01B20_b574(Ctx_b574_01E01B20 *g, Petal_b574_01E01B20 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 60.0f;
+        o->h = 60.0f;
+        o->h56 = 0;
+        o->state = 2;
+        if (o->slot < 36) {
+            o->mode = 0;
+        } else if (o->slot < 72) {
+            o->mode = 2;
+        } else if (o->slot < 108) {
+            o->mode = 4;
+        }
+        o->size = func_0019A5C8() % 3 + 4;
+        o->rot[0] = 0x4000;
+        o->phase = 0;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    if (o->t < 30) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 12;
+        }
+        if (o->col2[3] < 0xC0) {
+            o->col2[3] += 12;
+        }
+    } else if (g->timer > 400) {
+        if (o->col[3] > 12) {
+            o->col[3] -= 11;
+        } else {
+            o->state = 0;
+        }
+        if (o->col2[3] > 12) {
+            o->col2[3] -= 11;
+        }
+    }
+    if (o->t >= 30 && o->t % 10 == 1) {
+        o->phase++;
+        if (o->phase > 5) {
+            o->phase = 0;
+        }
+    }
+    if (o->phase == 0) {
+        o->col[0] += 5;
+        o->col2[0] += 5;
+    } else if (o->phase == 1) {
+        o->col[1] += 5;
+        o->col2[1] += 5;
+    } else if (o->phase == 2) {
+        o->col[2] += 5;
+        o->col2[2] += 5;
+    } else if (o->phase == 3) {
+        o->col[0] -= 5;
+        o->col2[0] += 5;
+    } else if (o->phase == 4) {
+        o->col[1] -= 5;
+        o->col2[1] += 5;
+    } else if (o->phase == 5) {
+        o->col[2] -= 5;
+        o->col2[2] += 5;
+    }
+    if (g->timer != 0) {
+        if (o->mode == 0) {
+            if (o->w > 25.0f) {
+                o->w -= 2.5f;
+            } else {
+                o->mode++;
+            }
+        } else if (o->mode == 1) {
+            if (o->h > 20.0f) {
+                o->h -= 2.5f;
+            }
+        } else if (o->mode == 2) {
+            if (o->w > 15.0f) {
+                o->w -= 2.5f;
+            } else {
+                o->mode++;
+            }
+        } else if (o->mode == 3) {
+            if (o->h > 10.0f) {
+                o->h -= 2.5f;
+            }
+        } else if (o->mode == 4) {
+            if (o->w < 20.0f) {
+                o->w += 2.5f;
+            } else {
+                o->mode++;
+            }
+        } else if (o->mode == 5) {
+            if (o->h < 10.0f) {
+                o->h += 2.5f;
+            }
+        }
+    }
+    if (g->timer > 290) {
+        if (o->slot < 36) {
+            o->rot[1] += 0x300;
+        } else if (o->slot < 72) {
+            o->rot[1] -= 0x300;
+        } else if (o->slot < 108) {
+            o->rot[1] += 0x300;
+        }
+        if (o->slot < 36) {
+            o->rot[0] += 0x300;
+        } else if (o->slot < 72) {
+            o->rot[0] -= 0x300;
+        } else if (o->slot < 108) {
+            o->rot[0] += 0x300;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b178:01E03530, 63 insns: a two-colour glow: grey and (0x80,0x80,0x40), life 12; both alphas grow by 0x2A
    (below 0x80) during the life, then fade out by 12; stops when the first is gone */
@@ -862,7 +1114,117 @@ static s32 func_01E02910_b574(s32 arg0, Obj_b574_01E02910 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b574", func_01E02A70_b574);
+/* shape b574:01E02A70, 387 insns (B574_OBJ_MOVE_10_, b445:01E03680's code): a jittery spark trail (b445:01E03080 twin: random pitch, light-grey blink; bigger and faster than b445's) on a world track (b149:01E01ED0 family): set up once
+   (point reset and nudged by a random kick, the track's 20 points filled with it, random size, speed, heading,
+   life); its frame grows for 7 frames then shrinks, full for its life then fades out, blinks; each frame the
+   point drifts along its heading and jitters, while the module's b574:01E00080 shifts the track */
+
+typedef struct {
+    Vec4f p[0x14];
+} Track_b574_01E02A70;
+
+typedef struct {
+    u8 pad0[0x7030];
+    Track_b574_01E02A70 track[0x40];
+    u8 pad[0xD430 - 0x7030 - 0x40 * 0x140];
+    Vec4f pt[0x86];
+    u8 padDC90[0xDC9C - 0xDC90];
+    u8 trig[1];
+} World_b574_01E02A70;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f v;
+    u8 pad40[8];
+    f32 size;
+    f32 speed;
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 head;
+    s16 pitch;
+    u8 pad5E[2];
+    u8 c0[4];
+} Spark_b574_01E02A70;
+
+static s32 func_01E02A70_b574(World_b574_01E02A70 *w, Spark_b574_01E02A70 *o) {
+    extern void func_01E00080_b574();
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        o->frame = 1;
+        o->c0[3] = 0;
+        w->pt[o->idx].x = 0.0f;
+        w->pt[o->idx].y = 0.0f;
+        w->pt[o->idx].z = 0.0f;
+        o->v.x = func_0019A5C8() % 60 - 30;
+        o->v.y = func_0019A5C8() % 60 - 30;
+        o->v.z = func_0019A5C8() % 60 - 30;
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+        w->pt[o->idx].z += o->v.z / 10.0f;
+        src = &w->pt[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 0x14; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->size = func_0019A5C8() % 130 + 40;
+        o->size /= 10.0f;
+        o->speed = func_0019A5C8() % 140 + 25;
+        o->speed /= 10.0f;
+        o->head = func_0019A5C8() % 360;
+        o->pitch = (func_0019A5C8() >> 4) % 360;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->t < 7) {
+        if (o->frame < 0xF) {
+            o->frame++;
+        }
+    } else if (o->frame > 0) {
+        o->frame--;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0x1E) {
+        o->c0[3] -= 0x1D;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+    }
+    o->v.x = func_0019A5C8() % 80 - 40;
+    o->v.y = func_0019A5C8() % 80 - 40;
+    o->v.z = func_0019A5C8() % 80 - 40;
+    if (o->t != 0) {
+        w->pt[o->idx].z += o->speed * func_00108030(w->trig, o->head, 0);
+        w->pt[o->idx].x += o->speed * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += o->speed * func_00108030(w->trig, o->pitch, 0);
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+        w->pt[o->idx].z += o->v.z / 10.0f;
+    }
+    if (o->t < 7) {
+        func_01E00080_b574(&w->track[o->idx].p[0x13], 0x14, 0, &w->pt[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b574:01E03080, 112 insns: b764:01E02A60 family ring (grey/purple) of random height 10..79 (25..124 once the scene value reaches 360), growing 1 (or 3) a tick, spun 0x4000: in by 80 up to 0xA0 for 3 ticks, then out by 12 and ends */
 

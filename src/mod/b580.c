@@ -609,7 +609,203 @@ static s32 func_01E01990_b580(s32 unused, Obj_b580_01E01990 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b580", func_01E01B70_b580);
+/* shape b580:01E01B70, 318 insns: the scene manager of b580: on a code >= 0 it clears the scene (0x8370 bytes), sets
+   up the sine tables, fetches resources and textures (group 4 cells 14-15, group 5 cells 0-3), a 378-tick timer and
+   a table of 256 random -15..14 offsets (100..179 cleared); otherwise it runs the step (b580:01E00CE0), steps and
+   draws the 25 rings (0x98 bytes at 0x2D0) and steps the 250 effects (0x70 bytes at 0x11B0), drawing the
+   b580:01E01640 ones as sprites and the b580:01E01990 ones through b580:01E00790; it returns 1, 4, 2 or 6 on the
+   scene frames 205, 360, 340 and 216..334, 8 when the timer runs out */
+
+typedef struct {
+    u8 pad0[0x88];
+    s16 used;
+    u8 pad8A[0xE];
+} Ring_b580_01E01B70;
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 hA;
+    u8 padC[4];
+    f32 x, y, z;
+    u8 pad1C[0x28];
+    s32 (*fn)(void *, void *);
+    f32 r;
+    u8 pad4C[0xA];
+    s16 cell;
+    s16 used;
+    s16 ang;
+    u8 pad5C[0x14];
+} Fx_b580_01E01B70;
+
+typedef struct {
+    s16 u, v, w, h;
+} Rect_b580_01E01B70;
+
+typedef struct {
+    u8 pad0[0x20];
+    f32 ox, oy, oz;
+    u8 pad2C[0x54];
+    s32 ot;
+    u8 pad84[4];
+    s32 texture;
+    u8 pad8C[8];
+    union {
+        Vec4f v;
+        Rect_b580_01E01B70 r;
+    } uv;
+    u8 padA4[0x14];
+    s16 count;
+    u8 padBA[2];
+    u8 padBC[2];
+    s16 mode;
+    s16 cell;
+    u8 padC2[0x16];
+    u8 tblD8[0x1B8];
+    s32 tex[16];
+    Ring_b580_01E01B70 ring[25];
+    u8 pad11A8[8];
+    Fx_b580_01E01B70 fx[250];
+    u8 pad7F10[0x8050 - 0x7F10];
+    s32 tex5[4];
+    u8 pad8060[0x10];
+    s32 timer;
+    u8 pad8074[8];
+    s32 ot2;
+    u8 pad8080[0x58];
+    s16 res0;
+    s16 res1;
+    s16 res2;
+    s16 res3;
+    u8 pad80E0[0x14];
+    s16 code;
+    s16 frame;
+    s8 rnd[0x100];
+    u8 sin[4];
+} Ctx_b580_01E01B70;
+
+static void func_01E004D0_b580();
+static void func_01E00790_b580();
+static s32 func_01E00CE0_b580();
+static s32 func_01E01280_b580();
+static s32 func_01E01640_b580();
+static s32 func_01E01990_b580();
+static s32 func_01E023B0_b580();
+
+static s32 func_01E01B70_b580(s32 arg0, s32 code) {
+    Ctx_b580_01E01B70 *g = (Ctx_b580_01E01B70 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern Vec4f func_00106080(s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s32 n;
+    Vec4f p;
+    Vec4f t0;
+    Vec4f t1;
+    u8 pkt[0x90];
+    s32 i;
+
+    n = 0;
+    g->ot2 = func_00207500();
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x8370);
+        func_00107C10(g->sin);
+        func_00107C10(g->tblD8);
+        g->res0 = func_001F5560(func_001F53A0(), 1, 1);
+        for (i = 14; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        for (i = 0; i < 4; i++) {
+            g->tex5[i] = func_00202BF0(5, i);
+        }
+        g->res1 = func_001F5560(func_001F5380(), 1, 1);
+        g->res2 = func_001F5560(func_001F53A0(), 0x37, 0);
+        g->res3 = func_001F5560(func_001F53A0(), 0x3D, 0);
+        g->code = code;
+        g->timer = 378;
+        for (i = 0; i < 0x100; i++) {
+            g->rnd[i] = func_0019A5C8() % 30 - 15;
+        }
+        for (i = 100; i < 180; i++) {
+            g->rnd[i] = 0;
+        }
+        return 0;
+    }
+    func_01E00CE0_b580(g, 0);
+    for (i = 0; i < 25; i++) {
+        if (g->ring[i].used != 0) {
+            func_01E01280_b580(g, &g->ring[i]);
+        }
+    }
+    for (i = 0; i < 25; i++) {
+        if (g->ring[i].used != 0) {
+            func_01E023B0_b580(g, &g->ring[i], pkt, 0);
+            func_01E023B0_b580(g, &g->ring[i], pkt, 1);
+        }
+    }
+    for (i = 0; i < 250; i++) {
+        if (g->fx[i].used != 0) {
+            if (g->fx[i].fn != NULL) {
+                g->fx[i].fn(g, &g->fx[i]);
+            }
+        }
+    }
+    for (i = 0; i < 250; i++) {
+        if (g->fx[i].used != 0) {
+            n++;
+            if (g->fx[i].fn == func_01E01640_b580) {
+                g->texture = g->tex5[1];
+                t0 = func_00106080(0x14, g->fx[i].cell, 0);
+                g->uv.v = t0;
+                g->uv.r.u = 0;
+                g->uv.r.v = 0;
+                g->uv.r.w = 0x7F;
+                g->uv.r.h = 0x3F;
+                g->mode = 0;
+                p.x = g->fx[i].x + g->fx[i].r * func_00108030(g->sin, g->fx[i].ang, 1);
+                p.y = g->fx[i].y;
+                p.z = g->fx[i].z + g->fx[i].r * func_00108030(g->sin, g->fx[i].ang, 0);
+                func_01E004D0_b580(g, &g->fx[i], 0x10, p);
+            }
+            if (g->fx[i].fn == func_01E01990_b580) {
+                t1 = func_00106080(0x14, g->fx[i].cell, 0);
+                g->uv.v = t1;
+                g->texture = g->tex5[2];
+                g->count = 5;
+                g->cell = g->fx[i].hA;
+                g->ox = g->fx[i].x;
+                g->oy = g->fx[i].y;
+                g->oz = g->fx[i].z;
+                func_01E00790_b580(g, &g->fx[i], 0x10, g->rnd);
+                g->count = 0;
+            }
+        }
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->frame == 205) {
+        return 1;
+    }
+    if (g->frame == 360) {
+        return 4;
+    }
+    if (g->frame == 340) {
+        return 2;
+    }
+    if (g->frame > 215 && g->frame < 335) {
+        return 6;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b580:01E02070, 89 insns: take a free node (0x19 of 0x98 bytes at 0x2D0), clear it, copy the scene vector
    0x250, 0x92/0x8E from 0x80EC/0x80F2, y = 0x80B0 and 0x14 = y - 18, then push it on the scene's list (0x8080,

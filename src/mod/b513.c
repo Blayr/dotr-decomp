@@ -516,7 +516,125 @@ static void func_01E01260_b513(Obj_b046_01E00DD0 *obj, Data_b046_01E00DD0 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b513", func_01E01450_b513);
+/* shape b513:01E01450, 267 insns (B513_W_S): the module's spawn step: scene colour red, ticks the timer; at 51 reads
+   joint 0x36CA into 0x3520 and from 52 to 64 copies it to the spawn point; spawns two b513:01E01880 before 179 and
+   two b513:01E021D0 before 204; on six ticks sixteen b513:01E01A10 at joint 0x36D2, on five more sixteen at joint
+   0x36D0; at 178 (joint 0x36CC) and 203 (joint 0x36CE) eight b513:01E02050, then eight b513:01E01EB0, thirty
+   b513:01E01D00, one b513:01E01B70 and one b513:01E02360 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x3520 - 0x25C];
+    f32 qx, qy, qz;
+    u8 pad352C[0x36A4 - 0x352C];
+    u8 rgba[4];
+    u8 pad36A8[0x36CA - 0x36A8];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    s16 j4;
+    u8 pad36D4[0x36E2 - 0x36D4];
+    s16 flag;
+    u8 pad36E4[2];
+    s16 t;
+} Scene_b513_01E01450;
+
+static s32 func_01E01880_b513();
+static s32 func_01E01A10_b513();
+static s32 func_01E01B70_b513();
+static s32 func_01E01D00_b513();
+static s32 func_01E01EB0_b513();
+static s32 func_01E02050_b513();
+static s32 func_01E021D0_b513();
+static s32 func_01E02360_b513();
+static s32 func_01E02E60_b513();
+
+static void func_01E01450_b513(Scene_b513_01E01450 *s) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t == 51) {
+        func_001F5620(func_001F53A0(), s->j0, &s->qx);
+    }
+    if (s->t > 51 && s->t < 65) {
+        func_001F5620(func_001F53A0(), s->j0, v);
+        for (i = 0; i < 6; i++) {
+            s->px = s->qx;
+            s->py = s->qy;
+            s->pz = s->qz;
+        }
+    }
+    if (s->t < 179) {
+        func_01E02E60_b513(s, func_01E01880_b513, 0);
+        func_01E02E60_b513(s, func_01E01880_b513, 0);
+    }
+    if (s->t < 204) {
+        func_01E02E60_b513(s, func_01E021D0_b513, 0);
+        func_01E02E60_b513(s, func_01E021D0_b513, 0);
+    }
+    if (s->t == 18 || s->t == 44 || s->t == 75 || s->t == 101 || s->t == 131 || s->t == 152) {
+        func_001F5620(func_001F53A0(), s->j4, v);
+        s->px = v[0];
+        s->py = v[1];
+        s->pz = v[2];
+        for (i = 0; i < 16; i++) {
+            func_01E02E60_b513(s, func_01E01A10_b513, 0);
+        }
+    }
+    if (s->t == 31 || s->t == 58 || s->t == 87 || s->t == 114 || s->t == 143) {
+        func_001F5620(func_001F53A0(), s->j3, v);
+        s->px = v[0];
+        s->py = v[1];
+        s->pz = v[2];
+        for (i = 0; i < 16; i++) {
+            func_01E02E60_b513(s, func_01E01A10_b513, 0);
+        }
+    }
+    if (s->t == 178 || s->t == 203) {
+        if (s->t == 178) {
+            func_001F5620(func_001F53A0(), s->j1, v);
+        }
+        if (s->t == 203) {
+            func_001F5620(func_001F53A0(), s->j2, v);
+        }
+        s->px = v[0];
+        s->py = v[1];
+        s->pz = v[2];
+        s->flag = 1;
+        for (i = 0; i < 8; i++) {
+            func_01E02E60_b513(s, func_01E02050_b513, 0);
+        }
+    }
+    if (s->t == 178 || s->t == 203) {
+        if (s->t == 178) {
+            func_001F5620(func_001F53A0(), s->j1, v);
+        }
+        if (s->t == 203) {
+            func_001F5620(func_001F53A0(), s->j2, v);
+        }
+        s->px = v[0];
+        s->py = v[1];
+        s->pz = v[2];
+        s->flag = 1;
+        for (i = 0; i < 8; i++) {
+            func_01E02E60_b513(s, func_01E01EB0_b513, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            func_01E02E60_b513(s, func_01E01D00_b513, 0);
+        }
+        func_01E02E60_b513(s, func_01E01B70_b513, 0);
+        func_01E02E60_b513(s, func_01E02360_b513, 0);
+    }
+}
 
 /* shape b513:01E01880, 99 insns: a red spark on a model joint (first): frame 10, random sub-frame 0..3 with rise 17 less half of it,
    y turn, width 0..9, hold 1..3; full alpha until the hold, then down by 10 until it ends; takes the joint position each frame */

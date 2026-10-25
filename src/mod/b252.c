@@ -908,7 +908,104 @@ static s32 func_01E03410_b252(void *arg0, Obj_b252_01E03410 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b252", func_01E03530_b252);
+/* shape b252:01E03530, 322 insns, 1 copy (B252_OBJ_MOVE_10_): one of the scene's 20-point trails (kind = trail, kind % 6
+   = its direction from the table at ctx+0xDB10): on start its head goes to 0, the trail fills with it, speed 0.9, size
+   0.3..6.7, life 3..17; size in up to 15 for 7 ticks then out; full alpha 0xC0 for its life, then out by 29; flickers
+   white / grey; the head moves by its direction plus a random jitter / 12 and the trail follows for 7 ticks */
+
+typedef struct {
+    u8 pad0[6];
+    s16 size;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f jit;
+    u8 pad40[8];
+    f32 speed;
+    f32 f4C;
+    s16 kind;
+    s16 dir;
+    s16 tick;
+    u8 pad56[2];
+    s16 state;
+    u8 pad5A[6];
+    u8 col[4];
+} Obj_b252_01E03530;
+
+typedef struct {
+    u8 pad0[0x7030];
+    Vec4f trail[6][20];
+    u8 pad77B0[0x5C80];
+    Vec4f head[0x6E];
+    Vec4f dirs[6];
+} Scene_b252_01E03530;
+
+static s32 func_01E03530_b252(Scene_b252_01E03530 *g, Obj_b252_01E03530 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_01E00080_b252();
+    s16 i;
+    Vec4f *h;
+    Vec4f *t;
+
+    if (o->state == 1) {
+        o->size = 1;
+        o->col[3] = 0;
+        o->dir = o->kind % 6;
+        g->head[o->kind].x = 0.0f;
+        g->head[o->kind].y = 0.0f;
+        g->head[o->kind].z = 0.0f;
+        o->jit.x = g->dirs[o->dir].x;
+        o->jit.y = g->dirs[o->dir].y;
+        o->jit.z = g->dirs[o->dir].z;
+        h = &g->head[o->kind];
+        t = g->trail[o->kind];
+        for (i = 0; i < 20; i++) {
+            t[i].x = h->x;
+            t[i].y = h->y;
+            t[i].z = h->z;
+        }
+        o->speed = 90.0f;
+        o->speed /= 10.0f;
+        o->f4C = func_0019A5C8() % 65 + 3;
+        o->f4C /= 10.0f;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->tick < 7) {
+        if (o->size < 15) {
+            o->size++;
+        }
+    } else if (o->size > 0) {
+        o->size--;
+    }
+    if (o->tick < o->life) {
+        o->col[3] = 0xC0;
+    } else if (o->col[3] > 30) {
+        o->col[3] -= 29;
+    } else {
+        o->state = 0;
+    }
+    if (o->tick % 2 == 0) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+    }
+    o->jit.x = func_0019A5C8() % 80 - 40;
+    o->jit.y = func_0019A5C8() % 80 - 40;
+    o->jit.z = func_0019A5C8() % 80 - 40;
+    if (o->tick != 0) {
+        g->head[o->kind].z += g->dirs[o->dir].z;
+        g->head[o->kind].x += g->dirs[o->dir].x;
+        g->head[o->kind].y += g->dirs[o->dir].y;
+        g->head[o->kind].x += o->jit.x / 12.0f;
+        g->head[o->kind].y += o->jit.y / 12.0f;
+        g->head[o->kind].z += o->jit.z / 12.0f;
+    }
+    if (o->tick < 7) {
+        func_01E00080_b252(&g->trail[o->kind][19], 20, 0, &g->head[o->kind]);
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b252:01E03A40, 150 insns: grey marker (size 22, 20 at scene count 153) on scene point o->h52 (ctx+0xD930), blinking 0xC0/0x70 by h50 parity and the scene flag; both alphas up by 9 to 0x80 until count 255, then the inner one falls by 11 (twice); frame flips 0/1 each tick */
 

@@ -93,7 +93,144 @@ INCLUDE_ASM("asm/nonmatchings/mod/b351", func_01E014C0_b351);
 
 INCLUDE_ASM("asm/nonmatchings/mod/b351", func_01E01D20_b351);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b351", func_01E02980_b351);
+/* shape b351:01E02980, 287 insns (ShFx_Flear03): steps and draws n flare arcs (0x5C bytes each): the arc's start
+   and end angles slide by 0x18 toward each other's side, the centre moves by its speed, the radius grows by 0x20 while
+   the life is above 0x09; each arc is drawn as a fan of triangles from the centre (colour 0x24, fading in over its
+   first 8 life steps) to the rim (colour 0x28), one per (0x14 x 0x08) degrees */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 xyz;
+} Vtx_b351_01E02980;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b351_01E02980 v[3];
+    u64 tail;
+} Pkt_b351_01E02980;
+
+typedef struct {
+    f32 x, y, z;
+} V3_b351_01E02980;
+
+typedef struct {
+    u8 life;
+    u8 pad1[7];
+    u8 steps;
+    u8 b9;
+    u8 padA[2];
+    f32 a0;
+    f32 a1;
+    f32 step;
+    f32 da;
+    f32 r;
+    f32 dr;
+    u8 c0[4];
+    u8 c1[4];
+    V3_b351_01E02980 pos;
+    u8 pad38[4];
+    V3_b351_01E02980 vel;
+    u8 pad48[4];
+    s32 rot[4];
+} Flare_b351_01E02980;
+
+static s32 func_01E02980_b351(void *arg0, s32 ot, s32 n) {
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_00101BA0(void *, void *);
+    extern f32 func_001A6898(f32);
+    extern f32 func_001A6A88(f32);
+    f32 m2[16];
+    f32 m1[16];
+    Vec4f v;
+    Pkt_b351_01E02980 pk __attribute__((aligned(8)));
+    f32 dep[3];
+    Flare_b351_01E02980 *e;
+    s32 i;
+    s32 down;
+    f32 lo;
+    f32 hi;
+    f32 st;
+    f32 ang;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e++;
+        }
+        if (func_00101AF0(e) != 0) {
+            if (e->a1 > e->a0) {
+                down = 0;
+            } else {
+                down = 1;
+            }
+            if (down) {
+                e->a0 -= e->da;
+                e->a1 -= e->da;
+            } else {
+                e->a0 += e->da;
+                e->a1 += e->da;
+            }
+            e->pos.x += e->vel.x;
+            e->pos.y += e->vel.y;
+            e->pos.z += e->vel.z;
+            if (e->life > e->b9) {
+                e->r += e->dr;
+            }
+            func_00101BA0(e, &e->pos);
+            func_0020EB40(m1);
+            func_0020C940(m2, 0, e->rot, &e->pos);
+            func_0020BC00((s32)m1, m2);
+            ((Pkt_b351_01E02980 *)(s32)&pk)->count = 0x13;
+            ((Pkt_b351_01E02980 *)(s32)&pk)->tag = 6;
+            ((Pkt_b351_01E02980 *)(s32)&pk)->regs = 0x414141;
+            ((Pkt_b351_01E02980 *)(s32)&pk)->pad = 0;
+            pk.v[0].r = e->c0[2];
+            pk.v[1].r = pk.v[2].r = e->c1[2];
+            pk.v[0].g = e->c0[1];
+            pk.v[1].g = pk.v[2].g = e->c1[1];
+            pk.v[0].b = e->c0[0];
+            pk.v[1].b = pk.v[2].b = e->c1[0];
+            pk.v[0].q = pk.v[1].q = pk.v[2].q = 1.0f;
+            pk.v[1].a = pk.v[2].a = e->c1[3];
+            if (e->life < 8) {
+                pk.v[0].a = e->life * (e->c0[3] >> 3);
+            } else {
+                pk.v[0].a = e->c0[3];
+            }
+            func_002086D0(&pk, 0x48);
+            v.z = 0.0f;
+            v.y = 0.0f;
+            v.x = 0.0f;
+            if (func_00205440(&v, m1, &pk.v[0].xyz, &dep[0]) != 0) {
+                if (down) {
+                    lo = e->a1;
+                    hi = e->a0;
+                } else {
+                    lo = e->a0;
+                    hi = e->a1;
+                }
+                st = e->step * e->steps;
+                for (; lo < hi; lo += st) {
+                    ang = 3.1415927f * lo / 180.0f;
+                    v.x = e->r * func_001A6898(ang);
+                    v.z = e->r * func_001A6A88(ang);
+                    if (func_00205440(&v, m1, &pk.v[1].xyz, &dep[1]) != 0) {
+                        v.x = e->r * func_001A6898(3.1415927f * (lo + e->step) / 180.0f);
+                        v.z = e->r * func_001A6A88(3.1415927f * (lo + e->step) / 180.0f);
+                        if (func_00205440(&v, m1, &pk.v[2].xyz, &dep[2]) != 0) {
+                            func_002075F0((s32)&pk, ot, (u32)dep[2]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b351", func_01E02E00_b351);
 

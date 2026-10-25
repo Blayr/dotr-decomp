@@ -659,7 +659,129 @@ static s32 func_01E01DE0_b702(s32 unused, Obj_b702_01E01DE0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b702", func_01E01FD0_b702);
+/* shape b702:01E01FD0, 308 insns, 1 copy (B702_OBJ_MOVE_6_): b247:01E027A0 in green and grey: a shock ring of kind
+   0..2, growth 35..42.9 a tick, out by 11; kind 0 keeps its inner at 0.2 of the radius and turns 0x80 a tick either way */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x1C];
+    s32 turn;
+    u8 pad28[8];
+    f32 rise;
+    f32 f34;
+    f32 grow;
+    u8 pad3C[0xC];
+    f32 r;
+    f32 r2;
+    s16 kind;
+    s16 dir;
+    s16 tick;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b702_01E01FD0;
+
+typedef struct {
+    u8 pad0[0xB3F8];
+    s16 frame;
+} Scene_b702_01E01FD0;
+
+static s32 func_01E01FD0_b702(Scene_b702_01E01FD0 *g, Obj_b702_01E01FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->r = 140.0f;
+        o->r2 = o->r - 58.0f;
+        if (o->kind == 0) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x80, 0xC0, 0x80);
+                func_001076F0(o->col, 8, 8, 8);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x80, 0xFF, 0x80);
+                func_001076F0(o->col, 0x38, 0x38, 0x38);
+            }
+            o->life = 8;
+        }
+        if (o->kind == 1) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x60, 0x80, 0x60);
+                func_001076F0(o->col, 8, 8, 8);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x40, 0xFF, 0x40);
+                func_001076F0(o->col, 0x38, 0x38, 0x38);
+            }
+            o->f34 = 10.0f;
+            o->life = 10;
+        }
+        if (o->kind == 2) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x50, 0x50, 0x50);
+                func_001076F0(o->col, 0x28, 0x28, 0x28);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x60, 0x60, 0x60);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 70.0f;
+            o->life = 10;
+        }
+        if (o->kind == 0) {
+            o->h5A = 60;
+            o->h5C = 60;
+            o->dir = (func_0019A5C8() >> 4) % 2;
+        }
+        if (o->kind == 1) {
+            o->h5A = 10;
+            o->h5C = 3;
+        }
+        if (o->kind == 2) {
+            o->h5A = 60;
+            o->h5C = 60;
+        }
+        o->grow = func_0019A5C8() % 80 + 350;
+        o->grow /= 10.0f;
+        o->rise = 350.0f;
+        o->rise /= 10.0f;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->turn = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < o->life) {
+        o->col2[3] = 0x80;
+    } else if (o->col2[3] > 12) {
+        o->col2[3] -= 11;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        o->r += o->grow;
+        o->r2 = 0.2f * o->r;
+        if (o->dir == 0) {
+            o->turn += 0x80;
+        } else {
+            o->turn -= 0x80;
+        }
+    }
+    if (o->kind == 1) {
+        o->r += o->grow;
+        o->r2 = 0.7f * o->r;
+        o->f34 += o->grow;
+    }
+    if (o->kind == 2) {
+        o->r += o->grow;
+        o->r2 = 0.7f * o->r;
+        o->f34 += o->grow;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b702:01E024A0, 113 insns: on start 0x8/0xA = 130, variant 2..4, colour white, random heading 0x5A and a jump of
    6.6 along it (z by the cosine, x by the sine of the game table 0xB6FC); alpha grows by 0x40 (below 0x80) for 10

@@ -2,7 +2,142 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E00080_b774);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b774", func_01E009D0_b774);
+/* shape b774:01E009D0, 287 insns: B774_OBJ_MOVE_2_, a trail spark: pink (white-ish after frame 140), set up once
+   (life 3..12, spin -15..14, random turn), fades in over its life then out (faster from level 30), and scatters its
+   trail's eight points (0x110 + idx * 0x80) by up to 4, stacked by 0x3710 before frame 140, else 17 apart */
+
+typedef struct {
+    u8 pad0[0x110];
+    Vec4f trail[10][8];
+    u8 pad610[0x36D0 - 0x610];
+    s32 level;
+    u8 pad36D4[0x3710 - 0x36D4];
+    s16 step;
+    u8 pad3712[0x371E - 0x3712];
+    s16 t;
+} Scene_b774_01E009D0;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 idx;
+    s16 age;
+    s16 f34;
+    s16 state;
+    s16 life;
+    s16 spin;
+} Spark_b774_01E009D0;
+
+static s32 func_01E009D0_b774(Scene_b774_01E009D0 *g, Spark_b774_01E009D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 i;
+    Vec4f *p;
+
+    if (g->t > 140) {
+        func_001076F0(o->col, 0xFF, 0x10, 0xFF);
+    } else {
+        func_001076F0(o->col, 0x2F, 0x10, 0x2F);
+    }
+    if (o->state == 1) {
+        o->life = func_0019A5C8() % 10 + 3;
+        o->spin = func_0019A5C8() % 30 - 15;
+        o->f34 = 0;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        o->col[3] = 0;
+        o->age = 0;
+        o->state = 2;
+    }
+    if (o->age < o->life) {
+        if (o->col[3] < 240) {
+            o->col[3] += 240 / (o->life - 1);
+        }
+    } else if (g->level < 30) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 10;
+        } else {
+            o->state = 0;
+        }
+    } else {
+        if (o->col[3] > 16) {
+            o->col[3] -= 15;
+        } else {
+            o->state = 1;
+        }
+    }
+    o->age++;
+    if (o->idx == 0) {
+        p = g->trail[0];
+    } else if (o->idx == 1) {
+        p = g->trail[1];
+    } else if (o->idx == 2) {
+        p = g->trail[2];
+    } else if (o->idx == 3) {
+        p = g->trail[3];
+    } else if (o->idx == 4) {
+        p = g->trail[4];
+    } else if (o->idx == 5) {
+        p = g->trail[5];
+    } else if (o->idx == 6) {
+        p = g->trail[6];
+    } else if (o->idx == 7) {
+        p = g->trail[7];
+    } else if (o->idx == 8) {
+        p = g->trail[8];
+    } else {
+        p = g->trail[9];
+    }
+    for (i = 0; i < 8; i++) {
+        p->x = func_0019A5C8() % 8 - 4;
+        p->z = func_0019A5C8() % 8 - 4;
+        if (g->t < 140) {
+            p->y = i * g->step;
+        } else {
+            p->y = i * 17;
+        }
+        p++;
+    }
+    if (o->idx == 0) {
+        g->trail[0][0].x = 0.0f;
+        g->trail[0][0].z = 0.0f;
+    } else if (o->idx == 1) {
+        g->trail[1][0].x = 0.0f;
+        g->trail[1][0].z = 0.0f;
+    } else if (o->idx == 2) {
+        g->trail[2][0].x = 0.0f;
+        g->trail[2][0].z = 0.0f;
+    } else if (o->idx == 3) {
+        g->trail[3][0].x = 0.0f;
+        g->trail[3][0].z = 0.0f;
+    } else if (o->idx == 4) {
+        g->trail[4][0].x = 0.0f;
+        g->trail[4][0].z = 0.0f;
+    } else if (o->idx == 5) {
+        g->trail[5][0].x = 0.0f;
+        g->trail[5][0].z = 0.0f;
+    } else if (o->idx == 6) {
+        g->trail[6][0].x = 0.0f;
+        g->trail[6][0].z = 0.0f;
+    } else if (o->idx == 7) {
+        g->trail[7][0].x = 0.0f;
+        g->trail[7][0].z = 0.0f;
+    } else if (o->idx == 8) {
+        g->trail[8][0].x = 0.0f;
+        g->trail[8][0].z = 0.0f;
+    } else {
+        g->trail[9][0].x = 0.0f;
+        g->trail[9][0].z = 0.0f;
+    }
+    o->rot[2] += o->spin * 64;
+    if (g->level < 30 && o->col[3] > 15) {
+        o->col[3] -= 14;
+    }
+    return 0;
+}
 
 /* shape b774:01E00E50, 78 insns: on start 0x38 = 30, one random roll thrown away, colour blue, random rotation; alpha
    grows by 12 for 10 ticks, then fades by 9 and stops; 0x38 counts up; the position follows the game's float point

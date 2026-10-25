@@ -600,7 +600,132 @@ static Rect_b152_01E014F0 func_01E01800_b529(s32 unused, s16 n) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b529", func_01E01950_b529);
+/* shape b529:01E01950, 333 insns: the b529 scene's script: the anchor point follows joint 0x72E8 until tick 190, then
+   glides to joint 0x72F8 over 50 ticks (until tick 238); on tick 1 it spawns 03090, 03170 and a ring 0 (023B0); from
+   tick 73 one 01E90 a tick (72 of them, angle 10 x index); on tick 146 a 02650; on tick 164 rings 1 and 2, twenty
+   027F0 and eleven 02D10; on ticks 250..280 a 02AB0 every other tick (numbered) and a 027F0 + 02D10 each tick; on tick
+   288 rings 1 and 2 and a 02C10; a 02EF0 every tick until 300; every third tick the spawn point takes the anchor */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x7270 - 0x260];
+    Vec4f p;
+    Vec4f vel;
+    u8 pad7290[0x58];
+    s16 jointA;
+    u8 pad72EA[0xE];
+    s16 jointB;
+    u8 pad72FA[0x9E];
+    s16 k;
+    s16 n;
+    s16 ang;
+    u8 pad739E[0xA];
+    s16 ring;
+    u8 pad73AA[6];
+    s16 tick;
+} Ctx_b529_01E01950;
+
+static void func_01E01950_b529(Ctx_b529_01E01950 *g) {
+    extern s32 b529_01E01E90();
+    extern s32 b529_01E023B0();
+    extern s32 b529_01E02650();
+    extern s32 b529_01E027F0();
+    extern s32 b529_01E02AB0();
+    extern s32 b529_01E02C10();
+    extern s32 b529_01E02D10();
+    extern s32 b529_01E02EF0();
+    extern s32 b529_01E03090();
+    extern s32 b529_01E03170();
+    extern void b529_01E03DF0(Ctx_b529_01E01950 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f t[2];
+    s16 i;
+
+    g->tick++;
+    if (g->tick == 1) {
+        b529_01E03DF0(g, b529_01E03090, 0);
+        b529_01E03DF0(g, b529_01E03170, 0);
+    }
+    if (g->tick >= 73 && g->k < 72) {
+        g->ang = g->k * 10;
+        g->ring = g->k;
+        b529_01E03DF0(g, b529_01E01E90, 0);
+        g->k++;
+    }
+    if (g->tick < 190) {
+        func_001F5620(func_001F53A0(), g->jointA, &g->p);
+    } else {
+        if (g->tick == 190) {
+            func_001F5620(func_001F5380(), g->jointB, t);
+            g->vel.z = (t[0].z - g->p.z) / 50.0f;
+            g->vel.y = (t[0].y - g->p.y) / 50.0f;
+            g->vel.x = (t[0].x - g->p.x) / 50.0f;
+        }
+        if (g->tick < 239) {
+            g->p.z += g->vel.z;
+            g->p.y += g->vel.y;
+            g->p.x += g->vel.x;
+        }
+    }
+    if (g->tick % 3 == 1) {
+        g->pos = g->p;
+    }
+    if (g->tick == 1) {
+        g->pos = g->p;
+        g->ring = 0;
+        b529_01E03DF0(g, b529_01E023B0, 0);
+    }
+    if (g->tick == 0xA4) {
+        g->pos = g->p;
+        g->ring = 1;
+        b529_01E03DF0(g, b529_01E023B0, 0);
+        g->ring = 2;
+        b529_01E03DF0(g, b529_01E023B0, 0);
+        g->pos = g->p;
+        g->ring = 0;
+        for (i = 0; i < 20; i++) {
+            b529_01E03DF0(g, b529_01E027F0, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b529_01E03DF0(g, b529_01E02D10, 0);
+        }
+        b529_01E03DF0(g, b529_01E02D10, 0);
+    }
+    if (g->tick == 0x92) {
+        g->pos = g->p;
+        g->ring = 0;
+        b529_01E03DF0(g, b529_01E02650, 0);
+    }
+    if (g->tick >= 250 && g->tick < 281) {
+        g->pos = g->p;
+        g->ring = g->n;
+        if (g->tick % 2 == 0) {
+            b529_01E03DF0(g, b529_01E02AB0, 0);
+        }
+        g->n++;
+    }
+    if (g->tick >= 250 && g->tick < 281) {
+        g->pos = g->p;
+        g->ring = 1;
+        b529_01E03DF0(g, b529_01E027F0, 0);
+        b529_01E03DF0(g, b529_01E02D10, 0);
+    }
+    if (g->tick == 0x120) {
+        g->pos = g->p;
+        g->ring = 1;
+        b529_01E03DF0(g, b529_01E023B0, 0);
+        g->ring = 2;
+        b529_01E03DF0(g, b529_01E023B0, 0);
+        b529_01E03DF0(g, b529_01E02C10, 0);
+    }
+    if (g->tick < 301) {
+        g->pos = g->p;
+        b529_01E03DF0(g, b529_01E02EF0, 0);
+    }
+}
 
 /* OVL_WARM */
 

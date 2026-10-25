@@ -699,7 +699,121 @@ static void func_01E01910_b743(Obj_b094_01E00920 *obj, Data_b094_01E00920 *data,
 
 INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E01C70_b743);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b743", func_01E020C0_b743);
+/* shape b743:01E020C0, 287 insns, 1 copy: B743_OBJ_MOVE_2_: on start greys both colours, copies its position into
+   scene slot k with a random angle 0..359 and radius 5..26.9; fades both alphas in by 42 to 0x80 for 52 ticks, then
+   out by 14 (ends when the first runs out); blinks white/light grey; spins; on tick 55 moves the scene point onto its
+   circle and spawns three b743:01E02540, two b743:01E026D0 and one b743:01E02C20; turns 18 a tick for 33 ticks, then
+   slides the slot 8 along z (back when the scene flag is set) */
+
+typedef struct Game_b743_01E020C0 {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCAD0 - 0x260];
+    Vec4f pts[(0xD28C - 0xCAD0) / 16];
+    u8 padD28C[0xD28C - 0xCAD0 - 16 * ((0xD28C - 0xCAD0) / 16)];
+    f32 rad[(0xD49C - 0xD28C) / 4];
+    s16 ang[(0xD59E - 0xD49C) / 2];
+    s16 flag;
+    u8 padD5A0[0xD7A4 - 0xD5A0];
+    u8 trig[1];
+} Game_b743_01E020C0;
+
+typedef struct Obj_b743_01E020C0 {
+    u8 pad0[8];
+    s16 h8;
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 k;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 h5A;
+    u8 pad5C[4];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b743_01E020C0;
+
+static s32 func_01E02540_b743();
+static s32 func_01E026D0_b743();
+static s32 func_01E02C20_b743();
+static s32 func_01E043D0_b743();
+
+static s32 func_01E020C0_b743(Game_b743_01E020C0 *g, Obj_b743_01E020C0 *o) {
+    extern void func_001076F0();
+    extern s32 func_0019A5C8();
+    extern void func_00205C40();
+    extern f32 func_00108030();
+    s16 k;
+
+    if (o->mode == 1) {
+        o->h8 = 15;
+        o->hA = 15;
+        o->h56 = 4;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        func_001076F0(o->col2, 0x80, 0x80, 0x80);
+        g->pts[o->k].x = o->pos.x;
+        g->pts[o->k].y = o->pos.y;
+        g->pts[o->k].z = o->pos.z;
+        o->mode = 2;
+        o->col2[3] = 0;
+        g->ang[o->k] = func_0019A5C8() % 360;
+        g->rad[o->k] = func_0019A5C8() % 220 + 50;
+        g->rad[o->k] /= 10.0f;
+    }
+    if (o->t < 52) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 42;
+        }
+        if (o->col2[3] < 0x80) {
+            o->col2[3] += 42;
+        }
+    } else {
+        if (o->col[3] > 15) {
+            o->col[3] -= 14;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col2[3] > 15) {
+            o->col2[3] -= 14;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->col, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->col, 0xC0, 0xC0, 0xC0);
+    }
+    func_00205C40(o->rot);
+    if (o->t == 55) {
+        k = o->k;
+        g->pos.x = g->pts[k].x + g->rad[k] * func_00108030(g->trig, g->ang[k], 1);
+        g->pos.y = g->pts[o->k].y;
+        k = o->k;
+        g->pos.z = g->pts[k].z + g->rad[k] * func_00108030(g->trig, g->ang[k], 0);
+        func_01E043D0_b743(g, func_01E02540_b743, 0);
+        func_01E043D0_b743(g, func_01E02540_b743, 0);
+        func_01E043D0_b743(g, func_01E02540_b743, 0);
+        func_01E043D0_b743(g, func_01E026D0_b743, 0);
+        func_01E043D0_b743(g, func_01E026D0_b743, 0);
+        func_01E043D0_b743(g, func_01E02C20_b743, 0);
+    }
+    if (o->t < 33) {
+        o->h5A += 5;
+        g->ang[o->k] += 18;
+    }
+    o->t++;
+    if (o->t > 33) {
+        if (g->flag) {
+            g->pts[o->k].z -= 8.0f;
+        } else {
+            g->pts[o->k].z += 8.0f;
+        }
+    }
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

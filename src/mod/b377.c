@@ -699,7 +699,125 @@ static s32 func_01E02150_b377(Mgr_b377_01E02150 *m, Obj_b377_01E02150 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E02320_b377);
+/* shape b377:01E02320, 290 insns (B377_OBJ_MOVE_6_): a growing ring by kind (0x50): on start width 140 / height 82,
+   colours by kind and the scene's frame parity (purple / blue / pink, lighter on odd frames), hold 8 or 10, sizes
+   10/10, 10/3 or 60/60, growth (350..429)/10, spin 35, a random turn; full alpha while held, then fades by 5; each
+   tick the width grows (height 0.4 or 0.7 of it) and kinds 1/2 also climb */
+
+typedef struct {
+    u8 pad0[0xB2BC];
+    s16 frame;
+} Game_b377_01E02320;
+
+typedef struct {
+    u8 pad0[6];
+    s16 hold;
+    u8 pad8[0x1C];
+    s32 turn;
+    u8 pad28[8];
+    f32 spin;
+    f32 y;
+    f32 grow;
+    u8 pad3C[0xC];
+    f32 w;
+    f32 h;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b377_01E02320;
+
+static s32 func_01E02320_b377(Game_b377_01E02320 *g, Obj_b377_01E02320 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->w = 140.0f;
+        o->h = o->w - 58.0f;
+        if (o->kind == 0) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x80, 0x20, 0xC0);
+                func_001076F0(o->col, 0, 0, 0);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->hold = 8;
+        }
+        if (o->kind == 1) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0x60, 0x20, 0x80);
+                func_001076F0(o->col, 0, 0, 0);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0x80, 0x40, 0xFF);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->y = 10.0f;
+            o->hold = 10;
+        }
+        if (o->kind == 2) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0xC0, 0x80, 0x80);
+                func_001076F0(o->col, 0x10, 0x10, 0x10);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->y = 10.0f;
+            o->hold = 10;
+        }
+        if (o->kind == 0) {
+            o->h5A = 10;
+            o->h5C = 10;
+        }
+        if (o->kind == 1) {
+            o->h5A = 10;
+            o->h5C = 3;
+        }
+        if (o->kind == 2) {
+            o->h5A = 60;
+            o->h5C = 60;
+        }
+        o->grow = func_0019A5C8() % 80 + 350;
+        o->grow /= 10.0f;
+        o->spin = 350.0f;
+        o->spin /= 10.0f;
+        o->mode = 2;
+        o->col2[3] = 0;
+        o->turn = func_0019A5C8() % 65535;
+    }
+    if (o->t < o->hold) {
+        o->col2[3] = 0x80;
+    } else if (o->col2[3] > 6) {
+        o->col2[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->w += o->grow;
+        o->h = 0.4f * o->w;
+    }
+    if (o->kind == 1) {
+        o->w += o->grow;
+        o->h = 0.7f * o->w;
+        o->y += o->grow;
+    }
+    if (o->kind == 2) {
+        o->w += o->grow;
+        o->h = 0.7f * o->w;
+        o->y += o->grow;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b377:01E027B0, 165 insns: b292:01E01C90 with the joints at 0xB244 */
 

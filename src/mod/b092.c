@@ -491,7 +491,221 @@ static Vec_b018_01E00EE0 func_01E012B0_b092(Vec_b018_01E00EE0 *p, s32 type, f32 
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b092", func_01E016F0_b092);
+/* shape b092:01E016F0, 730 insns: B092_W_S, the effect scene's step (b522:01E01D30 form): counts the frame (0xCBCE);
+   frame 1 0x1E02F80, frame 15 eight 0x1E02260 (two sides, four angles), frames 52/78 a ring of eighteen 0x1E02420
+   on joints 0xCB5C and 0xCB5E, 0x1E03090 / 0x1E03310 / 0x1E03600 on frame ranges; the mark (0xCAF0) follows joint
+   0xCB60; frame 60 two 0x1E02950 22 either side of it, frames 83..88 six 0x1E02AB0 stepping out (mirrored by 0xCBCA) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCAF0 - 0x260];
+    Vec4f mark;
+    u8 padCB00[0xCB5C - 0xCB00];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 padCB62[0xCBB6 - 0xCB62];
+    s16 ang;
+    u8 padCBB8[0xCBC4 - 0xCBB8];
+    s16 idx;
+    s16 side;
+    u8 padCBC8[2];
+    s16 flag;
+    u8 padCBCC[2];
+    s16 t;
+} Scene_b092_01E016F0;
+
+static void func_01E016F0_b092(Scene_b092_01E016F0 *g) {
+    extern void b092_01E02260(void);
+    extern void b092_01E02420(void);
+    extern void b092_01E02950(void);
+    extern void b092_01E02AB0(void);
+    extern void b092_01E02F80(void);
+    extern void b092_01E03090(void);
+    extern void b092_01E03310(void);
+    extern void b092_01E03600(void);
+    extern void b092_01E040E0(Scene_b092_01E016F0 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 a;
+
+    g->t++;
+    if (g->t == 1) {
+        b092_01E040E0(g, b092_01E02F80, 0);
+    }
+    if (g->t == 15) {
+        g->side = 0;
+        g->ang = 45;
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 135;
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 0;
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 90;
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->side = 1;
+        g->ang = 90;
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 180;
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 45;
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02260, 0);
+        g->ang = 135;
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02260, 0);
+    }
+    if (g->t == 52 || g->t == 78) {
+        for (i = 0, a = 0; i < 18; i++) {
+            func_001F5620(func_001F53A0(), g->ja, &g->pos);
+            g->ang = a;
+            g->pos.y -= 1.0f;
+            b092_01E040E0(g, b092_01E02420, 0);
+            a += 20;
+        }
+        for (a = 0, i = 0; a < 18; a++) {
+            func_001F5620(func_001F53A0(), g->jb, &g->pos);
+            g->ang = i;
+            g->pos.y -= 1.0f;
+            b092_01E040E0(g, b092_01E02420, 0);
+            i += 20;
+        }
+    }
+    if (g->t >= 78 && g->t < 113 && g->t % 2 == 1) {
+        b092_01E040E0(g, b092_01E03090, 0);
+    }
+    if (g->t >= 32 && g->t < 71 && g->t % 5 == 1) {
+        b092_01E040E0(g, b092_01E03090, 0);
+    }
+    if (g->t < 5) {
+        b092_01E040E0(g, b092_01E03310, 0);
+    }
+    if (g->t < 81) {
+        b092_01E040E0(g, b092_01E03600, 0);
+    }
+    func_001F5620(func_001F53A0(), g->jc, &g->mark);
+    if (g->t == 60) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.x -= 22.0f;
+        } else {
+            g->pos.x += 22.0f;
+        }
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02950, 0);
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.x += 22.0f;
+        } else {
+            g->pos.x -= 22.0f;
+        }
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02950, 0);
+    }
+    if (g->t == 83) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 4.0f;
+        } else {
+            g->pos.z += 4.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= 20.0f;
+        } else {
+            g->pos.x += 20.0f;
+        }
+        g->idx = 0;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+    if (g->t == 84) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 12.0f;
+        } else {
+            g->pos.z += 12.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= 10.0f;
+        } else {
+            g->pos.x += 10.0f;
+        }
+        g->pos.y += 1.0f;
+        g->idx = 1;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+    if (g->t == 85) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 24.0f;
+        } else {
+            g->pos.z += 24.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= 0.0f;
+        } else {
+            g->pos.x += 0.0f;
+        }
+        g->pos.y += 2.0f;
+        g->idx = 2;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+    if (g->t == 86) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 24.0f;
+        } else {
+            g->pos.z += 24.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= -10.0f;
+        } else {
+            g->pos.x += -10.0f;
+        }
+        g->pos.y += 3.0f;
+        g->idx = 3;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+    if (g->t == 87) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 12.0f;
+        } else {
+            g->pos.z += 12.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= -20.0f;
+        } else {
+            g->pos.x += -20.0f;
+        }
+        g->pos.y += 4.0f;
+        g->idx = 4;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+    if (g->t == 88) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        if (g->flag != 0) {
+            g->pos.z -= 4.0f;
+        } else {
+            g->pos.z += 4.0f;
+        }
+        if (g->flag != 0) {
+            g->pos.x -= -30.0f;
+        } else {
+            g->pos.x += -30.0f;
+        }
+        g->pos.y += 5.0f;
+        g->idx = 5;
+        b092_01E040E0(g, b092_01E02AB0, 0);
+    }
+}
 
 typedef struct {
     u8 pad00[0x30];

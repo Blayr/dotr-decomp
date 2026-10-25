@@ -766,7 +766,130 @@ static void func_01E02770_b357(u8 *self, Obj_b357_01E02770 *obj, Pk_b357_01E0277
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E02A30_b357);
+/* shape b357:01E02A30, 287 insns (B357_W_S): the module's spawn step: scene colour red, ticks the timer; tick 1
+   spawns b357:01E05230; on six ticks (68..122) it stores joint 0x38AC as a new point (0x1EC0 + 16 x n) and spawns
+   b357:01E04240/046D0/04910, 03F50, 032B0, three 03D30 and 04B50 there; from tick 11 every point more than 7 off the
+   camera depth slides 5 toward it (by the camera's turn); before tick 180, while 0x3880 > 20, two b357:01E03420 on
+   the next of ten slots; from tick 68 every point that far off becomes the spawn point, 2.5 deeper */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x1EC0 - 0x25C];
+    Vec4f pt[1];
+    u8 pad1ED0[0x3880 - 0x1ED0];
+    s32 n3880;
+    u8 rgba[4];
+    u8 pad3888[0x38AC - 0x3888];
+    s16 joint;
+    u8 pad38AE[0x38BC - 0x38AE];
+    s16 n;
+    s16 ang;
+    u8 pad38C0[6];
+    s16 cur;
+    s16 k;
+    u8 pad38CA[4];
+    s16 t;
+} Scene_b357_01E02A30;
+
+static s32 func_01E032B0_b357();
+static s32 func_01E03420_b357();
+static s32 func_01E03D30_b357();
+static s32 func_01E03F50_b357();
+static s32 func_01E04240_b357();
+static s32 func_01E046D0_b357();
+static s32 func_01E04910_b357();
+static s32 func_01E04B50_b357();
+static s32 func_01E05230_b357();
+static s32 func_01E06200_b357();
+
+static void func_01E02A30_b357(Scene_b357_01E02A30 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F6160(s32, void *);
+    extern f32 func_001A6C60(f32);
+    Vec4f v;
+    s32 r[4];
+    f32 d;
+    s32 side;
+    s32 i;
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t == 1) {
+        func_01E06200_b357(s, func_01E05230_b357, 0);
+    }
+    if (s->t == 68 || s->t == 77 || s->t == 87 || s->t == 99 || s->t == 111 || s->t == 122) {
+        func_001F5620(func_001F53A0(), s->joint, &v);
+        s->cur = s->n;
+        s->n++;
+        s->pt[s->cur] = v;
+        for (i = 0; i < 1; i++) {
+            s->ang = i * 30;
+            func_01E06200_b357(s, func_01E04240_b357, 0);
+            func_01E06200_b357(s, func_01E046D0_b357, 0);
+            func_01E06200_b357(s, func_01E04910_b357, 0);
+        }
+        func_01E06200_b357(s, func_01E03F50_b357, 0);
+        s->px = s->pt[s->cur].x;
+        s->py = s->pt[s->cur].y;
+        s->pz = s->pt[s->cur].z;
+        func_01E06200_b357(s, func_01E032B0_b357, 0);
+        func_01E06200_b357(s, func_01E03D30_b357, 0);
+        func_01E06200_b357(s, func_01E03D30_b357, 0);
+        func_01E06200_b357(s, func_01E03D30_b357, 0);
+        for (i = 0; i < 1; i++) {
+            func_01E06200_b357(s, func_01E04B50_b357, 0);
+        }
+    }
+    func_001F6160(func_001F53A0(), r);
+    side = r[1] / 180.0f;
+    if (s->t >= 11) {
+        func_001F5F90(func_001F5380(), &v);
+        for (i = 0; i < s->n; i++) {
+            d = v.z - s->pt[i].z;
+            if (func_001A6C60(d * d) > 7.0f) {
+                if (side != 0) {
+                    s->pt[i].z -= 5.0f;
+                } else {
+                    s->pt[i].z += 5.0f;
+                }
+            }
+        }
+    }
+    if (s->t < 180) {
+        if (s->n3880 > 20) {
+            for (i = 0; i < 2; i++) {
+                s->cur = s->k;
+                func_01E06200_b357(s, func_01E03420_b357, 0);
+                s->k++;
+                if (s->k >= 10) {
+                    s->k = 0;
+                }
+            }
+        }
+    }
+    for (i = 0; i < s->n; i++) {
+        s->cur = i;
+    }
+    if (s->t >= 68) {
+        func_001F5F90(func_001F5380(), &v);
+        for (i = 0; i < s->n; i++) {
+            d = v.z - s->pt[i].z;
+            if (func_001A6C60(d * d) > 7.0f) {
+                s->px = s->pt[i].x;
+                s->py = s->pt[i].y;
+                s->pz = s->pt[i].z;
+                s->pz += 2.5f;
+            }
+        }
+    }
+}
 
 /* shape b357:01E02EB0, 127 insns: b501:01E02FE0 family grey spark (size 30..79, frame 0 stepping every other tick to 6, random turn rerolled 0..359 each tick, angle 0..359, f30 growing 1..3, f8 0..9): alpha up by 64 for 1..2 ticks, then down by 15 */
 
@@ -1293,7 +1416,131 @@ static s32 func_01E04190_b357(s32 arg0, Glow_b207_01E034E0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b357", func_01E04240_b357);
+/* shape b357:01E04240, 292 insns (B357_OBJ_MOVE_13_): sits on its point (0x1EC0 + 16 x 0x30) at full alpha; once the
+   camera is within 7 in depth of it, it ends and bursts there: b357:01E04FE0, six jittered (-15..14) b357:01E030B0,
+   five 01E03B10, six 01E04D20, one 01E04E80, twelve 01E03850 on the next of fifteen slots, and 01E050C0; it counts
+   a frame 0..7, ends after 211 ticks and turns 10 a tick */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x1EC0 - 0x25C];
+    Vec4f pt[1];
+    u8 pad1ED0[0x38C6 - 0x1ED0];
+    s16 cur;
+    u8 pad38C8[2];
+    s16 k;
+} Scene_b357_01E04240;
+
+typedef struct {
+    s16 x, y, z;
+    s16 life;
+    u8 pad8[0x20];
+    u8 col[4];
+    u8 col2[4];
+    s16 idx;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+    s16 ang;
+} Obj_b357_01E04240;
+
+static s32 func_01E030B0_b357();
+static s32 func_01E03850_b357();
+static s32 func_01E03B10_b357();
+static s32 func_01E04D20_b357();
+static s32 func_01E04E80_b357();
+static s32 func_01E04FE0_b357();
+static s32 func_01E050C0_b357();
+static s32 func_01E06200_b357();
+
+static s32 func_01E04240_b357(Scene_b357_01E04240 *s, Obj_b357_01E04240 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5F90(s32, void *);
+    extern f32 func_001A6C60(f32);
+    Vec4f v;
+    f32 d;
+    s16 i;
+
+    if (o->mode == 1) {
+        o->size = 80;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        o->life = 5;
+        o->mode = 2;
+        o->col2[3] = 0;
+    }
+    if (o->t <= 0) {
+        o->col[3] = 0x80;
+    } else if (o->t % 2 == 1) {
+        o->col[3] = 0x80;
+    } else {
+        o->col[3] = 0x80;
+    }
+    o->x = s->pt[o->idx].x;
+    o->y = s->pt[o->idx].y;
+    o->z = s->pt[o->idx].z;
+    func_001F5F90(func_001F5380(), &v);
+    d = v.z - s->pt[o->idx].z;
+    if (func_001A6C60(d * d) < 7.0f) {
+        o->mode = 0;
+        s->px = s->pt[o->idx].x;
+        s->py = s->pt[o->idx].y;
+        s->pz = s->pt[o->idx].z;
+        func_01E06200_b357(s, func_01E04FE0_b357, 0);
+        for (i = 0; i < 6; i++) {
+            s->px = s->pt[0].x + (func_0019A5C8() % 30 - 15);
+            s->py = s->pt[0].y + (func_0019A5C8() % 30 - 15);
+            s->pz = s->pt[0].z + (func_0019A5C8() % 30 - 15);
+            func_01E06200_b357(s, func_01E030B0_b357, 0);
+        }
+        for (i = 0; i < 5; i++) {
+            s->px = s->pt[0].x;
+            s->py = s->pt[0].y;
+            s->pz = s->pt[0].z;
+            func_01E06200_b357(s, func_01E03B10_b357, 0);
+        }
+        for (i = 0; i < 6; i++) {
+            s->px = s->pt[0].x;
+            s->py = s->pt[0].y;
+            s->pz = s->pt[0].z;
+            func_01E06200_b357(s, func_01E04D20_b357, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            s->px = s->pt[0].x;
+            s->py = s->pt[0].y;
+            s->pz = s->pt[0].z;
+            func_01E06200_b357(s, func_01E04E80_b357, 0);
+        }
+        for (i = 0; i < 12; i++) {
+            s->cur = s->k;
+            s->px = s->pt[0].x;
+            s->py = s->pt[0].y;
+            s->pz = s->pt[0].z;
+            func_01E06200_b357(s, func_01E03850_b357, 0);
+            s->k++;
+            if (s->k >= 15) {
+                s->k = 0;
+            }
+        }
+        func_01E06200_b357(s, func_01E050C0_b357, 0);
+    }
+    if (o->frame < 7) {
+        o->frame++;
+    } else {
+        o->frame = 0;
+    }
+    o->t++;
+    if (o->t > 210) {
+        o->mode = 0;
+    }
+    o->ang += 10;
+    if (o->ang >= 360) {
+        o->ang %= 360;
+    }
+    return 0;
+}
 
 /* shape b357:01E046D0, 143 insns: a marker on a scene point (16-byte points at +0x1EC0): size 80, frame 0..7 cycling,
    alpha 0x80, flickering yellow / blue; it ends once the camera is within 7 of it in depth or after 211 ticks;

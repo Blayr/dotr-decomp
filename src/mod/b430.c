@@ -640,7 +640,129 @@ static void func_01E01510_b430(Obj_b257_01E01880 *o, Fx_b257_01E01880 *fx, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b430", func_01E01820_b430);
+/* shape b430:01E01820, 377 insns: the b430 module's event step (B430_W_S): scene colour (0x80, 0, 0, 0); counts
+   ticks (ctx+0x3358); at 127 b430:01E02AE0, at 237 b430:01E02970; 126..162 two b430:01E01F20; at 85 b430:01E02610 at
+   the third joint (0xEAC, also into 0x3C0, raised 0.15); 127..170 the scene turn 0xE24 grows 0.55; at 237 eight
+   b430:01E020B0 at each of two joints (0xEA8, 0xEAA); from 127 the field's quad count (0xEC0) grows by 8 to 342;
+   250..345 b430:01E02310 between the player and the camera, stepping along by 0x3354 (counted 235..348);
+   259..345 b430:01E02490 and b430:01E027E0 around the camera point */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3C0 - 0x260];
+    Vec4f p3C0;
+    u8 pad3D0[0xE24 - 0x3D0];
+    f32 turn;
+    u8 padE28[0xE84 - 0xE28];
+    u8 col[4];
+    u8 padE88[0xEA8 - 0xE88];
+    s16 joint[3];
+    u8 padEAE[0xEC0 - 0xEAE];
+    s16 count;
+    u8 padEC2[0x3354 - 0xEC2];
+    s16 step;
+    u8 pad3356[2];
+    s16 timer;
+} Ctx_b430_01E01820;
+
+static void func_01E01820_b430(Ctx_b430_01E01820 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void b430_01E03C90();
+    extern s32 b430_01E01F20();
+    extern s32 b430_01E020B0();
+    extern s32 b430_01E02310();
+    extern s32 b430_01E02490();
+    extern s32 b430_01E02610();
+    extern s32 b430_01E027E0();
+    extern s32 b430_01E02970();
+    extern s32 b430_01E02AE0();
+    Vec4f a;
+    Vec4f b;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 127) {
+        b430_01E03C90(g, b430_01E02AE0, 0);
+    }
+    if (g->timer == 237) {
+        b430_01E03C90(g, b430_01E02970, 0);
+    }
+    if (g->timer >= 126 && g->timer < 163) {
+        b430_01E03C90(g, b430_01E01F20, 0);
+        b430_01E03C90(g, b430_01E01F20, 0);
+    }
+    if (g->timer == 85) {
+        func_001F5620(func_001F53A0(), g->joint[2], &a);
+        func_001F5620(func_001F53A0(), g->joint[2], &g->p3C0);
+        g->p3C0.y += 0.15f;
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z;
+        b430_01E03C90(g, b430_01E02610, 0);
+    }
+    if (g->timer >= 127 && g->timer < 171) {
+        g->turn += 0.55f;
+    }
+    if (g->timer == 237) {
+        func_001F5620(func_001F53A0(), g->joint[0], &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z;
+        for (i = 0; i < 8; i++) {
+            b430_01E03C90(g, b430_01E020B0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->joint[1], &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z;
+        for (i = 0; i < 8; i++) {
+            b430_01E03C90(g, b430_01E020B0, 0);
+        }
+    }
+    if (g->timer >= 127) {
+        if (g->count < 343) {
+            g->count += 8;
+        } else {
+            g->count = 342;
+        }
+    }
+    if (g->timer >= 250 && g->timer < 346) {
+        func_001F5F90(func_001F53A0(), &a);
+        func_001F5F90(func_001F5380(), &b);
+        b.x = (b.x - a.x) / 65.0f;
+        b.y = (b.y - a.y) / 65.0f;
+        b.z = (b.z - a.z) / 65.0f;
+        g->pos.x = a.x + func_0019A5C8() % 80 - 40.0f;
+        g->pos.y = 5.0f + a.y + func_0019A5C8() % 80 - 40.0f;
+        g->pos.z = a.z + b.z * g->step;
+        b430_01E03C90(g, b430_01E02310, 0);
+    }
+    if (g->timer >= 235 && g->timer < 349) {
+        g->step++;
+    }
+    if (g->timer >= 259 && g->timer < 346) {
+        func_001F5F90(func_001F53A0(), &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = b.x + func_0019A5C8() % 30 - 15.0f;
+        g->pos.y = b.y + func_0019A5C8() % 30 - 15.0f;
+        g->pos.z = b.z + func_0019A5C8() % 30 - 15.0f;
+        b430_01E03C90(g, b430_01E02490, 0);
+        func_001F5F90(func_001F53A0(), &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = b.x + func_0019A5C8() % 30 - 15.0f;
+        g->pos.y = b.y + func_0019A5C8() % 30 - 15.0f;
+        g->pos.z = b.z + func_0019A5C8() % 30 - 15.0f;
+        b430_01E03C90(g, b430_01E027E0, 0);
+    }
+}
 
 /* shape b148:01E032D0, 65 insns: step of a fading effect (like b258:01E027A0): on state 1 sets its colour, two
    random angles and state 2; full alpha for 7 ticks, then fades by 15; picks a random frame every tick. */

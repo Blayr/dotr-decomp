@@ -674,7 +674,107 @@ static void func_01E01780_b516(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E01CF0_b516);
+/* shape b516:01E01CF0, 286 insns: the module's spawn step: at tick 144 b516:01E02AC0; at 154 two b516:01E02170 glows
+   (sizes 45 and 135) and a b516:01E02340 at joint 0xCB46 plus ten b516:01E02880 sparks; at 132 the same three times at
+   joint 0xCB48 (the middle one 6 lower, the last 6 higher); from 120 to 140 b516:01E02470 at three joints and a
+   b516:01E026D0; until 200 two b516:01E026D0 at joint 0xCB4C, 13 lower and 7 to one side */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0xCB46 - 0x25C];
+    s16 j46;
+    s16 j48;
+    u8 padCB4A[2];
+    s16 j4C;
+    u8 padCB4E[2];
+    s16 j50;
+    s16 j52;
+    u8 padCB54[0xCBA2 - 0xCB54];
+    s16 size;
+    u8 padCBA4[0xCBB0 - 0xCBA4];
+    s16 kind;
+    u8 padCBB2[2];
+    s16 side;
+    u8 padCBB6[2];
+    s16 t;
+} Scene_b516_01E01CF0;
+
+static s32 func_01E02170_b516();
+static s32 func_01E02340_b516();
+static s32 func_01E02470_b516();
+static s32 func_01E026D0_b516();
+static s32 func_01E02880_b516();
+static s32 func_01E03860_b516();
+
+static void func_01E01CF0_b516(Scene_b516_01E01CF0 *s) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern s32 func_01E02AC0_b516();
+    s16 i;
+    s16 j;
+
+    s->t++;
+    if (s->t == 0x90) {
+        s->kind = 0;
+        func_01E03860_b516(s, func_01E02AC0_b516, 0);
+    }
+    if (s->t == 0x9A) {
+        func_001F5620(func_001F53A0(), s->j46, &s->px);
+        s->size = 0x2D;
+        s->kind = 0;
+        func_01E03860_b516(s, func_01E02170_b516, 0);
+        s->size = 0x87;
+        s->kind = 1;
+        func_01E03860_b516(s, func_01E02170_b516, 0);
+        s->kind = 1;
+        func_01E03860_b516(s, func_01E02340_b516, 0);
+        for (i = 0; i < 10; i++) {
+            func_01E03860_b516(s, func_01E02880_b516, 0);
+        }
+    }
+    if (s->t == 0x84) {
+        for (j = 0; j < 3; j++) {
+            func_001F5620(func_001F53A0(), s->j48, &s->px);
+            s->size = 0x2D;
+            s->kind = 0;
+            func_01E03860_b516(s, func_01E02170_b516, 0);
+            s->size = 0x87;
+            s->kind = 0;
+            func_01E03860_b516(s, func_01E02170_b516, 0);
+            if (j == 1) {
+                s->py -= 6.0f;
+            }
+            if (j == 2) {
+                s->py += 6.0f;
+            }
+            func_01E03860_b516(s, func_01E02340_b516, 0);
+            for (i = 0; i < 10; i++) {
+                func_01E03860_b516(s, func_01E02880_b516, 0);
+            }
+        }
+    }
+    if (s->t >= 0x78 && s->t <= 0x8C) {
+        func_001F5620(func_001F53A0(), s->j48, &s->px);
+        func_01E03860_b516(s, func_01E02470_b516, 0);
+        func_001F5620(func_001F53A0(), s->j50, &s->px);
+        func_01E03860_b516(s, func_01E02470_b516, 0);
+        func_001F5620(func_001F53A0(), s->j52, &s->px);
+        func_01E03860_b516(s, func_01E02470_b516, 0);
+        func_01E03860_b516(s, func_01E026D0_b516, 0);
+    }
+    if (s->t <= 0xC8) {
+        func_001F5620(func_001F53A0(), s->j4C, &s->px);
+        s->py -= 13.0f;
+        if (s->side != 0) {
+            s->pz -= 7.0f;
+        } else {
+            s->pz += 7.0f;
+        }
+        func_01E03860_b516(s, func_01E026D0_b516, 0);
+        func_01E03860_b516(s, func_01E026D0_b516, 0);
+    }
+}
 
 /* shape b516:01E02170, 115 insns: flash puff of the b038/b432 family: size 6.0, green or red colour pair by the
    game's v (< 0x8D), speed/start by kind h50 (0, 1, 2); alpha +0x40 (below 0x80) for 4 ticks then -0xF. */
@@ -1014,7 +1114,130 @@ static s32 func_01E02880_b516(s32 arg0, Fx_b516_01E02880 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b516", func_01E02AC0_b516);
+/* shape b516:01E02AC0, 343 insns: an orange (0xFF, 0x80, 0x20) eight-trail streak, size 5: on start (kind 0) fills
+   four 20-point trails at joint 0xCB44 and four at joint 0xCB46, each 2.5 lower than the last; full alpha for 12
+   ticks (kind 0 pushes each trail's newest point from the joints), then fades by 9 and ends */
+
+typedef struct {
+    u8 pad0[0xB1D0];
+    Vec4f trail[8][20];
+    u8 padBBD0[0xCB44 - 0xBBD0];
+    s16 j44;
+    s16 j46;
+} Game_b516_01E02AC0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 h6;
+    u8 pad8[6];
+    s16 hE;
+    u8 pad10[0x38];
+    f32 size;
+    u8 pad4C[4];
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Obj_b516_01E02AC0;
+
+static s32 func_01E00080_b516();
+
+static s32 func_01E02AC0_b516(Game_b516_01E02AC0 *g, Obj_b516_01E02AC0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 p[4];
+    s16 i;
+    Vec4f *v;
+
+    func_001076F0(o->col, 0xFF, 0x80, 0x20);
+    if (o->mode == 1) {
+        o->size = 5.0f;
+        if (o->kind == 0) {
+            o->hE = 0x1E;
+            func_001F5620(func_001F53A0(), g->j44, p);
+            for (i = 0, v = g->trail[0]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[1]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[2]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[3]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            func_001F5620(func_001F53A0(), g->j46, p);
+            for (i = 0, v = g->trail[4]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[5]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[6]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+            p[1] -= 2.5f;
+            for (i = 0, v = g->trail[7]; i < 19; i++, v++) {
+                v->x = p[0];
+                v->y = p[1];
+                v->z = p[2];
+            }
+        }
+        o->mode = 2;
+    }
+    if (o->t < 12) {
+        o->col[3] = 0xFF;
+    } else if (o->col[3] > 10) {
+        o->col[3] -= 9;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0 && o->t < 12) {
+        func_001F5620(func_001F53A0(), g->j44, p);
+        func_01E00080_b516(&g->trail[0][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[1][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[2][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[3][19], 20, 0, p);
+        func_001F5620(func_001F53A0(), g->j46, p);
+        func_01E00080_b516(&g->trail[4][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[5][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[6][19], 20, 0, p);
+        p[1] -= 2.5f;
+        func_01E00080_b516(&g->trail[7][19], 20, 0, p);
+    }
+    o->h6 = 0xD;
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 

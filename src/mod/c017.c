@@ -1,6 +1,157 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E00080_c017);
+/* shape c017:01E00080, 393 insns: C017_W_S, the scene's step: colour 0x80,0x80,0x80,0, counts the frame (0x3960);
+   frame 1 fills the template (eight 160.0, a 5x5 table of random times) and spawns 0x1E006B0 and 0x1E01020;
+   every 7th frame two 0x1E009E0 with random spin and colour; every 4th frame, from level 11 on, 0x1E00D50 and
+   0x1E00F10 at (100, 50, 130) in one of three colours */
+
+typedef struct {
+    u8 pad0[0x180];
+    Vec4f scale;
+    u8 pad190[0x38DC - 0x190];
+    s32 level;
+    u8 col[4];
+    u8 pad38E4[8];
+    s32 f38EC;
+    u8 pad38F0[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad3900[8];
+    f32 f3908;
+    u8 pad390C[4];
+    f32 f3910;
+    f32 arr[8];
+    u8 pad3934[0x394C - 0x3934];
+    s32 f394C;
+    u8 pad3950[2];
+    s16 f3952;
+    s16 f3954;
+    s16 f3956;
+    s16 f3958;
+    s16 f395A;
+    u8 pad395C[4];
+    s16 t;
+    u8 pad3962[4];
+    s16 f3966;
+    s16 tab[5][5];
+    u8 pad399A[4];
+    s16 f399E;
+} Scene_c017_01E00080;
+
+static void func_01E00080_c017(Scene_c017_01E00080 *g) {
+    extern void c017_01E006B0(void);
+    extern void c017_01E009E0(void);
+    extern void c017_01E00D50(void);
+    extern void c017_01E00F10(void);
+    extern void c017_01E01020(void);
+    extern void c017_01E01400(Scene_c017_01E00080 *, void (*)(void));
+    extern void c017_01E01610(Scene_c017_01E00080 *, void (*)(void));
+    extern void c017_01E01840(Scene_c017_01E00080 *, void (*)(void));
+    extern void c017_01E019B0(Scene_c017_01E00080 *, void (*)(void));
+    extern void c017_01E01B00(Scene_c017_01E00080 *, void (*)(void));
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    s32 i;
+    s16 m;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0x80;
+    g->col[2] = 0x80;
+    g->col[3] = 0;
+    g->f3966 = 20;
+    g->f399E = 130;
+    g->t++;
+    if (g->t == 1) {
+        g->f38EC = 0;
+        for (i = 0; i < 8; i++) {
+            g->arr[i] = 160.0f;
+        }
+        for (i = 0; i < 5; i++) {
+            g->tab[0][i] = func_0019A5C8() % 40 + 60;
+            g->tab[1][i] = func_0019A5C8() % 40 + 140;
+            g->tab[2][i] = func_0019A5C8() % 40 + 200;
+            g->tab[3][i] = func_0019A5C8() % 40 + 280;
+            g->tab[4][i] = func_0019A5C8() % 40 + 60;
+        }
+        g->f394C = 0;
+        for (i = 0; i < 1; i++) {
+            g->x = 0.0f;
+            g->y = 0.0f;
+            g->f3956 = 1;
+            g->z = i * 25;
+            g->f395A = 1;
+            func_00106DD0(&g->scale, 0.0f, 0.0f, 0.0f);
+            g->col[3] = 0;
+            g->f3952 = i * 15;
+            func_001076F0(g->col, 20, 20, 40);
+            c017_01E01400(g, c017_01E006B0);
+            g->f38EC = 0;
+            g->f3954 = func_0019A5C8() % 360;
+            g->f3958 = 15;
+            func_001076F0(g->col, 0x40, 0x40, 0x70);
+        }
+        c017_01E01B00(g, c017_01E01020);
+    }
+    if (g->t % 7 == 1) {
+        g->f394C = 0;
+        for (i = 0; i < 2; i++) {
+            g->x = 0.0f;
+            g->y = 0.0f;
+            g->f3956 = 1;
+            g->z = i * 25;
+            g->f395A = 1;
+            g->col[3] = 0;
+            g->f3952 = i * 15;
+            g->f38EC = 0;
+            g->f3954 = func_0019A5C8() % 360;
+            g->f3958 = 8;
+            g->f3908 = func_0019A5C8() % 3 + 3;
+            g->f3910 = func_0019A5C8() % 5;
+            if (func_0019A5C8() % 2 != 0) {
+                func_001076F0(g->col, 0x40, 0x40, 0x40);
+            } else {
+                func_001076F0(g->col, 0x40, 0x40, 0x70);
+            }
+            c017_01E01610(g, c017_01E009E0);
+        }
+    }
+    if (g->t % 4 == 1 && g->level > 10) {
+        g->z = 130.0f;
+        g->x = 100.0f;
+        g->y = 50.0f;
+        g->f3956 = func_0019A5C8() % 4;
+        m = func_0019A5C8() % 3;
+        if (m == 0) {
+            func_001076F0(g->col, 0x30, 0x40, 0x50);
+        } else if (m == 1) {
+            func_001076F0(g->col, 0x20, 0x20, 0x60);
+        } else {
+            func_001076F0(g->col, 0x40, 0x40, 0x40);
+        }
+        g->f3952 = func_0019A5C8() % 360;
+        c017_01E01840(g, c017_01E00D50);
+    }
+    if (g->t % 4 == 1 && g->level > 10) {
+        g->z = 130.0f;
+        g->x = 100.0f;
+        g->y = 50.0f;
+        g->f3952 = func_0019A5C8() % 360;
+        g->f3956 = func_0019A5C8() % 4;
+        g->f3908 = func_0019A5C8() % 3 + 3;
+        g->f395A = func_0019A5C8() % 6 + 7;
+        m = func_0019A5C8() % 3;
+        if (m == 0) {
+            func_001076F0(g->col, 0x40, 0x60, 0x60);
+        } else if (m == 1) {
+            func_001076F0(g->col, 0x40, 0x40, 0x60);
+        } else {
+            func_001076F0(g->col, 0x40, 0x40, 0x40);
+        }
+        g->f3952 = func_0019A5C8() % 360;
+        c017_01E019B0(g, c017_01E00F10);
+    }
+}
 
 /* shape c017:01E006B0, 201 insns: c017's column piece step (c017:01E01400 entries): turns 6 a tick (wrapped past -359);
    its two screen heights are the scene scale (ctx+0x3914[f68] / ctx+0x399E) x height - 20 (ends once the scale drops

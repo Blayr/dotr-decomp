@@ -549,7 +549,121 @@ static void func_01E012B0_b414(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b414", func_01E016B0_b414);
+/* shape b414:01E016B0, 342 insns: B414_W_S, the scene script: counts the scene frame (0xB2BA) and spawns the module's
+   movers on it: two on frame 1, one on 193, four rings at the first joint on 158 and two more on 59, the two kinds of
+   aura every frame before 141, one at each of five joints (0xB248) on frames 116..144, two more every frame before
+   133, a mover between two joints on 194..229, and on 220 a burst of 40 + 20 + the flash */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f p;
+    u8 pad0260[0xB244 - 0x260];
+    s16 j0;
+    u8 padB246[2];
+    s16 joints[5];
+    u8 padB252[0xB2A2 - 0xB252];
+    s16 ang;
+    u8 padB2A4[0xC];
+    s16 kind;
+    u8 padB2B2[8];
+    s16 frame;
+} Ctx_b414_01E016B0;
+
+static void func_01E016B0_b414(Ctx_b414_01E016B0 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b414_01E04110();
+    extern s32 b414_01E01C10();
+    extern s32 b414_01E01E00();
+    extern s32 b414_01E01FF0();
+    extern s32 b414_01E021C0();
+    extern s32 b414_01E02420();
+    extern s32 b414_01E026F0();
+    extern s32 b414_01E029C0();
+    extern s32 b414_01E02C20();
+    extern s32 b414_01E02D80();
+    extern s32 b414_01E02E70();
+    extern s32 b414_01E03070();
+    extern s32 b414_01E03390();
+    extern s32 b414_01E03510();
+    s16 i;
+
+    g->frame++;
+    if (g->frame == 1) {
+        b414_01E04110(g, b414_01E03390, 0);
+    }
+    if (g->frame == 1) {
+        b414_01E04110(g, b414_01E03070, 0);
+    }
+    if (g->frame == 193) {
+        b414_01E04110(g, b414_01E03510, 0);
+    }
+    if (g->frame == 158) {
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+        g->ang = 0;
+        g->kind = 0;
+        b414_01E04110(g, b414_01E01C10, 0);
+        g->ang = 90;
+        g->kind = 0;
+        b414_01E04110(g, b414_01E01C10, 0);
+        g->ang = 45;
+        g->kind = 1;
+        b414_01E04110(g, b414_01E01C10, 0);
+        g->ang = 135;
+        g->kind = 1;
+        b414_01E04110(g, b414_01E01C10, 0);
+    }
+    if (g->frame == 59) {
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+        g->ang = 0;
+        g->kind = 2;
+        b414_01E04110(g, b414_01E01C10, 0);
+        g->ang = 90;
+        g->kind = 2;
+        b414_01E04110(g, b414_01E01C10, 0);
+    }
+    if (g->frame < 141) {
+        for (i = 0; i < 2; i++) {
+            g->kind = i;
+            if (i == 0) {
+                b414_01E04110(g, b414_01E01E00, 0);
+            } else {
+                b414_01E04110(g, b414_01E01FF0, 0);
+            }
+        }
+    }
+    if (g->frame < 145 && g->frame > 115) {
+        for (i = 0; i < 5; i++) {
+            func_001F5620(func_001F53A0(), g->joints[i], &g->p);
+            b414_01E04110(g, b414_01E021C0, 0);
+        }
+    }
+    if (g->frame < 133) {
+        for (i = 0; i < 1; i++) {
+            b414_01E04110(g, b414_01E02420, 0);
+        }
+    }
+    if (g->frame < 133) {
+        for (i = 0; i < 1; i++) {
+            b414_01E04110(g, b414_01E026F0, 0);
+        }
+    }
+    if (g->frame > 193 && g->frame < 230) {
+        func_001F5620(func_001F53A0(), g->joints[3], &g->p);
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+        b414_01E04110(g, b414_01E029C0, 0);
+    }
+    if (g->frame == 220) {
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+        for (i = 0; i < 40; i++) {
+            b414_01E04110(g, b414_01E02E70, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b414_01E04110(g, b414_01E02C20, 0);
+        }
+        b414_01E04110(g, b414_01E02D80, 0);
+    }
+}
 
 /* shape b414:01E01C10, 123 insns: b588:01E025F0 family (orange 0xF0/0xE0 + 0x80/0x40): kind 0 from 1000 growing 60, kind 1 from 250 growing 20, kind 2 from 100 growing 5 in grey/blue and turning 6 per tick */
 

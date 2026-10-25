@@ -316,4 +316,195 @@ static s32 func_01E00280_c523(s32 obj, Cam_b001_01E00A30 *cam, Emit_b001_01E00A3
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c523", func_01E00E10_c523);
+/* shape c523:01E00E10, 319 insns: the c523 module's main step (c545:01E00CB0 family): with a code it clears the scene,
+   sets up its coordinate, keeps the code and a 60-tick timer and three emitters: a white trail (texture 1, flags 3,
+   size 18, 2 points 5 apart, set up by c523:01E00120), grey sparks (texture 15, flags 0x485, size 10, 16 points
+   jittered around (0, 20)) and pink motes (texture 0, flags 0x87, size 0.5, 16 points around (0, 15)), reads the
+   effect position; otherwise it draws the sparks and motes scaled 1.01 and the trail unscaled, fades in the trail for
+   38 ticks then fades it and the motes; returns 2 on tick 40 and 8 when the timer ends */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_c523_01E00E10;
+
+typedef struct {
+    f32 x, y, z;
+    s16 hC;
+    s16 hE;
+} Pt_c523_01E00E10;
+
+typedef struct {
+    s32 texture;
+    s32 flags;
+    Src_c523_01E00E10 color;
+    f32 size;
+    f32 cx;
+    f32 cy;
+    f32 z0;
+    s32 w1C;
+    s16 rect[8];
+    Pt_c523_01E00E10 pt[16];
+    s16 count;
+    u8 pad132[4];
+    s16 h136;
+    s16 h138;
+    s16 step;
+    s16 h13C;
+    s16 h13E;
+    s16 h140;
+    u8 pad142[0xE];
+} Emit_c523_01E00E10;
+
+typedef struct {
+    u8 pad0[0x20];
+    struct {
+        f32 f0;
+        f32 scale;
+        u8 pad8[0x48];
+    } pos;
+    Emit_c523_01E00E10 e0;
+    Emit_c523_01E00E10 e1;
+    Emit_c523_01E00E10 e2;
+    s32 t;
+    s32 timer;
+    s32 code;
+} Scene_c523_01E00E10;
+
+static s32 func_01E00E10_c523(s32 arg0, s32 code) {
+    Scene_c523_01E00E10 *g = (Scene_c523_01E00E10 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00103890(void *);
+    extern void func_00103260(void *, s32);
+    extern void func_001039A0(void *);
+    extern void func_001F53B0(s32, void *);
+    extern void func_00103470(void *, s32, s32);
+    extern void func_001032C0(void *, s32, s32);
+    Vec4f sc;
+    s32 tex __attribute__((aligned(16)));
+    s32 ot;
+    s32 i;
+
+    ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x470);
+        func_00103890(g);
+        g->t = 0;
+        g->timer = 60;
+        g->code = code;
+        func_00103260(&tex, 1);
+        g->e0.texture = tex;
+        g->e0.flags = 3;
+        g->e0.cx = 0.0f;
+        g->e0.cy = 0.0f;
+        g->e0.z0 = 0.0f;
+        g->e0.w1C = 0;
+        g->e0.rect[4] = 0;
+        g->e0.rect[5] = 0;
+        g->e0.rect[2] = 0x18;
+        g->e0.rect[3] = 0x20;
+        g->e0.rect[6] = 0x80;
+        g->e0.rect[7] = 0x40;
+        g->e0.size = 18.0f;
+        g->e0.count = 2;
+        g->e0.step = 5;
+        g->e0.h13C = 1;
+        g->e0.h140 = 10;
+        g->e0.h136 = 0;
+        g->e0.h138 = 0;
+        g->e0.color.r = 0x80;
+        g->e0.color.g = 0x80;
+        g->e0.color.b = 0x80;
+        g->e0.color.a = 0;
+        func_01E00120_c523((Trail_b037_01E00280 *)&g->e0);
+        func_00103260(&tex, 0xF);
+        g->e1.texture = tex;
+        g->e1.flags = 0x485;
+        g->e1.cx = 0.0f;
+        g->e1.cy = 20.0f;
+        g->e1.z0 = 0.0f;
+        g->e1.w1C = 0;
+        g->e1.rect[4] = 0xF0;
+        g->e1.rect[5] = 0;
+        g->e1.rect[2] = 0x10;
+        g->e1.rect[3] = 0x10;
+        g->e1.rect[6] = 0x100;
+        g->e1.rect[7] = 0x100;
+        g->e1.size = 10.0f;
+        g->e1.count = 16;
+        g->e1.step = 3;
+        g->e1.h13C = 1;
+        g->e1.h140 = 8;
+        g->e1.h136 = 30;
+        g->e1.h138 = 30;
+        g->e1.color.r = 0x60;
+        g->e1.color.g = 0x60;
+        g->e1.color.b = 0x60;
+        g->e1.color.a = 0x80;
+        for (i = 0; i < g->e1.count; i++) {
+            g->e1.pt[i].x = g->e1.cx + (func_0019A5C8() % 20 - 10);
+            g->e1.pt[i].y = g->e1.cy + (func_0019A5C8() % 16 - 4);
+            g->e1.pt[i].z = g->e1.z0;
+            g->e1.pt[i].hE = -g->e1.step * i;
+            g->e1.pt[i].hC = 0;
+            g->e1.h13E = g->e1.h140 - 1;
+        }
+        func_00103260(&tex, 0);
+        g->e2.texture = tex;
+        g->e2.flags = 0x87;
+        g->e2.cx = 0.0f;
+        g->e2.cy = 15.0f;
+        g->e2.z0 = 0.0f;
+        g->e2.w1C = 0;
+        g->e2.rect[4] = 0;
+        g->e2.rect[5] = 0;
+        g->e2.rect[2] = 0x20;
+        g->e2.rect[3] = 0x20;
+        g->e2.rect[6] = 0x80;
+        g->e2.rect[7] = 0x40;
+        g->e2.size = 0.5f;
+        g->e2.count = 16;
+        g->e2.step = 1;
+        g->e2.h13C = 0;
+        g->e2.h140 = 6;
+        g->e2.h136 = 20;
+        g->e2.h138 = 20;
+        g->e2.color.r = 0x80;
+        g->e2.color.g = 0x40;
+        g->e2.color.b = 0x40;
+        g->e2.color.a = 0x80;
+        for (i = 0; i < g->e2.count; i++) {
+            g->e2.pt[i].x = g->e2.cx + (func_0019A5C8() % 10 - 5);
+            g->e2.pt[i].y = g->e2.cy + func_0019A5C8() % 5;
+            g->e2.pt[i].z = g->e2.z0 + (func_0019A5C8() % 10 - 5);
+            g->e2.pt[i].hE = -g->e2.step * i;
+            g->e2.pt[i].hC = 0;
+            g->e2.h13E = g->e2.h140 - 1;
+        }
+        func_001F53B0(0, &g->pos);
+        return 0;
+    }
+    g->pos.scale = g->e0.size;
+    func_001039A0(g);
+    sc.x = sc.y = sc.z = 1.01f;
+    func_01E00280_c523(ot, (Cam_b001_01E00A30 *)g, (Emit_b001_01E00A30 *)&g->e1, (Vec_b001_01E00A30 *)&sc);
+    func_00103470(&g->e1.color.a, 0, 2);
+    func_01E00280_c523(ot, (Cam_b001_01E00A30 *)g, (Emit_b001_01E00A30 *)&g->e2, (Vec_b001_01E00A30 *)&sc);
+    sc.x = sc.y = sc.z = 0.0f;
+    func_01E00280_c523(ot, (Cam_b001_01E00A30 *)g, (Emit_b001_01E00A30 *)&g->e0, (Vec_b001_01E00A30 *)&sc);
+    if (g->t < 38) {
+        func_001032C0(&g->e0.color.a, 0x80, 0x10);
+    } else {
+        func_00103470(&g->e0.color.a, 0, 8);
+        func_00103470(&g->e2.color.a, 0, 4);
+    }
+    g->t++;
+    g->timer--;
+    if (g->t == 40) {
+        return 2;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}

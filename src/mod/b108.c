@@ -516,7 +516,109 @@ static void func_01E01180_b108(Obj_b020_01E00920 *o, Anim_b020_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b108", func_01E016D0_b108);
+/* shape b108:01E016D0, 289 insns: the module's spawn step: tick 10 b108:01E02380 at joint 0x696C; ticks 125..210 odd
+   b108:01E025B0 there; 125 b108:01E021B0 at joint 0x696E; 269 b108:01E027D0 at joint 0x697A; ticks 210..285 every
+   fourth (up to 9) a new point jittered 75 around joint 0x697A, remembered twice, with b108:01E02010 and
+   b108:01E01EB0; from 211 each point closes a 23rd of its gap to the joint for 22 ticks; 260 eight b108:01E01CF0;
+   211..285 b108:01E01B60 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b108_01E016D0;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x63B0 - 0x25C];
+    V4_b108_01E016D0 cur[10];
+    V4_b108_01E016D0 start[10];
+    u8 pad64F0[0x696C - 0x64F0];
+    s16 j6C;
+    s16 j6E;
+    u8 pad6970[0x697A - 0x6970];
+    s16 j7A;
+    u8 pad697C[0x6AC0 - 0x697C];
+    s16 n;
+    s16 age[10];
+    u8 pad6AD6[0x6ADC - 0x6AD6];
+    s16 idx;
+    u8 pad6ADE[0x6AE4 - 0x6ADE];
+    s16 t;
+} Scene_b108_01E016D0;
+
+static s32 func_01E01B60_b108();
+static s32 func_01E01CF0_b108();
+static s32 func_01E01EB0_b108();
+static s32 func_01E02010_b108();
+static s32 func_01E021B0_b108();
+static s32 func_01E02380_b108();
+static s32 func_01E025B0_b108();
+static s32 func_01E027D0_b108();
+static s32 func_01E02FF0_b108();
+
+static void func_01E016D0_b108(Scene_b108_01E016D0 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    s->t++;
+    if (s->t == 10) {
+        s->idx = 0;
+        func_001F5620(func_001F53A0(), s->j6C, &s->px);
+        func_01E02FF0_b108(s, func_01E02380_b108, 0);
+    }
+    if (s->t >= 0x7D && s->t < 0xD3) {
+        if (s->t % 2 == 1) {
+            s->idx = 0;
+            func_001F5620(func_001F53A0(), s->j6C, &s->px);
+            func_01E02FF0_b108(s, func_01E025B0_b108, 0);
+        }
+    }
+    if (s->t == 0x7D) {
+        s->idx = 0;
+        func_001F5620(func_001F53A0(), s->j6E, &s->px);
+        func_01E02FF0_b108(s, func_01E021B0_b108, 0);
+    }
+    if (s->t == 0x10D) {
+        func_001F5620(func_001F5380(), s->j7A, &s->px);
+        s->idx = 0;
+        func_01E02FF0_b108(s, func_01E027D0_b108, 0);
+    }
+    if (s->t >= 0xD2 && s->t < 0x11E) {
+        if (s->t % 4 == 1 && s->n < 9) {
+            s->idx = s->n;
+            func_001F5620(func_001F5380(), s->j7A, &s->px);
+            s->cur[s->idx].y = s->start[s->idx].y = s->py += func_0019A5C8() % 150 - 75;
+            s->cur[s->idx].x = s->start[s->idx].x = s->px += func_0019A5C8() % 150 - 75;
+            s->cur[s->idx].z = s->start[s->idx].z = s->pz += func_0019A5C8() % 150 - 75;
+            func_01E02FF0_b108(s, func_01E02010_b108, 0);
+            func_01E02FF0_b108(s, func_01E01EB0_b108, 0);
+            s->n++;
+        }
+    }
+    if (s->t >= 0xD3) {
+        for (i = 0; i < s->n; i++) {
+            func_001F5620(func_001F5380(), s->j7A, &s->px);
+            if (s->age[i] < 0x16) {
+                s->cur[i].x += (s->px - s->start[i].x) / 23.0f;
+                s->cur[i].y += (s->py - s->start[i].y) / 23.0f;
+                s->cur[i].z += (s->pz - s->start[i].z) / 23.0f;
+            }
+            s->age[i]++;
+        }
+    }
+    if (s->t == 0x104) {
+        func_001F5620(func_001F5380(), s->j7A, &s->px);
+        for (i = 0; i < 8; i++) {
+            func_01E02FF0_b108(s, func_01E01CF0_b108, 0);
+        }
+    }
+    if (s->t >= 0xD3 && s->t < 0x11E) {
+        func_001F5620(func_001F5380(), s->j7A, &s->px);
+        func_01E02FF0_b108(s, func_01E01B60_b108, 0);
+    }
+}
 
 /* shape b108:01E01B60, 99 insns: on start f48 5, variant 0..3, colour 0xC0 grey, 0xA 0..7, 0xC keeps the old 0x50,
    0x50 320..469, speed 15..44 (0xE), 0x8 0..34, hold 3..7 (0x6); alpha 0x80 during the hold; after the first tick

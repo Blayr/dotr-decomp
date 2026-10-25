@@ -341,7 +341,171 @@ static s32 func_01E00A30_b260(s32 arg0, Fx_b260_01E00A30 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b260", func_01E00BC0_b260);
+/* shape b260:01E00BC0, 325 insns, 1 copy: b260's scene manager: with a scene id (>= 0) it clears the scene, builds both
+   sine tables, a 260-tick countdown, three model joints and a camera unit, the side the camera looks from, scale 0.1,
+   two random tables and a 250 distance; otherwise steps the clock (spawns b260:01E00A30 at 74, b260:01E004E0 and
+   b260:01E008B0 at 73), runs every live effect's step and draws three kinds; returns 1 at tick 85, 4 at 255, 2 at 240,
+   6 between 96 and 234, 8 when the countdown runs out */
+
+typedef struct Fx_b260_01E00BC0 {
+    u8 pad0[0x44];
+    s32 (*fn)();
+    u8 pad48[8];
+    s16 kind;
+    u8 pad52[6];
+    s16 active;
+    u8 pad5A[0x16];
+} Fx_b260_01E00BC0;
+
+typedef struct Game_b260_01E00BC0 {
+    u8 pad0[0x10];
+    f32 scale[3];
+    u8 pad1C[0x64];
+    s32 ot;
+    u8 pad84[0x32];
+    s16 hB6;
+    u8 padB8[0x20];
+    f32 trig[0x72];
+    Fx_b260_01E00BC0 fx[50];
+    u8 pad1880[0x30];
+    u8 b18B0[0x74A0 - 0x18B0];
+    Vec4f pA;
+    Vec4f pB;
+    u8 pad74C0[0x7620 - 0x74C0];
+    s32 count;
+    u8 pad7624[8];
+    s32 ot2;
+    u8 pad7630[0x10];
+    f32 dist;
+    u8 pad7644[0x10];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    u8 pad765A[0xA];
+    s16 cam;
+    u8 pad7666[0x1C];
+    s16 h7682;
+    u8 pad7684[2];
+    s16 side;
+    s16 id;
+    s16 clock;
+    s8 tblA[256];
+    s8 tblB[256];
+    f32 trig2[1];
+} Game_b260_01E00BC0;
+
+static s32 func_01E010E0_b260();
+
+static s32 func_01E00BC0_b260(Game_b260_01E00BC0 *g0, s32 id) {
+    Game_b260_01E00BC0 *g = (Game_b260_01E00BC0 *)(u32)g0;
+    extern s32 func_001F53A0();
+    extern s32 func_001F5380();
+    extern void b260_01E01220();
+    Vec4f v;
+    s32 r[4];
+    s16 i;
+    s32 (*fn)();
+    s16 n;
+
+    n = 0;
+    g->ot2 = (s32)func_00207500();
+    g->ot = (s32)func_00207500();
+    if (id >= 0) {
+        func_00195108((s32)g, 0x7A00);
+        func_00107C10(g->trig2);
+        func_00107C10(g->trig);
+        g->id = id;
+        g->count = 260;
+        g->j0 = func_001F5560(func_001F53A0(), 2, 1);
+        g->j1 = func_001F5560(func_001F53A0(), 0x1E, 0);
+        g->j2 = func_001F5560(func_001F53A0(), 1, 0);
+        g->cam = func_001F5560(func_001F5380(), 1, 1);
+        func_001F6160(func_001F53A0(), r);
+        g->side = (s32)(r[1] / 180.0f);
+        g->scale[0] = 0.1f;
+        g->scale[1] = 0.1f;
+        g->scale[2] = 0.1f;
+        for (i = 0; i < 256; i++) {
+            g->tblA[i] = func_0019A5C8() % 30 - 15;
+        }
+        for (i = 0; i < 256; i++) {
+            g->tblB[i] = func_0019A5C8() % 40 - 20;
+        }
+        g->dist = 250.0f;
+        return 0;
+    }
+    g->clock++;
+    if (g->clock == 74) {
+        func_01E010E0_b260(g, func_01E00A30_b260, 0);
+    }
+    if (g->clock == 73) {
+        g->h7682 = 0;
+        func_01E010E0_b260(g, func_01E004E0_b260, 0);
+    }
+    if (g->clock == 73) {
+        g->h7682 = 0;
+        func_01E010E0_b260(g, func_01E008B0_b260, 0);
+        g->h7682 = 1;
+    }
+    g->hB6 = g->clock;
+    for (i = 0; i < 50; i++) {
+        if (g->fx[i].active) {
+            fn = g->fx[i].fn;
+            if (fn) {
+                fn(g, &g->fx[i]);
+            }
+        }
+    }
+    for (i = 0; i < 50; i++) {
+        if (g->fx[i].active) {
+            n++;
+            if (g->fx[i].fn == func_01E00A30_b260) {
+                v = g->pA;
+                func_01E00080_b260((void *)g, (void *)&g->fx[i], 0x11, v);
+            }
+        }
+    }
+    for (i = 0; i < 50; i++) {
+        if (g->fx[i].active) {
+            n++;
+            if (g->fx[i].fn == func_01E004E0_b260) {
+                b260_01E01220(g, &g->fx[i], g->b18B0, 1);
+            }
+            if (g->fx[i].fn == func_01E008B0_b260) {
+                if (g->fx[i].kind == 0) {
+                    v = g->pA;
+                } else if (g->fx[i].kind == 1) {
+                    v = g->pB;
+                }
+                v = g->pB;
+                if (g->clock < 92) {
+                    func_01E00080_b260((void *)g, (void *)&g->fx[i], 0x10, v);
+                } else {
+                    func_01E00080_b260((void *)g, (void *)&g->fx[i], 0x11, v);
+                }
+            }
+        }
+    }
+    if (g->count) {
+        g->count--;
+    }
+    if (g->clock == 85) {
+        return 1;
+    }
+    if (g->clock == 255) {
+        return 4;
+    }
+    if (g->clock == 240) {
+        return 2;
+    }
+    if (g->clock > 95 && g->clock < 235) {
+        return 6;
+    }
+    if (g->count <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 typedef struct {
     f32 x, y, z, w;

@@ -222,7 +222,129 @@ static void func_01E00790_b506(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b506", func_01E00960_b506);
+/* shape b506:01E00960 (B506_W_S), 322 insns, 1 copy: the b506 module's event step: scene colour red 0x80; counts
+   ticks; at 70 b506:01E019C0, ten ring points stacked from -30 by 17 (radius 0 then 3, random angles), colour 0x20 and
+   the point (0, 30, 0), then one b506:01E00E70; at 87 b506:01E01540; every tick the ring points turn by 4; until 87
+   the eye point follows joint 0xC00C (copied to 0xAF10); from 70 to 115 the point follows that joint and five (from
+   87 twelve) b506:01E016D0 are spawned */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xAE20 - 0x260];
+    Vec4f eye;
+    u8 padAE30[0x40];
+    Vec4f pts[10];
+    Vec4f eye2;
+    u8 padAF20[0xBFA4 - 0xAF20];
+    u8 col[4];
+    u8 padBFA8[0xC];
+    f32 rad[10];
+    u8 padBFDC[4];
+    s32 wBFE0;
+    u8 padBFE4[0x14];
+    s16 ang[10];
+    s16 jB;
+    s16 jA;
+    u8 padC010[0x10];
+    s16 hC020;
+    s16 hC022;
+    u8 padC024[2];
+    s16 fA;
+    u8 padC028[4];
+    s16 timer;
+    u8 padC02E[0x102];
+    u8 sin[1];
+} Ctx_b506_01E00960;
+
+static void func_01E00960_b506(Ctx_b506_01E00960 *g) {
+    extern s32 b506_01E00E70(void);
+    extern s32 b506_01E01540(void);
+    extern s32 b506_01E016D0(void);
+    extern s32 b506_01E019C0(void);
+    extern void b506_01E02120(Ctx_b506_01E00960 *, s32 (*)(void), s32);
+    extern void b506_01E022C0(Ctx_b506_01E00960 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f v;
+    s32 i;
+    s32 k;
+    s32 n;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer == 70) {
+        b506_01E022C0(g, b506_01E019C0, 0);
+    }
+    if (g->timer == 87) {
+        g->fA = 0;
+        b506_01E022C0(g, b506_01E01540, 0);
+    }
+    if (g->timer == 70) {
+        for (i = 0, k = -30; i < 10; i++, k += 17) {
+            g->pts[i].y = k;
+        }
+        g->rad[0] = 0.0f;
+        for (i = 1; i < 10; i++) {
+            g->rad[i] = 3.0f;
+        }
+        for (i = 0; i < 10; i++) {
+            g->ang[i] = func_0019A5C8() % 360;
+        }
+        g->col[0] = 0x20;
+        g->col[1] = 0x20;
+        g->col[2] = 0x20;
+        g->pos.x = 0.0f;
+        g->pos.y = 30.0f;
+        g->pos.z = 0.0f;
+        for (i = 0; i < 1; i++) {
+            g->hC022 = 1;
+            g->wBFE0 = 0;
+            g->fA = 1;
+            g->hC020 = 0;
+            b506_01E02120(g, b506_01E00E70, 0);
+        }
+    }
+    func_001F5620(func_001F5380(), g->jA, &v);
+    for (i = 0; i < 10; i++) {
+        if (i != 0) {
+            g->pts[i].x = g->rad[i] * func_00108030(g->sin, g->ang[i], 1);
+            g->pts[i].z = g->rad[i] * func_00108030(g->sin, g->ang[i], 0);
+        } else {
+            g->pts[i].x = g->rad[i] * func_00108030(g->sin, g->ang[i], 1);
+            g->pts[i].z = g->rad[i] * func_00108030(g->sin, g->ang[i], 0);
+        }
+        g->ang[i] += 4;
+        if (g->ang[i] >= 360) {
+            g->ang[i] %= 360;
+        }
+    }
+    if (g->timer < 88) {
+        func_001F5620(func_001F53A0(), g->jB, &g->eye);
+        g->eye2 = g->eye;
+    }
+    if (g->timer < 116) {
+        if (g->timer >= 70) {
+            func_001F5620(func_001F53A0(), g->jB, &g->pos);
+        }
+    }
+    if (g->timer >= 70 && g->timer < 116) {
+        func_001F5620(func_001F53A0(), g->jB, &g->pos);
+        if (g->timer < 87) {
+            n = 5;
+        } else {
+            n = 12;
+        }
+        for (i = 0; i < n; i++) {
+            b506_01E022C0(g, b506_01E016D0, 0);
+        }
+    }
+}
 
 /* shape b506:01E00E70, 243 insns: c061:01E01BA0's rising column for module b506: colours (0x38, 0x38, 0x48), spine
    at g+0xAE70, side widths up to 10 / 9 per point, publish block at g+0xBFB0..0xC026, run while the scene count

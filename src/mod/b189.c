@@ -731,7 +731,130 @@ static void func_01E01A80_b189(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b189", func_01E01D40_b189);
+/* shape b189:01E01D40, 339 insns: B189_W_S, the scene script: counts the scene frame (0x4530); before frame 120 the
+   carried point (0x4470) rides 5 above the first joint, from frame 105 it is thrown back along its line to the
+   second joint (falling 0.1 * t sideways by the side flag); on 120 it aims at the target joint, flies there on frames
+   126..141, bursts on 142 and 164; sparks at the second joint on odd frames 125..135, trails behind it on 51..162 /
+   65..162, the extra one on 55, and the spin (0x4518) +7 a frame on 61..74 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f p;
+    u8 pad0260[0x4470 - 0x260];
+    Vec4f pos;
+    Vec4f step;
+    Vec4f back;
+    u8 pad44A0[0x44E4 - 0x44A0];
+    f32 t;
+    u8 pad44E8[0x10];
+    s16 j0;
+    u8 pad44FA[2];
+    s16 j1;
+    u8 pad44FE[0xA];
+    s16 j2;
+    u8 pad450A[0xE];
+    s16 spin;
+    u8 pad451A[0xE];
+    s16 kind;
+    u8 pad452A[2];
+    s16 side;
+    u8 pad452E[2];
+    s16 frame;
+} Ctx_b189_01E01D40;
+
+static void func_01E01D40_b189(Ctx_b189_01E01D40 *g) {
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b189_01E03A40();
+    extern s32 b189_01E02290();
+    extern s32 b189_01E023E0();
+    extern s32 b189_01E02560();
+    extern s32 b189_01E02850();
+    extern s32 b189_01E02990();
+    extern s32 b189_01E02B00();
+    extern s32 b189_01E02D00();
+    extern s32 b189_01E02EA0();
+    f32 v[8];
+    s16 i;
+
+    g->frame++;
+    if (g->frame < 120) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.y += 5.0f;
+        if (g->frame == 105) {
+            func_001F5620(func_001F53A0(), g->j1, v);
+            g->back.y = (g->pos.y - v[1]) / 15.0f;
+            g->back.x = (g->pos.x - v[0]) / 15.0f;
+        }
+        if (g->frame >= 105) {
+            g->pos.x -= g->back.x * g->t;
+            g->pos.y -= g->back.y * g->t;
+            if (g->side != 0) {
+                g->pos.z -= (f32)(0.1 * g->t);
+            } else {
+                g->pos.z += (f32)(0.1 * g->t);
+            }
+            g->t += 1.0f;
+        }
+    } else {
+        if (g->frame == 120) {
+            func_001F5620(func_001F5380(), g->j2, v);
+            g->step.z = (v[2] - g->pos.z) / 16.0f;
+            g->step.y = (v[1] - g->pos.y) / 16.0f;
+            g->step.x = (v[0] - g->pos.x) / 16.0f;
+        }
+        if (g->frame > 125 && g->frame < 142) {
+            g->pos.z += g->step.z;
+            g->pos.y += g->step.y;
+            g->pos.x += g->step.x;
+        }
+    }
+    if (g->frame == 142) {
+        g->p = g->pos;
+        g->kind = 0;
+        for (i = 0; i < 10; i++) {
+            b189_01E03A40(g, b189_01E02B00, 0);
+        }
+        b189_01E03A40(g, b189_01E02850, 0);
+    }
+    if (g->frame == 164) {
+        g->p = g->pos;
+        g->kind = 1;
+        for (i = 0; i < 10; i++) {
+            b189_01E03A40(g, b189_01E02EA0, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b189_01E03A40(g, b189_01E02D00, 0);
+        }
+        b189_01E03A40(g, b189_01E02850, 0);
+    }
+    if (g->frame >= 125 && g->frame < 136) {
+        func_001F5620(func_001F53A0(), g->j1, &g->p);
+        if (g->side != 0) {
+            g->p.z -= 5.0f;
+        } else {
+            g->p.z += 5.0f;
+        }
+        if (g->frame % 2 == 1) {
+            b189_01E03A40(g, b189_01E02290, 0);
+        }
+    }
+    if (g->frame >= 65 && g->frame < 163) {
+        g->p = g->pos;
+        b189_01E03A40(g, b189_01E023E0, 0);
+    }
+    if (g->frame > 50 && g->frame < 163) {
+        g->p = g->pos;
+        b189_01E03A40(g, b189_01E02560, 0);
+        if (g->frame == 55) {
+            b189_01E03A40(g, b189_01E02990, 0);
+        }
+    }
+    if (g->frame > 60 && g->frame < 75) {
+        g->spin += 7;
+    }
+}
 
 /* shape b163:01E02130, 82 insns, 2 copies: a rising red column: set up once (size 50, climb 400/10 a frame, random turn);
    full for 8 frames, then fades out; its top follows 50 below the climb (b016:01E026B0 family) */

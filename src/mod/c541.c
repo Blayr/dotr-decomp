@@ -1113,7 +1113,64 @@ static s32 func_01E02630_c541(s32 obj, Spr_b000_01E03420 *spr, Cam_b000_01E03420
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c541", func_01E02C40_c541);
+/* shape c541:01E02C40, 169 insns: lays out a fan of n rays (0x1C) of five points each: every ray turns by 0x10000 / n
+   plus a random -0x400..0x3FF; with bit 0x1F of the flags (0x04) the points run straight out at radius 0x14 per step
+   and rise by height / 5, each jittered by up to +-5; otherwise they bend down a quarter-to-half circle at full radius;
+   each ray gets a life 5..14 and alpha 0x80 */
+
+typedef struct {
+    s32 arg;
+    s32 flags;
+    u8 pad8[4];
+    f32 height;
+    u8 pad10[4];
+    f32 r;
+    u8 pad18[4];
+    s32 n;
+    u8 pad20[0x30];
+    Vec4f pt[32][5];
+    u8 life[32];
+    u8 alpha[32];
+} Fan_c541_01E02C40;
+
+static s32 func_01E02C40_c541(s32 arg0, s32 arg, f32 height) {
+    extern s32 func_00104520(s32, s32);
+    extern f32 func_0020B480(s32);
+    extern f32 func_0020B550(s32);
+    Fan_c541_01E02C40 *g = (Fan_c541_01E02C40 *)arg0;
+    s32 i;
+    s32 j;
+    s32 r;
+    f32 h;
+    s32 step;
+
+    h = height / 5.0f;
+    step = 0x10000 / g->n;
+    g->arg = arg;
+    g->height = height;
+    for (i = 0; i < g->n; i++) {
+        for (j = 0; j < 5; j++) {
+            r = func_0019A5C8() % 0x800 - 0x400;
+            if (func_00104520(g->flags, 0x1F) != 0) {
+                r += i * step;
+                g->pt[i][j].x = j * (g->r * func_0020B480(r));
+                g->pt[i][j].z = j * (g->r * func_0020B550(r));
+                g->pt[i][j].y = h * j;
+                g->pt[i][j].x += 0.1f * (func_0019A5C8() % 100 - 50);
+                g->pt[i][j].z += 0.1f * (func_0019A5C8() % 100 - 50);
+                g->pt[i][j].y += 0.1f * (func_0019A5C8() % 100 - 50);
+            } else {
+                r += i * step;
+                g->pt[i][j].x = g->r * func_0020B480(r) * func_0020B550(0x2000 + j * 0x1000);
+                g->pt[i][j].z = g->r * func_0020B550(r) * func_0020B550(0x2000 + j * 0x1000);
+                g->pt[i][j].y = h * j;
+            }
+        }
+        g->life[i] = func_0019A5C8() % 10 + 5;
+        g->alpha[i] = 0x80;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/c541", func_01E02EF0_c541);
 

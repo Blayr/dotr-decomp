@@ -725,7 +725,119 @@ static void func_01E01A00_b747(Obj_b020_01E011E0 *obj, Cam_b020_01E011E0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b747", func_01E01D00_b747);
+/* shape b747:01E01D00, 281 insns: B747_W_S, the effect scene's step (b522:01E01D30 form): counts the frame (0x451A);
+   until 155 the follow point sits on joint 0x44E4, at 155 it gets a 32-frame glide toward the camera joint
+   0x44F4, gliding until 186, where the scene point takes it; frame 100 looks up three joints (0x11, 0x1C, 0x26),
+   frame 40 spawns two 0x1E026D0 (side 0 angle 0, side 1 angle 90) and 0x1E02860; frames 109..360 spawn 0x1E02170
+   on the three joints in turn; frame 109 spawns 0x1E02D40 and 0x1E02B40; every 4th frame of 159..380 spawns
+   0x1E02420 and 0x1E02500 jittered around the camera joint; the spin (0x450C) turns 2 a frame */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x4470 - 0x260];
+    Vec4f p;
+    Vec4f vel;
+    u8 pad4490[0x44E4 - 0x4490];
+    s16 ja;
+    s16 jb;
+    s16 jc;
+    u8 pad44EA[0x44F4 - 0x44EA];
+    s16 jcam;
+    u8 pad44F6[0x4506 - 0x44F6];
+    s16 ang;
+    u8 pad4508[0x450C - 0x4508];
+    s16 spin;
+    u8 pad450E[0x4512 - 0x450E];
+    s16 side;
+    u8 pad4514[0x451A - 0x4514];
+    s16 t;
+} Scene_b747_01E01D00;
+
+static void func_01E01D00_b747(Scene_b747_01E01D00 *g) {
+    extern void b747_01E02170(void);
+    extern void b747_01E02420(void);
+    extern void b747_01E02500(void);
+    extern void b747_01E026D0(void);
+    extern void b747_01E02860(void);
+    extern void b747_01E02B40(void);
+    extern void b747_01E02D40(void);
+    extern void b747_01E03A50(Scene_b747_01E01D00 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+    s32 k;
+
+    g->t++;
+    if (g->t < 155) {
+        func_001F5620(func_001F53A0(), g->ja, &g->p);
+    } else {
+        if (g->t == 155) {
+            func_001F5620(func_001F5380(), g->jcam, v);
+            g->vel.z = (v[0].z - g->p.z) / 32.0f;
+            g->vel.y = (v[0].y - g->p.y) / 32.0f;
+        }
+        if (g->t < 186) {
+            g->p.z += g->vel.z;
+            g->p.y += g->vel.y;
+        }
+    }
+    if (g->t == 186) {
+        g->pos = g->p;
+        g->side = 0;
+    }
+    if (g->t == 100) {
+        g->ja = func_001F5560(func_001F53A0(), 0x11, 1);
+        g->jb = func_001F5560(func_001F53A0(), 0x1C, 0);
+        g->jc = func_001F5560(func_001F53A0(), 0x26, 0);
+    }
+    if (g->t == 40) {
+        g->side = 0;
+        g->ang = 0;
+        b747_01E03A50(g, b747_01E026D0, 0);
+        g->side = 1;
+        g->ang = 90;
+        b747_01E03A50(g, b747_01E026D0, 0);
+        b747_01E03A50(g, b747_01E02860, 0);
+    }
+    if (g->t >= 109 && g->t <= 360) {
+        k = g->t % 3;
+        if (k == 0) {
+            g->side = 0;
+            func_001F5620(func_001F53A0(), g->ja, &g->pos);
+            b747_01E03A50(g, b747_01E02170, 0);
+        } else if (k == 1) {
+            g->side = 1;
+            func_001F5620(func_001F53A0(), g->jb, &g->pos);
+            b747_01E03A50(g, b747_01E02170, 0);
+        } else if (k == 2) {
+            g->side = 2;
+            func_001F5620(func_001F53A0(), g->jc, &g->pos);
+            b747_01E03A50(g, b747_01E02170, 0);
+        }
+    }
+    if (g->t == 109) {
+        b747_01E03A50(g, b747_01E02D40, 0);
+    }
+    if (g->t == 109) {
+        b747_01E03A50(g, b747_01E02B40, 0);
+    }
+    if (g->t >= 159 && g->t <= 380 && g->t % 4 == 0) {
+        func_001F5620(func_001F5380(), g->jcam, v);
+        g->pos = v[0];
+        g->pos.x += func_0019A5C8() % 16 - 8;
+        g->pos.y += func_0019A5C8() % 16 - 8;
+        g->pos.z += func_0019A5C8() % 10 - 5;
+        b747_01E03A50(g, b747_01E02420, 0);
+        b747_01E03A50(g, b747_01E02500, 0);
+    }
+    g->spin += 2;
+    if (g->spin >= 360) {
+        g->spin %= 360;
+    }
+}
 
 /* shape b747:01E02170, 170 insns: b193:01E02530's ring in green (0x80/0xFF/0x80 blinking with 0x60/0xC0/0x60): size 7, h5C
    from the scene (g+0x450C), a 35-tick fade-in, f34 swinging by 1.6 to +-50 and f38 growing by 0.2 to 10; after the first tick

@@ -355,7 +355,121 @@ static void func_01E00F10_b073(u8 *self, Obj_b018_01E00C50 *obj, void *pk) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b073", func_01E011A0_b073);
+/* shape b073:01E011A0, 359 insns: the b073 scene's script (scene colour red): on ticks 111 and 151 a 025C0 at a random
+   angle (numbered 0/1) and two 02A70 at 0 and 90 degrees; on tick 255 a 01B50; on tick 260 a 02090 at the joint's
+   height under the model, two 02180, thirty-five 022E0 and ten 02450; on ticks 196/216/236/255 and 206/226/245/255
+   two 01970 just under joints 5 and 6; on tick 1 the spawn point jitters (-3..2) around joints 1 and 3 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x3594 - 0x260];
+    u8 col[4];
+    u8 pad3598[0x20];
+    s16 j[8];
+    u8 pad35C8[2];
+    s16 ang;
+    u8 pad35CC[2];
+    s16 ring;
+    u8 pad35D0[4];
+    s16 tick;
+} Ctx_b073_01E011A0;
+
+static void func_01E011A0_b073(Ctx_b073_01E011A0 *g) {
+    extern s32 b073_01E01970();
+    extern s32 b073_01E01B50();
+    extern s32 b073_01E02090();
+    extern s32 b073_01E02180();
+    extern s32 b073_01E022E0();
+    extern s32 b073_01E02450();
+    extern s32 b073_01E025C0();
+    extern s32 b073_01E02A70();
+    extern void b073_01E03840(Ctx_b073_01E011A0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f a;
+    Vec4f b;
+    s16 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick == 111) {
+        func_001F5620(func_001F53A0(), g->j[0], &a);
+        g->ang = func_0019A5C8() % 360;
+        g->ring = 0;
+        b073_01E03840(g, b073_01E025C0, 0);
+        g->ang = 0;
+        b073_01E03840(g, b073_01E02A70, 0);
+        g->ang = 90;
+        b073_01E03840(g, b073_01E02A70, 0);
+    }
+    if (g->tick == 151) {
+        func_001F5620(func_001F53A0(), g->j[2], &a);
+        g->ang = func_0019A5C8() % 360;
+        g->ring = 1;
+        b073_01E03840(g, b073_01E025C0, 0);
+        g->ang = 0;
+        b073_01E03840(g, b073_01E02A70, 0);
+        g->ang = 90;
+        b073_01E03840(g, b073_01E02A70, 0);
+    }
+    if (g->tick == 255) {
+        b073_01E03840(g, b073_01E01B50, 0);
+    }
+    if (g->tick == 260) {
+        func_001F5620(func_001F53A0(), g->j[2], &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = b.x;
+        g->pos.y = a.y;
+        g->pos.z = b.z;
+        b073_01E03840(g, b073_01E02090, 0);
+        g->ang = 0;
+        b073_01E03840(g, b073_01E02180, 0);
+        g->ang = 90;
+        b073_01E03840(g, b073_01E02180, 0);
+        for (i = 0; i < 35; i++) {
+            b073_01E03840(g, b073_01E022E0, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b073_01E03840(g, b073_01E02450, 0);
+        }
+    }
+    if (g->tick == 196 || g->tick == 216 || g->tick == 236 || g->tick == 255) {
+        func_001F5620(func_001F53A0(), g->j[5], &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y - 2.0f;
+        g->pos.z = a.z;
+        for (i = 0; i < 2; i++) {
+            b073_01E03840(g, b073_01E01970, 0);
+        }
+    }
+    if (g->tick == 206 || g->tick == 226 || g->tick == 245 || g->tick == 255) {
+        func_001F5620(func_001F53A0(), g->j[6], &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y - 2.0f;
+        g->pos.z = a.z;
+        for (i = 0; i < 2; i++) {
+            b073_01E03840(g, b073_01E01970, 0);
+        }
+    }
+    if (g->tick == 1) {
+        func_001F5620(func_001F53A0(), g->j[1], &a);
+        g->pos.x = a.x + func_0019A5C8() % 6 - 3.0f;
+        g->pos.y = a.y + func_0019A5C8() % 6 - 3.0f;
+        g->pos.z = a.z + func_0019A5C8() % 6 - 3.0f;
+        g->ring = 0;
+        func_001F5620(func_001F53A0(), g->j[3], &a);
+        g->pos.x = a.x + func_0019A5C8() % 6 - 3.0f;
+        g->pos.y = a.y + func_0019A5C8() % 6 - 3.0f;
+        g->pos.z = a.z + func_0019A5C8() % 6 - 3.0f;
+        g->ring = 0;
+    }
+}
 
 /* shape b073:01E01740, 137 insns: a grey flash (size 200, frame 1) whose speed is a fifth of the way between two tracked points (ids at ctx+0x35BA/0x35B8 for kind 0, 0x35BE/0x35BC for kind 1); full alpha for 7 ticks */
 

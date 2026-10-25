@@ -395,7 +395,134 @@ static void func_01E00DE0_b134(Obj_b134_01E00DE0 *o, Ring_b134_01E00DE0 *s, s32 
 
 INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E011E0_b134);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b134", func_01E016D0_b134);
+/* shape b134:01E016D0, 304 insns: the scene script by frame (ctx+0x3026): 155 one 0x1E02750, 180 one 0x1E024D0,
+   179/201, 185/205 and 191 a 0x1E02080 of kind 0/1/2, 186-187 a point at joint 0x300A (y from the model) as kind 1;
+   then frames 179-184/201-205, 185-189/205-209 and 191-199 put the point on joint 0x300A / 0x300E / 0x3012, kind by
+   the model's facing (turn / 180 != 0 -> 0), and spawn three 0x1E01E20 and one 0x1E01FB0 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 px;
+    f32 py;
+    f32 pz;
+    u8 pad2DC[0x2FC4 - 0x2DC];
+    u8 col[4];
+    u8 pad2FC8[0x300A - 0x2FC8];
+    s16 j0;
+    u8 pad300C[2];
+    s16 j1;
+    u8 pad3010[2];
+    s16 j2;
+    u8 pad3014[0x3022 - 0x3014];
+    s16 kind;
+    u8 pad3024[2];
+    s16 t;
+} Scene_b134_01E016D0;
+
+static s32 func_01E01E20_b134();
+static s32 func_01E01FB0_b134();
+static s32 func_01E02080_b134();
+static s32 func_01E024D0_b134();
+static s32 func_01E02750_b134();
+static s32 func_01E03760_b134();
+
+#pragma optimization_level 3
+
+static void func_01E016D0_b134(Scene_b134_01E016D0 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F6160(s32, void *);
+    f32 a[4];
+    f32 b[4];
+    s32 r[4];
+    s32 flip;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 155) {
+        func_01E03760_b134(g, (s32)func_01E02750_b134, 0);
+    }
+    if (g->t == 180) {
+        func_01E03760_b134(g, (s32)func_01E024D0_b134, 0);
+    }
+    if (g->t == 179 || g->t == 201) {
+        g->kind = 0;
+        func_01E03760_b134(g, (s32)func_01E02080_b134, 0);
+    }
+    if (g->t == 185 || g->t == 205) {
+        g->kind = 1;
+        func_01E03760_b134(g, (s32)func_01E02080_b134, 0);
+    }
+    if (g->t == 191) {
+        g->kind = 2;
+        func_01E03760_b134(g, (s32)func_01E02080_b134, 0);
+    }
+    if (g->t == 186 || g->t == 187) {
+        func_001F5620(func_001F53A0(), g->j0, a);
+        func_001F5F90(func_001F5380(), b);
+        g->px = a[0];
+        g->py = a[1];
+        g->pz = b[2];
+        g->kind = 1;
+    }
+    func_001F6160(func_001F53A0(), r);
+    flip = (s32)(r[1] / 180.0f);
+    if (g->t == 179 || g->t == 180 || g->t == 181 || g->t == 182 || g->t == 183 || g->t == 184 ||
+        g->t == 201 || g->t == 202 || g->t == 203 || g->t == 204 || g->t == 205) {
+        func_001F5620(func_001F53A0(), g->j0, a);
+        g->px = a[0];
+        g->py = a[1];
+        g->pz = a[2];
+        if (flip != 0) {
+            g->kind = 0;
+        } else {
+            g->kind = 1;
+        }
+        for (i = 0; i < 3; i++) {
+            func_01E03760_b134(g, (s32)func_01E01E20_b134, 0);
+        }
+        func_01E03760_b134(g, (s32)func_01E01FB0_b134, 0);
+    }
+    if (g->t == 185 || g->t == 186 || g->t == 187 || g->t == 188 || g->t == 189 ||
+        g->t == 205 || g->t == 206 || g->t == 207 || g->t == 208 || g->t == 209) {
+        func_001F5620(func_001F53A0(), g->j1, a);
+        g->px = a[0];
+        g->py = a[1];
+        g->pz = a[2];
+        if (flip != 0) {
+            g->kind = 0;
+        } else {
+            g->kind = 1;
+        }
+        for (i = 0; i < 3; i++) {
+            func_01E03760_b134(g, (s32)func_01E01E20_b134, 0);
+        }
+        func_01E03760_b134(g, (s32)func_01E01FB0_b134, 0);
+    }
+    if (g->t == 191 || g->t == 192 || g->t == 193 || g->t == 194 || g->t == 195 || g->t == 196 ||
+        g->t == 197 || g->t == 198 || g->t == 199) {
+        func_001F5620(func_001F53A0(), g->j2, a);
+        g->px = a[0];
+        g->py = a[1];
+        g->pz = a[2];
+        if (flip != 0) {
+            g->kind = 0;
+        } else {
+            g->kind = 1;
+        }
+        for (i = 0; i < 3; i++) {
+            func_01E03760_b134(g, (s32)func_01E01E20_b134, 0);
+        }
+        func_01E03760_b134(g, (s32)func_01E01FB0_b134, 0);
+    }
+}
+#pragma optimization_level reset
 
 /* shape b080:01E02140, 55 insns: colour (0xFF,0xF0,0xFF); on start f38 50, random direction, f34 0, f30 random
    -15..14; alpha grows by 0x26 (below 0xC0) for 5 ticks; resets f0/f2/f4 to (0, 20, 0) every tick */

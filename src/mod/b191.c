@@ -509,7 +509,106 @@ static void func_01E012C0_b191(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E01580_b191);
+/* shape b191:01E01580, 316 insns: the b191 scene's script: on tick 190 it spawns the opening set (02050 twice, 02E20,
+   02850 twice, 02D30); every third tick from 166 to 290 two trail sparks (01A70) at the joint with a 40-step ring
+   index, then a 02B50; every tenth tick from 196 to 260 two 021D0 at the joint and 02600 on every tick there; on tick
+   188 twenty 021D0 + 02600 pairs; on ticks 131/141/151/161 twenty 029D0 at each of two more joints */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xA8BC - 0x260];
+    s16 joint;
+    u8 padA8BE[4];
+    s16 jointL;
+    s16 jointR;
+    u8 padA8C6[0x24];
+    s16 ring;
+    s16 ringNext;
+    u8 padA8EE[4];
+    s16 tick;
+} Ctx_b191_01E01580;
+
+static s32 func_01E01A70_b191();
+static s32 func_01E02050_b191();
+static s32 func_01E021D0_b191();
+static s32 func_01E02600_b191();
+static s32 func_01E02850_b191();
+static s32 func_01E029D0_b191();
+static s32 func_01E02B50_b191();
+static s32 func_01E02D30_b191();
+static s32 func_01E02E20_b191();
+static s32 func_01E03AD0_b191();
+
+static void func_01E01580_b191(Ctx_b191_01E01580 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    g->tick++;
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02050_b191, 0);
+    }
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02050_b191, 0);
+    }
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02E20_b191, 0);
+    }
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02850_b191, 0);
+    }
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02850_b191, 0);
+    }
+    if (g->tick == 0xBE) {
+        func_01E03AD0_b191(g, func_01E02D30_b191, 0);
+    }
+    if (g->tick >= 0xA6 && g->tick < 0x123 && g->tick % 3 == 1) {
+        if (g->tick < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->joint, &g->pos);
+            g->ring = g->ringNext;
+            func_01E03AD0_b191(g, func_01E01A70_b191, 0);
+            g->ringNext++;
+            if (g->ringNext >= 40) {
+                g->ringNext = 0;
+            }
+        }
+        func_01E03AD0_b191(g, func_01E02B50_b191, 0);
+    }
+    if (g->tick >= 0xC4 && g->tick < 0x105 && g->tick % 10 == 1) {
+        for (i = 0; i < 2; i++) {
+            func_001F5620(func_001F53A0(), g->joint, &g->pos);
+            func_01E03AD0_b191(g, func_01E021D0_b191, 0);
+        }
+    }
+    if (g->tick >= 0xC4 && g->tick < 0x105) {
+        func_01E03AD0_b191(g, func_01E02600_b191, 0);
+    }
+    if (g->tick == 0xBC) {
+        for (i = 0; i < 20; i++) {
+            func_001F5620(func_001F53A0(), g->joint, &g->pos);
+            func_01E03AD0_b191(g, func_01E021D0_b191, 0);
+            func_01E03AD0_b191(g, func_01E02600_b191, 0);
+        }
+    }
+    if (g->tick == 0x83 || g->tick == 0x8D || g->tick == 0x97 || g->tick == 0xA1) {
+        for (i = 0; i < 20; i++) {
+            func_001F5620(func_001F53A0(), g->jointL, &g->pos);
+            func_01E03AD0_b191(g, func_01E029D0_b191, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            func_001F5620(func_001F53A0(), g->jointR, &g->pos);
+            func_01E03AD0_b191(g, func_01E029D0_b191, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b191", func_01E01A70_b191);
 

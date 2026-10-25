@@ -673,6 +673,129 @@ static s32 func_01E03590_b033(Part_b033_01E03590 *arg0, s32 id, s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E04020_b033);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E04F60_b033);
+/* shape b033:01E04F60 (b033_setVolt), 323 insns, 1 copy (-O2,p): with a flag set, four bolts are taken from the
+   emitter pool (stopping when it runs out), each between two of the unit's five joints: bolt 0 from joint 0 to 1, bolt
+   1 from joint 1 towards it with a random spread scaled by how far the gap is from the range, bolts 2 and 3 from joint
+   2 to joints 3 and 4; then the five joints are picked again (joint 1 fixed, the rest random within the model) */
+
+typedef struct {
+    u8 b0[4];
+    u8 b4;
+    u8 b5;
+    u8 b6[2];
+    u8 kind;
+    u8 b9[2];
+    u8 bB;
+    u8 bC;
+    u8 bD;
+    u8 bE[2];
+    f32 size;
+    u8 col[4];
+    f32 pos[3];
+    f32 tgt[3];
+    f32 off[3];
+} Emit_b033_01E04F60;
+
+typedef struct {
+    u8 pad0[8];
+    s32 unit;
+    s32 joint[5];
+    u8 pad20[0x180];
+    Emit_b033_01E04F60 pool[100];
+    u8 pad[0x1C88 - 0x1A0 - 100 * 0x3C];
+    f32 range;
+} Volt_b033_01E04F60;
+
+#pragma optimization_level 2
+
+static void func_01E04F60_b033(Volt_b033_01E04F60 *g, s32 on) {
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_0020D0E0(void *);
+    extern s32 func_001F54E0(s32);
+    extern s32 func_001F5560(s32, s32, s32);
+    Vec4f p[5];
+    Vec4f d;
+    f32 f;
+    s32 i;
+    s32 k;
+    s32 j;
+
+    while (on != 0) {
+        for (i = 0; i < 4; i++) {
+            k = func_00101C30(g->pool, 0x3C, 40);
+            if (k < 0) {
+                break;
+            }
+            for (j = 0; j < 5; j++) {
+                func_001F5620(g->unit, g->joint[j], &p[j]);
+            }
+            func_00101AD0(&g->pool[k], 12, 0, 0xFF);
+            g->pool[k].b5 = 0;
+            g->pool[k].b4 = 0;
+            g->pool[k].bB = 0;
+            g->pool[k].bC = 0;
+            g->pool[k].col[0] = 0x80;
+            g->pool[k].col[1] = 0x80;
+            g->pool[k].col[2] = 0x80;
+            g->pool[k].col[3] = 0x80;
+            g->pool[k].off[2] = 0.0f;
+            g->pool[k].off[1] = 0.0f;
+            g->pool[k].off[0] = 0.0f;
+            switch (i) {
+            case 0:
+                g->pool[k].kind = 8;
+                g->pool[k].size = 0.8f;
+                g->pool[k].bD = 3;
+                g->pool[k].pos[0] = p[0].x;
+                g->pool[k].pos[1] = p[0].y;
+                g->pool[k].pos[2] = p[0].z;
+                g->pool[k].tgt[0] = p[1].x;
+                g->pool[k].tgt[1] = p[1].y;
+                g->pool[k].tgt[2] = p[1].z;
+                break;
+            case 1:
+                g->pool[k].kind = 6;
+                g->pool[k].size = 1.2f;
+                g->pool[k].bD = 4;
+                g->pool[k].pos[0] = p[1].x;
+                g->pool[k].pos[1] = p[1].y;
+                g->pool[k].pos[2] = p[1].z;
+                d.x = p[1].x - p[0].x;
+                d.y = p[1].y - p[0].y;
+                d.z = p[1].z - p[0].z;
+                f = 200.0f * (g->range - func_0020D0E0(&d) >= 0.0f ? g->range - func_0020D0E0(&d)
+                                                                    : -(g->range - func_0020D0E0(&d)));
+                g->pool[k].tgt[0] = p[1].x + ((func_0019A5C8() >> 4) % (s32)f - ((s32)f >> 1)) / 100.0f;
+                g->pool[k].tgt[1] = p[1].y + ((func_0019A5C8() >> 4) % (s32)f - ((s32)f >> 1)) / 100.0f;
+                g->pool[k].tgt[2] = p[1].z + ((func_0019A5C8() >> 4) % (s32)f - ((s32)f >> 1)) / 100.0f;
+                break;
+            case 2:
+            case 3:
+                g->pool[k].kind = 8;
+                g->pool[k].size = 0.8f;
+                g->pool[k].bD = 3;
+                g->pool[k].pos[0] = p[2].x;
+                g->pool[k].pos[1] = p[2].y;
+                g->pool[k].pos[2] = p[2].z;
+                g->pool[k].tgt[0] = p[i + 1].x;
+                g->pool[k].tgt[1] = p[i + 1].y;
+                g->pool[k].tgt[2] = p[i + 1].z;
+                break;
+            }
+        }
+        break;
+    }
+    k = func_001F54E0(g->unit);
+    g->joint[0] = func_001F5560(g->unit, 1, 1);
+    i = (func_0019A5C8() >> 4) % (k - 3) + 3;
+    g->joint[1] = func_001F5560(g->unit, i, 0);
+    i = (func_0019A5C8() >> 4) % (k - 5) + 3;
+    g->joint[2] = func_001F5560(g->unit, i, 0);
+    g->joint[3] = func_001F5560(g->unit, i - 2, 0);
+    g->joint[4] = func_001F5560(g->unit, i + 2, 0);
+}
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b033", func_01E05470_b033);

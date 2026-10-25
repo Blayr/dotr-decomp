@@ -623,7 +623,148 @@ static void func_01E01630_b593(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b593", func_01E018F0_b593);
+/* shape b593:01E018F0, 353 insns: the module's spawn step for two points: B follows joint 0x4618 (camera 2) from tick
+   81 to 119 while the scene tint's alpha drops 6 a tick (91..109, cleared at 111); from 120 B glides over 20 ticks
+   (z to 0 in 30 steps, y toward 50 in 20); A follows joint 0x4608 2 higher from 190 to 254, then glides (z over 20,
+   y away from 50 over 50 steps) until 281; both points spawn b593:01E01E80 + b593:01E02250 (with b593:01E025B0 on
+   their first tick), B three b593:01E02BD0 on 81..99; A ends with b593:01E02480/b593:01E020C0 (281..295),
+   b593:01E028B0 (281), the tint back at 289 and five b593:01E029F0 at 291 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b593_01E018F0;
+
+typedef struct {
+    u8 pad0[0x250];
+    V4_b593_01E018F0 p;
+    u8 pad260[0x4470 - 0x260];
+    V4_b593_01E018F0 a;
+    V4_b593_01E018F0 b;
+    u8 pad4490[0x4510 - 0x4490];
+    V4_b593_01E018F0 va;
+    V4_b593_01E018F0 vb;
+    u8 pad4530[0x45DC - 0x4530];
+    u8 tint[4];
+    u8 pad45E0[0x4608 - 0x45E0];
+    s16 ja;
+    u8 pad460A[0x4618 - 0x460A];
+    s16 jb;
+    u8 pad461A[0x4636 - 0x461A];
+    s16 kind;
+    u8 pad4638[6];
+    s16 t;
+} Scene_b593_01E018F0;
+
+static s32 func_01E01E80_b593();
+static s32 func_01E020C0_b593();
+static s32 func_01E02250_b593();
+static s32 func_01E02480_b593();
+static s32 func_01E025B0_b593();
+static s32 func_01E028B0_b593();
+static s32 func_01E029F0_b593();
+static s32 func_01E02BD0_b593();
+static s32 func_01E03870_b593();
+
+static void func_01E018F0_b593(Scene_b593_01E018F0 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F6490(s32, void *);
+    extern void func_001F63E0(s32, void *);
+    s16 i;
+
+    s->t++;
+    if (s->t > 0x50 && s->t <= 0x77) {
+        func_001F5620(func_001F5380(), s->jb, &s->b);
+        func_001F6490(func_001F5380(), s->tint);
+        if (s->t > 0x5A && s->t <= 0x6D) {
+            s->tint[3] -= 6;
+        }
+        if (s->t == 0x6F) {
+            s->tint[3] = 0;
+        }
+        func_001F63E0(func_001F5380(), s->tint);
+    }
+    if (s->t >= 0x78) {
+        if (s->t == 0x78) {
+            s->vb.z = -s->b.z / 30.0f;
+        }
+        if (s->t == 0x78) {
+            s->vb.y = (50.0f - s->b.y) / 20.0f;
+        }
+        if (s->t < 0x8D) {
+            s->b.z += s->vb.z;
+        }
+        if (s->t < 0x8D) {
+            s->b.y += s->vb.y;
+        }
+    }
+    if (s->t > 0xBD && s->t <= 0xFE) {
+        func_001F5620(func_001F53A0(), s->ja, &s->a);
+        s->a.y += 2.0f;
+    }
+    if (s->t >= 0xFF) {
+        if (s->t == 0xFF) {
+            s->va.z = -s->a.z / 20.0f;
+        }
+        if (s->t == 0xFF) {
+            s->va.y = -(50.0f - s->a.y) / 50.0f;
+        }
+        if (s->t < 0x11A) {
+            s->a.z += s->va.z;
+        }
+        if (s->t < 0x11A) {
+            s->a.y -= s->va.y;
+        }
+    }
+    if (s->t > 0xBD && s->t <= 0x11E) {
+        s->kind = 0;
+        if (s->t == 0xBE) {
+            func_01E03870_b593(s, func_01E025B0_b593, 0);
+        }
+        func_01E03870_b593(s, func_01E01E80_b593, 0);
+        s->p = s->a;
+        func_01E03870_b593(s, func_01E02250_b593, 0);
+    }
+    if (s->t > 0x50 && s->t <= 0x11E) {
+        s->kind = 1;
+        if (s->t == 0x6F) {
+            func_01E03870_b593(s, func_01E025B0_b593, 0);
+        }
+        func_01E03870_b593(s, func_01E01E80_b593, 0);
+        s->p = s->b;
+        func_01E03870_b593(s, func_01E02250_b593, 0);
+    }
+    if (s->t > 0x50 && s->t <= 0x63) {
+        s->kind = 1;
+        s->p = s->b;
+        for (i = 0; i < 3; i++) {
+            func_01E03870_b593(s, func_01E02BD0_b593, 0);
+        }
+    }
+    if (s->t >= 0x119 && s->t < 0x128) {
+        s->p = s->a;
+        if (s->t % 2 == 0) {
+            func_01E03870_b593(s, func_01E02480_b593, 0);
+        }
+        func_01E03870_b593(s, func_01E020C0_b593, 0);
+    }
+    if (s->t == 0x119) {
+        s->p = s->a;
+        func_01E03870_b593(s, func_01E028B0_b593, 0);
+    }
+    if (s->t == 0x121) {
+        func_001F6490(func_001F5380(), s->tint);
+        s->tint[3] = 0x80;
+        func_001F63E0(func_001F5380(), s->tint);
+    }
+    if (s->t == 0x123) {
+        s->p = s->a;
+        for (i = 0; i < 5; i++) {
+            func_01E03870_b593(s, func_01E029F0_b593, 0);
+        }
+    }
+}
 
 /* shape b593:01E01E80, 144 insns: spinning glow (size 20..99 growing 1, grey over a green or blue that flashes every tick): alpha up by 48 to 0x60 for 2 ticks, then down by 11; spins 0x4000 per tick */
 

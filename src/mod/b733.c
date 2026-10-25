@@ -1003,7 +1003,118 @@ static s32 func_01E02EA0_b733(Game_b733_01E02EA0 *g, Fx_b733_01E02EA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b733", func_01E03040_b733);
+/* shape b733:01E03040, 416 insns: b847:01E05460 variant of b847:01E04E60 turning: kicked sideways at start, heading turns 165..194 a set-up, random pitch, no climb: a jittery spark trail on a world track (b149:01E01ED0 family): set up once
+   (point reset and nudged by a random kick, the track's 20 points filled with it, random size, speed, heading,
+   life); its frame grows for 7 frames then shrinks, full for its life then fades out, blinks; each frame the
+   point drifts along its heading and jitters, while the module's shape b445:01E00080 shifts the track */
+
+typedef struct {
+    Vec4f p[0x14];
+} Track_b733_01E03040;
+
+typedef struct {
+    u8 pad0[0x5A50];
+    Track_b733_01E03040 track[0x40];
+    u8 pad[0xBE50 - 0x5A50 - 0x40 * 0x140];
+    Vec4f pt[0x84];
+    u8 trig[1];
+} World_b733_01E03040;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f v;
+    u8 pad40[8];
+    f32 size;
+    f32 speed;
+    s16 idx;
+    s16 sub;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 head;
+    s16 pitch;
+    u8 pad5E[2];
+    u8 c0[4];
+} Spark_b733_01E03040;
+
+static s32 func_01E03040_b733(World_b733_01E03040 *w, Spark_b733_01E03040 *o) {
+    extern void b733_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        o->frame = 1;
+        o->c0[3] = 0;
+        o->sub = o->idx % 6;
+        w->pt[o->idx].x = 0.0f;
+        w->pt[o->idx].y = 0.0f;
+        w->pt[o->idx].z = 0.0f;
+        o->v.x = func_0019A5C8() % 60 - 30;
+        o->v.y = func_0019A5C8() % 60 - 30;
+        o->v.z = func_0019A5C8() % 60 - 30;
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+        w->pt[o->idx].z += o->v.z / 10.0f;
+        o->head = (func_0019A5C8() >> 4) % 360;
+        w->pt[o->idx].x += 25.0f * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += 25.0f * func_00108030(w->trig, o->head, 0);
+        src = &w->pt[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 0x14; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->size = func_0019A5C8() % 60 + 3;
+        o->size /= 10.0f;
+        o->speed = func_0019A5C8() % 65 + 3;
+        o->speed /= 10.0f;
+        o->head += (s16)(func_0019A5C8() % 30 + 165);
+        o->pitch = (func_0019A5C8() >> 4) % 360;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->t < 7) {
+        if (o->frame < 0xF) {
+            o->frame++;
+        }
+    } else if (o->frame > 0) {
+        o->frame--;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0x1E) {
+        o->c0[3] -= 0x1D;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    }
+    o->v.x = func_0019A5C8() % 80 - 40;
+    o->v.y = func_0019A5C8() % 80 - 40;
+    o->v.z = func_0019A5C8() % 80 - 40;
+    if (o->t != 0) {
+        w->pt[o->idx].x += o->speed * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += o->speed * func_00108030(w->trig, o->head, 0);
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+    }
+    if (o->t < 7) {
+        b733_01E00080(&w->track[o->idx].p[0x13], 0x14, 0, &w->pt[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b733:01E036C0, 118 insns: on start f48 3, variant 4, colour white, rotation -0x2000 when the game flag 0xC48A is
    set else 0x2000, 0x50 10..49 (kind 0x52 = 0) or 10..29 (kind 1), random 0x5A, speed 6..20 (0xE), 0x8 0..19, hold

@@ -457,7 +457,118 @@ static void func_01E012B0_b539(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b539", func_01E01480_b539);
+/* shape b539:01E01480, 371 insns: B539_W_S, the effect scene's step (b522:01E01D30 form): counts the frame (0xB2BC);
+   until 113 the point and the mark (0xB1D0) follow joint 0xB24A and spawn 0x1E01A50 there; frame 87 ten 0x1E01D40,
+   frame 1 eighteen 0x1E02270 (index 0xB2B4); frames 101..113 seven 0x1E01F60 stepping a fifth of the joints' depth
+   gap; before 100, every 6th frame 0x1E02410 on joint 0xB24E and 0xB250 in turn; frame 113 spawns 0x1E02740,
+   two 0x1E02880 (angle 0 / 90), 0x1E02990 and 0x1E02AC0 on the mark; odd frames 113..123 0x1E02990 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f mark;
+    u8 padB1E0[0xB248 - 0xB1E0];
+    s16 ja;
+    s16 jb;
+    u8 padB24C[2];
+    s16 jc;
+    s16 jd;
+    u8 padB252[0xB2A6 - 0xB252];
+    s16 ang;
+    u8 padB2A8[0xB2B4 - 0xB2A8];
+    s16 idx;
+    u8 padB2B6[6];
+    s16 t;
+} Scene_b539_01E01480;
+
+static void func_01E01480_b539(Scene_b539_01E01480 *g) {
+    extern void b539_01E01A50(void);
+    extern void b539_01E01D40(void);
+    extern void b539_01E01F60(void);
+    extern void b539_01E02270(void);
+    extern void b539_01E02410(void);
+    extern void b539_01E02740(void);
+    extern void b539_01E02880(void);
+    extern void b539_01E02990(void);
+    extern void b539_01E02AC0(void);
+    extern void b539_01E03530(Scene_b539_01E01480 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+    s16 i;
+    f32 *p;
+
+    g->t++;
+    if (g->t < 114) {
+        func_001F5620(func_001F53A0(), g->ja, &a);
+        func_001F5620(func_001F53A0(), g->jb, p = (f32 *)(u32)&b);
+        g->pos.x = p[0];
+        g->pos.y = b.y;
+        g->pos.z = b.z;
+        g->mark.x = g->pos.x;
+        g->mark.y = g->pos.y;
+        g->mark.z = g->pos.z;
+    }
+    if (g->t == 87) {
+        for (i = 0; i < 10; i++) {
+            g->idx = i;
+            b539_01E03530(g, b539_01E01D40, 0);
+        }
+    }
+    if (g->t < 114) {
+        g->pos = g->mark;
+        for (i = 0; i < 1; i++) {
+            b539_01E03530(g, b539_01E01A50, 0);
+        }
+    }
+    if (g->t > 100 && g->t < 114) {
+        func_001F5620(func_001F53A0(), g->ja, &a);
+        func_001F5620(func_001F53A0(), g->jb, &b);
+        a.z = (a.z - b.z) / 5.0f;
+        g->pos = g->mark;
+        for (i = 0; i < 7; i++) {
+            b539_01E03530(g, b539_01E01F60, 0);
+            g->pos.z += a.z;
+        }
+    }
+    if (g->t == 1) {
+        for (i = 0; i < 18; i++) {
+            g->idx = i;
+            b539_01E03530(g, b539_01E02270, 0);
+        }
+    }
+    if (g->t < 100) {
+        if (g->t % 6 == 0) {
+            func_001F5620(func_001F53A0(), g->jc, &g->pos);
+            g->pos.x += func_0019A5C8() % 10 - 5;
+            g->pos.y -= 1.5f;
+            b539_01E03530(g, b539_01E02410, 0);
+        }
+        if (g->t % 6 == 3) {
+            func_001F5620(func_001F53A0(), g->jd, &g->pos);
+            g->pos.x += func_0019A5C8() % 10 - 5;
+            g->pos.y -= 1.5f;
+            b539_01E03530(g, b539_01E02410, 0);
+        }
+    }
+    if (g->t == 113) {
+        g->pos = g->mark;
+        b539_01E03530(g, b539_01E02740, 0);
+        g->ang = 0;
+        b539_01E03530(g, b539_01E02880, 0);
+        g->ang = 90;
+        b539_01E03530(g, b539_01E02880, 0);
+        b539_01E03530(g, b539_01E02990, 0);
+        g->idx = 0;
+        b539_01E03530(g, b539_01E02AC0, 0);
+    }
+    if (g->t >= 113 && g->t < 124 && g->t % 2 == 1) {
+        g->pos = g->mark;
+        b539_01E03530(g, b539_01E02990, 0);
+    }
+}
 
 /* shape b539:01E01A50, 186 insns: c063:01E04250 family red (0xFF, 0x40, 0x40) flake 20 square growing 1 to 70, frame 0..2, drift /300, held 5..19 ticks, tumbling on all axes */
 

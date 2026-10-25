@@ -437,7 +437,171 @@ static s32 func_01E00F70_b086(Game_b086_01E00F70 *g, Fx_b086_01E00F70 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b086", func_01E01290_b086);
+/* shape b086:01E01290, 295 insns: the module's main: on start clears the 0x3D30 context, two cameras, 300 ticks, seven
+   model joints, textures 11..15, 2 and 5:0, then two 256-byte jitter tables (the fourth pass rewrites the first, the
+   second table at +0x100 stays as cleared); each tick runs the 150 slots' two movers, then draws each with its own
+   rotation (mode 3 or 2, a random 0..3 frame, table 1 or 2); ends 1 at step 90, 3 at 275, 6 in 101..269, 8 when the
+   timer runs out */
+
+typedef struct {
+    u8 pad00[0x24];
+    void *fn;
+    u8 pad28[0xC];
+    s16 rot;
+    s16 used;
+    u8 pad38[8];
+} Slot_b086_01E01290;
+
+typedef struct {
+    u8 pad0000[0x80];
+    s32 ot2;
+    u8 pad0084[4];
+    s32 tex88;
+    u8 pad008C[8];
+    Vec4f m94;
+    u8 pad00A4[0x14];
+    s16 mode;
+    u8 pad00BA[4];
+    s16 frame;
+    u8 pad00C0[0x18];
+    u8 camD8[0x238];
+    s32 w310;
+    s32 w314;
+    s32 w318;
+    u8 pad031C[4];
+    s32 tex[16];
+    u8 pad0360[0x2FC];
+    Slot_b086_01E01290 slot[150];
+} Ctx_b086_01E01290;
+
+typedef struct {
+    u8 pad0000[0x3930];
+    s32 tex5[8];
+    s32 timer;
+    u8 pad3954[8];
+    s32 ot;
+    u8 pad3960[0x38];
+    s16 joint[7];
+    u8 pad39A6[0xE];
+    s16 code;
+    s16 step;
+    u8 pad39B8[2];
+    s8 jit[256];
+    s8 jit2[256];
+    u8 pad3BBA[2];
+    u8 cam3BBC[1];
+} Hi_b086_01E01290;
+
+static s32 func_01E01290_b086(s32 arg0, s32 code) {
+    Ctx_b086_01E01290 *g = (Ctx_b086_01E01290 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5560(s32, s32, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_00106080(void *, s32, s32, s32);
+    extern void b086_01E00A50();
+    extern s32 b086_01E00BA0();
+    extern s32 b086_01E00F70();
+    extern void b086_01E004D0();
+    Hi_b086_01E01290 *h = (Hi_b086_01E01290 *)g;
+    Vec4f m1;
+    Vec4f m2;
+    s32 n;
+    s32 i;
+
+    n = 0;
+    h->ot = func_00207500();
+    g->ot2 = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x3D30);
+        func_00107C10(h->cam3BBC);
+        func_00107C10(g->camD8);
+        h->code = code;
+        h->timer = 300;
+        g->w310 = 0;
+        g->w314 = 0;
+        g->w318 = 0;
+        h->joint[0] = func_001F5560(func_001F53A0(), 0x41, 1);
+        h->joint[1] = func_001F5560(func_001F53A0(), 0x69, 0);
+        h->joint[2] = func_001F5560(func_001F53A0(), 0x1B, 0);
+        h->joint[3] = func_001F5560(func_001F53A0(), 0x26, 0);
+        h->joint[4] = func_001F5560(func_001F53A0(), 0xF, 0);
+        h->joint[5] = func_001F5560(func_001F53A0(), 0xA, 0);
+        h->joint[6] = func_001F5560(func_001F53A0(), 0x3D, 0);
+        for (i = 11; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        g->tex[2] = func_00202BF0(4, 2);
+        for (i = 0; i < 1; i++) {
+            h->tex5[i] = func_00202BF0(5, i);
+        }
+        for (i = 100; i < 180; i++) {
+            h->jit[i] = func_0019A5C8() % 20 - 10;
+        }
+        for (i = 0; i < 100; i++) {
+            h->jit[i] = func_0019A5C8() % 80 - 40;
+        }
+        for (i = 180; i < 256; i++) {
+            h->jit[i] = func_0019A5C8() % 2 + 1;
+        }
+        for (i = 0; i < 256; i++) {
+            h->jit[i] = func_0019A5C8() % 20 - 10;
+        }
+        return 0;
+    }
+    b086_01E00A50(g, 0);
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn == b086_01E00BA0) {
+                b086_01E00BA0(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b086_01E00F70) {
+                b086_01E00F70(g, &g->slot[i]);
+            }
+        }
+    }
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            if (g->slot[i].fn == b086_01E00BA0) {
+                g->tex88 = h->tex5[0];
+                func_00106080(&m1, 0x14, g->slot[i].rot, 0);
+                g->m94 = m1;
+                g->mode = 3;
+                g->frame = func_0019A5C8() % 4;
+                b086_01E004D0(g, &g->slot[i], 0, h->jit);
+                g->mode = 0;
+            }
+            if (g->slot[i].fn == b086_01E00F70) {
+                g->tex88 = h->tex5[0];
+                func_00106080(&m2, 0x14, g->slot[i].rot, 0);
+                g->m94 = m2;
+                g->mode = 2;
+                g->frame = func_0019A5C8() % 4;
+                b086_01E004D0(g, &g->slot[i], 1, h->jit2);
+                g->mode = 0;
+            }
+        }
+    }
+    if (h->timer != 0) {
+        h->timer--;
+    }
+    if (h->step == 90) {
+        return 1;
+    }
+    if (h->step == 275) {
+        return 3;
+    }
+    if (h->step > 100 && h->step < 270) {
+        return 6;
+    }
+    if (h->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b008:01E01EB0, 74 insns: twin of b046:01E03E20: take the first free slot of the 150-slot pool, clear it,
    give it the scene's colour twice, the scene matrix, the scene's value 0x39B0 and 0x39AA and the two arguments; returns 1 if a

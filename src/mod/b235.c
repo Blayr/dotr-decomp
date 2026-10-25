@@ -941,7 +941,125 @@ static s32 func_01E02560_b235(void *arg0, Obj_b235_01E02560 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b235", func_01E026E0_b235);
+/* shape b235:01E026E0, 290 insns: a growing ring in three kinds; on start size 140 (inner 82), colours by kind and by
+   the scene's odd/even flag at ctx+0xB2BA (violet/blue, dark/light purple, pink/light pink), a fade-in time of 8 or 10,
+   quad sizes 10x10 / 10x3 / 60x60, growth (450..529)/10 and spin speed 35, random angle; then full alpha until the
+   fade-in time, fading by 5 after, and the ring grows (inner 0.4 or 0.7 of it; kinds 1 and 2 also widen) */
+
+typedef struct {
+    u8 pad0[0xB2BA];
+    s16 flip;
+} Game_b235_01E026E0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 fade;
+    u8 pad8[0x1C];
+    s32 rot;
+    u8 pad28[8];
+    f32 spin;
+    f32 wide;
+    f32 grow;
+    u8 pad3C[0xC];
+    f32 size;
+    f32 inner;
+    s16 kind;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 w;
+    s16 h;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b235_01E026E0;
+
+static s32 func_01E026E0_b235(Game_b235_01E026E0 *g, Obj_b235_01E026E0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->size = 140.0f;
+        o->inner = o->size - 58.0f;
+        if (o->kind == 0) {
+            if (g->flip % 2 == 0) {
+                func_001076F0(o->c1, 0x80, 0x20, 0xC0);
+                func_001076F0(o->c0, 0, 0, 0);
+            }
+            if (g->flip % 2 == 1) {
+                func_001076F0(o->c1, 0x80, 0x40, 0xFF);
+                func_001076F0(o->c0, 0x30, 0x30, 0x30);
+            }
+            o->fade = 8;
+        }
+        if (o->kind == 1) {
+            if (g->flip % 2 == 0) {
+                func_001076F0(o->c1, 0x60, 0x20, 0x80);
+                func_001076F0(o->c0, 0, 0, 0);
+            }
+            if (g->flip % 2 == 1) {
+                func_001076F0(o->c1, 0x80, 0x40, 0xFF);
+                func_001076F0(o->c0, 0x30, 0x30, 0x30);
+            }
+            o->wide = 100.0f;
+            o->fade = 10;
+        }
+        if (o->kind == 2) {
+            if (g->flip % 2 == 0) {
+                func_001076F0(o->c1, 0xC0, 0x80, 0x80);
+                func_001076F0(o->c0, 0x10, 0x10, 0x10);
+            }
+            if (g->flip % 2 == 1) {
+                func_001076F0(o->c1, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->c0, 0x30, 0x30, 0x30);
+            }
+            o->wide = 100.0f;
+            o->fade = 10;
+        }
+        if (o->kind == 0) {
+            o->w = 10;
+            o->h = 10;
+        }
+        if (o->kind == 1) {
+            o->w = 10;
+            o->h = 3;
+        }
+        if (o->kind == 2) {
+            o->w = 60;
+            o->h = 60;
+        }
+        o->grow = func_0019A5C8() % 80 + 450;
+        o->grow /= 10.0f;
+        o->spin = 350.0f;
+        o->spin /= 10.0f;
+        o->state = 2;
+        o->c1[3] = 0;
+        o->rot = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->t < o->fade) {
+        o->c1[3] = 0x80;
+    } else if (o->c1[3] > 6) {
+        o->c1[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        o->size += o->grow;
+        o->inner = 0.4f * o->size;
+    }
+    if (o->kind == 1) {
+        o->size += o->grow;
+        o->inner = 0.7f * o->size;
+        o->wide += o->grow;
+    }
+    if (o->kind == 2) {
+        o->size += o->grow;
+        o->inner = 0.7f * o->size;
+        o->wide += o->grow;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b235:01E02B70, 165 insns: b065:01E02410 in pink (0xFF, 0x40, 0x80) with points at ctx+0xB244 / 0xB246 */
 

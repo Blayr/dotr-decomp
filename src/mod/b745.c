@@ -1146,7 +1146,129 @@ static s32 func_01E02870_b745(s32 arg0, Obj_b745_01E02870 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b745", func_01E02A70_b745);
+/* shape b745:01E02A70 (B745_OBJ_MOVE_6_), 308 insns, 1 copy: b293:01E022F0's growing ring in blue/green/grey kinds (by the scene side at
+   0xB2BC); kind 0 also spins 0x80 a tick one way or the other, kind 2 starts 70 up; fades by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[0x1C];
+    s32 f24;
+    u8 pad28[8];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b745_01E02A70;
+
+typedef struct {
+    u8 pad0[0xB2BC];
+    s16 side;
+} Game_b745_01E02A70;
+
+static s32 func_01E02A70_b745(Game_b745_01E02A70 *g, Fx_b745_01E02A70 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        if (o->kind == 0) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x80, 0x80, 0xC0);
+                func_001076F0(o->col0, 8, 8, 8);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x80, 0x80, 0xFF);
+                func_001076F0(o->col0, 0x38, 0x38, 0x38);
+            }
+            o->f6 = 8;
+        }
+        if (o->kind == 1) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x60, 0x80, 0x60);
+                func_001076F0(o->col0, 8, 8, 8);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x40, 0xFF, 0x40);
+                func_001076F0(o->col0, 0x38, 0x38, 0x38);
+            }
+            o->f34 = 10.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 2) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x50, 0x50, 0x50);
+                func_001076F0(o->col0, 0x28, 0x28, 0x28);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x60, 0x60, 0x60);
+                func_001076F0(o->col0, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 70.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 0) {
+            o->f5A = 15;
+            o->f5C = 15;
+            o->f52 = (func_0019A5C8() >> 4) % 2;
+        }
+        if (o->kind == 1) {
+            o->f5A = 10;
+            o->f5C = 3;
+        }
+        if (o->kind == 2) {
+            o->f5A = 60;
+            o->f5C = 60;
+        }
+        o->f38 = func_0019A5C8() % 80 + 350;
+        o->f38 = o->f38 / 10.0f;
+        o->f30 = 350.0f;
+        o->f30 = o->f30 / 10.0f;
+        o->mode = 2;
+        o->col1[3] = 0;
+        o->f24 = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < o->f6) {
+        o->col1[3] = 0x80;
+    } else if (o->col1[3] > 12) {
+        o->col1[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->f48 += o->f38;
+        o->f4C = 0.2f * o->f48;
+        if (o->f52 == 0) {
+            o->f24 += 0x80;
+        } else {
+            o->f24 -= 0x80;
+        }
+    }
+    if (o->kind == 1) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    if (o->kind == 2) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b745:01E02F40, 113 insns: a white drifting spark (b522:01E025A0 shape): size 100, sub-frame 2..4, random angle; pushed
    6.6 along it at the start, then drifting 0.5 a frame; alpha up by 0x40 for 10 frames, then down by 9 until it ends; turns */

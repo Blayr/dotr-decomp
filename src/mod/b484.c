@@ -418,7 +418,103 @@ static void func_01E00DD0_b484(Obj_b046_01E01A60 *obj, Def_b046_01E01A60 *def, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b484", func_01E01240_b484);
+/* shape b484:01E01240, 287 insns (B484_W_S): b513:01E01450's spawn step for b484: scene colour red, ticks the timer;
+   at 51 reads joint 0x363E into 0x3530 and from 52 to 64 copies it to the spawn point; at 83 two rings of fifteen
+   b484:01E01A10 (kinds 0 and 1) at jittered points of joint 0x363C, fourteen b484:01E016C0, one 01E01E90 and one
+   01E01DB0; from 76 to 102 two b484:01E01C50 at the joint, 5 lower; at 108, 120, 131 and 140 fifteen b484:01E01830
+   at the joint, 10 lower */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0x3530 - 0x25C];
+    f32 qx, qy, qz;
+    u8 pad353C[0x3614 - 0x353C];
+    u8 rgba[4];
+    u8 pad3618[0x363C - 0x3618];
+    s16 j0;
+    s16 j1;
+    u8 pad3640[0x3656 - 0x3640];
+    s16 kind;
+    u8 pad3658[2];
+    s16 t;
+} Scene_b484_01E01240;
+
+static s32 func_01E016C0_b484();
+static s32 func_01E01830_b484();
+static s32 func_01E01A10_b484();
+static s32 func_01E01C50_b484();
+static s32 func_01E01DB0_b484();
+static s32 func_01E01E90_b484();
+static s32 func_01E02B50_b484();
+
+static void func_01E01240_b484(Scene_b484_01E01240 *s) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    f32 v[4];
+    s32 i;
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t == 51) {
+        func_001F5620(func_001F53A0(), s->j1, &s->qx);
+    }
+    if (s->t > 51 && s->t < 65) {
+        func_001F5620(func_001F53A0(), s->j1, v);
+        for (i = 0; i < 6; i++) {
+            s->px = s->qx;
+            s->py = s->qy;
+            s->pz = s->qz;
+        }
+    }
+    if (s->t == 83) {
+        func_001F5620(func_001F53A0(), s->j0, v);
+        s->px = v[0] + func_0019A5C8() % 10 - 5.0f;
+        s->py = v[1] + func_0019A5C8() % 2 - 1.0f;
+        s->pz = v[2] + func_0019A5C8() % 10 - 5.0f;
+        s->kind = 0;
+        for (i = 0; i < 15; i++) {
+            func_01E02B50_b484(s, func_01E01A10_b484, 0);
+        }
+        func_001F5620(func_001F53A0(), s->j0, v);
+        s->px = v[0] + func_0019A5C8() % 10 - 5.0f;
+        s->py = v[1] + func_0019A5C8() % 2 - 1.0f;
+        s->pz = v[2] + func_0019A5C8() % 10 - 5.0f;
+        s->kind = 1;
+        for (i = 0; i < 15; i++) {
+            func_01E02B50_b484(s, func_01E01A10_b484, 0);
+        }
+        for (i = 0; i < 14; i++) {
+            func_01E02B50_b484(s, func_01E016C0_b484, 0);
+        }
+        func_01E02B50_b484(s, func_01E01E90_b484, 0);
+        func_01E02B50_b484(s, func_01E01DB0_b484, 0);
+    }
+    if (s->t >= 76 && s->t < 103) {
+        func_001F5620(func_001F53A0(), s->j0, v);
+        s->px = v[0];
+        s->py = v[1] - 5.0f;
+        s->pz = v[2];
+        func_01E02B50_b484(s, func_01E01C50_b484, 0);
+        func_001F5620(func_001F53A0(), s->j0, v);
+        s->px = v[0];
+        s->py = v[1] - 5.0f;
+        s->pz = v[2];
+        func_01E02B50_b484(s, func_01E01C50_b484, 0);
+    }
+    if (s->t == 108 || s->t == 120 || s->t == 131 || s->t == 140) {
+        func_001F5620(func_001F53A0(), s->j0, v);
+        s->px = v[0];
+        s->py = v[1] - 10.0f;
+        s->pz = v[2];
+        for (i = 0; i < 15; i++) {
+            func_01E02B50_b484(s, func_01E01830_b484, 0);
+        }
+    }
+}
 
 /* shape b484:01E016C0, 90 insns: a purple rising spark (b709:01E035F0 family): frame 17, random sub-frame 0..3, y turn
    and angle, rise 30..79, height 0..9, hold 5..14; then fades by 15 until it ends; rises every frame */

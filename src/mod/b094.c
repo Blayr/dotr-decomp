@@ -681,7 +681,138 @@ static s32 func_01E01900_b094(Ctx_b094_01E01900 *g, Fx_b094_01E01900 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b094", func_01E01AF0_b094);
+/* shape b094:01E01AF0, 323 insns: a white falling star of the b094 scene: on start 20 x 0x98, 1000 up, random heading
+   and tilt -15..14; fades in for 3 ticks, drops 80 a tick until it lands, then (late in the scene, step past 240)
+   fades out; on landing tick 16 it spawns an impact (026F0) and two jittered bursts (020E0), on tick 12 a puff at the
+   model's joint (02000), on tick 10 a streak (025F0 via 03100) along its heading */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    s32 r260;
+    s32 r264;
+    u8 pad268[0x4500 - 0x268];
+    s16 joint;
+    u8 pad4502[0x62];
+    s16 step;
+    u8 pad4566[0x202];
+    u8 table[1];
+} Scene_b094_01E01AF0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    Vec4f v;
+    s32 rot[4];
+    u8 pad30[4];
+    f32 dist;
+    u8 pad38[0x1C];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    s16 tilt;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Star_b094_01E01AF0;
+
+static s32 func_01E02000_b094();
+static s32 func_01E020E0_b094();
+static s32 func_01E025F0_b094();
+static s32 func_01E026F0_b094();
+static s32 func_01E02FC0_b094();
+static s32 func_01E03100_b094();
+
+static s32 func_01E01AF0_b094(Scene_b094_01E01AF0 *g, Star_b094_01E01AF0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_00205C40();
+    extern void func_00108950(void *, void *, s32, void *);
+    Vec4f v;
+    s32 r[4];
+    s32 rr[4];
+    s16 i;
+
+    if (o->state == 1) {
+        o->w = 20;
+        o->h = 0x98;
+        o->dist = 1000.0f;
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+        o->state = 2;
+        o->c1[3] = 0;
+        o->ang = func_0019A5C8() % 360;
+        o->tilt = func_0019A5C8() % 30 - 15;
+    }
+    if (o->t < 3) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x2A;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 0x2A;
+        }
+    }
+    if (o->t != 0) {
+        if (o->dist > 0.0f) {
+            o->dist -= 80.0f;
+        } else if (g->step > 0xF0) {
+            if (o->c0[3] > 10) {
+                o->c0[3] -= 9;
+            } else {
+                o->state = 0;
+            }
+            if (o->c0[3] > 10) {
+                o->c0[3] -= 9;
+            }
+        }
+    }
+    if (o->t == 16) {
+        g->pos = o->v;
+        func_01E02FC0_b094(g, func_01E026F0_b094, 0);
+        for (i = 0; i < 2; i++) {
+            g->pos = o->v;
+            g->pos.x += func_0019A5C8() % 20 - 10;
+            g->pos.z += func_0019A5C8() % 20 - 10;
+            func_01E02FC0_b094(g, func_01E020E0_b094, 0);
+        }
+    }
+    if (o->t == 12) {
+        for (i = 0; i < 1; i++) {
+            func_001F5620(func_001F5380(), g->joint, &g->pos);
+            g->pos.x += func_0019A5C8() % 30 - 15;
+            g->pos.z += func_0019A5C8() % 20 - 10;
+            g->pos.y += func_0019A5C8() % 20 - 10;
+            func_01E02FC0_b094(g, func_01E02000_b094, 0);
+        }
+    }
+    if (o->t == 10) {
+        g->pos = o->v;
+        v.y = o->dist / 10.0f;
+        v.x = 0.0f;
+        v.z = 0.0f;
+        r[0] = o->tilt;
+        r[1] = o->ang;
+        r[2] = o->tilt;
+        func_00205C40(rr);
+        r[1] -= rr[1] / 180;
+        func_00108950(&v, r, 2, g->table);
+        func_00108950(&v, r, 0, g->table);
+        g->pos.x += v.x;
+        g->pos.y += v.y;
+        g->pos.z += v.z;
+        g->r264 = o->ang * -180;
+        g->r260 = o->tilt * -180;
+        func_01E03100_b094(g, func_01E025F0_b094, 0);
+    }
+    func_00205C40(o->rot);
+    o->rot[0] = 0;
+    o->t++;
+    return 0;
+}
 
 /* shape b094:01E02000, 54 insns: a red spinning flash: set up once (scale 80, colours pink and white, size 15x15),
    full alpha for 2 frames, then fades out by 14; turns a quarter each frame after a random turn */

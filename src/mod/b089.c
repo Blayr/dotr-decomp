@@ -466,7 +466,126 @@ static s32 func_01E014C0_b089(Scene_b089_01E014C0 *g, Fx_b089_01E014C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b089", func_01E016D0_b089);
+/* shape b089:01E016D0, 308 insns: a white flame on scene point n (ctx+0x1C50 table, 1 higher): random spin words,
+   frame 0..4 cycling 0..6, size 3; alpha in by 12 below 0x80 for 10 ticks; while the point's state (ctx+0x3B68) is 1
+   it grows to 6 every third tick; when it turns 2 it greys, sets size 13 and spawns three b089:01E013A0 puffs
+   (jitter 10, numbered) and four b089:01E01D90 + b089:01E024F0 pairs (jitter 15 / 10, the latter lowered by 8 x the
+   camera-angle sine); fades by 7 and ends once the scene counter (ctx+0x26E0) is under 25 */
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_b089_01E016D0;
+
+typedef struct {
+    f32 px, py, pz;
+    u8 padC[0x1C50 - 0xC];
+    V4_b089_01E016D0 pt[1];
+    u8 pad1C60[0x26E0 - 0x1C60];
+    s32 count;
+    u8 pad26E4[0x3B68 - 0x26E4];
+    s16 state[1];
+    u8 pad3B6A[0x3B84 - 0x3B6A];
+    s16 idx;
+    u8 pad3B86[6];
+    u8 sin[4];
+} Game_b089_01E016D0;
+
+typedef struct {
+    s16 x;
+    s16 y;
+    s16 z;
+    u8 pad6[0xA];
+    s32 r10;
+    s32 r14;
+    s32 r18;
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 n;
+    s16 t;
+    s16 frame;
+    s16 mode;
+    s16 size;
+} Obj_b089_01E016D0;
+
+static s32 func_01E013A0_b089();
+static s32 func_01E01D90_b089();
+static s32 func_01E024F0_b089();
+static s32 func_01E031D0_b089();
+
+static s32 func_01E016D0_b089(Game_b089_01E016D0 *g, Obj_b089_01E016D0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F53A0();
+    extern void func_001F6160(s32, s32 *);
+    extern f32 func_00108030(void *, s32, s32);
+    s32 cam[4];
+    s16 i;
+    s16 j;
+    s16 a;
+
+    func_001076F0(o->col, 0x80, 0x80, 0x80);
+    if (o->mode == 1) {
+        o->r10 = func_0019A5C8() % 0xFFFF;
+        o->r14 = func_0019A5C8() % 0xFFFF;
+        o->r18 = func_0019A5C8() % 0xFFFF;
+        o->frame = func_0019A5C8() % 5;
+        o->size = 3;
+        o->mode = 2;
+        o->col[3] = 0;
+    }
+    if (o->t < 10) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 0xC;
+        }
+    }
+    if (o->t != 0) {
+        if (o->frame < 6) {
+            o->frame++;
+        } else {
+            o->frame = 0;
+        }
+    }
+    o->t++;
+    o->x = g->pt[o->n].x;
+    o->y = 1.0f + g->pt[o->n].y;
+    o->z = g->pt[o->n].z;
+    if (g->state[o->n] == 1) {
+        if (o->size < 6 && o->t % 3 == 1) {
+            o->size++;
+        }
+    }
+    if (g->state[o->n] == 2) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+        o->size = 0xD;
+        for (i = 0; i < 3; i++) {
+            g->px = o->x + func_0019A5C8() % 20 - 10;
+            g->py = o->y + func_0019A5C8() % 20 - 10;
+            g->pz = o->z;
+            g->idx = i;
+            func_01E031D0_b089(g, func_01E013A0_b089, 0);
+        }
+        for (j = 0; j < 4; j++) {
+            g->px = o->x + func_0019A5C8() % 30 - 15;
+            g->py = o->y + func_0019A5C8() % 30 - 15;
+            g->pz = o->z;
+            func_01E031D0_b089(g, func_01E01D90_b089, 0);
+            func_001F6160(func_001F53A0(), cam);
+            a = 8.0f * -func_00108030(g->sin, (s16)(cam[1] / 180.0f) - 180, 1);
+            g->px = o->x + func_0019A5C8() % 20 - 10;
+            g->py = o->y + func_0019A5C8() % 20 - 10;
+            g->pz = o->z + a;
+            func_01E031D0_b089(g, func_01E024F0_b089, 0);
+        }
+    }
+    if (g->count < 25) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    return 0;
+}
 
 /* shape b089:01E01BA0, 123 insns: a white spark on scene point h3B76: random spin words, size 14..23; alpha in by 16 up
    to 0xA0 for 10 ticks, then out by 19 and ends; placed at the point, its height lowered by twice the sine of the

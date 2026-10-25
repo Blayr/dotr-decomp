@@ -1160,7 +1160,115 @@ static s32 func_01E031C0_b492(Ctx_b492_01E031C0 *g, Fx_b492_01E031C0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E03430_b492);
+/* shape b492:01E03430, 292 insns, 1 copy: B492_OBJ_MOVE_203_: a full-screen sprite through the scene's sprite packet:
+   grey level cycling 0x60/0x50/0x40/0x30/0x20/0x30/0x40/0x50 over 8 ticks, UVs inset by size/10 (0x8, 0xA), fades in
+   by 9 to 0x80 for 220 ticks, then out by 7 and ends */
+
+typedef struct Xyz_b492_01E03430 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b492_01E03430;
+
+typedef struct Spr_b492_01E03430 {
+    u8 pad0[0x10];
+    u8 r, g, b, a;
+    f32 q;
+    f32 u0, v0;
+    Xyz_b492_01E03430 p0;
+    f32 u1, v1;
+    Xyz_b492_01E03430 p1;
+} Spr_b492_01E03430;
+
+typedef struct Game_b492_01E03430 {
+    u8 pad0[0xCB28];
+    Spr_b492_01E03430 *spr;
+} Game_b492_01E03430;
+
+typedef struct Obj_b492_01E03430 {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x48];
+    s16 t;
+    u8 pad56[2];
+    s16 mode;
+    u8 pad5A[6];
+    u8 col[4];
+} Obj_b492_01E03430;
+
+static s32 func_01E03430_b492(Game_b492_01E03430 *g, Obj_b492_01E03430 *o) {
+    extern void func_001076F0();
+    extern void func_002075F0();
+    f32 w;
+    f32 h;
+
+    w = o->w;
+    h = o->h;
+    w /= 10.0f;
+    h /= 10.0f;
+    if (o->mode == 1) {
+        o->col[3] = 0;
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+        o->mode = 2;
+    }
+    if (o->t % 8 == 0) {
+        func_001076F0(o->col, 0x60, 0x60, 0x60);
+    }
+    if (o->t % 8 == 1) {
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+    }
+    if (o->t % 8 == 2) {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    if (o->t % 8 == 3) {
+        func_001076F0(o->col, 0x30, 0x30, 0x30);
+    }
+    if (o->t % 8 == 4) {
+        func_001076F0(o->col, 0x20, 0x20, 0x20);
+    }
+    if (o->t % 8 == 5) {
+        func_001076F0(o->col, 0x30, 0x30, 0x30);
+    }
+    if (o->t % 8 == 6) {
+        func_001076F0(o->col, 0x40, 0x40, 0x40);
+    }
+    if (o->t % 8 == 7) {
+        func_001076F0(o->col, 0x50, 0x50, 0x50);
+    }
+    g->spr->r = o->col[0];
+    g->spr->g = o->col[1];
+    g->spr->b = o->col[2];
+    g->spr->a = o->col[3];
+    g->spr->q = 1.0f;
+    g->spr->p0.x = 0x6BF8;
+    g->spr->p0.y = 0x71F8;
+    g->spr->p0.z = 0xFFFFFF;
+    g->spr->p0.f = 0;
+    g->spr->p1.x = 0x93F8;
+    g->spr->p1.y = 0x8DF8;
+    g->spr->p1.z = 0xFFFFFF;
+    g->spr->p1.f = 0;
+    g->spr->u0 = w / 1024.0f;
+    g->spr->v0 = h / 512.0f;
+    g->spr->u1 = (640.0f - w) / 1024.0f;
+    g->spr->v1 = (448.0f - h) / 512.0f;
+    func_002075F0(g->spr, 0, 0);
+    if (o->t < 220) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 9;
+        }
+    } else if (o->t > 40) {
+        if (o->col[3] > 8) {
+            o->col[3] -= 7;
+        } else {
+            o->mode = 0;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b492", func_01E038C0_b492);
 

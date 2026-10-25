@@ -638,7 +638,112 @@ static void func_01E014F0_b757(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b757", func_01E01900_b757);
+/* shape b757:01E01900 (B757_W_S), 320 insns, 1 copy: the b757 module's event step: counts ticks; at 1 b757:01E02BC0
+   and b757:01E029A0; at 161 b757:01E02CD0; at 68, 110, 127, 144 and 192 thirteen b757:01E024A0 on joint 0xB244 (1.5
+   lower), at 118, 136 and 192 on joint 0xB246; at 195 the ring point goes to joint 0xB248, pushed 4 along z (back
+   when the game value at 0xB2B4 is set); from 195 to 220 the three b757:01E01FD0 ring kinds (0 and 1 on odd ticks, 2
+   on even ones) and b757:01E02670 at that point (b757:01E02880 once at 195); below 221 b757:01E01E00 on joint
+   0xB24A */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f pt;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 jA;
+    s16 jB;
+    s16 jC;
+    s16 jD;
+    u8 padB24C[0xB2B0 - 0xB24C];
+    s16 kind;
+    u8 padB2B2[2];
+    s16 v;
+    u8 padB2B6[2];
+    s16 timer;
+} Ctx_b757_01E01900;
+
+static void func_01E01900_b757(Ctx_b757_01E01900 *g) {
+    extern s32 b757_01E01E00(void);
+    extern s32 b757_01E01FD0(void);
+    extern s32 b757_01E024A0(void);
+    extern s32 b757_01E02670(void);
+    extern s32 b757_01E02880(void);
+    extern s32 b757_01E029A0(void);
+    extern s32 b757_01E02BC0(void);
+    extern s32 b757_01E02CD0(void);
+    extern void b757_01E03790(Ctx_b757_01E01900 *, s32 (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->timer++;
+    if (g->timer == 1) {
+        b757_01E03790(g, b757_01E02BC0, 0);
+    }
+    if (g->timer == 1) {
+        b757_01E03790(g, b757_01E029A0, 0);
+    }
+    if (g->timer == 161) {
+        b757_01E03790(g, b757_01E02CD0, 0);
+    }
+    if (g->timer == 68 || g->timer == 110 || g->timer == 127 || g->timer == 144 || g->timer == 192) {
+        func_001F5620(func_001F53A0(), g->jA, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b757_01E03790(g, b757_01E024A0, 0);
+        }
+    }
+    if (g->timer == 118 || g->timer == 136 || g->timer == 192) {
+        func_001F5620(func_001F53A0(), g->jB, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b757_01E03790(g, b757_01E024A0, 0);
+        }
+    }
+    if (g->timer == 195) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pt);
+        if (g->v != 0) {
+            g->pt.z -= 4.0f;
+        } else {
+            g->pt.z += 4.0f;
+        }
+    }
+    if (g->timer >= 195 && g->timer < 221) {
+        func_001F5F90(func_001F5380(), &g->pos);
+        g->pos.y -= 20.0f;
+        if (g->v != 0) {
+            g->pos.z -= 5.0f;
+        } else {
+            g->pos.z += 5.0f;
+        }
+        g->pos.x = g->pt.x;
+        g->pos.y = g->pt.y;
+        g->pos.z = g->pt.z;
+        g->kind = 0;
+        if (g->timer % 2 == 1) {
+            b757_01E03790(g, b757_01E01FD0, 0);
+        }
+        g->kind = 1;
+        if (g->timer % 2 == 1) {
+            b757_01E03790(g, b757_01E01FD0, 0);
+        }
+        g->kind = 2;
+        if (g->timer % 2 == 0) {
+            b757_01E03790(g, b757_01E01FD0, 0);
+        }
+        b757_01E03790(g, b757_01E02670, 0);
+        if (g->timer == 195) {
+            b757_01E03790(g, b757_01E02880, 0);
+        }
+    }
+    if (g->timer < 221) {
+        func_001F5620(func_001F53A0(), g->jD, &g->pos);
+        b757_01E03790(g, b757_01E01E00, 0);
+    }
+}
 
 /* shape b757:01E01E00, 114 insns: b702:01E01A00 twin: random size 80..119, spin 5..14, held 5..12 ticks */
 
@@ -702,7 +807,129 @@ static s32 func_01E01E00_b757(s32 arg0, Obj_b757_01E01E00 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b757", func_01E01FD0_b757);
+/* shape b757:01E01FD0 (B757_OBJ_MOVE_6_), 308 insns, 1 copy: b293:01E022F0's growing ring in green/green/grey kinds (by the scene side at
+   0xB2B8); kind 0 also spins 0x80 a tick one way or the other, kind 2 starts 70 up; fades by 11 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[0x1C];
+    s32 f24;
+    u8 pad28[8];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    s16 f52;
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b757_01E01FD0;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 side;
+} Game_b757_01E01FD0;
+
+static s32 func_01E01FD0_b757(Game_b757_01E01FD0 *g, Fx_b757_01E01FD0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f4C = o->f48 - 58.0f;
+        if (o->kind == 0) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x80, 0xC0, 0x80);
+                func_001076F0(o->col0, 8, 8, 8);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x80, 0xFF, 0x80);
+                func_001076F0(o->col0, 0x38, 0x38, 0x38);
+            }
+            o->f6 = 8;
+        }
+        if (o->kind == 1) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x60, 0x80, 0x60);
+                func_001076F0(o->col0, 8, 8, 8);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x40, 0xFF, 0x40);
+                func_001076F0(o->col0, 0x38, 0x38, 0x38);
+            }
+            o->f34 = 10.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 2) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x50, 0x50, 0x50);
+                func_001076F0(o->col0, 0x28, 0x28, 0x28);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x60, 0x60, 0x60);
+                func_001076F0(o->col0, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 70.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 0) {
+            o->f5A = 15;
+            o->f5C = 15;
+            o->f52 = (func_0019A5C8() >> 4) % 2;
+        }
+        if (o->kind == 1) {
+            o->f5A = 10;
+            o->f5C = 3;
+        }
+        if (o->kind == 2) {
+            o->f5A = 60;
+            o->f5C = 60;
+        }
+        o->f38 = func_0019A5C8() % 80 + 350;
+        o->f38 = o->f38 / 10.0f;
+        o->f30 = 350.0f;
+        o->f30 = o->f30 / 10.0f;
+        o->mode = 2;
+        o->col1[3] = 0;
+        o->f24 = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < o->f6) {
+        o->col1[3] = 0x80;
+    } else if (o->col1[3] > 12) {
+        o->col1[3] -= 11;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->f48 += o->f38;
+        o->f4C = 0.2f * o->f48;
+        if (o->f52 == 0) {
+            o->f24 += 0x80;
+        } else {
+            o->f24 -= 0x80;
+        }
+    }
+    if (o->kind == 1) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    if (o->kind == 2) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b606:01E01D00, 113 insns, 2 copies: a white drifter: set up once (size 100, random frame 2..4 and heading, pushed 6.6
    along it); fades in over 10 frames, then out; drifts 0.5 a frame along its heading (world trig table);

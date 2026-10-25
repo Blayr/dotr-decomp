@@ -496,7 +496,106 @@ static void func_01E01230_b282(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b282", func_01E015A0_b282);
+/* shape b282:01E015A0, 305 insns: the b282 module's event step (B282_W_S): counts ticks (ctx+0xB2B8); at tick 1
+   spawns b282:01E025A0, b282:01E026B0 and four b282:01E01DB0 rings at the hand (turns 0, 90 / slot 0, 45, 135 /
+   slot 1); at 28, 38, 44 thirty b282:01E01F60 and one b282:01E01C20 just under the second point (0xB244); 108..160
+   b282:01E01A70 there, 134..160 b282:01E01C20 at the third point (0xB246); at 121 and 144 a burst (ten, one
+   b282:01E02480, thirty b282:01E021F0) */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB244 - 0x260];
+    s16 id2;
+    s16 id3;
+    s16 id;
+    u8 padB24A[0xB2A2 - 0xB24A];
+    s16 turn;
+    u8 padB2A4[0xB2B0 - 0xB2A4];
+    s16 slot;
+    u8 padB2B2[6];
+    s16 timer;
+} Ctx_b282_01E015A0;
+
+static void func_01E015A0_b282(Ctx_b282_01E015A0 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern void func_01E032B0_b282();
+    extern s32 func_01E01A70_b282();
+    extern s32 func_01E01C20_b282();
+    extern s32 func_01E01DB0_b282();
+    extern s32 func_01E01F60_b282();
+    extern s32 func_01E021F0_b282();
+    extern s32 func_01E02480_b282();
+    extern s32 func_01E025A0_b282();
+    extern s32 b282_01E026B0();
+    Vec4f v[2];
+    s16 i;
+
+    g->timer++;
+    if (g->timer == 1) {
+        func_01E032B0_b282(g, func_01E025A0_b282, 0);
+    }
+    if (g->timer == 1) {
+        func_01E032B0_b282(g, b282_01E026B0, 0);
+    }
+    if (g->timer == 1) {
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        g->turn = 0;
+        g->slot = 0;
+        func_01E032B0_b282(g, func_01E01DB0_b282, 0);
+        g->turn = 90;
+        g->slot = 0;
+        func_01E032B0_b282(g, func_01E01DB0_b282, 0);
+        g->turn = 45;
+        g->slot = 1;
+        func_01E032B0_b282(g, func_01E01DB0_b282, 0);
+        g->turn = 135;
+        g->slot = 1;
+        func_01E032B0_b282(g, func_01E01DB0_b282, 0);
+    }
+    if (g->timer == 28 || g->timer == 38 || g->timer == 44) {
+        func_001F5F90(func_001F53A0(), &g->pos);
+        func_001F5620(func_001F53A0(), g->id2, v);
+        g->pos.y = v[0].y - 1.0f;
+        g->slot = 0;
+        for (i = 0; i < 30; i++) {
+            func_01E032B0_b282(g, func_01E01F60_b282, 0);
+        }
+        func_01E032B0_b282(g, func_01E01C20_b282, 0);
+    }
+    if (g->timer >= 108 && g->timer < 161) {
+        func_001F5620(func_001F53A0(), g->id2, &g->pos);
+        func_01E032B0_b282(g, func_01E01A70_b282, 0);
+    }
+    if (g->timer == 121) {
+        func_001F5620(func_001F53A0(), g->id2, &g->pos);
+        for (i = 0; i < 10; i++) {
+            func_01E032B0_b282(g, func_01E01C20_b282, 0);
+        }
+        func_01E032B0_b282(g, func_01E02480_b282, 0);
+        g->slot = 0;
+        for (i = 0; i < 30; i++) {
+            func_01E032B0_b282(g, func_01E021F0_b282, 0);
+        }
+    }
+    if (g->timer >= 134 && g->timer < 161) {
+        func_001F5620(func_001F53A0(), g->id3, &g->pos);
+        func_01E032B0_b282(g, func_01E01C20_b282, 0);
+    }
+    if (g->timer == 144) {
+        func_001F5620(func_001F53A0(), g->id3, &g->pos);
+        for (i = 0; i < 10; i++) {
+            func_01E032B0_b282(g, func_01E01A70_b282, 0);
+        }
+        func_01E032B0_b282(g, func_01E02480_b282, 0);
+        g->slot = 0;
+        for (i = 0; i < 30; i++) {
+            func_01E032B0_b282(g, func_01E021F0_b282, 0);
+        }
+    }
+}
 
 /* shape b282:01E01A70, 105 insns: b282:01E01C20 family spinning spark (random size 50..99, frame 0..2, angle 10..49, spin 20..39, held 7..11 ticks): in by 64 up to 0xC0, then out by 14 and ends */
 

@@ -159,7 +159,119 @@ static void func_01E00330_b194(Pk_b008_01E00080 *p, Rect_b008_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b194", func_01E00780_b194);
+/* shape b194:01E00780, 312 insns: the b194 module's event step (B194_W_S): scene colour (0x80, 0, 0, 0); counts ticks
+   (ctx+0x3E2E); from 52 to 132 six b194:01E01760 (slots 0..5) a tick, ten rounds of them at tick 22; 50..86 two
+   b194:01E01010 at the two hands (0x3E18, 0x3E1A) jittered on x by -5..4 (sign flips from 73) and up by 0..14; at 91
+   ten b194:01E00E80 per slot 0 and 1 and fifty b194:01E015C0 at the first hand; 85..95 b194:01E01180 */
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f p;
+    u8 pad90[0x3DD4 - 0x90];
+    u8 col[4];
+    u8 pad3DD8[0x3E18 - 0x3DD8];
+    s16 hand0;
+    s16 hand1;
+    u8 pad3E1C[0x3E2A - 0x3E1C];
+    s16 slot;
+    u8 pad3E2C[2];
+    s16 timer;
+} Ctx_b194_01E00780;
+
+static void func_01E00780_b194(Ctx_b194_01E00780 *g) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_01E021A0_b194();
+    extern s32 func_01E00E80_b194();
+    extern s32 func_01E01010_b194();
+    extern s32 func_01E01180_b194();
+    extern s32 func_01E015C0_b194();
+    extern s32 func_01E01760_b194();
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->timer++;
+    if (g->timer < 133) {
+        if (g->timer >= 52) {
+            g->slot = 0;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 1;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+        }
+        if (g->timer >= 52) {
+            g->slot = 2;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 3;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 4;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 5;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+        }
+    }
+    if (g->timer == 22) {
+        for (i = 0; i < 10; i++) {
+            g->slot = 0;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 1;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+        }
+    }
+    if (g->timer == 22) {
+        for (i = 0; i < 10; i++) {
+            g->slot = 2;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 3;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 4;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+            g->slot = 5;
+            func_01E021A0_b194(g, func_01E01760_b194, 0);
+        }
+    }
+    if (g->timer > 49 && g->timer < 87) {
+        func_001F5620(func_001F53A0(), g->hand0, &v);
+        g->p.x = v.x - (func_0019A5C8() % 10 - 5);
+        if (g->timer >= 73) {
+            g->p.x = v.x + (func_0019A5C8() % 10 - 5);
+        }
+        g->p.y = v.y + func_0019A5C8() % 15;
+        g->p.z = v.z;
+        func_01E021A0_b194(g, func_01E01010_b194, 0);
+        func_001F5620(func_001F53A0(), g->hand1, &v);
+        g->p.x = v.x - (func_0019A5C8() % 10 - 5);
+        if (g->timer >= 73) {
+            g->p.x = v.x + (func_0019A5C8() % 10 - 5);
+        }
+        g->p.y = v.y + func_0019A5C8() % 15;
+        g->p.z = v.z;
+        func_01E021A0_b194(g, func_01E01010_b194, 0);
+    }
+    if (g->timer == 91) {
+        func_001F5620(func_001F53A0(), g->hand0, &v);
+        g->p.x = v.x;
+        g->p.y = v.y;
+        g->p.z = v.z;
+        g->slot = 0;
+        for (i = 0; i < 10; i++) {
+            func_01E021A0_b194(g, func_01E00E80_b194, 0);
+        }
+        g->slot = 1;
+        for (i = 0; i < 10; i++) {
+            func_01E021A0_b194(g, func_01E00E80_b194, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            func_01E021A0_b194(g, func_01E015C0_b194, 0);
+        }
+    }
+    if (g->timer >= 85 && g->timer < 96) {
+        func_01E021A0_b194(g, func_01E01180_b194, 0);
+    }
+}
 
 /* shape b194:01E00C60, 134 insns, 2 copies: a violet wisp (b018:01E01F60 twin): set up once (random heading, tilt -15..14); fades in to 0x60
    over 10 frames, then out; its size grows every other frame up to 18, its frame every third up to 7; x and z drift 10 along its heading, y 4 by

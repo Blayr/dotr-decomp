@@ -495,7 +495,117 @@ static void func_01E01330_b362(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b362", func_01E015F0_b362);
+/* shape b362:01E015F0, 327 insns: the b362 module's event step (B362_W_S): counts ticks (ctx+0xB278); at 69 it takes
+   the player and camera points and picks the side (0 or 2) by the player's x and the flag 0xB274; on odd ticks
+   69..155 one b362:01E01B10 at the model point (0xB240) jittered by -20..19; every third tick 1..200 two
+   b362:01E01EE0 at the two joints (0xB242) jittered by a fifth of that; every third tick to 234 b362:01E028A0; at 1
+   b362:01E026A0 and b362:01E025A0; until 225 b362:01E020F0 at the model point */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB220 - 0x260];
+    Vec4f *pa;
+    Vec4f *pb;
+    u8 padB228[0xB240 - 0xB228];
+    s16 id;
+    s16 joint[2];
+    u8 padB246[0xB260 - 0xB246];
+    s16 side;
+    u8 padB262[0xB274 - 0xB262];
+    s16 flag;
+    u8 padB276[2];
+    s16 timer;
+} Ctx_b362_01E015F0;
+
+static void func_01E015F0_b362(Ctx_b362_01E015F0 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern Vec4f *func_001F9AD0(s32);
+    extern Vec4f *func_001F9D30(s32);
+    extern void func_01E03290_b362();
+    extern s32 func_01E01B10_b362();
+    extern s32 func_01E01EE0_b362();
+    extern s32 func_01E020F0_b362();
+    extern s32 func_01E025A0_b362();
+    extern s32 func_01E026A0_b362();
+    extern s32 func_01E028A0_b362();
+    f32 x;
+    f32 y;
+    f32 z;
+    s16 i;
+    s16 n;
+
+    g->timer++;
+    if (g->timer == 69) {
+        g->pa = func_001F9AD0(0);
+        g->pb = func_001F9D30(0);
+        if (g->flag != 0) {
+            if (g->pa->x > 0.0f) {
+                g->side = 0;
+            } else {
+                g->side = 2;
+            }
+        } else {
+            if (g->pa->x > 0.0f) {
+                g->side = 2;
+            } else {
+                g->side = 0;
+            }
+        }
+    }
+    if (g->timer >= 69 && g->timer < 156 && g->timer % 2 == 1) {
+        if (g->timer < 100) {
+            n = 1;
+        } else {
+            n = 1;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->id, &g->pos);
+            g->pos.x += func_0019A5C8() % 40 - 20;
+            g->pos.y += func_0019A5C8() % 40 - 20;
+            g->pos.z += func_0019A5C8() % 40 - 20;
+            func_01E03290_b362(g, func_01E01B10_b362, 0);
+        }
+    }
+    if (g->timer > 0 && g->timer < 201 && g->timer % 3 == 1) {
+        if (g->timer < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), g->joint[i], &g->pos);
+            x = func_0019A5C8() % 40 - 20;
+            y = func_0019A5C8() % 40 - 20;
+            z = func_0019A5C8() % 40 - 20;
+            x /= 5.0f;
+            y /= 5.0f;
+            z /= 5.0f;
+            g->pos.x += x;
+            g->pos.y += y;
+            g->pos.z += z;
+            func_01E03290_b362(g, func_01E01EE0_b362, 0);
+        }
+    }
+    if (g->timer % 3 == 1 && g->timer < 235) {
+        func_01E03290_b362(g, func_01E028A0_b362, 0);
+    }
+    if (g->timer == 1) {
+        func_01E03290_b362(g, func_01E026A0_b362, 0);
+    }
+    if (g->timer == 1) {
+        func_01E03290_b362(g, func_01E025A0_b362, 0);
+    }
+    if (g->timer < 226) {
+        func_001F5F90(func_001F5380(), &g->pos);
+        g->pos.y = 35.0f;
+        func_001F5620(func_001F53A0(), g->id, &g->pos);
+        func_01E03290_b362(g, func_01E020F0_b362, 0);
+    }
+}
 
 /* shape b362:01E01B10, 242 insns: b428:01E01A70's spark (size 20, grey) that picks a camera point jittered by
    (-50..49)/7, then from tick 51 flies to it in steps of a 20th (depth an 18.5th) of the gap; at tick 70 it ends,

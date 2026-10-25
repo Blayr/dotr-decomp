@@ -683,7 +683,129 @@ static void func_01E018F0_b524(Scene_b524_01E018F0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b524", func_01E01B30_b524);
+/* shape b524:01E01B30, 297 insns: a flying shard (B524_OBJ_MOVE_2_): set up once at size 20, a random frame 2..7,
+   grey 0x80, a random direction (ctx+0x5A50 slot, x/z -50..49, y 0..39, all /15), speed 50, random turn and side;
+   fades in by 10 before tick 80 then out by 9; frame cycles 0..2; grows to 30 every third tick; flies at its speed
+   from its point, sparking b524:01E01FE0 on odd ticks; slows to 20, then after tick 60 to 0 and bursts
+   (b524:01E023F0 + b524:01E02910) once it runs out; speed kept in ctx+0x5E10/0x5E74 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x5A50 - 0x260];
+    Vec4f dir[0x3C];
+    s16 spd[0x32];
+    s16 spd2[0x32];
+} Ctx_b524_01E01B30;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    s16 side;
+    u8 padE[2];
+    Vec4f pos;
+    s32 rot[4];
+    u8 pad30[0x18];
+    f32 f48;
+    u8 pad4C[4];
+    s16 idx;
+    s16 speed;
+    s16 t;
+    s16 frame;
+    s16 state;
+    u8 pad5A[2];
+    s16 ang;
+    u8 pad5E[2];
+    u8 col[4];
+} Shard_b524_01E01B30;
+
+static s32 func_01E01B30_b524(Ctx_b524_01E01B30 *g, Shard_b524_01E01B30 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_01E034A0_b524();
+    extern s32 func_01E01FE0_b524();
+    extern s32 func_01E023F0_b524();
+    extern s32 func_01E02910_b524();
+    f32 sp;
+
+    if (o->state == 1) {
+        o->w = 20;
+        o->h = 20;
+        o->f48 = 5.0f;
+        o->frame = func_0019A5C8() % 6 + 2;
+        func_001076F0(o->col, 0x80, 0x80, 0x80);
+        g->dir[o->idx].x = func_0019A5C8() % 100 - 50;
+        g->dir[o->idx].y = func_0019A5C8() % 40;
+        g->dir[o->idx].z = func_0019A5C8() % 100 - 50;
+        g->dir[o->idx].x /= 15.0f;
+        g->dir[o->idx].y /= 15.0f;
+        g->dir[o->idx].z /= 15.0f;
+        o->state = 2;
+        o->speed = 50;
+        o->ang = func_0019A5C8() % 360;
+        o->side = (func_0019A5C8() >> 4) % 2;
+        if (o->side == 0) {
+            o->side = 0;
+        } else {
+            o->side = 2;
+        }
+    }
+    if (o->t < 80) {
+        if (o->col[3] < 0x80) {
+            o->col[3] += 10;
+        }
+    } else {
+        if (o->col[3] > 10) {
+            o->col[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    }
+    o->frame++;
+    if (o->frame >= 3) {
+        o->frame = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->w < 30) {
+            o->w++;
+        }
+        if (o->h < 30) {
+            o->h++;
+        }
+    }
+    if (o->t != 0) {
+        g->pos = o->pos;
+        sp = o->speed;
+        g->pos.x += g->dir[o->idx].x * sp;
+        g->pos.y += g->dir[o->idx].y * sp;
+        g->pos.z += g->dir[o->idx].z * sp;
+        if (o->t % 2 == 1) {
+            func_01E034A0_b524(g, func_01E01FE0_b524, 0);
+        }
+        if (o->speed > 20) {
+            o->speed--;
+        } else if (o->t > 60) {
+            if (o->speed != 0) {
+                o->speed--;
+            } else {
+                o->speed--;
+                g->pos = o->pos;
+                sp = o->speed;
+                g->pos.x += g->dir[o->idx].x * sp;
+                g->pos.y += g->dir[o->idx].y * sp;
+                g->pos.z += g->dir[o->idx].z * sp;
+                func_01E034A0_b524(g, func_01E023F0_b524, 0);
+                func_01E034A0_b524(g, func_01E02910_b524, 0);
+            }
+        }
+    }
+    g->spd[o->idx] = o->speed;
+    func_00205C40((s32)o->rot);
+    o->t++;
+    o->ang += 5;
+    g->spd2[o->idx] = o->speed;
+    return 0;
+}
 
 /* shape b428:01E018E0, 98 insns, 2 copies: a grey ember: set up once (random size 2..4, frame, angle, speed 16..35, life
    3..5); fades in for its life, then out (b225:01E026A0 family, 0x58-state layout) */

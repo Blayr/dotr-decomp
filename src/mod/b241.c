@@ -335,9 +335,333 @@ static s32 func_01E01160_b241(Rib_b059_01E00E10 *arg0, s32 id __attribute__((ali
 
 INCLUDE_ASM("asm/nonmatchings/mod/b241", func_01E02020_b241);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b241", func_01E02BB0_b241);
+/* shape b241:01E02BB0, 322 insns: ShFx_Amp3, b241:01E030C0's trail emitters (0x64 bytes) riding between two model
+   joints (b13 and b14, lerp by f2C): one particle at the head when b18 < 2, else b18 along a spline through the last
+   three positions; each particle's speed is the length to the next point (y raised 0.8 when shorter than f1C) */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b241", func_01E030C0_b241);
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec4f out[28];
+} Spline_b241_01E02BB0;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b241_01E02BB0;
+
+typedef struct {
+    u8 pad00[4];
+    u8 flags;
+    u8 b5;
+    u8 pad06[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 bC;
+    u8 pad0D[3];
+    s32 w10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    C4_b241_01E02BB0 col;
+    u8 x24[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+} Part_b241_01E02BB0;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 b5;
+    u8 joint;
+    u8 pad7;
+    Part_b241_01E02BB0 *list;
+    s32 w0C;
+    u8 b10;
+    u8 b11;
+    u8 b12;
+    u8 j0;
+    u8 j1;
+    u8 b15;
+    u8 b16;
+    u8 b17;
+    u8 cnt;
+    u8 pad19[3];
+    f32 minlen;
+    f32 f20;
+    f32 f24;
+    f32 f28;
+    f32 lerp;
+    C4_b241_01E02BB0 col;
+    Vec4f pos;
+    Vec4f prev;
+    Vec4f prev2;
+} Amp_b241_01E02BB0;
+
+#pragma optimization_level 1
+
+static s32 func_01E02BB0_b241(void *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00101BA0(void *, void *);
+    extern void func_00102550(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_00101940(void *, void *);
+    extern f32 func_0020D0E0(void *);
+    Spline_b241_01E02BB0 sp;
+    Vec4f d;
+    Vec4f a;
+    Vec4f b;
+    Amp_b241_01E02BB0 *e;
+    s32 i;
+    s32 k;
+    s32 cnt;
+    s32 idx;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Amp_b241_01E02BB0 *)((u8 *)e + 0x64);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->life == e->max - 1) {
+            continue;
+        }
+        e->b5 = 1;
+        e->joint = e->j0;
+        func_00101BA0(e, &a);
+        e->joint = e->j1;
+        func_00101BA0(e, &b);
+        e->pos.x = b.x + e->lerp * (a.x - b.x);
+        e->pos.y = b.y + e->lerp * (a.y - b.y);
+        e->pos.z = b.z + e->lerp * (a.z - b.z);
+        if (e->cnt < 2) {
+            sp.out[0] = e->pos;
+            sp.out[1] = e->prev;
+            cnt = 1;
+        } else {
+            sp.n = 3;
+            sp.x[0] = e->pos.x;
+            sp.y[0] = e->pos.y;
+            sp.z[0] = e->pos.z;
+            sp.x[1] = e->prev.x;
+            sp.y[1] = e->prev.y;
+            sp.z[1] = e->prev.z;
+            sp.x[2] = e->prev2.x;
+            sp.y[2] = e->prev2.y;
+            sp.z[2] = e->prev2.z;
+            func_00102550(&sp);
+            cnt = e->cnt;
+        }
+        for (k = 0; k < cnt; k++) {
+            idx = func_00101C30(e->list, 0x40, e->b10);
+            if (idx >= 0) {
+                func_00101AD0(&e->list[idx], e->b11, 0, 0xFF);
+                d.x = sp.out[k + 1].x - sp.out[k].x;
+                d.y = sp.out[k + 1].y - sp.out[k].y;
+                d.z = sp.out[k + 1].z - sp.out[k].z;
+                if (func_0020D0E0(&d) < e->minlen) {
+                    d.y += 0.8f;
+                }
+                e->list[idx].f14 = func_0020D0E0(&d);
+                if (e->f20) {
+                    e->list[idx].f14 *= e->f20;
+                }
+                e->list[idx].f18 = e->f24;
+                e->list[idx].flags = 0;
+                e->list[idx].b5 = 0;
+                e->list[idx].b8 = e->b12;
+                e->list[idx].f1C = e->f28;
+                e->list[idx].b9 = func_0019A5C8() >> 4;
+                e->list[idx].bA = e->b15;
+                e->list[idx].bB = e->b16;
+                e->list[idx].bC = e->b17;
+                e->list[idx].w10 = e->w0C;
+                e->list[idx].col = e->col;
+                e->list[idx].x = sp.out[k].x;
+                e->list[idx].y = sp.out[k].y;
+                e->list[idx].z = sp.out[k].z;
+                func_00101940(&d, e->list[idx].x24);
+            }
+        }
+        e->prev2 = e->prev;
+        e->prev = e->pos;
+    }
+    return 1;
+}
+
+#pragma optimization_level reset
+
+/* shape b241:01E030C0, 304 insns: ShFx_Amp4, b198:01E05C30's trail emitters (0x70 bytes, 0x40-byte particles) with
+   gravity (+0x28 into vel.y) and no follow: one particle at the head when b16 < 2, else b16 along a spline through the
+   last three positions; each particle's speed is the length to the next point (or 0.8 up when flag 1), times f18 */
+
+typedef struct {
+    s32 n;
+    f32 x[8];
+    f32 y[8];
+    f32 z[8];
+    Vec4f out[28];
+} Spline_b241_01E030C0;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b241_01E030C0;
+
+typedef struct {
+    u8 pad00[4];
+    u8 flags;
+    u8 b5;
+    u8 pad06[2];
+    u8 b8;
+    u8 b9;
+    u8 bA;
+    u8 bB;
+    u8 bC;
+    u8 pad0D[3];
+    s32 w10;
+    f32 f14;
+    f32 f18;
+    f32 f1C;
+    C4_b241_01E030C0 col;
+    u8 x24[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+} Part_b241_01E030C0;
+
+typedef struct {
+    u8 life;
+    u8 pad1;
+    u8 max;
+    u8 pad3;
+    u8 flags;
+    u8 pad5[3];
+    Part_b241_01E030C0 *list;
+    s32 w0C;
+    u8 b10;
+    u8 b11;
+    u8 b12;
+    u8 b13;
+    u8 b14;
+    u8 b15;
+    u8 b16;
+    u8 pad17;
+    f32 f18;
+    f32 f1C;
+    f32 f20;
+    f32 f24;
+    f32 grav;
+    C4_b241_01E030C0 col;
+    Vec4f pos;
+    Vec4f prev;
+    Vec4f prev2;
+    Vec4f vel;
+} Amp_b241_01E030C0;
+
+#pragma optimization_level 1
+
+static s32 func_01E030C0_b241(void *arg0, s32 arg1, s32 n) {
+    extern s32 func_00101AF0(void *);
+    extern void func_00102550(void *);
+    extern s32 func_00101C30(void *, s32, s32);
+    extern void func_00101AD0(void *, s32, s32, s32);
+    extern void func_00101940(void *, void *);
+    extern f32 func_0020D0E0(void *);
+    Spline_b241_01E030C0 sp;
+    Vec4f d;
+    Amp_b241_01E030C0 *e;
+    s32 i;
+    s32 k;
+    s32 cnt;
+    s32 idx;
+
+    e = arg0;
+    for (i = 0; i < n; i++) {
+        if (i != 0) {
+            e = (Amp_b241_01E030C0 *)((u8 *)e + 0x70);
+        }
+        if (func_00101AF0(e) == 0) {
+            continue;
+        }
+        if (e->life == e->max - 1) {
+            continue;
+        }
+        e->vel.y += e->grav;
+        e->pos.x += e->vel.x;
+        e->pos.y += e->vel.y;
+        e->pos.z += e->vel.z;
+        if (e->b16 < 2) {
+            sp.out[0] = e->pos;
+            sp.out[1] = e->prev;
+            cnt = 1;
+        } else {
+            sp.n = 3;
+            sp.x[0] = e->pos.x;
+            sp.y[0] = e->pos.y;
+            sp.z[0] = e->pos.z;
+            sp.x[1] = e->prev.x;
+            sp.y[1] = e->prev.y;
+            sp.z[1] = e->prev.z;
+            sp.x[2] = e->prev2.x;
+            sp.y[2] = e->prev2.y;
+            sp.z[2] = e->prev2.z;
+            func_00102550(&sp);
+            cnt = e->b16;
+        }
+        for (k = 0; k < cnt; k++) {
+            idx = func_00101C30(e->list, 0x40, e->b10);
+            if (idx >= 0) {
+                func_00101AD0(&e->list[idx], e->b11, 0, 0xFF);
+                if (e->flags & 1) {
+                    d.x = 0.0f;
+                    d.y = 0.8f;
+                    d.z = 0.0f;
+                } else {
+                    d.x = sp.out[k + 1].x - sp.out[k].x;
+                    d.y = sp.out[k + 1].y - sp.out[k].y;
+                    d.z = sp.out[k + 1].z - sp.out[k].z;
+                }
+                e->list[idx].f14 = func_0020D0E0(&d);
+                if (e->f18) {
+                    e->list[idx].f14 *= e->f18;
+                }
+                e->list[idx].f18 = e->f1C;
+                e->list[idx].flags = 0;
+                if (e->flags & 0x40) {
+                    e->list[idx].flags = 0x40;
+                }
+                e->list[idx].b5 = 0;
+                e->list[idx].b8 = e->b12;
+                e->list[idx].f1C = e->f20;
+                e->list[idx].b9 = func_0019A5C8() >> 4;
+                e->list[idx].bA = e->b13;
+                e->list[idx].bB = e->b14;
+                e->list[idx].bC = e->b15;
+                e->list[idx].w10 = e->w0C;
+                e->list[idx].col = e->col;
+                e->list[idx].x = sp.out[k].x;
+                e->list[idx].y = sp.out[k].y;
+                e->list[idx].z = sp.out[k].z;
+                func_00101940(&d, e->list[idx].x24);
+            }
+        }
+        e->prev2 = e->prev;
+        e->prev = e->pos;
+    }
+    return 1;
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b241", func_01E03580_b241);
 

@@ -2,7 +2,120 @@
 
 INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00080_c021);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00630_c021);
+/* shape c021:01E00630, 303 insns: turns the scene's six orbit rings (ctx+0x3370+0x118, 0x18 apiece): each places its
+   point at radius r on its angle from the sine table (ctx+0x35E4) and turns by +3, -8, +11, -12, +18, -9 (wrapped
+   past 360); every 14th tick the first three radii grow up to 15/14/14, rings 4 and 5 to 13 (ring 4 reset to 10
+   first); ring 6 is held at 10 and its wrap test reads ring 1's angle; the object ends when the counter
+   (ctx+0x3578) is under 16. A NULL ring block prints the module's message */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 padC[8];
+    s16 ang;
+    s16 r;
+} Ring_c021_01E00630;
+
+typedef struct {
+    u8 pad0[0x118];
+    Ring_c021_01E00630 ring[6];
+} Rings_c021_01E00630;
+
+typedef struct {
+    u8 pad0[0x3370];
+    Rings_c021_01E00630 rings;
+    u8 pad3518[0x3578 - 0x3518];
+    s32 count;
+    u8 pad357C[0x35E4 - 0x357C];
+    u8 sin[0x38BA - 0x35E4];
+    s16 t;
+} Ctx_c021_01E00630;
+
+typedef struct {
+    u8 pad0[0x84];
+    s16 state;
+} Obj_c021_01E00630;
+
+static s32 func_01E00630_c021(Ctx_c021_01E00630 *g, Obj_c021_01E00630 *o) {
+    extern char D_01E04080_c021[];
+    extern void func_00199B50(char *);
+    extern f32 func_00108030(void *, s32, s32);
+    Rings_c021_01E00630 *p;
+
+    p = &g->rings;
+    if (p == NULL) {
+        func_00199B50(D_01E04080_c021);
+        return 0;
+    }
+    p->ring[0].x = p->ring[0].r * func_00108030(g->sin, p->ring[0].ang, 1);
+    p->ring[0].z = p->ring[0].r * func_00108030(g->sin, p->ring[0].ang, 0);
+    p->ring[0].ang += 3;
+    if (p->ring[0].ang >= 360) {
+        p->ring[0].ang %= 360;
+    }
+    if (g->t % 14 == 1) {
+        if (p->ring[0].r < 15) {
+            p->ring[0].r++;
+        }
+    }
+    p->ring[1].x = p->ring[1].r * func_00108030(g->sin, p->ring[1].ang, 1);
+    p->ring[1].z = p->ring[1].r * func_00108030(g->sin, p->ring[1].ang, 0);
+    p->ring[1].ang -= 8;
+    if (p->ring[1].ang <= -360) {
+        p->ring[1].ang %= 360;
+    }
+    if (g->t % 14 == 1) {
+        if (p->ring[1].r < 14) {
+            p->ring[1].r++;
+        }
+    }
+    p->ring[2].x = p->ring[2].r * func_00108030(g->sin, p->ring[2].ang, 1);
+    p->ring[2].z = p->ring[2].r * func_00108030(g->sin, p->ring[2].ang, 0);
+    p->ring[2].ang += 11;
+    if (p->ring[2].ang <= -360) {
+        p->ring[2].ang %= 360;
+    }
+    if (g->t % 14 == 1) {
+        if (p->ring[2].r < 14) {
+            p->ring[2].r++;
+        }
+    }
+    p->ring[3].x = p->ring[3].r * func_00108030(g->sin, p->ring[3].ang, 1);
+    p->ring[3].z = p->ring[3].r * func_00108030(g->sin, p->ring[3].ang, 0);
+    p->ring[3].ang -= 12;
+    if (p->ring[3].ang <= -360) {
+        p->ring[3].ang %= 360;
+    }
+    p->ring[3].r = 10;
+    if (g->t % 14 == 1) {
+        if (p->ring[3].r < 13) {
+            p->ring[3].r++;
+        }
+    }
+    p->ring[4].x = p->ring[4].r * func_00108030(g->sin, p->ring[4].ang, 1);
+    p->ring[4].z = p->ring[4].r * func_00108030(g->sin, p->ring[4].ang, 0);
+    p->ring[4].ang += 18;
+    if (p->ring[4].ang <= -360) {
+        p->ring[4].ang %= 360;
+    }
+    if (g->t % 14 == 1) {
+        if (p->ring[4].r < 13) {
+            p->ring[4].r++;
+        }
+    }
+    p->ring[5].x = p->ring[5].r * func_00108030(g->sin, p->ring[5].ang, 1);
+    p->ring[5].z = p->ring[5].r * func_00108030(g->sin, p->ring[5].ang, 0);
+    p->ring[5].ang -= 9;
+    if (p->ring[0].ang <= -360) {
+        p->ring[0].ang %= 360;
+    }
+    p->ring[5].r = 10;
+    if (g->count < 16) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape c021:01E00AF0, 40 insns, 1 copy */
 
@@ -1085,7 +1198,112 @@ static void func_01E03280_c021(Scene_c021_01E03280 *g, Fx_c021_01E03280 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E03390_c021);
+/* shape c021:01E03390, 323 insns: c021:01E038A0's ribbon as a full ring: mode 0 sets texture frame 2 of the effect's
+   0x92 and the scene texture (g+0xBC); else 18 segments from the scene's 20-degree cos/sin tables (g+0x3750..), the
+   inner edge from the linked object (its radius 0x87 and height 0x64, func_00107DD0 between them) or its own radius
+   0x86, the outer edge at radius 0x87 and its height, coloured 0x80 (or its 0x7C at alpha 10 unless 0x6C) */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c021_01E03390;
+
+typedef struct Rib_c021_01E03390 {
+    u8 pad0[0x40];
+    u8 m40[0x20];
+    f32 f60;
+    f32 f64;
+    struct Rib_c021_01E03390 *link;
+    s32 w6C;
+    u8 pad70[0xC];
+    u8 c7C[4];
+    u8 c80[4];
+    u8 pad84[2];
+    u8 c86;
+    u8 c87;
+    u8 pad88[0xA];
+    s16 tex;
+} Rib_c021_01E03390;
+
+typedef struct {
+    u8 pad0[0x40];
+    u8 m40[0x7C];
+    s32 tex;
+    u8 padC0[0x20];
+    Vec4f q[4];
+    u8 pad120[0x3584 - 0x120];
+    s32 ot;
+    u8 pad3588[0x3750 - 0x3588];
+    f32 c[20];
+    f32 s[20];
+    f32 c2[20];
+    f32 s2[20];
+} Game_c021_01E03390;
+
+static void func_01E03390_c021(Game_c021_01E03390 *g, Rib_c021_01E03390 *o, void *p, s32 mode) {
+    extern Col_c021_01E03390 D_01E04000_c021;
+    extern void func_00105D00(void *, s32, s32);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00107DD0(void *, void *, void *, s32);
+    extern void func_00106FA0(void *, void *, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 d[4];
+    u8 rm[0x1C];
+    Col_c021_01E03390 c;
+    Rib_c021_01E03390 *q;
+    s32 i;
+
+    q = o->link;
+    c = D_01E04000_c021;
+    if (mode == 0) {
+        func_00105D00(rm, 2, o->tex);
+        func_00109270(p, 0, 0);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 0);
+        return;
+    }
+    g->q[0].y = g->q[1].y = o->f60;
+    g->q[2].y = g->q[3].y = o->f64;
+    for (i = 0; i < 18; i++) {
+        if (q != NULL) {
+            g->q[0].x = g->s[i] * (u32)q->c87;
+            g->q[0].z = g->c[i] * (u32)q->c87;
+            g->q[1].x = g->s2[i] * (u32)q->c87;
+            g->q[1].z = g->c2[i] * (u32)q->c87;
+            g->q[0].y = g->q[1].y = o->f60 = q->f64;
+            func_00107DD0(&g->q[0], q->m40, o->m40, 0);
+        } else {
+            g->q[0].x = g->s[i] * (u32)o->c86;
+            g->q[0].z = g->c[i] * (u32)o->c86;
+            g->q[1].x = g->s2[i] * (u32)o->c86;
+            g->q[1].z = g->c2[i] * (u32)o->c86;
+        }
+        g->q[2].x = g->s[i] * (u32)o->c87;
+        g->q[2].z = g->c[i] * (u32)o->c87;
+        g->q[3].x = g->s2[i] * (u32)o->c87;
+        g->q[3].z = g->c2[i] * (u32)o->c87;
+        func_00107DD0(&g->q[2], o->m40, o, 0);
+        func_00106FA0(&g->q[0], o->m40, 0);
+        if (q == NULL) {
+            func_00107790(p, o->c80, 1);
+        } else {
+            func_00107790(p, q->c7C, 1);
+        }
+        if (o->w6C != 0) {
+            func_00107790(p, o->c80, 2);
+        } else {
+            c = *(Col_c021_01E03390 *)o->c7C;
+            c.a = 10;
+            func_00107790(p, &c, 2);
+        }
+        if (func_00205630(&g->q[0], 0x70000000, g->m40, p, d) != 0) {
+            func_002075F0(p, g->ot, (u32)d[0]);
+        }
+    }
+}
 
 /* shape c021:01E038A0, 189 insns: c021:01E03280 family ribbon draw: mode 0 sets texture 0x97 (frame 1) and the scene texture (g+0xBC); else five 15-degree segments at the scene's angle table (g+0x38C6), the inner edge from the linked object (0x68: its radius 0x87, height 0x64, colour 0x7C, func_00107DD0 between them) or its own radius 0x86, the outer edge at radius 0x87 and its height, coloured 0x80 (or its 0x7C at alpha 10 unless 0x6C), depth-tested into g+0x3584 */
 

@@ -61,7 +61,121 @@ static void func_01E00080_b286(Pk_b008_01E00080 *p, Rect_b008_01E00080 *r, s32 m
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b286", func_01E004D0_b286);
+/* shape b286:01E004D0, 312 insns: B286_W_S, the effect scene's step (b522:01E01D30 form): colour 0x80,0,0,0, counts
+   the frame (0x6AE4); frames 52..152 spawn 0x1E01130 on sides 0..5; frame 22 ten rounds of it on sides 0..5;
+   frames 62..104 spawn 0x1E00B40 jittered around joints 0x6AC4 and 0x6AC6; frame 105 puts the point on joint
+   0x6ACA and spawns ten 0x1E009B0 per side 0/1 and fifty 0x1E00F90; frames 105..115 spawn 0x1E00C60 */
+
+typedef struct {
+    u8 pad0[0x80];
+    Vec4f pos;
+    u8 pad90[0x6A84 - 0x90];
+    u8 col[4];
+    u8 pad6A88[0x6AC4 - 0x6A88];
+    s16 ja;
+    s16 jb;
+    u8 pad6AC8[2];
+    s16 jc;
+    u8 pad6ACC[0x6ADE - 0x6ACC];
+    s16 side;
+    u8 pad6AE0[4];
+    s16 t;
+} Scene_b286_01E004D0;
+
+static void func_01E004D0_b286(Scene_b286_01E004D0 *g) {
+    extern void b286_01E009B0(void);
+    extern void b286_01E00B40(void);
+    extern void b286_01E00C60(void);
+    extern void b286_01E00F90(void);
+    extern void b286_01E01130(void);
+    extern void b286_01E01990(Scene_b286_01E004D0 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t < 153) {
+        if (g->t >= 52) {
+            g->side = 0;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 1;
+            b286_01E01990(g, b286_01E01130, 0);
+        }
+        if (g->t >= 52) {
+            g->side = 2;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 3;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 4;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 5;
+            b286_01E01990(g, b286_01E01130, 0);
+        }
+    }
+    if (g->t == 22) {
+        for (i = 0; i < 10; i++) {
+            g->side = 0;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 1;
+            b286_01E01990(g, b286_01E01130, 0);
+        }
+    }
+    if (g->t == 22) {
+        for (i = 0; i < 10; i++) {
+            g->side = 2;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 3;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 4;
+            b286_01E01990(g, b286_01E01130, 0);
+            g->side = 5;
+            b286_01E01990(g, b286_01E01130, 0);
+        }
+    }
+    if (g->t > 61 && g->t < 105) {
+        func_001F5620(func_001F53A0(), g->ja, &v);
+        g->pos.x = v.x - (func_0019A5C8() % 10 - 5);
+        if (g->t >= 73) {
+            g->pos.x = v.x + (func_0019A5C8() % 10 - 5);
+        }
+        g->pos.y = v.y + func_0019A5C8() % 15;
+        g->pos.z = v.z;
+        b286_01E01990(g, b286_01E00B40, 0);
+        func_001F5620(func_001F53A0(), g->jb, &v);
+        g->pos.x = v.x - (func_0019A5C8() % 10 - 5);
+        if (g->t >= 73) {
+            g->pos.x = v.x + (func_0019A5C8() % 10 - 5);
+        }
+        g->pos.y = v.y + func_0019A5C8() % 15;
+        g->pos.z = v.z;
+        b286_01E01990(g, b286_01E00B40, 0);
+    }
+    if (g->t == 105) {
+        func_001F5620(func_001F53A0(), g->jc, &v);
+        g->pos.x = v.x;
+        g->pos.y = v.y;
+        g->pos.z = v.z;
+        g->side = 0;
+        for (i = 0; i < 10; i++) {
+            b286_01E01990(g, b286_01E009B0, 0);
+        }
+        g->side = 1;
+        for (i = 0; i < 10; i++) {
+            b286_01E01990(g, b286_01E009B0, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b286_01E01990(g, b286_01E00F90, 0);
+        }
+    }
+    if (g->t >= 105 && g->t <= 115) {
+        b286_01E01990(g, b286_01E00C60, 0);
+    }
+}
 
 /* shape b286:01E009B0, 99 insns: an orange or teal (by kind) streak: frame 15 growing by 4, random tilt 0..0x3FFF, turn and
    sub-frame 0..6; alpha up by 0x50 for 2 frames, then down by 13 once grown past 15, and by 15 when the scene timer drops under 10 */

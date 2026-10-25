@@ -1589,7 +1589,202 @@ static s32 func_01E03DA0_c056(Scene_c056_01E03DA0 *g, Fx_c056_01E03DA0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c056", func_01E03FE0_c056);
+/* shape c056:01E03FE0 (C056_OBJ_MOVE_3_), 308 insns, 1 copy: a curtain that climbs the scene object's eight joints:
+   it spins 0x400 a tick; at the first joint above it, it takes both edges from the joint pair and (from scene tick
+   8) widens towards that joint's size; its top climbs by 6 up to joint 6's height and its bottom follows within 20
+   (the bottom stops it once it catches up); it fades by 15 near the top (after scene tick 16) or once the game counter
+   is under 21 (growing by 3); while it is the leader it hands the scene its size, colour, height and edge, and
+   spawns the scene trail */
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[0xC];
+} Joint_c056_01E03FE0;
+
+typedef struct {
+    u8 pad0[0x118];
+    Joint_c056_01E03FE0 pt[8];
+} Anchor_c056_01E03FE0;
+
+typedef struct {
+    u8 pad0[0x90];
+    s32 w90;
+} Link_c056_01E03FE0;
+
+typedef struct {
+    f32 x, y, z, w;
+} V4_c056_01E03FE0;
+
+typedef struct {
+    V4_c056_01E03FE0 q[4];
+    V4_c056_01E03FE0 v40;
+    s32 f50;
+    s32 f54;
+    s32 f58;
+    u8 pad5C[0x14];
+    V4_c056_01E03FE0 v70;
+    u8 pad80[0x14];
+    Link_c056_01E03FE0 *link;
+    u8 pad98[0xC];
+    s16 hA4;
+    u8 padA6[2];
+    s16 hA8;
+    s16 hAA;
+    u8 col0[4];
+    u8 col1[4];
+    u8 padB4[4];
+    s16 hB8;
+    s16 hBA;
+    s16 hBC;
+} Fx_c056_01E03FE0;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 f80;
+    s32 f84;
+    s32 f88;
+    u8 pad8C[0x64];
+    V4_c056_01E03FE0 vF0;
+    u8 pad100[0x4270 - 0x100];
+    Anchor_c056_01E03FE0 anchor;
+    u8 pad[0x4478 - 0x4270 - sizeof(Anchor_c056_01E03FE0)];
+    s32 count;
+    u8 pad447C[7];
+    u8 alpha;
+    u8 pad4484[8];
+    Fx_c056_01E03FE0 *leader;
+    u8 pad4490[0xC];
+    f32 f449C;
+    f32 f44A0;
+    f32 f44A4;
+    u8 pad44A8[0x10];
+    s16 h44B8;
+    s16 h44BA;
+    s16 h44BC;
+    u8 pad44BE[4];
+    s16 h44C2;
+    u8 pad44C4[4];
+    s16 h44C8;
+} Scene_c056_01E03FE0;
+
+static s32 func_01E03FE0_c056(Scene_c056_01E03FE0 *g, Fx_c056_01E03FE0 *o) {
+    extern V4_c056_01E03FE0 func_001098E0(void *, void *, void *, void *);
+    extern void func_00106BC0(void *, s32, s32);
+    extern void func_01E00D30_c056(void *, void *);
+    Anchor_c056_01E03FE0 *a;
+    V4_c056_01E03FE0 v;
+    s32 i;
+    Joint_c056_01E03FE0 *p;
+    Joint_c056_01E03FE0 *q;
+    f32 top;
+
+    a = &g->anchor;
+    v.y = 0.0f;
+    if (a == NULL) {
+        return 0;
+    }
+    o->f54 += 0x400;
+    o->hBA = 0;
+    o->f50 = 0;
+    o->f58 = 0;
+    for (i = 1; i < 8; i++) {
+        if (a->pt[i].y > o->q[0].y) {
+            v.x = a->pt[0].x;
+            p = &a->pt[i];
+            q = &a->pt[i - 1];
+            v.z = a->pt[0].z;
+            o->v70 = func_001098E0(&v, o, q, p);
+            o->v40 = func_001098E0(&v, o, q, p);
+            if (g->h44C2 > 7) {
+                if (o->hA8 <= i * 10 + 9) {
+                    o->hA8 += 2;
+                }
+                if (o->hAA <= i * 9 + 5) {
+                    o->hAA += 2;
+                }
+            }
+            i = 8;
+        }
+    }
+    top = a->pt[i - 2].y;
+    if (o->q[0].y < top) {
+        o->q[0].y += 6.0f;
+        o->q[1].y = o->q[0].y;
+        if (o->q[0].y - o->q[2].y >= 20.0f) {
+            o->q[2].y += 6.0f;
+            o->q[3].y = o->q[2].y;
+        }
+    } else {
+        o->q[2].y += 6.0f;
+        o->q[3].y = o->q[2].y;
+        if (o->q[2].y > o->q[0].y) {
+            o->q[3].y = o->q[2].y = o->q[0].y;
+            if (o->link != NULL) {
+                o->link->w90 = 0;
+            }
+            o->hA4 = 0;
+        }
+    }
+    if (g->h44C2 < 16) {
+        if (o->q[0].y < top - 20.0f) {
+            func_00106BC0(o, 20, 160);
+        }
+    } else if (o->q[0].y > top - 30.0f) {
+        if (o->col0[3] > 16) {
+            o->col0[3] -= 15;
+        }
+        if (o->col1[3] > 16) {
+            o->col1[3] -= 15;
+        }
+    }
+    if (g->count < 21) {
+        o->hA8 += 3;
+        o->hAA += 3;
+        if (o->col0[3] > 16) {
+            o->col0[3] -= 15;
+        }
+        if (o->col1[3] > 16) {
+            o->col1[3] -= 15;
+        } else {
+            o->hA4 = 0;
+        }
+    }
+    if (o->hBC > 0 && o->q[2].y > 0.0f) {
+        g->leader = o;
+        if (g->h44C2 > 105) {
+            g->f449C = o->hAA;
+        } else if (o->hAA > 7) {
+            g->f449C = o->hAA - 2;
+        } else {
+            g->f449C = 6.0f;
+        }
+        if (g->h44C2 > 105) {
+            g->f44A0 = o->hAA;
+        } else {
+            g->f44A0 = 4.0f;
+        }
+        g->alpha = o->col0[3];
+        g->h44BC = 1;
+        if (o->hB8 == 0) {
+            g->h44B8 = 1;
+        } else {
+            g->h44B8 = 0;
+        }
+        g->f44A4 = o->q[2].y;
+        g->h44C8 = 1;
+        g->vF0 = o->v40;
+        g->f84 = 0;
+        g->f80 = 0;
+        g->f88 = 0;
+        g->h44BA = o->hBA;
+        func_01E00D30_c056(g, func_01E03FE0_c056);
+        o->hBC = 0;
+    }
+    if (g->count < 11) {
+        o->hA4 = 0;
+    }
+    return 0;
+}
 
 /* shape c056:01E044B0, 178 insns: c056:01E03DA0 family orbiter: while its wait (0xBE) is out steps its phase (0xA6: 0 -> 1, then frames 0xBC to 7 and phase 3) and waits 1..2 again; turn 0xB8 = 4, radius 0xAA +3 and 0xA8 +1..3 a tick; phase 3 -> 4 fades by 9 and ends; from scene timer 22 fades in by 14 to 0xA0, under 17 fades out by 15; sits at radius 0xA8 along 0xBA + 0xB8 plus the path's 0x118/0x120 swing along the scene turn / 360 (g+0xE4) */
 

@@ -652,7 +652,152 @@ static void func_01E01500_b714(s32 unused, Beam_b018_01E01320 *an, Vec_b018_01E0
 
 INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E01940_b714);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b714", func_01E01DB0_b714);
+/* shape b714:01E01DB0, 339 insns: the module's spawn step: scene colour red, ticks the timer; tick 51 keeps joint
+   0x3B8A's position, ticks 52..64 copy it to the spawn point (six times over); ticks 1 and 117 six b714:01E02300 by
+   index; every third tick before 106 a b714:01E02450 at one of six random joints; ticks 44/98 and 19/71 six
+   b714:01E02E50 2 below joint 0x3B94; tick 1 b714:01E03230; tick 106 three b714:01E02DA0 and three b714:01E02840;
+   tick 111 at joint 0x3B88 eight b714:01E02C30, eight b714:01E02AA0, thirty b714:01E028F0, a b714:01E02760 and a
+   b714:01E02FF0 */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    f32 px, py, pz;
+    u8 pad2DC[0x36C0 - 0x2DC];
+    f32 kx, ky, kz;
+    u8 pad36CC[0x3B44 - 0x36CC];
+    u8 rgba[4];
+    u8 pad3B48[0x3B88 - 0x3B48];
+    s16 joints[6];
+    s16 j94;
+    u8 pad3B96[0x3B9A - 0x3B96];
+    s16 idx;
+    u8 pad3B9C[2];
+    s16 t;
+} Scene_b714_01E01DB0;
+
+static s32 func_01E02300_b714();
+static s32 func_01E02450_b714();
+static s32 func_01E02760_b714();
+static s32 func_01E02840_b714();
+static s32 func_01E028F0_b714();
+static s32 func_01E02AA0_b714();
+static s32 func_01E02C30_b714();
+static s32 func_01E02DA0_b714();
+static s32 func_01E02E50_b714();
+static s32 func_01E02FF0_b714();
+static s32 func_01E03230_b714();
+static s32 func_01E040B0_b714();
+
+static void func_01E01DB0_b714(Scene_b714_01E01DB0 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    f32 p[4];
+    f32 cam[4];
+    s32 i;
+    s16 k;
+
+    s->rgba[0] = 0x80;
+    s->rgba[1] = 0;
+    s->rgba[2] = 0;
+    s->rgba[3] = 0;
+    s->t++;
+    if (s->t == 0x33) {
+        func_001F5620(func_001F53A0(), s->joints[1], &s->kx);
+    }
+    if (s->t > 0x33 && s->t <= 0x40) {
+        func_001F5620(func_001F53A0(), s->joints[1], p);
+        for (i = 0; i < 6; i++) {
+            s->px = s->kx;
+            s->py = s->ky;
+            s->pz = s->kz;
+        }
+    }
+    if (s->t == 1 || s->t == 0x75) {
+        s->idx = 0;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+        s->idx = 1;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+        s->idx = 2;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+        s->idx = 3;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+        s->idx = 4;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+        s->idx = 5;
+        func_01E040B0_b714(s, func_01E02300_b714, 0);
+    }
+    if (s->t % 3 == 1 && s->t < 0x6A) {
+        k = func_0019A5C8() % 6;
+        func_001F5620(func_001F53A0(), s->joints[k], p);
+        s->px = p[0];
+        s->py = p[1];
+        s->pz = p[2];
+        func_01E040B0_b714(s, func_01E02450_b714, 0);
+    }
+    if (s->t == 0x2C || s->t == 0x62) {
+        func_001F5620(func_001F53A0(), s->j94, p);
+        for (i = 0; i < 6; i++) {
+            s->px = p[0];
+            s->py = p[1] - 2.0f;
+            s->pz = p[2];
+            func_01E040B0_b714(s, func_01E02E50_b714, 0);
+        }
+    }
+    if (s->t == 0x13 || s->t == 0x47) {
+        func_001F5620(func_001F53A0(), s->j94, p);
+        for (i = 0; i < 6; i++) {
+            s->px = p[0];
+            s->py = p[1] - 2.0f;
+            s->pz = p[2];
+            func_01E040B0_b714(s, func_01E02E50_b714, 0);
+        }
+    }
+    if (s->t == 1) {
+        func_01E040B0_b714(s, func_01E03230_b714, 0);
+    }
+    if (s->t == 0x6A) {
+        s->idx = 0;
+        func_01E040B0_b714(s, func_01E02DA0_b714, 0);
+        s->idx = 1;
+        func_01E040B0_b714(s, func_01E02DA0_b714, 0);
+        s->idx = 2;
+        func_01E040B0_b714(s, func_01E02DA0_b714, 0);
+        s->idx = 0;
+        func_01E040B0_b714(s, func_01E02840_b714, 0);
+        s->idx = 1;
+        func_01E040B0_b714(s, func_01E02840_b714, 0);
+        s->idx = 2;
+        func_01E040B0_b714(s, func_01E02840_b714, 0);
+    }
+    if (s->t == 0x6F) {
+        func_001F5620(func_001F53A0(), s->joints[0], p);
+        func_001F5F90(func_001F5380(), cam);
+        s->px = p[0];
+        s->py = p[1];
+        s->pz = p[2];
+        s->idx = 1;
+        for (i = 0; i < 8; i++) {
+            func_01E040B0_b714(s, func_01E02C30_b714, 0);
+        }
+    }
+    if (s->t == 0x6F) {
+        func_001F5620(func_001F53A0(), s->joints[0], p);
+        s->px = p[0];
+        s->py = p[1];
+        s->pz = p[2];
+        s->idx = 1;
+        for (i = 0; i < 8; i++) {
+            func_01E040B0_b714(s, func_01E02AA0_b714, 0);
+        }
+        for (i = 0; i < 30; i++) {
+            func_01E040B0_b714(s, func_01E028F0_b714, 0);
+        }
+        func_01E040B0_b714(s, func_01E02760_b714, 0);
+        func_01E040B0_b714(s, func_01E02FF0_b714, 0);
+    }
+}
 
 /* shape b714:01E02300, 84 insns: follows model point 0x3B88[0x30] (for 0x65 ticks); colour (0xA0, 0x80, 8); alpha
    grows by 12 (below 0x80) for 0x66 ticks once the game counter 0x3B40 reaches 0x10, then fades by 10; also fades

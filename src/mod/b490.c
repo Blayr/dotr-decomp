@@ -537,7 +537,187 @@ static s32 func_01E01D50_b490(Scene_b490_01E01D50 *g, Flash_b490_01E01D50 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b490", func_01E020F0_b490);
+/* shape b490:01E020F0, 349 insns: the module's main (b086:01E01290 family): on start clears the 0x8ED0 context, two
+   cameras, 260 ticks, three joints, texture 5:0, the facing from the model's turn, a +-15 jitter table and a second
+   table (0 for 100, 0..4 for 80, then 0..3 signed by the facing); each tick runs the 310 slots' five movers, counting
+   the two kinds that need the module's extra pass, then draws the two drawn kinds; ends 1 at step 90, 4 at 245, 2 at
+   230, 6 in 101..224, 8 when the timer runs out */
+
+typedef struct {
+    u8 pad00[0x10];
+    f32 x, y, z;
+    u8 pad1C[0x28];
+    void *fn;
+    u8 pad48[0xE];
+    s16 rot;
+    s16 used;
+    u8 pad5A[0x16];
+} Slot_b490_01E020F0;
+
+typedef struct {
+    u8 pad0000[0x80];
+    s32 ot2;
+    u8 pad0084[4];
+    s32 tex88;
+    u8 pad008C[8];
+    Vec4f m94;
+    u8 pad00A4[0x14];
+    s16 mode;
+    u8 pad00BA[0x1E];
+    u8 camD8[0x208];
+    Slot_b490_01E020F0 slot[310];
+    u8 pad8A80[0x60];
+    s32 tex5[8];
+    s32 timer;
+    u8 pad8B04[8];
+    s32 ot;
+    u8 pad8B10[0x28];
+    s16 joint[3];
+    u8 pad8B3E[0x14];
+    s16 face;
+    s16 code;
+    s16 step;
+    s8 jit[256];
+    s8 jit2[256];
+    u8 pad8D58[1];
+} Ctx_b490_01E020F0;
+
+static s32 func_01E020F0_b490(s32 arg0, s32 code) {
+    Ctx_b490_01E020F0 *g = (Ctx_b490_01E020F0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5560(s32, s32, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_001F6160(s32, void *);
+    extern void func_00106080(void *, s32, s32, s32);
+    extern void b490_01E00920();
+    extern s32 b490_01E00BF0();
+    extern s32 b490_01E00D90();
+    extern s32 b490_01E00E90();
+    extern s32 b490_01E01080();
+    extern s32 b490_01E01160();
+    extern s32 b490_01E01260();
+    extern s32 b490_01E01D50();
+    extern void b490_01E02800();
+    extern void b490_01E029F0();
+    extern void b490_01E02BF0();
+    f32 v[4];
+    Vec4f m;
+    s32 r1[4];
+    s32 r2[4];
+    u8 w[0x90];
+    s32 n;
+    s32 c;
+    s32 i;
+    s32 face;
+
+    n = 0;
+    c = 0;
+    g->ot2 = func_00207500();
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x8ED0);
+        func_00107C10(g->pad8D58);
+        func_00107C10(g->camD8);
+        g->code = code;
+        g->timer = 260;
+        g->joint[0] = func_001F5560(func_001F53A0(), 1, 1);
+        g->joint[1] = func_001F5560(func_001F53A0(), 1, 0);
+        g->joint[2] = func_001F5560(func_001F53A0(), 1, 0);
+        for (i = 0; i < 1; i++) {
+            g->tex5[i] = func_00202BF0(5, i);
+        }
+        func_001F6160(func_001F53A0(), r1);
+        g->face = r1[1] / 180.0f;
+        for (i = 0; i < 256; i++) {
+            g->jit[i] = func_0019A5C8() % 30 - 15;
+        }
+        for (i = 0; i < 100; i++) {
+            g->jit2[i] = 0;
+        }
+        for (i = 100; i < 180; i++) {
+            g->jit2[i] = func_0019A5C8() % 5;
+        }
+        func_001F6160(func_001F53A0(), r2);
+        face = r2[1] / 180.0f;
+        for (i = 180; i < 256; i++) {
+            if (face != 0) {
+                g->jit2[i] = func_0019A5C8() % 4;
+            } else {
+                g->jit2[i] = -(func_0019A5C8() % 4);
+            }
+        }
+        return 0;
+    }
+    b490_01E00920(g, 0);
+    for (i = 0; i < 310; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn == b490_01E00BF0) {
+                b490_01E00BF0(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b490_01E00D90) {
+                b490_01E00D90(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b490_01E00E90) {
+                b490_01E00E90(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b490_01E01080) {
+                b490_01E01080(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b490_01E01160) {
+                b490_01E01160(g, &g->slot[i]);
+            }
+            if (g->slot[i].fn == b490_01E01260) {
+                n = (s16)(n + 1);
+            }
+            if (g->slot[i].fn == b490_01E01D50) {
+                n = (s16)(n + 1);
+            }
+        }
+    }
+    for (i = 0; i < 310; i++) {
+        if (g->slot[i].used != 0) {
+            c++;
+            if (g->slot[i].fn == b490_01E00BF0) {
+                g->tex88 = g->tex5[0];
+                func_00106080(&m, 0x14, g->slot[i].rot, 0);
+                g->m94 = m;
+                v[0] = g->slot[i].x;
+                v[1] = g->slot[i].y;
+                v[2] = g->slot[i].z;
+                b490_01E02800(g, &g->slot[i], 0, v);
+            }
+            if (g->slot[i].fn == b490_01E00D90) {
+                b490_01E029F0(g, &g->slot[i], w, 0);
+                g->mode = 0;
+            }
+        }
+    }
+    if (n != 0) {
+        b490_01E02BF0(g);
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->step == 90) {
+        return 1;
+    }
+    if (g->step == 245) {
+        return 4;
+    }
+    if (g->step == 230) {
+        return 2;
+    }
+    if (g->step > 100 && g->step < 225) {
+        return 6;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b490:01E02670, 98 insns, 1 copies (b236:01E02330's code, generated by chatG/ovl/gen236.py): take a free effect slot (0x136 of 0x70 bytes), clear it, colour it from the
    owner's colour, place it at the owner's position; returns 1, or 0 if every slot is in use */

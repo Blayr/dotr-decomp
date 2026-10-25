@@ -566,4 +566,113 @@ static void func_01E01CD0_c024(Ctx_c024_01E01CD0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E02020_c024);
+/* shape c024:01E02020, 319 insns: C024PAINT_RAIN5, a flat diamond on the ground: mode 0 builds the packet (texture
+   page 0x99 frame b24, the effect's colour in all four corners); other modes stand on the model's root (y + h16),
+   take corners at angles 135/45/225/315 of radius r + 5 and push them all r out along the heading ang + 15, then draw
+   at the context depth */
+
+typedef struct {
+    u8 c[4];
+    f32 q;
+    u64 uv;
+    u64 xyz;
+} Vtx_c024_01E02020;
+
+typedef struct {
+    u8 pad0[0x10];
+    Vtx_c024_01E02020 v[4];
+} Pkt_c024_01E02020;
+
+typedef struct {
+    u8 pad0[4];
+    s32 ry;
+    u8 pad8[0xE];
+    s16 dy;
+    u8 pad18[0xC];
+    s8 frame;
+    u8 pad25;
+    s16 r;
+    s16 ang;
+    u8 col[4];
+} Fx_c024_01E02020;
+
+typedef struct {
+    u8 pad0[0x40];
+    f32 m[16];
+    u8 pad80[0x10C - 0x80];
+    void *tex;
+    u8 scale[0x3B2C - 0x110];
+    s32 ot;
+    u8 pad3B30[0x3B48 - 0x3B30];
+    f32 depth;
+    u8 pad3B4C[0x3B80 - 0x3B4C];
+    u8 sin[4];
+} Ctx_c024_01E02020;
+
+static void func_01E02020_c024(Ctx_c024_01E02020 *g, Fx_c024_01E02020 *o, Pkt_c024_01E02020 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, s32);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107710(void *, void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_001F53B0(s32, void *);
+    extern void func_0020EB40(void *);
+    extern void func_00205C40(void *);
+    extern void func_0020C940(void *, s32, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f q[4];
+    s16 rect[8];
+    f32 m1[16];
+    Vec4f pos;
+    s32 rot[4];
+
+    if (mode == 0) {
+        func_00106080(rect, 0x99, o->frame, 0);
+        func_00109270(p, 0, 0);
+        func_00107710(p->v[0].c, o->col);
+        p->v[0].q = 1.0f;
+        func_00107710(p->v[1].c, o->col);
+        p->v[1].q = 1.0f;
+        func_00107710(p->v[2].c, o->col);
+        p->v[2].q = 1.0f;
+        func_00107710(p->v[3].c, o->col);
+        p->v[3].q = 1.0f;
+        func_00108500(p, rect, 0);
+        func_00208700(p, g->tex, 1);
+        return;
+    }
+    func_001F53B0(0, &pos);
+    func_0020EB40(g->m);
+    func_00205C40(rot);
+    rot[0] = 0;
+    rot[1] = o->ry;
+    rot[2] = 0;
+    pos.y += o->dy;
+    func_0020C940(m1, 0, g->scale, &pos);
+    func_0020BC00(g->m, m1);
+    q[0].x = (o->r + 5) * func_00108030(g->sin, 0x87, 1);
+    q[0].y = (o->r + 5) * func_00108030(g->sin, 0x87, 0);
+    q[0].z = 0.0f;
+    q[1].x = (o->r + 5) * func_00108030(g->sin, 0x2D, 1);
+    q[1].y = (o->r + 5) * func_00108030(g->sin, 0x2D, 0);
+    q[1].z = 0.0f;
+    q[2].x = (o->r + 5) * func_00108030(g->sin, 0xE1, 1);
+    q[2].y = (o->r + 5) * func_00108030(g->sin, 0xE1, 0);
+    q[2].z = 0.0f;
+    q[3].x = (o->r + 5) * func_00108030(g->sin, 0x13B, 1);
+    q[3].y = (o->r + 5) * func_00108030(g->sin, 0x13B, 0);
+    q[3].z = 0.0f;
+    q[0].x += o->r * func_00108030(g->sin, o->ang + 15, 1);
+    q[0].z += o->r * func_00108030(g->sin, o->ang + 15, 0);
+    q[1].x += o->r * func_00108030(g->sin, o->ang + 15, 1);
+    q[1].z += o->r * func_00108030(g->sin, o->ang + 15, 0);
+    q[2].x += o->r * func_00108030(g->sin, o->ang + 15, 1);
+    q[2].z += o->r * func_00108030(g->sin, o->ang + 15, 0);
+    q[3].x += o->r * func_00108030(g->sin, o->ang + 15, 1);
+    q[3].z += o->r * func_00108030(g->sin, o->ang + 15, 0);
+    if (func_00205630(q, 0x70000000, g->m, p, &g->depth) != 0) {
+        func_002075F0(p, g->ot, (u32)g->depth);
+    }
+}

@@ -431,7 +431,140 @@ static void func_01E01090_b215(Ctx_b215_01E01090 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E01500_b215);
+/* shape b215:01E01500 (B215_OBJ_MOVE_2_), 346 insns, 1 copy: a ripple wave (side by its kind, turned 0x2000 one way
+   or the other) over one row of b215:01E01A70's grid: brightens by 12 until tick 144, then fades by 9, blinks grey;
+   the cells behind its front settle (counter down, the two phases and the third by 10 shrink to 0), the cells ahead
+   advance by its two phase steps and 10 (wrapping at 360); the front moves one cell a tick after tick 30 (it spins
+   once it reaches the end after tick 80); it stops at scene tick 141 */
+
+typedef struct {
+    u8 pad0[8];
+    s16 f8;
+    u8 padA[0x1A];
+    s32 f24;
+    s32 f28;
+    u8 pad2C[8];
+    f32 f34;
+    u8 pad38[0x10];
+    f32 f48;
+    u8 pad4C[4];
+    s16 kind;
+    s16 front;
+    s16 tick;
+    s16 f56;
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b215_01E01500;
+
+typedef struct {
+    u8 pad0[0xB460];
+    s16 a[20][40];
+    u8 padBAA0[0xC0E0 - 0xBAA0];
+    s16 b[20][40];
+    u8 padC720[0xCD60 - 0xC720];
+    s16 c[20][40];
+    u8 padD3A0[0xD9E0 - 0xD3A0];
+    s16 d[20][40];
+    u8 padE020[0xE676 - 0xE020];
+    s16 timer;
+} Game_b215_01E01500;
+
+static s32 func_01E01500_b215(Game_b215_01E01500 *g, Fx_b215_01E01500 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    s16 i;
+
+    if (o->mode == 1) {
+        o->f48 = 20.0f;
+        o->f56 = func_0019A5C8() % 7;
+        o->mode = 2;
+        o->f8 = func_0019A5C8() % 3 + 4;
+        o->f34 = 1.2f;
+        o->f5C = func_0019A5C8() % 8 + 4;
+        o->f5A = func_0019A5C8() % 8 + 4;
+        o->front = 0;
+        if (o->kind == 0) {
+            o->f28 = 0x2000;
+        }
+        if (o->kind == 1) {
+            o->f28 = -0x2000;
+        }
+    }
+    if (o->tick < 145) {
+        if (o->col0[3] < 0x80) {
+            o->col0[3] += 12;
+        }
+        if (o->col1[3] < 0x80) {
+            o->col1[3] += 12;
+        }
+    } else {
+        if (o->col0[3] > 10) {
+            o->col0[3] -= 9;
+        } else {
+            o->mode = 0;
+        }
+        if (o->col1[3] > 10) {
+            o->col1[3] -= 9;
+        }
+    }
+    if (o->tick % 2 == 1) {
+        func_001076F0(o->col0, 0xC0, 0xC0, 0xC0);
+        func_001076F0(o->col1, 0xC0, 0xC0, 0xC0);
+    } else {
+        func_001076F0(o->col0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->col1, 0xFF, 0xFF, 0xFF);
+    }
+    for (i = 0; i < o->front; i++) {
+        if (g->d[o->kind][i] > 0) {
+            g->d[o->kind][i]--;
+        }
+        if (g->a[o->kind][i] > o->f5A) {
+            g->a[o->kind][i] -= o->f5A;
+        } else {
+            g->a[o->kind][i] = 0;
+        }
+        if (g->b[o->kind][i] > o->f5C) {
+            g->b[o->kind][i] -= o->f5C;
+        } else {
+            g->b[o->kind][i] = 0;
+        }
+        if (g->c[o->kind][i] > 10) {
+            g->c[o->kind][i] -= 10;
+        } else {
+            g->c[o->kind][i] = 0;
+        }
+    }
+    for (i = o->front; i < 36; i++) {
+        g->a[o->kind][i] += o->f5A;
+        g->b[o->kind][i] += o->f5C;
+        g->c[o->kind][i] += 10;
+        if (g->a[o->kind][i] >= 360) {
+            g->a[o->kind][i] %= 360;
+        }
+        if (g->b[o->kind][i] >= 360) {
+            g->b[o->kind][i] %= 360;
+        }
+        if (g->c[o->kind][i] >= 360) {
+            g->c[o->kind][i] %= 360;
+        }
+    }
+    if (o->tick > 80 && o->front == 36) {
+        o->f24 += 0x200;
+    }
+    if (o->tick > 30) {
+        if (o->front < 36) {
+            o->front++;
+        }
+    }
+    if (g->timer == 141) {
+        o->mode = 0;
+    }
+    o->tick++;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b215", func_01E01A70_b215);
 

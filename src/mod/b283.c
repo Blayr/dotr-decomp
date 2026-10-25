@@ -1001,7 +1001,163 @@ static s32 func_01E027F0_b283(s32 arg0, Obj_b283_01E027F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b283", func_01E029A0_b283);
+/* shape b283:01E029A0, 357 insns: one of four green orbiters of the b283 scene (idx 0..3 start a quarter turn apart):
+   on start it fills its 69-point trail with its centre, copies the centre, colours its tail red and aims a climb
+   over 50 ticks from the model's height to the joint's; full alpha until scene step 290, then fades and shrinks;
+   flashes green every other tick; it climbs (until step 249) and circles its centre at a radius that grows to 10
+   for 25 ticks then eases to 8; for 50 ticks its trail follows (b283:01E00080), for 45 a spark rides the trail head */
+
+typedef struct {
+    Vec4f p[70];
+} Trail_b283_01E029A0;
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x48D0 - 0x260];
+    Trail_b283_01E029A0 tr[4];
+    u8 pad5A50[0xA060 - 0x5A50];
+    Vec4f a[10];
+    Vec4f b[4];
+    u8 padA140[0xA298 - 0xA140];
+    s16 joint;
+    u8 padA29A[0x28];
+    s16 ring;
+    u8 padA2C4[6];
+    s16 step;
+    u8 padA2CC[0x200];
+    u8 table[1];
+} Ctx_b283_01E029A0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x28];
+    f32 rad;
+    u8 pad34[4];
+    f32 vy;
+    u8 pad3C[0xC];
+    f32 size;
+    u8 pad4C[4];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Orb_b283_01E029A0;
+
+static s32 func_01E029A0_b283(Ctx_b283_01E029A0 *g, Orb_b283_01E029A0 *o) {
+    extern void b283_01E00080(Vec4f *, s32, s32, Vec4f *);
+    extern s32 b283_01E01EA0();
+    extern void b283_01E04320(Ctx_b283_01E029A0 *, void *, s32);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F5620(s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f q;
+    Vec4f p[2];
+    s16 i;
+    Vec4f *s;
+    Vec4f *d;
+
+    if (o->state == 1) {
+        o->life = 8;
+        o->c0[3] = 0;
+        s = &g->a[o->idx];
+        d = g->tr[o->idx].p;
+        for (i = 0; i < 69; i++) {
+            d->x = s->x;
+            d->y = s->y;
+            d->z = s->z;
+            d++;
+        }
+        g->b[o->idx].x = g->a[o->idx].x;
+        g->b[o->idx].y = g->a[o->idx].y;
+        g->b[o->idx].z = g->a[o->idx].z;
+        func_001076F0(o->c1, 0x80, 0x10, 0x10);
+        if (o->idx == 0) {
+            o->ang = 0;
+        }
+        if (o->idx == 1) {
+            o->ang = 180;
+        }
+        if (o->idx == 2) {
+            o->ang = 90;
+        }
+        if (o->idx == 3) {
+            o->ang = 270;
+        }
+        func_001F5F90(func_001F5380(), p);
+        func_001F5620(func_001F53A0(), g->joint, &q);
+        o->vy = (p[0].z - q.z) / 50.0f;
+        o->size = 20.0f;
+        o->state = 2;
+    }
+    if (o->life < 52) {
+        o->life++;
+    }
+    if (g->step < 290) {
+        o->c0[3] = 0xC0;
+    } else {
+        if (o->c0[3] > 8) {
+            o->c0[3] -= 7;
+        } else {
+            o->state = 0;
+        }
+        if (o->size > 0.0f) {
+            o->size -= 1.0f;
+        }
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0x10, 0xFF, 0x10);
+    } else {
+        func_001076F0(o->c0, 0x10, 0x80, 0x10);
+    }
+    if (o->t != 0) {
+        if (g->step < 249) {
+            g->b[o->idx].z += o->vy;
+        }
+        g->b[o->idx].x = g->a[o->idx].x + o->rad * func_00108030(g->table, o->ang, 1);
+        g->b[o->idx].y = g->a[o->idx].y + o->rad * func_00108030(g->table, o->ang, 0);
+        if (o->idx == 0) {
+            o->ang += 8;
+        }
+        if (o->idx == 1) {
+            o->ang += 8;
+        }
+        if (o->idx == 2) {
+            o->ang += 8;
+        }
+        if (o->idx == 3) {
+            o->ang += 8;
+        }
+        if (o->t < 25) {
+            if (o->rad < 10.0f) {
+                o->rad += 1.5f;
+            }
+        } else if (o->rad > 8.0f) {
+            o->rad -= 0.5f;
+        }
+    }
+    if (o->t < 50) {
+        b283_01E00080(&g->tr[o->idx].p[69], 70, 0, &g->b[o->idx]);
+    }
+    if (o->t < 45) {
+        g->pos.x = g->tr[o->idx].p[0].x;
+        g->pos.y = g->tr[o->idx].p[0].y;
+        g->pos.z = g->tr[o->idx].p[0].z;
+        g->ring = o->idx;
+        b283_01E04320(g, b283_01E01EA0, 0);
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b283:01E02F40, 119 insns: a white tumbling ring (size 1000, spin 20/4, random turns re-rolled in 0..32767), its second colour blinking green: in by 64 up to 0xC0 while the scene value is under 300, then out by 8 and ends */
 

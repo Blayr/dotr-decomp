@@ -521,7 +521,129 @@ static void func_01E01400_b570(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b570", func_01E016C0_b570);
+/* shape b570:01E016C0, 348 insns: the b570 scene's script (scene colour red): on ticks 319..349 a 02680 at joint
+   0x9F6E and that joint's point into the 200-step trail ring; on ticks 121..284 a puff (01C30) at joint 0x9F6C nudged
+   4.5 along z by the side flag, with a 200-step ring index; on ticks 121..299 a 028B0 at joint 0x9F68 (2 up, 1 along
+   z); before tick 250 a 020A0 halfway between joints 0x9F68 and 0x9F6A (variant 1 every fifth tick, else 2); on ticks
+   191..349 except every seventh a 02280 at a random one of eight joints */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x34A0 - 0x260];
+    Vec4f trail[200];
+    u8 pad4120[0x98F4 - 0x4120];
+    u8 col[4];
+    u8 pad98F8[0x9F68 - 0x98F8];
+    s16 jC;
+    s16 jD;
+    s16 jB;
+    s16 jA;
+    u8 pad9F70[4];
+    s16 jt[8];
+    u8 pad9F84[4];
+    s16 k;
+    s16 m;
+    u8 pad9F8C[4];
+    s16 ring;
+    u8 pad9F92[2];
+    s16 flag;
+    s16 tick;
+} Ctx_b570_01E016C0;
+
+static void func_01E016C0_b570(Ctx_b570_01E016C0 *g) {
+    extern s32 b570_01E01C30();
+    extern s32 b570_01E020A0();
+    extern s32 b570_01E02280();
+    extern s32 b570_01E02680();
+    extern s32 b570_01E028B0();
+    extern void b570_01E03B40(Ctx_b570_01E016C0 *, void *, s32);
+    extern void b570_01E03CB0(Ctx_b570_01E016C0 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f a;
+    Vec4f b;
+    Vec4f *pb;
+    s32 i;
+    s32 r;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->tick++;
+    if (g->tick > 318 && g->tick < 350) {
+        func_001F5620(func_001F53A0(), g->jA, &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z;
+        b570_01E03CB0(g, b570_01E02680, 0);
+    }
+    if (g->tick > 120 && g->tick < 285) {
+        func_001F5620(func_001F53A0(), g->jB, &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        if (g->flag != 0) {
+            g->pos.z = 4.5f + a.z;
+        } else {
+            g->pos.z = a.z - 4.5f;
+        }
+        g->ring = g->k;
+        for (i = 0; i < 1; i++) {
+            b570_01E03B40(g, b570_01E01C30, 0);
+        }
+        g->k++;
+        if (g->k >= 200) {
+            g->k = 0;
+        }
+    }
+    if (g->tick > 120 && g->tick < 300) {
+        func_001F5620(func_001F53A0(), g->jC, &a);
+        g->pos.x = a.x;
+        g->pos.y = 2.0f + a.y;
+        if (g->flag != 0) {
+            g->pos.z = a.z - 1.0f;
+        } else {
+            g->pos.z = 1.0f + a.z;
+        }
+        b570_01E03CB0(g, b570_01E028B0, 0);
+    }
+    if (g->tick < 250) {
+        func_001F5620(func_001F53A0(), g->jC, &a);
+        func_001F5620(func_001F53A0(), g->jD, pb = &b);
+        pb->x = (pb->x - a.x) / 2.0f;
+        b.y = (b.y - a.y) / 2.0f;
+        b.z = (b.z - a.z) / 2.0f;
+        g->pos.x = a.x + pb->x;
+        g->pos.y = a.y + b.y;
+        g->pos.z = a.z + b.z;
+        if (g->tick % 5 == 1) {
+            g->ring = 1;
+        } else {
+            g->ring = 2;
+        }
+        for (i = 0; i < 1; i++) {
+            b570_01E03B40(g, b570_01E020A0, 0);
+        }
+    }
+    if (g->tick > 318 && g->tick < 350) {
+        func_001F5620(func_001F53A0(), g->jA, &g->trail[g->m]);
+        g->ring = g->m;
+        g->m++;
+        if (g->m >= 200) {
+            g->m = 0;
+        }
+    }
+    if (g->tick > 190 && g->tick < 350 && g->tick % 7 != 1) {
+        r = func_0019A5C8() % 8;
+        func_001F5620(func_001F5380(), g->jt[r], &a);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z;
+        b570_01E03B40(g, b570_01E02280, 0);
+    }
+}
 
 /* shape b570:01E01C30, 284 insns: a magenta puff on the world's trail: on start a random size 12..23, colour 80/10/FF,
    claims trail point a30 at its spot (x less 0.7), random heading, speed 2..6, h8, life 37..61 and the reach between

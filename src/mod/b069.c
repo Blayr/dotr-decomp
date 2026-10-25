@@ -494,7 +494,180 @@ static s32 func_01E010B0_b069(void *arg0, Obj_b069_01E010B0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b069", func_01E01210_b069);
+/* shape b069:01E01210, 315 insns: b069's scene manager (b060:01E013C0 family): with a scene id (>= 0) it clears the
+   scene, resets both camera blocks, keeps the id, sets the 381-frame countdown, zeroes three fades, takes seven model
+   handles, loads textures 11..15, 2 and page-5 textures 0..1, and fills the 256-entry jitter table (0..99: -10..9,
+   100..179: -4..7, 180..255: -3..2); otherwise it runs the module's step and every live node's update, then draws
+   every live node by its callback with the matching texture and rect, counts down and returns 1 / 3 / 6 at frames
+   170 / 355 / 181..344, 8 once the countdown runs out */
+
+typedef struct {
+    u8 pad0[0x24];
+    void *fn;
+    u8 pad28[0xC];
+    s16 h34;
+    s16 used;
+    u8 pad38[8];
+} Node_b069_01E01210;
+
+typedef struct {
+    u8 pad0[0x80];
+    s32 ot2;
+    u8 pad84[4];
+    s32 tex88;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x14];
+    s16 hB8;
+    u8 padBA[4];
+    s16 hBE;
+    u8 padC0[0x18];
+    u8 camD8[0x238];
+    f32 f310;
+    f32 f314;
+    f32 f318;
+    u8 pad31C[4];
+    s32 tex[16];
+    u8 pad360[0x65C - 0x360];
+    Node_b069_01E01210 node[150];
+    u8 pad2BDC[0x3930 - 0x2BDC];
+    s32 tex5[2];
+    u8 pad3938[0x18];
+    s32 count;
+    u8 pad3954[8];
+    s32 ot;
+    u8 pad3960[0x38];
+    s16 model[7];
+    u8 pad39A6[0xE];
+    s16 id;
+    s16 timer;
+    u8 pad39B8[2];
+    s8 rnd[256];
+    u8 pad3ABA[2];
+    u8 cam[0x170];
+} Scene_b069_01E01210;
+
+static s32 func_01E01210_b069(s32 arg0, s32 id) {
+    Scene_b069_01E01210 *g = (Scene_b069_01E01210 *)arg0;
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_001F5F90(s32, void *);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_01E00A60_b069();
+    extern void func_01E004D0_b069();
+    extern s32 func_01E00BC0_b069();
+    extern s32 func_01E00EF0_b069();
+    extern s32 func_01E010B0_b069();
+    extern void b069_01E01830();
+    extern void b069_01E01A70();
+    s32 n;
+    Vec4f v;
+    Vec4f r1;
+    Vec4f r2;
+    Vec4f r3;
+    u8 buf[0x90];
+    s32 i;
+
+    n = 0;
+    g->ot = (s32)func_00207500();
+    g->ot2 = (s32)func_00207500();
+    if (id >= 0) {
+        func_00195108(g, 0x3C30);
+        func_00107C10(g->cam);
+        func_00107C10(g->camD8);
+        g->id = id;
+        g->count = 381;
+        g->f310 = 0.0f;
+        g->f314 = 0.0f;
+        g->f318 = 0.0f;
+        g->model[0] = func_001F5560(func_001F53A0(), 0x67, 1);
+        g->model[1] = func_001F5560(func_001F53A0(), 0x68, 0);
+        g->model[2] = func_001F5560(func_001F53A0(), 0x6A, 0);
+        g->model[3] = func_001F5560(func_001F53A0(), 0x26, 0);
+        g->model[4] = func_001F5560(func_001F53A0(), 0xF, 0);
+        g->model[5] = func_001F5560(func_001F53A0(), 0xA, 0);
+        g->model[6] = func_001F5560(func_001F53A0(), 0x3D, 0);
+        for (i = 11; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        g->tex[2] = func_00202BF0(4, 2);
+        for (i = 0; i < 2; i++) {
+            g->tex5[i] = func_00202BF0(5, i);
+        }
+        for (i = 100; i < 180; i++) {
+            g->rnd[i] = func_0019A5C8() % 12 - 4;
+        }
+        for (i = 0; i < 100; i++) {
+            g->rnd[i] = func_0019A5C8() % 20 - 10;
+        }
+        for (i = 180; i < 256; i++) {
+            g->rnd[i] = func_0019A5C8() % 6 - 3;
+        }
+        return 0;
+    }
+    func_01E00A60_b069(g, 0);
+    for (i = 0; i < 150; i++) {
+        if (g->node[i].used != 0) {
+            if (g->node[i].fn == func_01E00BC0_b069) {
+                func_01E00BC0_b069(g, &g->node[i]);
+            }
+            if (g->node[i].fn == func_01E00EF0_b069) {
+                func_01E00EF0_b069(g, &g->node[i]);
+            }
+            if (g->node[i].fn == func_01E010B0_b069) {
+                func_01E010B0_b069(g, &g->node[i]);
+            }
+        }
+    }
+    func_001F5F90(func_001F5380(), &v);
+    v.z -= 25.0f;
+    for (i = 0; i < 150; i++) {
+        if (g->node[i].used != 0) {
+            n++;
+            if (g->node[i].fn == func_01E00BC0_b069) {
+                g->tex88 = g->tex5[1];
+                func_00106080(&r1, 0x14, g->node[i].h34, 0);
+                g->rect = r1;
+                g->hB8 = 2;
+                g->hBE = func_0019A5C8() % 4;
+                func_01E004D0_b069(g, &g->node[i], 0, g->rnd);
+                g->hB8 = 0;
+            }
+            if (g->node[i].fn == func_01E00EF0_b069) {
+                g->tex88 = g->tex5[0];
+                func_00106080(&r2, 0x14, g->node[i].h34, 0);
+                g->rect = r2;
+                b069_01E01830(g, &g->node[i], buf, 0);
+            }
+            if (g->node[i].fn == func_01E010B0_b069) {
+                g->tex88 = g->tex[15];
+                func_00106080(&r3, 0x9A, 1, 0);
+                g->rect = r3;
+                b069_01E01A70(g, &g->node[i], buf, 0);
+            }
+        }
+    }
+    if (g->count != 0) {
+        g->count--;
+    }
+    if (g->timer == 170) {
+        return 1;
+    }
+    if (g->timer == 355) {
+        return 3;
+    }
+    if (g->timer > 180 && g->timer < 345) {
+        return 6;
+    }
+    if (g->count <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b008:01E01EB0, 74 insns: twin of b046:01E03E20: take the first free slot of the 150-slot pool, clear it,
    give it the scene's colour twice, the scene matrix, the scene's value 0x39B0 and 0x39AA and the two arguments; returns 1 if a

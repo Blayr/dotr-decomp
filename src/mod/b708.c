@@ -479,7 +479,149 @@ static void func_01E012D0_b708(Scene_b708_01E012D0 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01610_b708);
+/* shape b708:01E01610, 319 insns: a magenta wing beat on one side of the b708 scene (side flag 0x4C7A picks the colour
+   slot, the drift and the tilt direction): size 5 that swells 7.5 a tick for 8 ticks and then on a sine, tilts up
+   to 50 and spreads to 6, flashes grey every other tick, fades in for 25 ticks then out by 9, drifts sideways and
+   falls; late in the scene (0x4C7E past 201) it ages 25 a tick */
+
+typedef struct {
+    u8 pad0[0x4C7A];
+    s16 side;
+    u8 pad4C7C[2];
+    s16 step;
+    u8 pad4C80[0x200];
+    u8 table[1];
+} Scene_b708_01E01610;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot;
+    u8 pad24[0xC];
+    f32 spread;
+    f32 tilt;
+    f32 swing;
+    u8 pad3C[0xC];
+    f32 size;
+    f32 top;
+    s16 flip;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 ang;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 c0[4];
+    u8 c1[4];
+} Wing_b708_01E01610;
+
+static s32 func_01E01610_b708(Scene_b708_01E01610 *g, Wing_b708_01E01610 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+
+    if (o->state == 1) {
+        o->size = 5.0f;
+        if (g->side != 0) {
+            func_001076F0(o->c0, 0x80, 0x10, 0xFF);
+            func_001076F0(o->c1, 0x80, 0x10, 0xFF);
+        } else {
+            func_001076F0(o->c1, 0x80, 0x10, 0xFF);
+            func_001076F0(o->c0, 0x80, 0x10, 0xFF);
+        }
+        o->state = 2;
+        if (o->flip != 0) {
+            o->h5C = 0;
+        } else {
+            o->h5C = 0xB4;
+        }
+        o->swing = 0.0f;
+        o->c1[3] = 0;
+    }
+    if (o->t < 25) {
+        if (g->side != 0) {
+            if (o->c1[3] < 0x80) {
+                o->c1[3] += 0x80;
+            }
+        } else if (o->c0[3] < 0x80) {
+            o->c0[3] += 0x80;
+        }
+    } else if (g->side != 0) {
+        if (o->c1[3] > 10) {
+            o->c1[3] -= 9;
+        } else {
+            o->state = 0;
+        }
+    } else if (o->c0[3] > 10) {
+        o->c0[3] -= 9;
+    } else {
+        o->state = 0;
+    }
+    if (g->side != 0) {
+        if (o->t % 2 == 1) {
+            func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        } else {
+            func_001076F0(o->c0, 0x60, 0x60, 0x60);
+        }
+    } else if (o->t % 2 == 1) {
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+    } else {
+        func_001076F0(o->c1, 0x60, 0x60, 0x60);
+    }
+    o->rot = 0x4000;
+    if (g->side != 0) {
+        if (o->tilt < 50.0f) {
+            o->tilt += 1.6f;
+        }
+    } else if (o->tilt > -50.0f) {
+        o->tilt -= 1.6f;
+    }
+    if (o->spread < 6.0f) {
+        o->spread += 0.8f;
+    }
+    if (o->t >= 10) {
+        o->ang += 30;
+    }
+    if (o->t < 8) {
+        o->size += 7.5f;
+    } else {
+        o->size += o->swing + 26.5f * func_00108030(g->table, o->ang, 0);
+        if (o->swing < 20.0f) {
+            o->swing += 0.2f;
+        }
+    }
+    o->top = o->size - o->tilt;
+    o->h5C += 20;
+    if (o->t > 2) {
+        if (o->flip == 0) {
+            if (g->side != 0) {
+                o->x += 0.4f;
+            } else {
+                o->x -= 0.4f;
+            }
+        } else if (g->side != 0) {
+            o->x -= 0.4f;
+        } else {
+            o->x += 0.4f;
+        }
+    }
+    o->t++;
+    if (o->t != 0) {
+        if (g->side != 0) {
+            o->z -= 5.0f;
+        } else {
+            o->z += 5.0f;
+        }
+        o->y -= 0.5f;
+    }
+    if (g->step > 0xC9) {
+        o->t += 25;
+    }
+    return 0;
+}
 
 /* shape b708:01E01B10, 60 insns: a growing glow: on start f48 5, colour 0xC0 grey, second colour (0x80, 0x10, 0xFF)
    with alpha 0; alpha grows by 0x40 (below 0x80) for 6 ticks, then fades by 14 and stops; the rotation at 0x20
@@ -585,7 +727,180 @@ static s32 func_01E01DB0_b708(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b708", func_01E01DC0_b708);
+/* shape b708:01E01DC0, 324 insns: the b708 module's main step (b538:01E00EA0 family): keeps two order tables; with a
+   code it clears the scene, sets up its two coordinates, keeps the code and a 210-tick timer, the model's joints
+   0x25/0x29/0x2D/0x53/0x57/0x5B, texture (5,0), the camera's turned-back side (turn / 180), scale 0.1 and three noise
+   tables (-12..11, 0..3 from 100, -20..19); otherwise it runs the scene script (b708:01E012D0), every live slot's
+   handler (150 of 0x70 bytes) except the idle one, then draws the wings (b708:01E01610) as magic circles swung by the
+   scene angle, the flashes (b708:01E01B10) as rings and the glows (b708:01E01C00) as gas; counts the timer down and
+   returns 1 / 3 at steps 120 / 205, 6 between 131 and 199, 8 when the timer ends */
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    u8 pad20[0x10];
+    f32 f30;
+    u8 pad34[0x10];
+    s32 (*fn)(void *, void *);
+    u8 pad48[0xE];
+    s16 frame;
+    s16 used;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[0x12];
+} Slot_b708_01E01DC0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 sx, sy, sz;
+    u8 pad1C[4];
+    f32 px, py, pz;
+    u8 pad2C[0x54];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex88;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x14];
+    s16 hB8;
+    u8 padBA[6];
+    s16 hC0;
+    u8 padC2[0x16];
+    u8 crdD8[0x2A0 - 0xD8];
+    Slot_b708_01E01DC0 slot[150];
+    u8 pad4440[0x7B0];
+    s32 tex[1];
+    u8 pad4BF4[0x1C];
+    s32 timer;
+    u8 pad4C14[8];
+    s32 ot2;
+    u8 pad4C20[0x28];
+    s16 joint[6];
+    u8 pad4C54[0x1C];
+    s16 ang;
+    u8 pad4C72[8];
+    s16 turn;
+    s16 code;
+    s16 step;
+    s8 noise[0x100];
+    s8 noise2[0x100];
+    u8 crd4E80[1];
+} Scene_b708_01E01DC0;
+
+static s32 func_01E01DC0_b708(s32 arg0, s32 code) {
+    extern void b708_01E012D0();
+    extern s32 b708_01E01DB0();
+    extern s32 b708_01E01610();
+    extern s32 b708_01E01B10();
+    extern s32 b708_01E01C00();
+    extern void b708_01E02420(void *, void *, s32, Vec4f);
+    extern void b708_01E00920(void *, void *, s32, Vec4f);
+    extern void b708_01E00D80();
+    Scene_b708_01E01DC0 *g = (Scene_b708_01E01DC0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F6160(s32, void *);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f p;
+    f32 rm[4];
+    s32 ang[4];
+    s32 k;
+    s16 n;
+    s16 i;
+
+    n = 0;
+    g->ot2 = func_00207500();
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x4FF0);
+        func_00107C10(g->crd4E80);
+        func_00107C10(g->crdD8);
+        g->code = code;
+        g->timer = 210;
+        g->joint[0] = func_001F5560(func_001F53A0(), 0x25, 1);
+        g->joint[1] = func_001F5560(func_001F53A0(), 0x29, 0);
+        g->joint[2] = func_001F5560(func_001F53A0(), 0x2D, 0);
+        g->joint[3] = func_001F5560(func_001F53A0(), 0x53, 0);
+        g->joint[4] = func_001F5560(func_001F53A0(), 0x57, 0);
+        g->joint[5] = func_001F5560(func_001F53A0(), 0x5B, 0);
+        for (k = 0; k < 1; k++) {
+            g->tex[k] = func_00202BF0(5, k);
+        }
+        func_001F6160(func_001F53A0(), ang);
+        g->turn = (s16)(ang[1] / 180.0f);
+        g->sx = 0.1f;
+        g->sy = 0.1f;
+        g->sz = 0.1f;
+        for (i = 0; i < 0x100; i++) {
+            g->noise[i] = func_0019A5C8() % 24 - 12;
+        }
+        for (i = 100; i < 180; i++) {
+            g->noise[i] = func_0019A5C8() % 4;
+        }
+        for (i = 0; i < 0x100; i++) {
+            g->noise2[i] = func_0019A5C8() % 40 - 20;
+        }
+        return 0;
+    }
+    b708_01E012D0(g, 0);
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn != NULL && g->slot[i].fn != b708_01E01DB0) {
+                g->slot[i].fn(g, &g->slot[i]);
+            }
+        }
+    }
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            if (g->slot[i].fn == b708_01E01610) {
+                p = g->slot[i].pos;
+                p.x += g->slot[i].f30 * func_00108030(g->crdD8, g->slot[i].h5C + g->ang, 0);
+                b708_01E02420(g, &g->slot[i], 0x20, p);
+            }
+            if (g->slot[i].fn == b708_01E01B10) {
+                n++;
+                p = g->slot[i].pos;
+                b708_01E00920(g, &g->slot[i], 0x20, p);
+            }
+            if (g->slot[i].fn == b708_01E01C00) {
+                func_00106080(rm, 0x14, g->slot[i].frame, 0);
+                g->rect = *(Vec4f *)rm;
+                g->tex88 = g->tex[0];
+                g->hB8 = 6;
+                g->hC0 = g->slot[i].hA;
+                g->px = g->slot[i].pos.x;
+                g->py = g->slot[i].pos.y;
+                g->pz = g->slot[i].pos.z;
+                b708_01E00D80(g, &g->slot[i], 0x20, g->noise);
+                g->hB8 = 0;
+            }
+        }
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->step == 120) {
+        return 1;
+    }
+    if (g->step == 205) {
+        return 3;
+    }
+    if (g->step > 130 && g->step < 200) {
+        return 6;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b280:01E02530, 82 insns, 2 copies: spawns an effect into the first free slot (150 of 0x70 bytes): clears it, marks it
    live, both colours from the scene, placed at the scene position, with the caller's handler and argument */

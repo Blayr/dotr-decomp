@@ -724,7 +724,100 @@ static void func_01E01810_b550(Obj_b016_01E014F0 *o, Cam_b016_01E014F0 *cam, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E01C10_b550);
+/* shape b550:01E01C10, 328 insns: the b550 scene's script: on tick 1 it reads the joint into six points and spreads
+   them into a hexagon (5 / 12 apart) and spawns 03C60 and 03D30; on tick 102 a pair (02130 + 03090) at each point with a
+   120-step ring index; on tick 135 seven 03A90 at the joint; on tick 35 six 03590 numbered 0..5; on ticks 30..38 one
+   03EE0 a tick */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB950 - 0x260];
+    Vec4f pts[6];
+    u8 padB9B0[0xBC24 - 0xB9B0];
+    s16 joint;
+    u8 padBC26[0xBD42 - 0xBC26];
+    s16 ring;
+    s16 ringNext;
+    u8 padBD46[4];
+    s16 tick;
+} Ctx_b550_01E01C10;
+
+static void func_01E01C10_b550(Ctx_b550_01E01C10 *g) {
+    extern s32 b550_01E02130();
+    extern s32 b550_01E03090();
+    extern s32 b550_01E03590();
+    extern s32 b550_01E03A90();
+    extern s32 b550_01E03C60();
+    extern s32 b550_01E03D30();
+    extern s32 b550_01E03EE0();
+    extern void b550_01E04D40(Ctx_b550_01E01C10 *, void *, s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+
+    g->tick++;
+    if (g->tick == 1) {
+        for (i = 0; i < 6; i++) {
+            func_001F5620(func_001F53A0(), g->joint, &g->pts[i]);
+        }
+        g->pts[0].x -= 5.0f;
+        g->pts[0].y += 12.0f;
+        g->pts[1].x -= 12.0f;
+        g->pts[2].x -= 5.0f;
+        g->pts[2].y -= 12.0f;
+        g->pts[3].x += 5.0f;
+        g->pts[3].y += 12.0f;
+        g->pts[4].x += 12.0f;
+        g->pts[5].x += 5.0f;
+        g->pts[5].y -= 12.0f;
+    }
+    if (g->tick == 0x66) {
+        for (i = 0; i < 6; i++) {
+            g->pos = g->pts[i];
+            g->ring = g->ringNext;
+            b550_01E04D40(g, b550_01E02130, 0);
+            b550_01E04D40(g, b550_01E03090, 0);
+            g->ringNext++;
+            if (g->ringNext >= 120) {
+                g->ringNext = 0;
+            }
+        }
+    }
+    if (g->tick == 0x87) {
+        func_001F5620(func_001F53A0(), g->joint, &g->pos);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+        b550_01E04D40(g, b550_01E03A90, 0);
+    }
+    if (g->tick == 0x23) {
+        g->ring = 0;
+        b550_01E04D40(g, b550_01E03590, 0);
+        g->ring = 1;
+        b550_01E04D40(g, b550_01E03590, 0);
+        g->ring = 2;
+        b550_01E04D40(g, b550_01E03590, 0);
+        g->ring = 3;
+        b550_01E04D40(g, b550_01E03590, 0);
+        g->ring = 4;
+        b550_01E04D40(g, b550_01E03590, 0);
+        g->ring = 5;
+        b550_01E04D40(g, b550_01E03590, 0);
+    }
+    if (g->tick == 1) {
+        b550_01E04D40(g, b550_01E03C60, 0);
+    }
+    if (g->tick == 1) {
+        b550_01E04D40(g, b550_01E03D30, 0);
+    }
+    if (g->tick >= 30 && g->tick < 39) {
+        b550_01E04D40(g, b550_01E03EE0, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b550", func_01E02130_b550);
 

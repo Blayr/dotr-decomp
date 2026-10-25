@@ -635,7 +635,148 @@ static s32 func_01E022D0_b764(s32 arg0, Fx_b764_01E022D0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E02440_b764);
+/* shape b764:01E02440, 305 insns: a 60x60 flash in three rows by index (<36, <72, <108): tilt +-0x2000 by row and side
+   (ctx+0xDBD8), 4..6 frames; alpha up 12 to 0xC0 for 30 frames, down 11 from frame 411 (ctx+0xDBDC); white on odd
+   frames, grey on even; while the scene runs it squeezes in steps (w to 30, h to 20; then w back up to 20, h to 10);
+   from frame 281 it spins by row, from 239 the tilts settle by 0x100 a frame */
+
+typedef struct {
+    u8 pad0[0xDBD8];
+    s16 side;
+    u8 padDBDA[2];
+    s16 t;
+} Game_b764_01E02440;
+
+typedef struct {
+    u8 pad0[8];
+    s16 life;
+    u8 padA[0x16];
+    s32 rx;
+    s32 ry;
+    s32 rz;
+    u8 pad2C[0x1C];
+    f32 w;
+    f32 h;
+    s16 idx;
+    s16 step;
+    s16 t;
+    s16 f56;
+    s16 state;
+    u8 pad5A[6];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b764_01E02440;
+
+static s32 func_01E02440_b764(Game_b764_01E02440 *g, Obj_b764_01E02440 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->w = 60.0f;
+        o->h = 60.0f;
+        o->f56 = 0;
+        o->state = 2;
+        if (o->idx < 36) {
+            o->step = 0;
+        } else if (o->idx < 72) {
+            o->step = 2;
+        } else if (o->idx < 108) {
+            o->step = 4;
+        }
+        if (o->idx < 36) {
+            o->rz = 0x2000;
+        } else if (o->idx < 72) {
+            o->rz = -0x2000;
+        }
+        if (g->side != 0) {
+            o->rx = 0x2000;
+        } else {
+            o->rx = -0x2000;
+        }
+
+        o->life = func_0019A5C8() % 3 + 4;
+    }
+    if (o->t < 30) {
+        if (o->c0[3] < 0xC0) {
+            o->c0[3] += 12;
+        }
+        if (o->c1[3] < 0xC0) {
+            o->c1[3] += 12;
+        }
+    } else if (g->t > 410) {
+        if (o->c0[3] > 12) {
+            o->c0[3] -= 11;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 12) {
+            o->c1[3] -= 11;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+        func_001076F0(o->c1, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+    }
+    if (g->t != 0) {
+        if (o->step == 0) {
+            if (o->w > 30.0f) {
+                o->w -= 5.0f;
+            } else {
+                o->step++;
+            }
+        } else if (o->step == 1) {
+            if (o->h > 20.0f) {
+                o->h -= 5.0f;
+            }
+        } else if (o->step == 2) {
+            if (o->w > 30.0f) {
+                o->w -= 5.0f;
+            } else {
+                o->step++;
+            }
+        } else if (o->step == 3) {
+            if (o->h > 20.0f) {
+                o->h -= 5.0f;
+            }
+        } else if (o->step == 4) {
+            if (o->w < 20.0f) {
+                o->w += 2.5f;
+            } else {
+                o->step++;
+            }
+        } else if (o->step == 5) {
+            if (o->h < 10.0f) {
+                o->h += 2.5f;
+            }
+        }
+    }
+    if (g->t > 280) {
+        if (o->idx < 36) {
+            o->ry += 0x300;
+        } else if (o->idx < 72) {
+            o->ry -= 0x300;
+        } else if (o->idx < 108) {
+            o->ry += 0x300;
+        }
+    } else if (g->t > 238) {
+        if (o->rz > 0) {
+            o->rz -= 0x100;
+        }
+        if (o->rz < 0) {
+            o->rz += 0x100;
+        }
+        if (o->rx > 0) {
+            o->rx -= 0x100;
+        }
+        if (o->rx < 0) {
+            o->rx += 0x100;
+        }
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b764:01E02910, 81 insns: a white flickering spark (b252:01E03410 family): size 15, random sub-frame 2..7, f34 0.5; alpha up
    by 0x60 to 0xC0 until the game timer reaches 0x109, then down by 9; colour flickers by frame parity; random turn */

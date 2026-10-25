@@ -645,7 +645,122 @@ static void func_01E01640_b247(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E019B0_b247);
+/* shape b247:01E019B0, 367 insns, 1 copy (B247_W_S): the module's scene step: counts frames; at 167 it takes the model
+   point (5 higher); 153..179 five b247:01E02C50 bursts of kind 0 and one of kind 1 at joint A a frame; 71..139 a
+   b247:01E027A0 ring of kind 0 every third frame and kinds 1 and 2 every other frame at joint B, drifting 4 a frame
+   to the scene's side; at 70 a b247:01E03300; 37..139 the spawn point follows joint C; at 167 a b247:01E01F70 at the
+   model point and, 167..177, two b247:01E02530 and five b247:01E02FC0 a frame; at 60 a b247:01E01F70 and 40
+   b247:01E02FC0 at joint C */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xAF70];
+    Vec4f pt;
+    u8 padB1E0[0x64];
+    s16 jA;
+    s16 jB;
+    s16 jC;
+    u8 padB24A[0x58];
+    s16 h;
+    u8 padB2A4[0xC];
+    s16 kind;
+    u8 padB2B2[2];
+    s16 side;
+    u8 padB2B6[2];
+    s16 frame;
+} Scene_b247_01E019B0;
+
+static void func_01E019B0_b247(Scene_b247_01E019B0 *g) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, Vec4f *);
+    extern void func_001F5F90(s32, Vec4f *);
+    extern s32 func_01E03E80_b247();
+    extern s32 func_01E01F70_b247();
+    extern s32 func_01E02530_b247();
+    extern s32 func_01E027A0_b247();
+    extern s32 func_01E02C50_b247();
+    extern s32 func_01E02FC0_b247();
+    extern s32 func_01E03300_b247();
+    s16 i;
+
+    g->frame++;
+    if (g->frame == 167) {
+        func_001F5F90(func_001F5380(), &g->pt);
+        g->pt.y += 5.0f;
+    }
+    if (g->frame > 152 && g->frame < 180) {
+        func_001F5620(func_001F53A0(), g->jA, &g->pos);
+        g->kind = 0;
+        for (i = 0; i < 5; i++) {
+            func_01E03E80_b247(g, func_01E02C50_b247, 0);
+        }
+        g->kind = 1;
+        for (i = 0; i < 1; i++) {
+            func_01E03E80_b247(g, func_01E02C50_b247, 0);
+        }
+    }
+    if (g->frame > 70 && g->frame < 140) {
+        func_001F5620(func_001F53A0(), g->jB, &g->pos);
+        g->pos.y = 40.0f;
+        if (g->side != 0) {
+            g->pos.z -= 4.0f;
+        } else {
+            g->pos.z += 4.0f;
+        }
+        g->kind = 0;
+        if (g->frame % 3 == 1) {
+            func_01E03E80_b247(g, func_01E027A0_b247, 0);
+        }
+        g->kind = 1;
+        if (g->frame % 2 == 1) {
+            func_01E03E80_b247(g, func_01E027A0_b247, 0);
+        }
+        g->kind = 2;
+        if (g->frame % 2 == 1) {
+            func_01E03E80_b247(g, func_01E027A0_b247, 0);
+        }
+    }
+    if (g->frame == 70) {
+        func_01E03E80_b247(g, func_01E03300_b247, 0);
+    }
+    if (g->frame > 36 && g->frame < 140) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pos);
+    }
+    if (g->frame == 167) {
+        g->pos = g->pt;
+        g->kind = 0;
+        func_01E03E80_b247(g, func_01E01F70_b247, 0);
+    }
+    if (g->frame >= 167 && g->frame < 178) {
+        g->pos = g->pt;
+        for (i = 0; i < 2; i++) {
+            func_01E03E80_b247(g, func_01E02530_b247, 0);
+        }
+        g->kind = 1;
+        for (i = 0; i < 5; i++) {
+            func_01E03E80_b247(g, func_01E02FC0_b247, 0);
+        }
+    }
+    if (g->frame == 60) {
+        func_001F5620(func_001F53A0(), g->jC, &g->pos);
+        g->h = 0;
+        g->kind = 0;
+        g->h = 90;
+        g->kind = 0;
+        g->h = 45;
+        g->kind = 1;
+        g->h = 135;
+        g->kind = 1;
+        g->kind = 1;
+        func_01E03E80_b247(g, func_01E01F70_b247, 0);
+        g->kind = 0;
+        for (i = 0; i < 40; i++) {
+            func_01E03E80_b247(g, func_01E02FC0_b247, 0);
+        }
+    }
+}
 
 /* shape b247:01E01F70, 117 insns: on start by the kind 0x50 (0: f4C 220, hold 14, colours (0xFF, 0x40, 0x40) / white;
    1: hold 3, both (0xFF, 0x80, 0x80)), 0x52 = 0, 0x5A/0x5C = 10, second alpha 0; the second alpha grows by 0x60 (below
@@ -943,7 +1058,128 @@ static s32 func_01E02530_b247(Ctx_b247_01E02530 *g, Obj_b247_01E02530 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b247", func_01E027A0_b247);
+/* shape b247:01E027A0, 297 insns, 1 copy (B247_OBJ_MOVE_6_): a red shock ring of kind 0..2: on start radius 140
+   (inner 82), red on black or pink on grey by the scene frame's parity, life 8 or 10, growth 15..22.9 a tick, a random
+   turn; full alpha for its life, then out by 5; kind 0 keeps its inner at 0.4 of the radius, 1 and 2 at 0.7 and rise
+   by the growth; all end at scene frame 157 */
+
+typedef struct {
+    u8 pad0[6];
+    s16 life;
+    u8 pad8[0x1C];
+    s32 turn;
+    u8 pad28[8];
+    f32 rise;
+    f32 f34;
+    f32 grow;
+    u8 pad3C[0xC];
+    f32 r;
+    f32 r2;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+    u8 col2[4];
+} Obj_b247_01E027A0;
+
+typedef struct {
+    u8 pad0[0xB2B8];
+    s16 frame;
+} Scene_b247_01E027A0;
+
+static s32 func_01E027A0_b247(Scene_b247_01E027A0 *g, Obj_b247_01E027A0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->state == 1) {
+        o->r = 140.0f;
+        o->r2 = o->r - 58.0f;
+        if (o->kind == 0) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0xC0, 0x20, 0x20);
+                func_001076F0(o->col, 0, 0, 0);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->life = 8;
+        }
+        if (o->kind == 1) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0xC0, 0x20, 0x20);
+                func_001076F0(o->col, 0, 0, 0);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 10.0f;
+            o->life = 10;
+        }
+        if (o->kind == 2) {
+            if (g->frame % 2 == 0) {
+                func_001076F0(o->col2, 0xC0, 0x20, 0x20);
+                func_001076F0(o->col, 0, 0, 0);
+            }
+            if (g->frame % 2 == 1) {
+                func_001076F0(o->col2, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->col, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 10.0f;
+            o->life = 10;
+        }
+        if (o->kind == 0) {
+            o->h5A = 10;
+            o->h5C = 10;
+        }
+        if (o->kind == 1) {
+            o->h5A = 10;
+            o->h5C = 3;
+        }
+        if (o->kind == 2) {
+            o->h5A = 60;
+            o->h5C = 60;
+        }
+        o->grow = func_0019A5C8() % 80 + 150;
+        o->grow /= 10.0f;
+        o->rise = 350.0f;
+        o->rise /= 10.0f;
+        o->state = 2;
+        o->col2[3] = 0;
+        o->turn = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < o->life) {
+        o->col2[3] = 0x80;
+    } else if (o->col2[3] > 6) {
+        o->col2[3] -= 5;
+    } else {
+        o->state = 0;
+    }
+    if (o->kind == 0) {
+        o->r += o->grow;
+        o->r2 = 0.4f * o->r;
+    }
+    if (o->kind == 1) {
+        o->r += o->grow;
+        o->r2 = 0.7f * o->r;
+        o->f34 += o->grow;
+    }
+    if (o->kind == 2) {
+        o->r += o->grow;
+        o->r2 = 0.7f * o->r;
+        o->f34 += o->grow;
+    }
+    o->tick++;
+    if (g->frame >= 157) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b247:01E02C50, 219 insns: b751:01E01980's rising flash with the kind (0x50) given by the spawner: colours red
    on black or pink on grey by the parity of the scene count (ctx+0xB2B8), width 60, height 6 (kind 0) or 20 (kind 1),

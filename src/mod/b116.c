@@ -1948,7 +1948,135 @@ static void func_01E05530_b116(Obj_b116_01E05530 *o, Fx_b116_01E05530 *fx, Pkt_b
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E058C0_b116);
+/* shape b116:01E058C0, 271 insns: draws a sprite and its mirror image (two passes) at the given position: colour
+   from the object, texture corners from the owner's rectangle (0x94, in 256ths, flipped sideways when the object's
+   0x30 is set), world matrix scale 0.1 with the object's rotation; the second pass mirrors the quad (y negated,
+   corners swapped) and the offset (owner 0x20/0x24) is applied with the signs of the pass and the flip */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b116_01E058C0;
+
+typedef struct {
+    Rgbaq_b116_01E058C0 c;
+    f32 s, t;
+    u64 xyz;
+} Vtx_b116_01E058C0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b116_01E058C0 v[4];
+} Pkt_b116_01E058C0;
+
+typedef struct {
+    u8 pad0[0x20];
+    f32 ox;
+    f32 oy;
+    u8 pad28[0x58];
+    s32 ot;
+    u8 pad84[4];
+    void *texture;
+    u8 pad8C[8];
+    s16 u;
+    s16 v;
+    s16 w;
+    s16 h;
+} Self_b116_01E058C0;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    s32 rot[3];
+    u8 pad1C[0xC];
+    u8 col[4];
+    u8 pad2C[4];
+    s16 flip;
+} Obj_b116_01E058C0;
+
+static void func_01E058C0_b116(Self_b116_01E058C0 *self, Obj_b116_01E058C0 *obj, Pkt_b116_01E058C0 *pk, Vec4f *at) {
+    extern void func_00109270(void *, s32, s32);
+    extern Rgbaq_b116_01E058C0 func_00107740(void *);
+    extern void func_00108EF0(void *, void *, void *, void *);
+    extern void func_00108CE0(void *, f32, f32);
+    extern void func_00107070(void *, s32, f32);
+    extern s32 func_002058D0(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f pos;
+    Vec4f quad[4];
+    Vec4f t;
+    Vec4f scale;
+    f32 depth[4];
+    f32 m[16];
+    f32 a;
+    f32 b;
+    f32 c;
+    s16 i;
+
+    pos = *at;
+    func_00109270(pk, 0, 0);
+    pk->v[0].c = func_00107740(obj->col);
+    pk->v[1].c = func_00107740(obj->col);
+    pk->v[2].c = func_00107740(obj->col);
+    pk->v[3].c = func_00107740(obj->col);
+    pk->count &= ~0x800;
+    func_00208700(pk, self->texture, 1);
+    scale.x = 0.1f;
+    t.x = pos.x;
+    scale.y = 0.1f;
+    t.y = pos.y;
+    scale.z = 0.1f;
+    t.z = pos.z;
+    func_00108EF0(m, &scale, obj->rot, &t);
+    for (i = 0; i < 2; i++) {
+        if (obj->flip == 0) {
+            pk->v[0].s = pk->v[2].s = self->u / 256.0f;
+            pk->v[1].s = pk->v[3].s = (self->u + self->w) / 256.0f;
+            pk->v[0].t = pk->v[1].t = self->v / 256.0f;
+            pk->v[2].t = pk->v[3].t = (self->v + self->h) / 256.0f;
+        } else {
+            pk->v[0].s = pk->v[2].s = (self->u + self->w) / 256.0f;
+            pk->v[1].s = pk->v[3].s = self->u / 256.0f;
+            pk->v[0].t = pk->v[1].t = self->v / 256.0f;
+            pk->v[2].t = pk->v[3].t = (self->v + self->h) / 256.0f;
+        }
+        func_00108CE0(quad, obj->w, obj->h);
+        quad[2].y = quad[3].y = 0.0f;
+        if (i == 1) {
+            quad[0].y = quad[1].y *= -1.0f;
+            a = quad[0].x;
+            b = quad[2].x;
+            c = quad[3].x;
+            quad[0].x = quad[1].x;
+            quad[1].x = a;
+            quad[2].x = c;
+            quad[3].x = b;
+        }
+        if (obj->flip == 0) {
+            if (i == 0) {
+                func_00107070(quad, 0, self->ox);
+                func_00107070(quad, 1, self->oy);
+            } else if (i == 1) {
+                func_00107070(quad, 0, -self->ox);
+                func_00107070(quad, 1, -self->oy);
+            }
+        } else if (i == 0) {
+            func_00107070(quad, 0, -self->ox);
+            func_00107070(quad, 1, self->oy);
+        } else if (i == 1) {
+            func_00107070(quad, 0, self->ox);
+            func_00107070(quad, 1, -self->oy);
+        }
+        if (func_002058D0(quad, 0x70000000, m, pk, depth) != 0) {
+            func_002075F0(pk, self->ot, (u32)depth[0]);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b116", func_01E05D00_b116);
 

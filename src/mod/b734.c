@@ -681,7 +681,146 @@ static void func_01E01220_b734(Obj_b111_01E00D70 *obj, Data_b111_01E00D70 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b734", func_01E01770_b734);
+/* shape b734:01E01770, 347 insns: B734_W_S, the effect scene's step (b522:01E01D30 form): colour 0x80,0,0,0, counts
+   the frame (0x6E0C); frame 148 spawns 0x1E01CE0; frame 158, for joints 0x6DEE / 0x6DF0 / 0x6DF2, puts the point
+   halfway in depth toward the camera and spawns bursts of 0x1E02090 / 0x1E01EE0 (plus 0x1E02220 x50, 0x1E02BB0 x4,
+   0x1E024B0 on the first, 0x1E02CA0 on the last); frames 105/159 two rounds of thirteen 0x1E025F0 1.5 under joint
+   0x6DEC; frames 0..5 0x1E030C0, 47..87 five 0x1E027B0, 0..24 and 132..160 0x1E02970 on it; the sway (0x6D70) is
+   100 x the sine of the angle 0x6E02, which turns 5 a frame */
+
+typedef struct {
+    u8 pad0[0x2D0];
+    Vec4f pos;
+    u8 pad2E0[0x6D70 - 0x2E0];
+    f32 sway;
+    u8 pad6D74[0x6DA4 - 0x6D74];
+    u8 col[4];
+    u8 pad6DA8[0x6DEC - 0x6DA8];
+    s16 j0;
+    s16 j1;
+    s16 j2;
+    s16 j3;
+    u8 pad6DF4[0x6E02 - 0x6DF4];
+    s16 ang;
+    u8 pad6E04[2];
+    s16 side;
+    u8 pad6E08[4];
+    s16 t;
+    u8 pad6E0E[0x7010 - 0x6E0E];
+    u8 trig[1];
+} Scene_b734_01E01770;
+
+static void func_01E01770_b734(Scene_b734_01E01770 *g) {
+    extern void b734_01E01CE0(void);
+    extern void b734_01E01EE0(void);
+    extern void b734_01E02090(void);
+    extern void b734_01E02220(void);
+    extern void b734_01E024B0(void);
+    extern void b734_01E025F0(void);
+    extern void b734_01E027B0(void);
+    extern void b734_01E02970(void);
+    extern void b734_01E02BB0(void);
+    extern void b734_01E02CA0(void);
+    extern void b734_01E030C0(void);
+    extern void b734_01E03C60(Scene_b734_01E01770 *, void (*)(void), s32);
+    extern void b734_01E03D80(Scene_b734_01E01770 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    Vec4f a;
+    Vec4f b;
+    s32 i;
+
+    g->col[0] = 0x80;
+    g->col[1] = 0;
+    g->col[2] = 0;
+    g->col[3] = 0;
+    g->t++;
+    if (g->t == 148) {
+        g->side = 0;
+        b734_01E03C60(g, b734_01E01CE0, 0);
+    }
+    if (g->t == 158) {
+        func_001F5620(func_001F53A0(), g->j1, &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z + (b.z - a.z) / 2.0f;
+        g->side = 1;
+        for (i = 0; i < 8; i++) {
+            b734_01E03C60(g, b734_01E02090, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b734_01E03C60(g, b734_01E01EE0, 0);
+        }
+        for (i = 0; i < 50; i++) {
+            b734_01E03D80(g, b734_01E02220, 0);
+        }
+        b734_01E03D80(g, b734_01E02BB0, 0);
+        b734_01E03D80(g, b734_01E02BB0, 0);
+        b734_01E03D80(g, b734_01E02BB0, 0);
+        b734_01E03D80(g, b734_01E02BB0, 0);
+        b734_01E03D80(g, b734_01E024B0, 0);
+        func_001F5620(func_001F53A0(), g->j2, &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z + (b.z - a.z) / 2.0f;
+        g->side = 1;
+        for (i = 0; i < 8; i++) {
+            b734_01E03C60(g, b734_01E02090, 0);
+        }
+        for (i = 0; i < 20; i++) {
+            b734_01E03C60(g, b734_01E01EE0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j3, &a);
+        func_001F5F90(func_001F5380(), &b);
+        g->pos.x = a.x;
+        g->pos.y = a.y;
+        g->pos.z = a.z + (b.z - a.z) / 2.0f;
+        g->side = 1;
+        for (i = 0; i < 8; i++) {
+            b734_01E03C60(g, b734_01E02090, 0);
+        }
+        b734_01E03C60(g, b734_01E02CA0, 0);
+    }
+    if (g->t == 105 || g->t == 159) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b734_01E03D80(g, b734_01E025F0, 0);
+        }
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b734_01E03D80(g, b734_01E025F0, 0);
+        }
+    }
+    if (g->t < 6) {
+        b734_01E03D80(g, b734_01E030C0, 0);
+    }
+    if (g->t >= 47 && g->t < 88) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 5; i++) {
+            b734_01E03D80(g, b734_01E027B0, 0);
+        }
+    }
+    if (g->t < 25) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b734_01E03D80(g, b734_01E02970, 0);
+    }
+    if (g->t >= 132 && g->t < 161) {
+        func_001F5620(func_001F53A0(), g->j0, &g->pos);
+        b734_01E03D80(g, b734_01E02970, 0);
+    }
+    g->sway = 100.0f * func_00108030((s32)g->trig, g->ang, 0);
+    g->ang += 5;
+    if (g->ang >= 360) {
+        g->ang %= 360;
+    }
+}
 
 /* shape b734:01E01CE0, 127 insns: b397:01E01540 with joints at g+0x6DEC/0x6DEE, hold 30, h6 10, and the trail and the
    full alpha kept while the scene timer at g+0x6E0C is below 160 */

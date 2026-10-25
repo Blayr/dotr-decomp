@@ -761,7 +761,134 @@ static void func_01E01C70_b640(Ctx_b640_01E01C70 *g) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b640", func_01E01F10_b640);
+/* shape b640:01E01F10, 316 insns: B640_OBJ_MOVE_2_, a rising spark per slot (index h50): on start 15x15 grey, its
+   slot point set to the object's position, a random angle and a speed (50..269)/10; alpha up 42 to 0x80 for 82 frames
+   then down 14; white on odd frames; spins; from frame 27 each odd frame drops two 0x1E02400, two 0x1E02590, one
+   0x1E02AD0 and one 0x1E02920 at its point; for 25 frames it grows to 60, drifts 6.5 in z by side and 0.4 down, and
+   drops a 0x1E02770 */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px;
+    f32 py;
+    f32 pz;
+    u8 pad25C[0x9330 - 0x25C];
+    Vec4f pos[(0x9AEC - 0x9330) / 16];
+    u8 pad9AEC[0x9AEC - 0x9330 - (0x9AEC - 0x9330) / 16 * 16];
+    f32 spd[(0x9CFC - 0x9AEC) / 4];
+    s16 ang[(0x9DFE - 0x9CFC) / 2];
+    s16 side;
+} Game_b640_01E01F10;
+
+typedef struct {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[4];
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    u8 pad30[0x20];
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    s16 f56;
+    s16 state;
+    s16 spin;
+    u8 pad5C[4];
+    u8 c0[4];
+    u8 c1[4];
+} Obj_b640_01E01F10;
+
+static s32 func_01E02400_b640();
+static s32 func_01E02590_b640();
+static s32 func_01E02770_b640();
+static s32 func_01E02920_b640();
+static s32 func_01E02AD0_b640();
+static s32 func_01E042C0_b640();
+
+static s32 func_01E01F10_b640(Game_b640_01E01F10 *g, Obj_b640_01E01F10 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void func_00205C40(void *);
+
+    if (o->state == 1) {
+        o->w = 15;
+        o->h = 15;
+        o->f56 = 4;
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+        func_001076F0(o->c1, 0x80, 0x80, 0x80);
+        g->pos[o->idx].x = o->x;
+        g->pos[o->idx].y = o->y;
+        g->pos[o->idx].z = o->z;
+        o->state = 2;
+        o->c1[3] = 0;
+        g->ang[o->idx] = func_0019A5C8() % 360;
+        g->spd[o->idx] = func_0019A5C8() % 220 + 50;
+        g->spd[o->idx] /= 10.0f;
+    }
+    if (o->t < 82) {
+        if (o->c0[3] < 0x80) {
+            o->c0[3] += 42;
+        }
+        if (o->c1[3] < 0x80) {
+            o->c1[3] += 42;
+        }
+    } else {
+        if (o->c0[3] > 15) {
+            o->c0[3] -= 14;
+        } else {
+            o->state = 0;
+        }
+        if (o->c1[3] > 15) {
+            o->c1[3] -= 14;
+        }
+    }
+    if (o->t % 2 == 1) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0xC0, 0xC0, 0xC0);
+    }
+    func_00205C40(o->rot);
+    if (o->t > 26 && o->t % 2 == 1) {
+        g->px = g->pos[o->idx].x;
+        g->py = g->pos[o->idx].y;
+        g->pz = g->pos[o->idx].z;
+        func_01E042C0_b640((void *)g, (s32)func_01E02400_b640, 0);
+        func_01E042C0_b640((void *)g, (s32)func_01E02400_b640, 0);
+        func_01E042C0_b640((void *)g, (s32)func_01E02590_b640, 0);
+        func_01E042C0_b640((void *)g, (s32)func_01E02590_b640, 0);
+        func_01E042C0_b640((void *)g, (s32)func_01E02AD0_b640, 0);
+        func_01E042C0_b640((void *)g, (s32)func_01E02920_b640, 0);
+    }
+    if (o->t < 23) {
+        o->spin += 5;
+        g->ang[o->idx] += 18;
+    }
+    o->t++;
+    if (o->t < 26) {
+        if (o->w < 60) {
+            o->w += 8;
+        }
+        if (o->h < 60) {
+            o->h += 8;
+        }
+        if (g->side != 0) {
+            g->pos[o->idx].z -= 6.5f;
+        } else {
+            g->pos[o->idx].z += 6.5f;
+        }
+        g->pos[o->idx].y -= 0.4f;
+        g->px = g->pos[o->idx].x;
+        g->py = g->pos[o->idx].y;
+        g->pz = g->pos[o->idx].z;
+        if (o->t < 22) {
+            func_01E042C0_b640((void *)g, (s32)func_01E02770_b640, 0);
+        }
+    }
+    return 0;
+}
 
 /* shape b111:01E02160, 100 insns: spark update, a variant of b018:01E02950 (on spawn: random kind, white
    colour, angle, spin, height, speed, size and lifetime; then fade out after the lifetime, move while

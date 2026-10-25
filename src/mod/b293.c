@@ -850,7 +850,125 @@ static s32 func_01E02140_b293(s32 arg0, Obj_b293_01E02140 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b293", func_01E022F0_b293);
+/* shape b293:01E022F0 (B293_OBJ_MOVE_6_), 290 insns, 1 copy: a growing ring in one of three kinds, coloured by the
+   scene's side (even/odd): kind 0 green-grey, kind 1 dark green, kind 2 red, each with its own life (8 or 10 ticks
+   bright) and sizes; it grows by 35..42.9 a tick (the inner size 0.4 or 0.7 of it), kinds 1 and 2 also rise, and it
+   fades by 5 until it stops */
+
+typedef struct {
+    u8 pad0[6];
+    s16 f6;
+    u8 pad8[0x1C];
+    s32 f24;
+    u8 pad28[8];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    u8 pad3C[0xC];
+    f32 f48;
+    f32 f4C;
+    s16 kind;
+    u8 pad52[2];
+    s16 tick;
+    u8 pad56[2];
+    s16 mode;
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    u8 col0[4];
+    u8 col1[4];
+} Fx_b293_01E022F0;
+
+typedef struct {
+    u8 pad0[0xCBB8];
+    s16 side;
+} Game_b293_01E022F0;
+
+static s32 func_01E022F0_b293(Game_b293_01E022F0 *g, Fx_b293_01E022F0 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+
+    if (o->mode == 1) {
+        o->f48 = 140.0f;
+        o->f4C = o->f48 - 58.0f;
+        if (o->kind == 0) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x80, 0xC0, 0x80);
+                func_001076F0(o->col0, 8, 8, 8);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0xB0, 0xFF, 0xB0);
+                func_001076F0(o->col0, 0x30, 0x38, 0x38);
+            }
+            o->f6 = 8;
+        }
+        if (o->kind == 1) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0x40, 0x80, 0x40);
+                func_001076F0(o->col0, 0, 0, 0);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0x60, 0xCF, 0x60);
+                func_001076F0(o->col0, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 10.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 2) {
+            if (g->side % 2 == 0) {
+                func_001076F0(o->col1, 0xC0, 0x80, 0x80);
+                func_001076F0(o->col0, 0x10, 0x10, 0x10);
+            }
+            if (g->side % 2 == 1) {
+                func_001076F0(o->col1, 0xFF, 0xA0, 0xA0);
+                func_001076F0(o->col0, 0x30, 0x30, 0x30);
+            }
+            o->f34 = 10.0f;
+            o->f6 = 10;
+        }
+        if (o->kind == 0) {
+            o->f5A = 10;
+            o->f5C = 10;
+        }
+        if (o->kind == 1) {
+            o->f5A = 10;
+            o->f5C = 3;
+        }
+        if (o->kind == 2) {
+            o->f5A = 60;
+            o->f5C = 60;
+        }
+        o->f38 = func_0019A5C8() % 80 + 350;
+        o->f38 = o->f38 / 10.0f;
+        o->f30 = 350.0f;
+        o->f30 = o->f30 / 10.0f;
+        o->mode = 2;
+        o->col1[3] = 0;
+        o->f24 = func_0019A5C8() % 0xFFFF;
+    }
+    if (o->tick < o->f6) {
+        o->col1[3] = 0x80;
+    } else if (o->col1[3] > 6) {
+        o->col1[3] -= 5;
+    } else {
+        o->mode = 0;
+    }
+    if (o->kind == 0) {
+        o->f48 += o->f38;
+        o->f4C = 0.4f * o->f48;
+    }
+    if (o->kind == 1) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    if (o->kind == 2) {
+        o->f48 += o->f38;
+        o->f4C = 0.7f * o->f48;
+        o->f34 += o->f38;
+    }
+    o->tick++;
+    return 0;
+}
 
 /* shape b293:01E02780, 225 insns: b746:01E03990's trail light in green (0x20/0xC0/0x20) feeding four 20-point
    trails from joints 0xCB44..0xCB4A until scene frame 75; alpha up until frame 74 */

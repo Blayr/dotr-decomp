@@ -562,7 +562,108 @@ static void func_01E012B0_b065(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b065", func_01E016C0_b065);
+/* shape b065:01E016C0, 311 insns: B065_W_S, the scene script: counts the scene frame (0xB2BA) and spawns the module's
+   movers on it: joint glows on frames 36..46, four rings + the fade + the light on frame 1, the three flashing rings
+   (kinds 0, 1 on odd frames, 2 on even) at the model point on frames 57..80, the veil on 53, the swirl on 57 and 13
+   sparks at either tracked joint on frames 17/30/56 and 24/36/56 */
+
+typedef struct {
+    u8 pad0000[0x250];
+    Vec4f p;
+    u8 pad0260[0xB1D0 - 0x260];
+    Vec4f home;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 j0;
+    s16 j1;
+    u8 padB248[0xB2A2 - 0xB248];
+    s16 ang;
+    u8 padB2A4[4];
+    s16 n;
+    u8 padB2AA[8];
+    s16 kind;
+    u8 padB2B4[6];
+    s16 frame;
+} Ctx_b065_01E016C0;
+
+static void func_01E016C0_b065(Ctx_b065_01E016C0 *g) {
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, void *);
+    extern void func_001F5620(s32, s32, void *);
+    extern void b065_01E03490();
+    extern s32 b065_01E01BA0();
+    extern s32 b065_01E01DB0();
+    extern s32 b065_01E02240();
+    extern s32 b065_01E02410();
+    extern s32 b065_01E026B0();
+    extern s32 b065_01E027A0();
+    extern s32 b065_01E029C0();
+    extern s32 b065_01E02AD0();
+    s16 i;
+
+    g->frame++;
+    if (g->frame > 35 && g->frame < 47) {
+        g->kind = g->n;
+        b065_01E03490(g, b065_01E01BA0, 0);
+        g->n++;
+    }
+    if (g->frame == 1) {
+        g->ang = 0;
+        g->kind = 0;
+        b065_01E03490(g, b065_01E02410, 0);
+        g->ang = 90;
+        g->kind = 0;
+        b065_01E03490(g, b065_01E02410, 0);
+        g->ang = 45;
+        g->kind = 1;
+        b065_01E03490(g, b065_01E02410, 0);
+        g->ang = 135;
+        g->kind = 1;
+        b065_01E03490(g, b065_01E02410, 0);
+        b065_01E03490(g, b065_01E029C0, 0);
+        b065_01E03490(g, b065_01E027A0, 0);
+    }
+    if (g->frame == 57) {
+        func_001F5F90(func_001F5380(), &g->home);
+    }
+    if (g->frame >= 57 && g->frame < 81) {
+        g->p = g->home;
+        func_001F5F90(func_001F5380(), &g->p);
+        g->p.y -= 15.0f;
+        g->kind = 0;
+        if (g->frame % 2 == 1) {
+            b065_01E03490(g, b065_01E01DB0, 0);
+        }
+        g->kind = 1;
+        if (g->frame % 2 == 1) {
+            b065_01E03490(g, b065_01E01DB0, 0);
+        }
+        g->kind = 2;
+        if (g->frame % 2 == 0) {
+            b065_01E03490(g, b065_01E01DB0, 0);
+        }
+        if (g->frame == 57) {
+            b065_01E03490(g, b065_01E026B0, 0);
+        }
+    }
+    if (g->frame == 53) {
+        b065_01E03490(g, b065_01E02AD0, 0);
+    }
+    if (g->frame == 17 || g->frame == 30 || g->frame == 56) {
+        func_001F5620(func_001F53A0(), g->j0, &g->p);
+        g->p.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b065_01E03490(g, b065_01E02240, 0);
+        }
+    }
+    if (g->frame == 24 || g->frame == 36 || g->frame == 56) {
+        func_001F5620(func_001F53A0(), g->j1, &g->p);
+        g->p.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b065_01E03490(g, b065_01E02240, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b065", func_01E01BA0_b065);
 

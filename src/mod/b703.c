@@ -719,7 +719,105 @@ static void func_01E01D30_b703(s32 arg0, u8 *obj, s32 mode, f32 level) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b703", func_01E01F00_b703);
+/* shape b703:01E01F00, 283 insns: B703_W_S, the effect scene's step (b522:01E01D30 form): counts the frame (0xCBBC);
+   frame 1 spawns 0x1E03320 and four 0x1E02BD0 at angles 0/90 (side 0) and 45/135 (side 1); frame 10 spawns
+   0x1E02E70; frame 123 puts the scene point on the camera, 5 down, spawns 0x1E03200, four 0x1E02840 (same angles),
+   twenty 0x1E02370 and 0x1E026B0; frames 118..150 spawn 0x1E02520 at joint 0xCB4A; frames 91/119 and 102/119
+   spawn thirteen 0x1E02A00 1.5 below joint 0xCB4C */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCB4A - 0x260];
+    s16 jc;
+    s16 jd;
+    u8 padCB4E[0xCBA6 - 0xCB4E];
+    s16 ang;
+    u8 padCBA8[0xCBB4 - 0xCBA8];
+    s16 side;
+    u8 padCBB6[6];
+    s16 t;
+} Scene_b703_01E01F00;
+
+static void func_01E01F00_b703(Scene_b703_01E01F00 *g) {
+    extern void b703_01E02370(void);
+    extern void b703_01E02520(void);
+    extern void b703_01E026B0(void);
+    extern void b703_01E02840(void);
+    extern void b703_01E02A00(void);
+    extern void b703_01E02BD0(void);
+    extern void b703_01E02E70(void);
+    extern void b703_01E03200(void);
+    extern void b703_01E03320(void);
+    extern void b703_01E03C70(Scene_b703_01E01F00 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+
+    g->t++;
+    if (g->t == 1) {
+        b703_01E03C70(g, b703_01E03320, 0);
+    }
+    if (g->t == 10) {
+        b703_01E03C70(g, b703_01E02E70, 0);
+    }
+    if (g->t == 123) {
+        func_001F5F90(func_001F5380(), &g->pos);
+        g->pos.y -= 5.0f;
+        b703_01E03C70(g, b703_01E03200, 0);
+        g->ang = 0;
+        g->side = 0;
+        b703_01E03C70(g, b703_01E02840, 0);
+        g->ang = 90;
+        g->side = 0;
+        b703_01E03C70(g, b703_01E02840, 0);
+        g->ang = 45;
+        g->side = 1;
+        b703_01E03C70(g, b703_01E02840, 0);
+        g->ang = 135;
+        g->side = 1;
+        b703_01E03C70(g, b703_01E02840, 0);
+        for (i = 0; i < 20; i++) {
+            b703_01E03C70(g, b703_01E02370, 0);
+        }
+        g->side = 0;
+        b703_01E03C70(g, b703_01E026B0, 0);
+    }
+    if (g->t == 1) {
+        g->ang = 0;
+        g->side = 0;
+        b703_01E03C70(g, b703_01E02BD0, 0);
+        g->ang = 90;
+        g->side = 0;
+        b703_01E03C70(g, b703_01E02BD0, 0);
+        g->ang = 45;
+        g->side = 1;
+        b703_01E03C70(g, b703_01E02BD0, 0);
+        g->ang = 135;
+        g->side = 1;
+        b703_01E03C70(g, b703_01E02BD0, 0);
+    }
+    if (g->t >= 118 && g->t <= 150) {
+        func_001F5620(func_001F53A0(), g->jc, &g->pos);
+        b703_01E03C70(g, b703_01E02520, 0);
+    }
+    if (g->t == 91 || g->t == 119) {
+        func_001F5620(func_001F53A0(), g->jd, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b703_01E03C70(g, b703_01E02A00, 0);
+        }
+    }
+    if (g->t == 102 || g->t == 119) {
+        func_001F5620(func_001F53A0(), g->jd, &g->pos);
+        g->pos.y -= 1.5f;
+        for (i = 0; i < 13; i++) {
+            b703_01E03C70(g, b703_01E02A00, 0);
+        }
+    }
+}
 
 /* shape b703:01E02370, 105 insns: a grey spark: size 4..6, random sub-frame 0..2, height 10..49, angle, rise 16..35, width 0..34,
    hold 8..14, rising once started; alpha up by 0x40 to 0xC0 until the hold, then down by 14 until it ends */

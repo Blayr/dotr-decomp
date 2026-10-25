@@ -785,7 +785,198 @@ static s32 func_01E01B80_b206(Scene_b206_01E01B80 *g, Fx_b206_01E01B80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b206", func_01E01DB0_b206);
+/* shape b206:01E01DB0, 346 insns: the b206 module's main step (b708:01E01DC0 twin): keeps two order tables; with a
+   code it clears the scene, sets up its two coordinates, keeps the code and a 330-tick timer, the model's joints
+   0x22/0x3A/0x46 and the camera's joint 1, textures (4,10..15), (4,0), (5,0..1), the camera's turned-back side, scale
+   0.1 and three noise tables; otherwise it runs the scene script (b206:01E012D0), every live slot's handler (150 of
+   0x70 bytes, counting the idle ones), then draws the swirls (b206:01E01550) and sparks (b206:01E01770) as rings and
+   the glows (b206:01E019D0) as gas, and the idle pass (b206:01E02460) if any slot idled; counts the timer down and
+   returns 1 / 4 / 2 at steps 140 / 320 / 310, 6 between 151 and 299, 8 when the timer ends */
+
+typedef struct {
+    u8 pad0[0xA];
+    s16 hA;
+    u8 padC[4];
+    Vec4f pos;
+    u8 pad20[0x10];
+    f32 f30;
+    u8 pad34[0x10];
+    s32 (*fn)(void *, void *);
+    u8 pad48[0xE];
+    s16 frame;
+    s16 used;
+    u8 pad5A[2];
+    s16 h5C;
+    u8 pad5E[0x12];
+} Slot_b206_01E01DB0;
+
+typedef struct {
+    u8 pad0[0x10];
+    f32 sx, sy, sz;
+    u8 pad1C[4];
+    f32 px, py, pz;
+    u8 pad2C[0x54];
+    s32 ot;
+    u8 pad84[4];
+    s32 tex88;
+    u8 pad8C[8];
+    Vec4f rect;
+    u8 padA4[0x14];
+    s16 hB8;
+    u8 padBA[6];
+    s16 hC0;
+    u8 padC2[0x16];
+    u8 crdD8[0x260 - 0xD8];
+    s32 texA[16];
+    Slot_b206_01E01DB0 slot[150];
+    u8 pad4440[0x7B0];
+    s32 tex[2];
+    u8 pad4BF8[0x18];
+    s32 timer;
+    u8 pad4C14[8];
+    s32 ot2;
+    u8 pad4C20[0x28];
+    s16 joint[3];
+    u8 pad4C4E[8];
+    s16 cam;
+    u8 pad4C58[0x18];
+    s16 ang;
+    u8 pad4C72[8];
+    s16 turn;
+    s16 code;
+    s16 step;
+    s8 noise[0x100];
+    s8 noise2[0x100];
+    u8 crd4E80[1];
+} Scene_b206_01E01DB0;
+
+static s32 func_01E01DB0_b206(s32 arg0, s32 code) {
+    extern void b206_01E012D0();
+    extern s32 b206_01E01B80();
+    extern s32 b206_01E01550();
+    extern s32 b206_01E01770();
+    extern s32 b206_01E019D0();
+    extern void b206_01E00920(void *, void *, s32, Vec4f);
+    extern void b206_01E00D80();
+    extern void b206_01E02460();
+    Scene_b206_01E01DB0 *g = (Scene_b206_01E01DB0 *)arg0;
+    extern s32 func_00207500(void);
+    extern void func_00195108(void *, s32);
+    extern void func_00107C10(void *);
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern s16 func_001F5560(s32, s32, s32);
+    extern void func_001F6160(s32, void *);
+    extern s32 func_00202BF0(s32, s32);
+    extern void func_00106080(void *, s32, s32, void *);
+    extern f32 func_00108030(void *, s16, s32);
+    Vec4f p;
+    f32 rm[4];
+    s32 ang[4];
+    s32 k;
+    s16 c;
+    s16 n;
+    s16 i;
+
+    c = 0;
+    n = 0;
+    g->ot2 = func_00207500();
+    g->ot = func_00207500();
+    if (code >= 0) {
+        func_00195108(g, 0x4FF0);
+        func_00107C10(g->crd4E80);
+        func_00107C10(g->crdD8);
+        g->code = code;
+        g->timer = 330;
+        g->joint[0] = func_001F5560(func_001F53A0(), 0x22, 1);
+        g->joint[1] = func_001F5560(func_001F53A0(), 0x3A, 0);
+        g->joint[2] = func_001F5560(func_001F53A0(), 0x46, 0);
+        g->cam = func_001F5560(func_001F5380(), 1, 1);
+        for (k = 10; k < 16; k++) {
+            g->texA[k] = func_00202BF0(4, k);
+        }
+        g->texA[0] = func_00202BF0(4, 0);
+        for (k = 0; k < 2; k++) {
+            g->tex[k] = func_00202BF0(5, k);
+        }
+        func_001F6160(func_001F53A0(), ang);
+        g->turn = (s16)(ang[1] / 180.0f);
+        g->sx = 0.1f;
+        g->sy = 0.1f;
+        g->sz = 0.1f;
+        for (i = 0; i < 0x100; i++) {
+            g->noise[i] = func_0019A5C8() % 24 - 12;
+        }
+        for (i = 100; i < 180; i++) {
+            g->noise[i] = func_0019A5C8() % 4;
+        }
+        for (i = 0; i < 0x100; i++) {
+            g->noise2[i] = func_0019A5C8() % 40 - 20;
+        }
+        return 0;
+    }
+    b206_01E012D0(g, 0);
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            if (g->slot[i].fn != NULL) {
+                if (g->slot[i].fn != b206_01E01B80) {
+                    g->slot[i].fn(g, &g->slot[i]);
+                } else {
+                    c++;
+                }
+            }
+        }
+    }
+    for (i = 0; i < 150; i++) {
+        if (g->slot[i].used != 0) {
+            n++;
+            if (g->slot[i].fn == b206_01E01550) {
+                p = g->slot[i].pos;
+                p.z += g->slot[i].f30 * func_00108030(g->crdD8, g->slot[i].h5C, 1);
+                p.x += g->slot[i].f30 * func_00108030(g->crdD8, g->slot[i].h5C, 0);
+                b206_01E00920(g, &g->slot[i], 0x20, p);
+            }
+            if (g->slot[i].fn == b206_01E01770) {
+                p = g->slot[i].pos;
+                b206_01E00920(g, &g->slot[i], 0x20, p);
+            }
+            if (g->slot[i].fn == b206_01E019D0) {
+                func_00106080(rm, 0x14, g->slot[i].frame, 0);
+                g->rect = *(Vec4f *)rm;
+                g->tex88 = g->tex[1];
+                g->hB8 = 10;
+                g->hC0 = g->slot[i].hA;
+                g->px = g->slot[i].pos.x;
+                g->py = g->slot[i].pos.y;
+                g->pz = g->slot[i].pos.z;
+                b206_01E00D80(g, &g->slot[i], 0x20, g->noise);
+                g->hB8 = 0;
+            }
+        }
+    }
+    if (c) {
+        b206_01E02460(g);
+    }
+    if (g->timer != 0) {
+        g->timer--;
+    }
+    if (g->step == 140) {
+        return 1;
+    }
+    if (g->step == 320) {
+        return 4;
+    }
+    if (g->step == 310) {
+        return 2;
+    }
+    if (g->step > 150 && g->step < 300) {
+        return 6;
+    }
+    if (g->timer <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape b206:01E02320, 80 insns: twin of b034:01E05330: take a free effect slot (0x96 of 0x70 bytes), clear
    it, colour it from the scene colour, copy the scene position and value, store the two arguments; returns 1 if a

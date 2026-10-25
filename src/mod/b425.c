@@ -385,9 +385,240 @@ static void func_01E00BE0_b425(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01150_b425);
+/* shape b425:01E01150, 322 insns: the module's spawn step: follows joint 0xDFA4; ticks 68..250 spawn one (odd tick)
+   or two b425:01E01660 puffs and one b425:01E01C80 puff 3.5 lower and 4 to one side; ticks 130..295 every 15th start
+   one of 20 rising rings (size 10..17, height -15, random angle); every live ring spawns a b425:01E01B10 with its
+   size/angle/height, rises 1.5 until past 18 and turns 10 one way (even) or the other */
 
-INCLUDE_ASM("asm/nonmatchings/mod/b425", func_01E01660_b425);
+typedef struct {
+    f32 x, y, z, w;
+} V4_b425_01E01150;
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0xDD90 - 0x25C];
+    V4_b425_01E01150 h[20];
+    u8 padDED0[0xDEF4 - 0xDED0];
+    f32 fh;
+    u8 padDEF8[0xDF3C - 0xDEF8];
+    f32 fsz;
+    u8 padDF40[4];
+    f32 size[20];
+    u8 padDF94[0xDFA4 - 0xDF94];
+    s16 joint;
+    u8 padDFA6[0xE002 - 0xDFA6];
+    s16 fang;
+    u8 padE004[4];
+    s16 ang[20];
+    s16 live[20];
+    s16 k;
+    u8 padE05A[6];
+    s16 cur;
+    u8 padE062[2];
+    s16 side;
+    u8 padE066[2];
+    s16 t;
+} Scene_b425_01E01150;
+
+static s32 func_01E01660_b425();
+static s32 func_01E01B10_b425();
+static s32 func_01E01C80_b425();
+static s32 func_01E02B60_b425();
+
+static void func_01E01150_b425(Scene_b425_01E01150 *s) {
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    s16 i;
+    s16 n;
+
+    s->t++;
+    func_001F5620(func_001F53A0(), s->joint, &s->px);
+    if (s->t >= 0x44 && s->t < 0xFB) {
+        if (s->t % 2 == 1) {
+            n = 1;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint, &s->px);
+            s->py -= 3.5f;
+            if (s->side != 0) {
+                s->pz -= 4.0f;
+            } else {
+                s->pz += 4.0f;
+            }
+            func_01E02B60_b425(s, func_01E01660_b425, 0);
+        }
+        for (i = 0; i < 1; i++) {
+            func_001F5620(func_001F53A0(), s->joint, &s->px);
+            s->py -= 3.5f;
+            if (s->side != 0) {
+                s->pz -= 4.0f;
+            } else {
+                s->pz += 4.0f;
+            }
+            func_01E02B60_b425(s, func_01E01C80_b425, 0);
+        }
+    }
+    if (s->t >= 0x82 && s->t < 0x128) {
+        if (s->t % 15 == 1 && s->k < 20) {
+            s->live[s->k]++;
+            s->size[s->k] = 10.0f + (func_0019A5C8() >> 4) % 8;
+            s->h[s->k].y = -15.0f;
+            s->ang[s->k] = (func_0019A5C8() >> 4) % 360;
+            s->k++;
+            if (s->k >= 20) {
+                s->k = 0;
+            }
+        }
+    }
+    for (i = 0; i < 20; i++) {
+        if (s->live[i] != 0) {
+            s->cur = i;
+            s->fsz = s->size[i];
+            s->fang = s->ang[i];
+            s->fh = s->h[i].y;
+            func_01E02B60_b425(s, func_01E01B10_b425, 0);
+            s->h[i].y += 1.5f;
+            if (s->h[i].y > 18.0f) {
+                s->live[i] = 0;
+            }
+            if (i % 2 == 0) {
+                s->ang[i] += 10;
+            } else {
+                s->ang[i] -= 10;
+            }
+        }
+    }
+}
+
+/* shape b425:01E01660, 297 insns: b425:01E01C80's puff in white (0xFF, 0xFF, 0x80, alpha in by 0xC0 for 75 ticks,
+   out by 11): sheet 1 picks a random frame 0..3 each tick, sheet 0 steps the frame every fourth tick up to 8 and back
+   down to 0; frame step 100..449; asks the camera position once more each tick (unused) */
+
+typedef struct {
+    u8 pad0[0xDFA4];
+    s16 v;
+    u8 padDFA6[0xE068 - 0xDFA6];
+    s16 count;
+} Ctx_b425_01E01660;
+
+typedef struct {
+    u8 pad00[6];
+    s16 h6;
+    s16 h8;
+    s16 hA;
+    s16 hC;
+    s16 hE;
+    f32 x, y, z;
+    u8 pad1C[0x14];
+    f32 f30;
+    f32 f34;
+    f32 f38;
+    f32 f3C;
+    u8 pad40[8];
+    f32 f48;
+    u8 pad4C[4];
+    s16 h50;
+    s16 h52;
+    s16 t;
+    s16 h56;
+    s16 state;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b425_01E01660;
+
+static s32 func_01E01660_b425(Ctx_b425_01E01660 *ctx, Obj_b425_01E01660 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5F90(s32, f32 *);
+    extern void func_001F5620(s32, s32, f32 *);
+    f32 a[4];
+    f32 b[4];
+    f32 c[4];
+
+    if (o->state == 1) {
+        o->f48 = 25.0f;
+        o->h56 = (func_0019A5C8() >> 4) % 8;
+        o->h6 = 1;
+        func_001076F0(o->col, 0xFF, 0xFF, 0x80);
+        o->h5A = func_0019A5C8() % 360;
+        o->h5C = func_0019A5C8() % 360;
+        if (func_0019A5C8() % 2 != 0) {
+            o->hA = 2;
+        } else {
+            o->hA = 0;
+        }
+        o->hC = o->h50;
+        o->h50 = 0;
+        o->h52 = func_0019A5C8() % 350 + 100;
+        o->hE = func_0019A5C8() % 20 + 10;
+        o->h8 = func_0019A5C8() % 35;
+        o->f30 = func_0019A5C8() % 40 - 20;
+        o->f34 = func_0019A5C8() % 40 - 20;
+        o->f38 = func_0019A5C8() % 40 - 20;
+        o->f30 /= 50.0f;
+        o->f34 /= 60.0f;
+        o->f38 /= 60.0f;
+        func_001F5F90(func_001F5380(), a);
+        func_001F5620(func_001F53A0(), ctx->v, b);
+        o->f3C = (a[2] - b[2]) / 60.0f;
+        o->state = 2;
+    }
+    if (o->f48 < 45.0f) {
+        o->f48 += 1.5f;
+    }
+    if (o->t < 75) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0xC0;
+        }
+    } else if (o->col[3] > 0xC) {
+        o->col[3] -= 0xB;
+    } else {
+        o->state = 0;
+    }
+    if (o->t > 10 && o->t < 70) {
+        o->x += 1.4f * o->f30;
+        o->z += o->f38;
+    }
+    if (o->h6 == 1) {
+        o->h56 = (func_0019A5C8() >> 4) % 4;
+    }
+    if (o->h6 == 0) {
+        if (o->h5A == 0) {
+            if (o->t % 4 == 1) {
+                o->h56++;
+            }
+            if (o->h56 > 7) {
+                o->h5A = 1;
+            }
+        } else {
+            if (o->t % 4 == 1) {
+                o->h56--;
+            }
+            if (o->h56 <= 0) {
+                o->h5A = 0;
+            }
+        }
+    }
+    func_001F5F90(func_001F5380(), c);
+    if (o->t != 0) {
+        o->z += o->f3C;
+        o->f48 += 1.5f;
+        if (o->y > 35.0f) {
+            o->y -= 2.0f;
+        }
+    }
+    if (ctx->count > 290) {
+        o->t = 100;
+    }
+    o->t++;
+    return 0;
+}
 
 /* shape b425:01E01B10, 89 insns: a yellow flicker (130 x 130 growing 3 a tick up to 160, frame re-rolled 0..3 each tick): in by 96 up to 0xC0 for 5 ticks, then out by 9 and ends; its clock jumps to 20 once the scene value reaches 296 */
 

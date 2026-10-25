@@ -388,7 +388,130 @@ static void func_01E00ED0_b520(Obj_b016_01E01190 *obj, Data_b016_01E01190 *data,
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b520", func_01E01230_b520);
+/* shape b520:01E01230, 308 insns, 1 copy: B520_OBJ_MOVE_2_: a purple (0x80/0x10/0xFF) spark: on start random size
+   (3..5, +4), frames, scale 13..25, drift (+-0.125), spin speeds and angles, and an x speed of a seventh of the gap
+   between the scene's two joint points; fades in by 0x60 for 64 ticks, then out by 15; grows to 11 every third
+   tick; slides 3 in z (by the scene flag) and rises; jumps to tick 90 once the scene clock passes 350 */
+
+typedef struct Game_b520_01E01230 {
+    u8 pad0[0xB244];
+    s16 j0;
+    s16 j1;
+    u8 padB248[0xB2B4 - 0xB248];
+    s16 flag;
+    u8 padB2B6[2];
+    s16 clock;
+} Game_b520_01E01230;
+
+typedef struct Obj_b520_01E01230 {
+    s16 spin[3];
+    u8 pad6[2];
+    s16 h8;
+    s16 hA;
+    u8 padC[2];
+    s16 hE;
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 pad1C[4];
+    s32 rot[4];
+    f32 f30;
+    f32 f34;
+    u8 pad38[4];
+    f32 f3C;
+    u8 pad40[8];
+    f32 size;
+    u8 pad4C[4];
+    s16 h50;
+    u8 pad52[2];
+    s16 t;
+    s16 h56;
+    s16 mode;
+    s16 h5A;
+    s16 h5C;
+    u8 pad5E[2];
+    u8 col[4];
+} Obj_b520_01E01230;
+
+static s32 func_01E01230_b520(Game_b520_01E01230 *g, Obj_b520_01E01230 *o) {
+    extern void func_001076F0();
+    extern s32 func_0019A5C8();
+    extern void func_00205C40();
+    extern s32 func_001F53A0();
+    extern void func_001F5620();
+    f32 a[4];
+    f32 b[4];
+    f32 *pb;
+
+    if (o->mode == 1) {
+        o->h8 = func_0019A5C8() % 3 + 3;
+        o->hA = o->h8 + 4;
+        o->hE = (func_0019A5C8() >> 4) % 2 + 1;
+        o->size = func_0019A5C8() % 13 + 13;
+        o->h56 = (func_0019A5C8() >> 4) % 4 + 2;
+        func_001076F0(o->col, 0x80, 0x10, 0xFF);
+        o->mode = 2;
+        o->f34 = func_0019A5C8() % 100 - 50;
+        o->f30 = func_0019A5C8() % 100 - 50;
+        o->f34 /= 400.0f;
+        o->f30 /= 400.0f;
+        o->h50 = 0;
+        o->h5C = func_0019A5C8() % 2;
+        o->h5A = func_0019A5C8() % 360;
+        func_00205C40(o->rot);
+        o->spin[2] = func_0019A5C8() % 2048 - 1024;
+        o->spin[1] = func_0019A5C8() % 2048 - 1024;
+        o->spin[0] = func_0019A5C8() % 2048 - 1024;
+        o->rot[0] = func_0019A5C8() % 0xFFFF;
+        o->rot[1] = func_0019A5C8() % 0xFFFF;
+        o->rot[2] = func_0019A5C8() % 0xFFFF;
+        func_001F5620(func_001F53A0(), g->j0, a);
+        func_001F5620(func_001F53A0(), g->j1, pb = (f32 *)(u32)b);
+        o->f3C += (pb[0] - a[0]) / 7.0f;
+    }
+    if (o->t < 64) {
+        if (o->col[3] < 0xC0) {
+            o->col[3] += 0x60;
+        }
+    } else if (o->col[3] > 16) {
+        o->col[3] -= 15;
+    } else {
+        o->mode = 0;
+    }
+    if (o->t % 3 == 1) {
+        if (o->size < 11.0f) {
+            o->size += 1.0f;
+        }
+    }
+    if (o->t != 0) {
+        if (g->flag) {
+            o->z -= 3.0f;
+        } else {
+            o->z += 3.0f;
+        }
+        o->y += o->f34 - 0.09f;
+    }
+    if (o->t != 0 && (s16)o->t < 20) {
+        o->x += o->f3C;
+    }
+    o->rot[2] += o->spin[2];
+    o->rot[1] += o->spin[1];
+    o->rot[0] += o->spin[0];
+    if (g->clock > 350) {
+        o->t = 90;
+    }
+    if (o->h5C) {
+        o->h5A += 2;
+    } else {
+        o->h5A -= 2;
+    }
+    if (o->t != 0) {
+        o->h50 += 4;
+    }
+    o->size += 1.6f;
+    o->t++;
+    return 0;
+}
 
 /* shape b027:01E00DA0, 2 insns, 89 copies: an empty handler that returns 0 */
 
