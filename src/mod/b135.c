@@ -42,7 +42,103 @@ static void func_01E00080_b135(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b135", func_01E00120_b135);
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b000_01E001A0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b000_01E001A0 v[2];
+    u64 tail;
+} Flat_b000_01E001A0;
+
+typedef struct {
+    f32 s, t;
+    Xyz_b000_01E001A0 p;
+} Tv_b000_01E001A0;
+
+typedef struct {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    u8 r, g, b, a;
+    f32 q;
+    Tv_b000_01E001A0 v[2];
+    u64 tail;
+} Tex_b000_01E001A0;
+
+static s32 func_01E00120_b135(u8 *c) {
+    extern s32 func_00207F60(void);
+    extern void func_00208460(void);
+    extern s32 func_00209E50(void);
+    extern void func_00208800(s32, s32, void *, void *);
+    extern u64 func_00208D00(s32);
+    extern s32 func_00207500(void);
+    extern void func_00207FD0(s32, s32, s32);
+    Flat_b000_01E001A0 flat __attribute__((aligned(8)));
+    Tex_b000_01E001A0 pk __attribute__((aligned(8)));
+    u64 a;
+    s32 b[3];
+    s32 buf;
+
+    buf = func_00207F60();
+    ((Tex_b000_01E001A0 *)(s32)&pk)->flags = 0x26;
+    ((Tex_b000_01E001A0 *)(s32)&pk)->size = 5;
+    ((Tex_b000_01E001A0 *)(s32)&pk)->regs = 0x42421;
+    ((Tex_b000_01E001A0 *)(s32)&pk)->pad4 = 0;
+    func_00208460();
+    func_00208800(func_00209E50(), 0, &a, b);
+    func_00208460();
+    ((Flat_b000_01E001A0 *)(s32)&flat)->flags = 6;
+    ((Flat_b000_01E001A0 *)(s32)&flat)->size = 3;
+    ((Flat_b000_01E001A0 *)(s32)&flat)->regs = 0x441;
+    ((Flat_b000_01E001A0 *)(s32)&flat)->pad4 = 0;
+    flat.r = c[2];
+    flat.g = c[1];
+    flat.b = c[0];
+    flat.a = c[3];
+    flat.q = 1.0f;
+    flat.v[0].x = 0x6BF8;
+    flat.v[0].y = 0x71F8;
+    flat.v[0].z = 0xFFFFFF;
+    flat.v[0].f = 0;
+    flat.v[1].x = 0x93F8;
+    flat.v[1].y = 0x8DF8;
+    flat.v[1].z = 0xFFFFFF;
+    flat.v[1].f = 0;
+    func_002086D0(&flat, func_00208D00(3));
+    func_002075F0((s32)&flat, 0, 0);
+    pk.r = 0x80;
+    pk.g = 0x80;
+    pk.b = 0x80;
+    pk.a = 0x80 - c[3];
+    pk.q = 1.0f;
+    pk.v[0].p.x = 0x6BF8;
+    pk.v[0].p.y = 0x71F8;
+    pk.v[0].p.z = 0xFFFFFF;
+    pk.v[0].p.f = 0;
+    pk.v[1].p.x = 0x93F8;
+    pk.v[1].p.y = 0x8DF8;
+    pk.v[1].p.z = 0xFFFFFF;
+    pk.v[1].p.f = 0;
+    pk.v[0].s = 0.0f;
+    pk.v[0].t = 0.0f;
+    pk.v[1].s = 0.625f;
+    pk.v[1].t = 0.875f;
+    func_002086D0(&pk, func_00208D00(0));
+    func_002075F0((s32)&pk, 0, 0);
+    func_00207FD0(buf, func_00207500(), 0xFFFFFF);
+    return 0;
+}
 
 /* shape b000:01E01140, 1595 insns, 70 copies: draws an emitter's particles. Each particle is either a camera-facing
    sprite (strip packet, 9 regs) sized by distance, or with flag 0x1F a quad (12 regs) turned by its own rotation;
