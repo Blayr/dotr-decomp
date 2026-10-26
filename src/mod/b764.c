@@ -1056,7 +1056,123 @@ static s32 func_01E02E80_b764(s32 arg0, Fx_b764_01E02E80 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b764", func_01E02FC0_b764);
+/* shape b764:01E02FC0 (B764_OBJ_MOVE_9_), 381 insns, 1 copy (-O3,p): a jittery white spark trail on a world track
+   (b149:01E01ED0 family): set up once (point reset and nudged by a random kick, the track's 20 points filled with it,
+   random size, speed, heading, life); its frame grows for 7 frames then shrinks, full for its life then fades out,
+   blinks; each frame the point drifts along its heading and jitters, while the module's shape b445:01E00080 shifts
+   the track; the source of shape b445:01E03080, built here at -O3 */
+
+typedef struct {
+    Vec4f p[0x14];
+} Track_b764_01E02FC0;
+
+/* the world as this module lays it out: its sine table at 0XDEE0 */
+
+typedef struct {
+    u8 pad0[0x7030];
+    Track_b764_01E02FC0 track[0x40];
+    u8 pad[0xD430 - 0x7030 - 0x40 * 0x140];
+    Vec4f pt[0xab];
+    u8 trig[1];
+} World_b764_01E02FC0;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f v;
+    u8 pad40[8];
+    f32 size;
+    f32 speed;
+    s16 idx;
+    u8 pad52[2];
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 head;
+    s16 pitch;
+    u8 pad5E[2];
+    u8 c0[4];
+} Spark_b764_01E02FC0;
+
+#pragma optimization_level 3
+
+static s32 func_01E02FC0_b764(World_b764_01E02FC0 *w, Spark_b764_01E02FC0 *o) {
+    extern void b764_01E00080(void *, s32, s32, void *);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        o->frame = 1;
+        o->c0[3] = 0;
+        w->pt[o->idx].x = 0.0f;
+        w->pt[o->idx].y = 0.0f;
+        w->pt[o->idx].z = 0.0f;
+        o->v.x = func_0019A5C8() % 60 - 30;
+        o->v.y = func_0019A5C8() % 60 - 30;
+        o->v.z = func_0019A5C8() % 60 - 30;
+        w->pt[o->idx].x += o->v.x / 2.0f;
+        w->pt[o->idx].y += o->v.y / 2.0f;
+        w->pt[o->idx].z += o->v.z / 2.0f;
+        src = &w->pt[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 0x14; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->size = func_0019A5C8() % 150 + 30;
+        o->size /= 10.0f;
+        o->speed = func_0019A5C8() % 85 + 3;
+        o->speed /= 10.0f;
+        o->head = func_0019A5C8() % 360;
+        o->pitch = 0x5A;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->t < 7) {
+        if (o->frame < 0xF) {
+            o->frame++;
+        }
+    } else if (o->frame > 0) {
+        o->frame--;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0x1E) {
+        o->c0[3] -= 0x1D;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    }
+    o->v.x = func_0019A5C8() % 80 - 40;
+    o->v.y = func_0019A5C8() % 80 - 40;
+    o->v.z = func_0019A5C8() % 80 - 40;
+    if (o->t != 0) {
+        w->pt[o->idx].z += o->speed * func_00108030(w->trig, o->head, 0);
+        w->pt[o->idx].x += o->speed * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += o->speed * func_00108030(w->trig, o->pitch, 0);
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+        w->pt[o->idx].z += o->v.z / 10.0f;
+    }
+    if (o->t < 7) {
+        b764_01E00080(&w->track[o->idx].p[0x13], 0x14, 0, &w->pt[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
+
+#pragma optimization_level reset
 
 /* shape b764:01E035C0 (B764_OBJ_MOVE_10_), 387 insns, 1 copy (-O3,p): a jittery spark trail (b445:01E03080 twin:
    smaller, random pitch, grey blink) on a world track (b149:01E01ED0 family): set up once (point reset and nudged by
