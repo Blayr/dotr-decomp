@@ -131,3 +131,26 @@ there is a source form that gives the original.
 - **`*_W_S` scene scripts:** a timer `g->t++` and a list of `if (g->t == N) spawn(g, fn, 0);` blocks: write them
   straight from the asm, top to bottom. (b703, b747, b286)
 - **`*_OBJ_MOVE_*` steps:** the same-named function in another module is usually 99% the same C with other offsets.
+
+## Twins built with other flags (26 October 2026)
+
+- **Find them by their calls.** A still-asm shape whose calls into the main program, in order, are exactly those
+  of a finished function is very often the same C at another level (`-O1`/`-O2`/`-O3`/`-O4`), even when the two
+  differ by 100+ instructions. Copy the finished C, rename the module labels, try each level. Closed ShFx_Flear01
+  (b051:01E003A0 at -O3 = b035:01E00410 at -O2), ShFx_Ndl (b532:01E00080 = b011:01E04380's source at -O2),
+  ShFx_Smk01 (b010:01E00410, b029:01E003A0), ShFx_RingTX (b561:01E02A90, b715:01E003A0).
+- **What still differs is usually small and mechanical:**
+  - spilled parameters 4 bytes off at the new level: `aligned(8)` on the parameter (above, "Stack and frames");
+  - tuned constants (`% 50 + 20` there, `% 150 + 30` here; `15.0f` / `10.0f`). A constant written several times
+    in the C is loaded once, so change every occurrence together. (b765:01E037A0, B270_OBJ_MOVE_10_)
+  - one address computed before another (`addiu a1, sp, &td.w` first): an expression through a local,
+    `s32 h = (td.w - td.u) >> 1; td.u += h;`. (b561:01E02A90)
+- **`B*_OBJ_MOVE_*` spark trails (b445 family):** `addiu $a0, $sN, 0x5CA0` where yours has `0x5F58` and nothing
+  else differs: the world's sine table (`w->trig`, `func_00108030`'s first argument) sits at another offset in each
+  module. Give the copy its own world type with the table moved by the difference. (b764:01E035C0, b764:01E02FC0)
+- **Float temporaries one register off after the port, every declaration order tried by hand:** `dk perm
+  <func> --minutes 15` found the order in one run; copy back only its declaration order, not its reformatted
+  body. (b070:01E003A0)
+- **Spreading a `-O1`/`-O2`/`-O3` shape:** `tools/mod_spread.py` copies the typedefs and the definition but not the
+  `#pragma optimization_level` lines around it, so its copies of such a shape do not match; carry the pragmas over
+  to each copy.
