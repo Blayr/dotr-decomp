@@ -259,7 +259,69 @@ static s32 func_01E01290_b117(Game_b117_01E01290 *g, Obj_b117_01E01290 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b117", func_01E01490_b117);
+/* shape b117:01E01490, 105 insns, 1 copy: a red mote that leads the scene's trail: on start it resets its counters;
+   each tick it pushes its position into the 10-point trail (func_01E00C30_b117), drifts by the scene's velocity in
+   y and z and a tenth of the way to the target point in x, and writes itself back as the trail's head; it ends when
+   the scene timer reaches 50 */
+
+typedef struct {
+    u8 pad0[0xD4];
+    f32 vy;
+    f32 vz;
+    u8 padDC[0x3B00 - 0xDC];
+    Vec4f trail[7];
+    u8 pad3B70[0xA];
+    s16 target;
+    u8 pad3B7C[0x10];
+    s16 timer;
+} Game_b117_01E01490;
+
+typedef struct {
+    s16 x, y, z;
+    u8 pad6[0x22];
+    u8 c0[4];
+    u8 c1[4];
+    u8 pad30[4];
+    s16 sub;
+    s16 state;
+    s16 h38;
+} Obj_b117_01E01490;
+
+static s32 func_01E01490_b117(Game_b117_01E01490 *g, Obj_b117_01E01490 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern s16 func_001A22C0(f32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f p;
+    Vec4f t;
+
+    func_001076F0(o->c0, 0xFF, 0x80, 0x80);
+    func_001076F0(o->c1, 0, 0, 0);
+    if (o->state == 1) {
+        o->h38 = 2;
+        o->sub = 0;
+        o->state = 2;
+    }
+    p.x = o->x;
+    p.y = o->y;
+    p.z = o->z;
+    func_01E00C30_b117(g->trail, 10, 0, &p);
+    o->z = func_001A22C0(o->z + g->vz);
+    o->y = func_001A22C0(o->y + g->vy);
+    func_001F5620(func_001F5380(), g->target, &t);
+    {
+        f32 d = (t.x - p.x) / 10.0f;
+        o->x = func_001A22C0(o->x + d);
+    }
+    o->c0[3] = 0xFF;
+    g->trail[1].x = o->x;
+    g->trail[1].y = o->y;
+    g->trail[1].z = o->z;
+    if (g->timer == 50) {
+        o->state = 0;
+    }
+    return 0;
+}
 
 /* shape b117:01E01640, 77 insns: a yellow spark: random frame 5..42 and sub-frame 0..3, random turn on all three axes; alpha
    up by 0x40 for 2 frames, then down by 14 until it ends */
