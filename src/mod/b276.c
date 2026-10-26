@@ -284,7 +284,58 @@ static void func_01E00920_b276(Obj_b038_01E00920 *o, Anim_b038_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b276", func_01E00E90_b276);
+/* shape b276:01E00E90 (B276_W_S), 114 insns, 1 copy: the scene script: counts the scene frame (0xB25E); from frame
+   158 to 250 it spawns two b276:01E01060 objects a frame at the target joint, each 0.5 lower, and from frame 200 to
+   350 two b276:01E013C0 objects at the point func_001F5F90 gives, each 60
+   higher */
+
+typedef struct {
+    u8 pad0[0x250];
+    f32 px, py, pz;
+    u8 pad25C[0xB228 - 0x25C];
+    s16 joint;
+    u8 padB22A[0xB25E - 0xB22A];
+    s16 t;
+} Scene_b276_01E00E90;
+
+static s32 func_01E01060_b276();
+static s32 func_01E013C0_b276();
+
+static void func_01E00E90_b276(Scene_b276_01E00E90 *s) {
+    extern s32 func_001F53A0(void);
+    extern s32 func_001F5380(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    extern s32 b276_01E01CF0();
+    s16 n;
+    s16 i;
+
+    s->t++;
+    if (s->t >= 158 && s->t < 251) {
+        if (s->t < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5620(func_001F53A0(), s->joint, &s->px);
+            s->py -= 0.5f;
+            b276_01E01CF0(s, func_01E01060_b276, 0);
+        }
+    }
+    if (s->t >= 200 && s->t < 351) {
+        if (s->t < 100) {
+            n = 2;
+        } else {
+            n = 2;
+        }
+        for (i = 0; i < n; i++) {
+            func_001F5F90(func_001F5380(), &s->px);
+            s->py += 60.0f;
+            b276_01E01CF0(s, func_01E013C0_b276, 0);
+        }
+    }
+}
 
 /* shape b276:01E01060, 216 insns: b038:01E01090's smoke puff in white (0xFF, 0xFF, 0x80): random turn and spin, drift
    (-20..19)/50 on x and /60 on z between ticks 11 and 69, a fall toward point ctx->v spread over 70 ticks, size 35
