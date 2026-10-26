@@ -151,6 +151,14 @@ there is a source form that gives the original.
 - **Float temporaries one register off after the port, every declaration order tried by hand:** `dk perm
   <func> --minutes 15` found the order in one run; copy back only its declaration order, not its reformatted
   body. (b070:01E003A0)
+- **Two parameter copies (`paddub sN, aN`) in the other order, nothing else different, before a float-to-int
+  conversion:** the original called `func_001A22C0(...)` by name there (`extern s32 func_001A22C0(f32);`); the
+  `(s32)` cast gives the same call through the runtime name and the scheduler places the copies the other way.
+  (b007:01E00120)
+- **Ported twins of trails and particles (b108:01E02010 family, `*PAINT_RAIN*`):** the source is the same, but the
+  object and scene layouts move: row length (20/50/70 points), where the points sit, which joint comes first,
+  colours (often passed halved, `(u8)(c >> 1)`), fade steps. Read the differing offsets off `dk try`'s diff and give
+  the copy its own struct. (b116:01E03190, b121:01E021E0, c017:01E02790, b415:01E02A90, c022:01E00F10)
 - **Spreading a `-O1`/`-O2`/`-O3` shape:** `tools/mod_spread.py` copies the typedefs and the definition but not the
   `#pragma optimization_level` lines around it, so its copies of such a shape do not match; carry the pragmas over
   to each copy.
