@@ -217,7 +217,154 @@ static s32 func_01E004F0_c024(s32 arg0, Spr_c024_01E004F0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E005E0_c024);
+/* shape c024:01E005E0 (c024), 243 insns, 1 copy: c024's scene manager: with a scene id (>= 0) it clears the scene, sets
+   the scene colour and the module step, builds the sine table for 0..90 degrees, keeps the id, sets the 71-frame
+   countdown and loads texture 15; otherwise it runs the step, every live node's update (c024:01E00400 or
+   c024:01E004F0 by its handler), and draws every live node twice with the camera point (func_001F5BD0) by its handler
+   and flag; it grows the shared scale to 1, draws the scene layer while the countdown is above 3, and returns 2 once
+   the scene state reaches 38, 8 once the countdown runs out */
+
+typedef struct {
+    u8 pad0[0x10];
+    void *fn;
+    u8 pad14[0x10];
+    s8 flag;
+    s8 used;
+    u8 pad26[0xE];
+} Node_c024_01E005E0;
+
+typedef struct {
+    u8 m0[0x80];
+    u8 m[0x50];
+    s32 tex[16];
+    s32 rot[4];
+    u8 pad120[0x20];
+    f32 sc[4];
+    u8 pad150[0x2A90 - 0x150];
+    Node_c024_01E005E0 node[80];
+    u8 pad3AD0[0x50];
+    s32 count;
+    u8 pad3B24[8];
+    s32 ot;
+    u8 pad3B30[4];
+    void *step;
+    u8 pad3B38[0x20];
+    u8 col[4];
+    u8 pad3B5C[0xE];
+    s16 id;
+    u8 pad3B6C[2];
+    s16 state;
+    u8 pad3B70[0x10];
+    f32 sintab[91];
+} Scene_c024_01E005E0;
+
+static void func_01E01220_c024();
+static void func_01E02020_c024();
+
+static s32 func_01E005E0_c024(s32 arg0, s32 id) {
+    Scene_c024_01E005E0 *g = (Scene_c024_01E005E0 *)arg0;
+    extern void func_00195108(void *, s32);
+    extern void c024_01E00080();
+    extern void c024_01E00400();
+    extern void c024_01E004F0();
+    extern void c024_01E00CD0();
+    extern void c024_01E015D0();
+    extern f32 func_001A6A88(f32);
+    extern s32 func_00202BF0(s32, s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5BD0(s32, void *);
+    extern void func_0020EB40(void *);
+    extern void func_0020C940(void *, void *, void *, void *);
+    extern void func_0020BC00(void *, void *);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    s32 n;
+    f32 v[4];
+    Vec4f t;
+    u8 buf[0x90];
+    s32 i;
+
+    n = 0;
+    g->ot = (s32)func_00207500();
+    if (id >= 0) {
+        v[0] = v[1] = v[2] = 0.0f;
+        func_00195108(g, 0x3CF0);
+        g->col[0] = 0x50;
+        g->col[1] = 0x50;
+        g->col[2] = 0xFF;
+        g->col[3] = 0xFF;
+        g->step = func_01E00080_c024;
+        for (; n < 91; n++) {
+            g->sintab[n] = func_001A6A88(3.1415927f * n / 180.0f);
+        }
+        g->id = id;
+        g->count = 71;
+        for (i = 15; i < 16; i++) {
+            g->tex[i] = func_00202BF0(4, i);
+        }
+        return 0;
+    }
+    c024_01E00080(g, 0);
+    func_001F5BD0(func_001F5380(), &t);
+    v[0] = t.x;
+    v[1] = t.y;
+    v[2] = t.z;
+    func_0020EB40(g->m);
+    func_00205C40((s32)g->rot);
+    g->rot[0] = 0;
+    func_0020C940(g, NULL, g->rot, v);
+    func_0020BC00(g->m, g);
+    for (i = 0; i < 80; i++) {
+        if (g->node[i].used != 0) {
+            if (g->node[i].fn == func_01E00400_c024) {
+                c024_01E00400(g, &g->node[i]);
+            } else if (g->node[i].fn == func_01E004F0_c024) {
+                c024_01E004F0(g, &g->node[i]);
+            }
+        }
+    }
+    v[2] = 0.0f;
+    v[0] = 0.0f;
+    v[1] = 50.0f;
+    func_00205C40((s32)g->rot);
+    for (i = 0; i < 80; i++) {
+        if (g->node[i].used != 0) {
+            n++;
+            if (g->node[i].fn == func_01E00400_c024) {
+                func_01E02020_c024(g, &g->node[i], buf, 0);
+                func_01E02020_c024(g, &g->node[i], buf, 1);
+            } else if (g->node[i].fn == func_01E004F0_c024) {
+                if (g->node[i].flag == 0) {
+                    func_01E01220_c024(g, &g->node[i], buf, 0);
+                    func_01E01220_c024(g, &g->node[i], buf, 1);
+                } else {
+                    c024_01E00CD0(g, &g->node[i], buf, 0);
+                    c024_01E00CD0(g, &g->node[i], buf, 1);
+                }
+            }
+        }
+    }
+    v[2] = 0.0f;
+    v[1] = 0.0f;
+    v[0] = 0.0f;
+    v[1] = 50.0f;
+    if (g->sc[1] < 1.0f) {
+        func_00106DD0(g->sc, 0.24f, 0.5f, 0.24f);
+    }
+    if (g->count > 3) {
+        c024_01E015D0(g, 0, buf, 0);
+        c024_01E015D0(g, 0, buf, 1);
+    }
+    if (g->count != 0) {
+        g->count--;
+    }
+    if (g->state == 38) {
+        return 2;
+    }
+    if (g->count <= 0) {
+        return 8;
+    }
+    return 0;
+}
 
 /* shape c024:01E009B0, 74 insns: take a free slot (0x50 of 0x34 bytes at 0x2A90, byte flag at 0x25 = index + 1),
    clear it, colour both colours from the scene colour 0x3B24, position (0xC0..0xC8), 0x26/0x1C from the scene floats
