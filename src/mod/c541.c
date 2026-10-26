@@ -1176,4 +1176,59 @@ INCLUDE_ASM("asm/nonmatchings/mod/c541", func_01E02EF0_c541);
 
 INCLUDE_ASM("asm/nonmatchings/mod/c541", func_01E03B60_c541);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c541", func_01E04C60_c541);
+/* shape c541:01E04C60 (c541_Flash), 108 insns, 1 copy: c541's scene step (c543:01E04870's form): it draws the
+   1.3-scaled overlay, runs both rings, the model and the sprites; while the scene scale is up to 1.0 it grows it by
+   0.2, after that by 0.005, clears five colour blocks and runs the module's closing layer; it spins the 64
+   particles */
+
+typedef struct {
+    f32 f[3];
+    u8 pad00C[0x64];
+    u8 b70[0x60];
+    s32 arr[64][4];
+    u8 b4D0[0xA0];
+    u8 b570[0x60];
+    u8 b5D0[0x400];
+    u8 b9D0[0x400];
+    u8 bDD0[0x2F0];
+    u8 b10C0[0x70];
+    u8 b1130[1];
+} Scene_c541_01E04C60;
+
+static void func_01E04C60_c541(Scene_c541_01E04C60 *g, s32 ot) {
+    extern void c541_01E00820(s32, void *, void *, void *);
+    extern void c541_01E01140(s32, void *, void *, void *);
+    extern void c541_01E01FE0(s32, void *, void *);
+    extern void c541_01E02630(s32, void *, void *);
+    extern void c541_01E02EF0(s32, void *, void *);
+    extern void func_00103470(void *, s32, s32);
+    f32 sc[4];
+    s32 i;
+
+    sc[0] = sc[1] = sc[2] = 1.3f;
+    c541_01E00820(ot, g->bDD0, g, sc);
+    c541_01E01FE0(ot, g->b5D0, g);
+    c541_01E01FE0(ot, g->b9D0, g);
+    c541_01E01140(ot, g->b570, g->b4D0, g);
+    c541_01E02630(ot, g->b70, g);
+    if (g->f[0] <= 1.0f) {
+        g->f[0] += 0.2f;
+        g->f[1] += 0.2f;
+        g->f[2] += 0.2f;
+    } else {
+        g->f[0] += 0.005f;
+        g->f[1] += 0.005f;
+        g->f[2] += 0.005f;
+        func_00103470(&g->bDD0[0xB], 0, 8);
+        func_00103470(&g->b70[0xB], 0, 2);
+        func_00103470(&g->b5D0[0xB], 0, 2);
+        func_00103470(&g->b9D0[0xB], 0, 2);
+        func_00103470(&g->b570[0x37], 0, 3);
+        c541_01E02EF0(ot, g->b1130, g->b10C0);
+    }
+    for (i = 0; i < 64; i++) {
+        g->arr[i][0] += 0x80;
+        g->arr[i][1] += 0x80;
+        g->arr[i][2] += 0x80;
+    }
+}
