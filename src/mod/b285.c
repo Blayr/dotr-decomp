@@ -89,7 +89,7 @@ static void func_01E00080_b285(Fx_b005_01E00080 *o) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b285", func_01E003A0_b285);
 
-/* shape b285:01E014C0 (ShFx_Mptc), 791 insns, 1 copy (-O3,p): update and draw ribbon emitters (0x58 bytes each);
+/* shape b285:01E014C0 (ShFx_Mptc), 791 insns, 12 copies (-O3,p): update and draw ribbon emitters (0x58 bytes each);
    every segment is projected straight into the packet's vertex slots and widened on screen; the source of shape
    b024:01E02120, built here at -O3 */
 
