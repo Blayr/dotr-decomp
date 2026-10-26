@@ -230,7 +230,7 @@ b774:01E00080	99.7% (593/595)	hard: W_S; first drift line (p.y += (a.y - r.y) / 
 b774:01E02F60	99% (257/259)	hard: in-file; func_00106DD0(&sc, 0.8f, 1.0f, 0.8f): orig puts 0.8 in f14 and copies to f12, ours f12 -> f14; a named const local made it worse (best draft: drafts/mod/b774_01E02F60.c)
 b774:01E04530	96% (172/179)	hard: in-file; a stack zero stored through `addiu v0,sp,0x74` (address temp) where ours stores direct, plus one branch shorter (best draft: drafts/mod/b774_01E04530.c)
 c006:01E00B80	96% (215/223)	hard: draw loop counter s4 vs handler s3 swapped (45 old rounds + c017 cousin forms: worse) (best draft: drafts/mod/c006_01E00B80.c)
-c017:01E009E0	99%	an earlier try got this far
+c017:01E009E0	99% (218/220)	hard: c017:01E006B0's source at -O3 with a speed turn and a hand-over to the scene; only the scene floor's load (lh 0x399A) takes $a0 where the original has $a2; its position, float or integer locals, the per-function pragmas and the in-file compile do not move it (best draft: drafts/mod/c017_01E009E0.c)
 c020:01E003C0	83% (169/203)	hard: saved-register colouring only (loop counters/pointer temps); chatF tried 120 orders (best draft: drafts/mod/c020_01E003C0.c)
 c021:01E016C0	98% (347/355)	hard: left: andi 0xFF after the float->u8 radius shrink (x2) and the 0.0f arg built in f14 first for func_00106DD0 (best draft: drafts/mod/c021_01E016C0.c)
 c021:01E02350	99% (305/308)	hard: c056:01E00800-style manager; left: 1.5f for the second func_00106DD0 built in f14 then copied (ours f12->f14), and paddub s0,a0 one slot early; literal/double/prototype spellings no help (best draft: drafts/mod/c021_01E02350.c)
