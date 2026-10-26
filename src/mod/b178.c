@@ -312,7 +312,8 @@ typedef struct {
     s32 pad[2];
 } Rect_b152_01E014F0;
 
-static Rect_b152_01E014F0 func_01E00F60_b178(s32 unused, s16 n) {
+/* takes the third argument its callers pass (a3 = 0, unused) */
+static Rect_b152_01E014F0 func_01E00F60_b178(s32 unused, s16 n, s32 unused2) {
     Rect_b152_01E014F0 r;
 
     if (n < 2) {
