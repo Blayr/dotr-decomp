@@ -897,7 +897,15 @@ static void func_01E02190_b848(s32 arg) {
     func_0020EC60(arg);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b848", func_01E02240_b848);
+/* shape b848:01E02240 (LkPrim_PostFuncEnemyImage), 13 insns, 1 copy: load the module's camera (D_01E04480_b848,
+   set up by func_01E02190_b848) as the view and pass the packet on (func_0020EC60) */
+
+static void func_01E02240_b848(s32 arg) {
+    extern s32 func_0020EC60();
+
+    func_0020E360(&D_01E04480_b848);
+    func_0020EC60(arg);
+}
 
 /* OVL_WARM */
 
