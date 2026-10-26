@@ -1150,7 +1150,93 @@ static void func_01E025B0_c017(Scene_c017_01E025B0 *g, Fx_c017_01E025B0 *o, void
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E02790_c017);
+/* shape c017:01E02790 (C017PAINT_RAIN5), 119 insns, 1 copy (-O3,p): mode 0 sets the drawing state (a 0x9B matrix from
+   the angle 0x5A, colour 0x48 for both slots, the scene texture 0x21C); otherwise sizes the scene quad 0x1A0 to 0x5C,
+   puts all four corners at height 0x14, pushes them 0x56 along the heading 0x52 (game table 0x39A4), builds the
+   rotation matrix 0x140 from 0x20 and, when the quad is on screen, sends it with the scene texture 0x38E8; the source
+   of shape c017:01E025B0, built here at -O3 */
+
+typedef struct {
+    u8 pad0[0x14];
+    f32 y;
+    u8 pad18[8];
+    s32 rot[4];
+    u8 pad30[0x18];
+    u8 col[4];
+    u8 col2[4];
+    u8 pad50[2];
+    s16 heading;
+    u8 pad54[2];
+    s16 dist;
+    u8 pad58[2];
+    s16 angle;
+    s16 size;
+} Fx_c017_01E02790;
+
+typedef struct {
+    u8 pad0[0x140];
+    f32 m[16];
+    u8 pad180[0x20];
+    Vec4f quad[4];
+    u8 pad1E0[0x3C];
+    s32 tex;
+    u8 pad220[0x38E8 - 0x220];
+    s32 tex2;
+    u8 pad38EC[0x3934 - 0x38EC];
+    f32 depth;
+    u8 pad3938[0x39A4 - 0x3938];
+    u8 trig[1];
+} Scene_c017_01E02790;
+
+#pragma optimization_level 3
+
+static void func_01E02790_c017(Scene_c017_01E02790 *g, Fx_c017_01E02790 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern void func_00108D20(void *, f32, f32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_0020C940(void *, s32, void *, s32);
+    extern void func_0020BC00(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, void *);
+    extern s32 func_001A23B0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    f32 rm[4];
+    f32 m[16];
+    f32 a;
+    f32 b;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x9B, o->angle, rm);
+        func_00109270(p, 0, 0);
+        func_00107790(p, o->col, 1);
+        func_00107790(p, o->col, 2);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        func_00108D20(g->quad, o->size, o->size);
+        g->quad[0].y = g->quad[1].y = g->quad[2].y = g->quad[3].y = o->y;
+        a = o->dist * func_00108030(g->trig, o->heading, 1);
+        b = o->dist * func_00108030(g->trig, o->heading, 0);
+        g->quad[0].x += a;
+        g->quad[0].z += b;
+        g->quad[1].x += a;
+        g->quad[1].z += b;
+        g->quad[2].x += a;
+        g->quad[2].z += b;
+        g->quad[3].x += a;
+        g->quad[3].z += b;
+        func_0020C940(m, 0, o->rot, 0);
+        func_0020BC00(g->m, m);
+        if (func_00205630(g->quad, 0x70000000, g->m, p, &g->depth) != 0) {
+            func_002075F0(p, g->tex2, func_001A23B0(g->depth));
+        }
+    }
+}
+
+#pragma optimization_level reset
 
 /* shape c017:01E02970, 71 insns: draws a slot effect (c035:01E01290 shape with the effect colours at 0x50): mode 0 builds the
    gouraud packet with q 0, other modes queue it */
