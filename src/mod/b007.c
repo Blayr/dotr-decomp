@@ -42,7 +42,61 @@ static void func_01E00080_b007(Vtx_b000_01E00100 *v, Src_b000_01E00100 *s) {
     v[3].c.q = 1.0f;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b007", func_01E00120_b007);
+/* shape b007:01E00120 (LkPrim_SetLineParticle), 110 insns, 1 copy (-O3,p): scatter the particles on a random ring
+   (flag 0x1D) or at a spawn point; the source of shape b015:01E01620, built here at -O3 */
+
+typedef struct {
+    f32 x, y, z;
+    u8 c;
+    u8 d;
+    s16 t;
+} Part_b007_01E00120;
+
+typedef struct {
+    u8 pad00[4];
+    s32 flags;
+    u8 pad08[3];
+    u8 c;
+    Part_b007_01E00120 *parts;
+    u8 pad10[0x18];
+    f32 radius;
+    s16 count;
+} Obj_b007_01E00120;
+
+#pragma optimization_level 3
+
+static s32 func_01E00120_b007(Obj_b007_01E00120 *obj, s32 life, f32 y) {
+    f32 v[4];
+    s32 a;
+    s32 n;
+    s32 i;
+    f32 r;
+
+    {
+        extern s32 func_001A22C0(f32);
+        n = func_001A22C0(10.0f * obj->radius);
+    }
+    for (i = 0; i < obj->count; i++) {
+        if (func_00104520(obj->flags, 0x1D) != 0) {
+            a = func_0019A5C8() % 0x10000;
+            r = 0.1f * (f32)(func_0019A5C8() % n);
+            obj->parts[i].y = y;
+            obj->parts[i].z = r * func_0020B480(a);
+            obj->parts[i].x = r * func_0020B550(a);
+        } else {
+            func_001043F0(v, y);
+            obj->parts[i].x = v[0];
+            obj->parts[i].y = v[1];
+            obj->parts[i].z = v[2];
+        }
+        obj->parts[i].t = -(func_0019A5C8() % life);
+        obj->parts[i].c = obj->c;
+        obj->parts[i].d = 0;
+    }
+    return 0;
+}
+
+#pragma optimization_level reset
 
 INCLUDE_ASM("asm/nonmatchings/mod/b007", func_01E002E0_b007);
 
