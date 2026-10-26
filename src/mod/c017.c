@@ -1064,7 +1064,121 @@ static void func_01E01B00_c017(Ctx_c017_01E01B00 *ctx, s32 arg) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E01BF0_c017);
 
-INCLUDE_ASM("asm/nonmatchings/mod/c017", func_01E02120_c017);
+/* shape c017:01E02120 (C017PAINT_RAIN3), 289 insns, 1 copy: mode 0 sets the drawing state (a 0x97 matrix, colour 1
+   from the previous segment 0x54 or own 0x50, colour 2 from 0x54 with its alpha cleared when 0x6A is 0, the scene
+   texture 0x21C); otherwise three passes of a 15-step band: the inner edge from the previous segment (radius 0x62,
+   angle 0x5A, height 0x14) or its own (radius 0x60, height 0x04), the outer edge at radius 0x62 and height 0x14, the
+   scene quad 0x1A0 sent with texture 0x38E8 when on screen, the next start angle from the scene table 0x3968 row
+   (s16)0x2C */
+
+typedef struct {
+    u8 r, g, b, a;
+} Col_c017_01E02120;
+
+typedef struct Ent_c017_01E02120 {
+    f32 x0;
+    f32 y0;
+    f32 z0;
+    u8 padC[4];
+    f32 x1;
+    f32 y1;
+    f32 z1;
+    u8 pad1C[0x10];
+    f32 f2C;
+    Vec4f v;
+    struct Ent_c017_01E02120 *prev;
+    struct Ent_c017_01E02120 *next;
+    void (*cb)(void);
+    s32 arg;
+    Col_c017_01E02120 col0;
+    Col_c017_01E02120 col1;
+    s16 used;
+    s16 f5A;
+    s16 f5C;
+    s16 f5E;
+    s16 f60;
+    s16 f62;
+    s16 f64;
+    s16 f66;
+    s16 f68;
+    s16 f6A;
+} Ent_c017_01E02120;
+
+typedef struct {
+    u8 pad0[0x140];
+    f32 m[16];
+    u8 pad180[0x20];
+    Vec4f quad[4];
+    u8 pad1E0[0x3C];
+    s32 tex;
+    u8 pad220[0x38E8 - 0x220];
+    s32 tex2;
+    u8 pad38EC[0x3934 - 0x38EC];
+    f32 depth;
+    u8 pad3938[0x3968 - 0x3938];
+    s16 tab[6][5];
+    u8 trig[1];
+} Scene_c017_01E02120;
+
+static void func_01E02120_c017(Scene_c017_01E02120 *g, Ent_c017_01E02120 *o, void *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern void func_00109270(void *, s32, s32);
+    extern void func_00107790(void *, void *, s32);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern s32 func_00205630(void *, s32, void *, void *, void *);
+    extern s32 func_001A23B0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    Ent_c017_01E02120 *prev = o->prev;
+    f32 rm[4];
+    s16 a;
+    s32 i;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x97, 0, rm);
+        func_00109270(p, 0, 0);
+        if (prev != NULL) {
+            func_00107790(p, &prev->col1, 1);
+        } else {
+            func_00107790(p, &o->col0, 1);
+        }
+        if (o->f6A != 0) {
+            func_00107790(p, &o->col1, 2);
+        } else {
+            o->col1.a = 0;
+            func_00107790(p, &o->col1, 2);
+        }
+        func_00108500(p, rm, 1);
+        func_00208700(p, g->tex, 1);
+    } else {
+        a = o->f5C;
+        for (i = 0; i < 3; i++) {
+            if (prev != NULL) {
+                g->quad[0].x = o->x0 = prev->f62 * func_00108030(g->trig, a + prev->f5A, 1);
+                g->quad[0].z = o->z0 = prev->f62 * func_00108030(g->trig, a + prev->f5A, 0);
+                g->quad[1].x = prev->f62 * func_00108030(g->trig, a + prev->f5A + 15, 1);
+                g->quad[1].z = prev->f62 * func_00108030(g->trig, a + prev->f5A + 15, 0);
+                g->quad[1].y = g->quad[0].y = o->y0 = prev->y1;
+            } else {
+                g->quad[0].x = o->x0 = o->f60 * func_00108030(g->trig, a + o->f5A, 1);
+                g->quad[0].z = o->z0 = o->f60 * func_00108030(g->trig, a + o->f5A, 0);
+                g->quad[1].x = o->f60 * func_00108030(g->trig, a + o->f5A + 15, 1);
+                g->quad[1].z = o->f60 * func_00108030(g->trig, a + o->f5A + 15, 0);
+                g->quad[1].y = g->quad[0].y = o->y0;
+            }
+            g->quad[2].x = o->x1 = o->f62 * func_00108030(g->trig, a + o->f5A, 1);
+            g->quad[2].z = o->z1 = o->f62 * func_00108030(g->trig, a + o->f5A, 0);
+            g->quad[3].x = o->f62 * func_00108030(g->trig, a + o->f5A + 15, 1);
+            g->quad[3].z = o->f62 * func_00108030(g->trig, a + o->f5A + 15, 0);
+            g->quad[2].y = g->quad[3].y = o->y1;
+            if (func_00205630(g->quad, 0x70000000, g->m, p, &g->depth) != 0) {
+                func_002075F0(p, g->tex2, func_001A23B0(g->depth));
+            }
+            a = g->tab[(s16)(s32)o->f2C][i];
+        }
+    }
+}
 
 /* shape c017:01E025B0, 118 insns: mode 0 sets the drawing state (a 0x9B matrix from the angle 0x5A, colours 0x48/0x4C,
    the scene texture 0x21C); otherwise sizes the scene quad 0x1A0 to 0x56, puts all four corners at height 0x14,
