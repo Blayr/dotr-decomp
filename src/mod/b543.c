@@ -148,4 +148,10 @@ static void func_01E04F30_b543(s32 arg) {
     func_0020EC60(arg);
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b543", func_01E04FF0_b543);
+/* shape b543:01E04FF0, 15 insns, 1 copy: load the scene's own camera as the view (unchanged, unlike
+   func_01E04F30_b543's) and pass the packet on (func_0020EC60) */
+
+static void func_01E04FF0_b543(s32 arg) {
+    func_0020E360(&D_01E05100_b543->cam);
+    func_0020EC60(arg);
+}
