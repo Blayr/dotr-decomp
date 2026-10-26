@@ -159,7 +159,134 @@ static s32 func_01E00250_b419(s32 arg0, Src_b000_01E00400 *c) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b419", func_01E003B0_b419);
+/* shape b540:01E00250 (LkPrim_SortSpot), 341 insns, 66 copies: a flat disc drawn as count triangles from the centre
+   (the colour and its alpha) to the rim (alpha 0); flags 0x100000..0x400000 record which vertices projected, flag
+   bits 0x13/0x12 force the far or the near z */
+
+typedef struct {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Xyz_b540_01E00250;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    Xyz_b540_01E00250 xyz;
+} Vtx_b540_01E00250;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b540_01E00250 v[3];
+    u8 tail[8];
+} Pkt_b540_01E00250;
+
+typedef struct {
+    s32 flags;
+    u8 b, g, r, a;
+    f32 radius;
+    s16 count;
+    s16 height;
+} Disc_b540_01E00250;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[16];
+} Cam_b540_01E00250;
+
+static s32 func_01E003B0_b419(s32 ot, Disc_b540_01E00250 *d, Cam_b540_01E00250 *cam) {
+    extern s32 func_00104520(s32, s32);
+    extern void func_002086D0(void *, u64);
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern f32 func_0020B620(f32);
+    extern f32 func_0020B730(f32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f c[3];
+    Pkt_b540_01E00250 pkt __attribute__((aligned(8)));
+    f32 dep[3];
+    f32 step;
+    f32 a;
+    s32 i;
+
+    step = 6.2831855f / d->count;
+    ((Pkt_b540_01E00250 *)(s32)&pkt)->count = 0x13;
+    ((Pkt_b540_01E00250 *)(s32)&pkt)->tag = 6;
+    ((Pkt_b540_01E00250 *)(s32)&pkt)->regs = 0x414141;
+    ((Pkt_b540_01E00250 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(d->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(d->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    pkt.v[0].r = d->r;
+    pkt.v[0].g = d->g;
+    pkt.v[0].b = d->b;
+    pkt.v[0].a = d->a;
+    pkt.v[0].q = 1.0f;
+    pkt.v[1].r = d->r;
+    pkt.v[1].g = d->g;
+    pkt.v[1].b = d->b;
+    pkt.v[1].a = 0;
+    pkt.v[1].q = 1.0f;
+    pkt.v[2].r = d->r;
+    pkt.v[2].g = d->g;
+    pkt.v[2].b = d->b;
+    pkt.v[2].a = 0;
+    pkt.v[2].q = 1.0f;
+    c[0].y = 0.0f;
+    c[0].x = 0.0f;
+    c[0].z = c[1].z = c[2].z = 0.1f * d->height;
+    for (i = 0; i < d->count; i++) {
+        if (func_00205440(&c[0], cam->view, &pkt.v[0].xyz, &dep[0]) != 0) {
+            d->flags |= 0x100000;
+        }
+        a = step * i;
+        c[1].x = d->radius * func_0020B620(a);
+        c[1].y = d->radius * func_0020B730(a);
+        if (func_00205440(&c[1], cam->view, &pkt.v[1].xyz, &dep[1]) != 0) {
+            d->flags |= 0x200000;
+        }
+        if (i == d->count - 1) {
+            c[2].x = d->radius;
+            c[2].y = 0.0f;
+        } else {
+            a = step * (i + 1);
+            c[2].x = d->radius * func_0020B620(a);
+            c[2].y = d->radius * func_0020B730(a);
+        }
+        if (func_00205440(&c[2], cam->view, &pkt.v[2].xyz, &dep[2]) != 0) {
+            d->flags |= 0x400000;
+        }
+        if (func_00104520(d->flags, 0x14) != 0 && func_00104520(d->flags, 0x15) != 0 &&
+            func_00104520(d->flags, 0x16) != 0) {
+            if (func_00104520(d->flags, 0x13) != 0) {
+                pkt.v[0].xyz.z = pkt.v[1].xyz.z = pkt.v[2].xyz.z = 0xFFFFFF;
+                func_002075F0(&pkt, ot, 0);
+                if (func_00104520(d->flags, 0x1C) != 0) {
+                    func_002075F0(&pkt, ot, 0);
+                }
+            } else if (func_00104520(d->flags, 0x12) != 0) {
+                func_002075F0(&pkt, ot, 0xFFFFFF);
+                if (func_00104520(d->flags, 0x1C) != 0) {
+                    func_002075F0(&pkt, ot, 0xFFFFFF);
+                }
+            } else {
+                func_002075F0(&pkt, ot, (u32)((dep[0] + dep[1] + dep[2]) / 3.0f));
+                if (func_00104520(d->flags, 0x1C) != 0) {
+                    func_002075F0(&pkt, ot, (u32)((dep[0] + dep[1] + dep[2]) / 3.0f));
+                }
+            }
+        }
+        d->flags &= 0xFF8FFFFF;
+    }
+    return 0;
+}
 
 /* shape b000:01E02A30, 546 insns, 18 copies: draws one particle as a textured quad of the sprite's size, aspect-scaled,
    rotated by the sprite angle (flag 0x1F) or axis-aligned; depth-sorted unless flag 0x13.
