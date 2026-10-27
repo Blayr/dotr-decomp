@@ -764,7 +764,208 @@ static void func_01E01220_c024(Scene_c024_01E01220 *g, Anim_c024_01E01220 *an, P
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E015D0_c024);
+/* shape c024:01E015D0 (C024PAINT_RAIN4), 445 insns, 1 copy: mode 0 sets the drawing state (a 0x9C
+   matrix, packet via func_00109270, all four colours from the scene colour 0x3B58, texture 0x10C); otherwise, from
+   scene state 3, draws the 10x24 grid at ctx+0x150 as quads (point j, j+1 wrapping at 23, and the next ring), each
+   moved by its own piece (0x1C bytes at ctx+0x1050, the first ctx+0x3B7A drawn), scaled by ctx+0x140 and offset by
+   the unit position; at tick 34 each piece takes its point / 15 as speed, from tick 36 (state 5+) pieces fly and turn
+   by 12 and the alpha fades by 13 down to 16 */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c024_01E015D0;
+
+typedef struct {
+    Rgbaq_c024_01E015D0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c024_01E015D0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c024_01E015D0 v[4];
+} Pkt_c024_01E015D0;
+
+typedef struct {
+    f32 x, y, z;
+    u8 padC[4];
+    s16 rx;
+    s16 ry;
+    u8 pad14[2];
+    s16 vx;
+    s16 vy;
+    s16 vz;
+} Obj_c024_01E015D0;
+
+typedef struct {
+    u8 pad0[0x10C];
+    s32 tex;
+    u8 pad110[0x30];
+    f32 sc[4];
+    Vec4f pt[10][24];
+    Obj_c024_01E015D0 obj[240];
+    u8 pad2A90[0x3B20 - 0x2A90];
+    s32 state;
+    u8 pad3B24[8];
+    s32 ot;
+    u8 pad3B30[0x18];
+    f32 depth;
+    u8 pad3B4C[0xC];
+    u8 col[4];
+    u8 pad3B5C[0x12];
+    s16 t;
+    u8 pad3B70[0xA];
+    s16 cnt;
+    u8 pad3B7C[4];
+    f32 sintab[91];
+} Scene_c024_01E015D0;
+
+static void func_01E015D0_c024(Scene_c024_01E015D0 *g, s32 unused, Pkt_c024_01E015D0 *p __attribute__((aligned(8))), s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern Rgbaq_c024_01E015D0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern s32 func_00109270(void *, s32, s32);
+    extern void func_0020EB40(void *);
+    extern Vec4f *func_001F9D30(s32);
+    extern s32 func_001F5380(void);
+    extern void func_001F5BD0(s32, void *);
+    extern void func_001E11B0(s32, s32, void *);
+    extern void func_00108950(void *, void *, s32, void *);
+    extern void func_00106B50(void *, void *);
+    extern void func_00106E90(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, void *);
+    extern s32 func_001A23B0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f v[4];
+    f32 rm[4];
+    s32 a[4];
+    f32 m[16];
+    f32 off[4];
+    f32 rot[4];
+    Vec4f pos;
+    Vec4f *c;
+    Obj_c024_01E015D0 *o;
+    s32 i;
+    s32 j;
+    s16 n;
+    f32 ox;
+    f32 oy;
+    f32 oz;
+
+    n = 0;
+    if (mode == 0) {
+        func_00106080(rm, 0x9C, 0, rm);
+        func_00109270(p, 0, 0);
+        p->v[0].c = func_00107740(g->col);
+        p->v[1].c = func_00107740(g->col);
+        p->v[2].c = func_00107740(g->col);
+        p->v[3].c = func_00107740(g->col);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        func_0020EB40(m);
+        c = func_001F9D30(0);
+        func_00205C40((s32)rot);
+        pos = *c;
+        func_001F5BD0(func_001F5380(), off);
+        func_001E11B0(func_001F5380() >> 8, func_001F5380() & 0xF, off);
+        ox = off[0];
+        oy = off[1];
+        oz = off[2];
+        if (g->state > 2) {
+            for (i = 0; i < 10; i++) {
+                for (j = 0; j < 24; j++) {
+                    o = &g->obj[n];
+                    pos = g->pt[i][j];
+                    if (g->cnt > n) {
+                        v[0].x = g->pt[i][j].x - pos.x;
+                        v[0].z = g->pt[i][j].z - pos.z;
+                        if (j != 23) {
+                            v[1].x = g->pt[i][j + 1].x - pos.x;
+                            v[1].z = g->pt[i][j + 1].z - pos.z;
+                        } else {
+                            v[1].x = g->pt[i][0].x - pos.x;
+                            v[1].z = g->pt[i][0].z - pos.z;
+                        }
+                        v[2].x = g->pt[i + 1][j].x - pos.x;
+                        v[2].z = g->pt[i + 1][j].z - pos.z;
+                        if (j != 23) {
+                            v[3].x = g->pt[i + 1][j + 1].x - pos.x;
+                            v[3].z = g->pt[i + 1][j + 1].z - pos.z;
+                        } else {
+                            v[3].x = g->pt[i + 1][0].x - pos.x;
+                            v[3].z = g->pt[i + 1][0].z - pos.z;
+                        }
+                        v[0].y = g->pt[i][j].y - pos.y;
+                        if (j != 23) {
+                            v[1].y = g->pt[i][j + 1].y - pos.y;
+                        } else {
+                            v[1].y = g->pt[i][0].y - pos.y;
+                        }
+                        v[2].y = g->pt[i + 1][j].y - pos.y;
+                        if (j != 23) {
+                            v[3].y = g->pt[i + 1][j + 1].y - pos.y;
+                        } else {
+                            v[3].y = g->pt[i + 1][0].y - pos.y;
+                        }
+                        pos.x *= g->sc[0];
+                        pos.y *= g->sc[1];
+                        pos.z *= g->sc[2];
+                        pos.x += o->x;
+                        pos.y += o->y;
+                        pos.z += o->z;
+                        pos.x += ox;
+                        pos.y += oy;
+                        pos.z += oz;
+                        if (g->t > 35 && g->state > 4) {
+                            a[1] = o->ry;
+                            func_00108950(&v[0], a, 0, g->sintab);
+                            func_00108950(&v[1], a, 0, g->sintab);
+                            func_00108950(&v[2], a, 0, g->sintab);
+                            func_00108950(&v[3], a, 0, g->sintab);
+                            a[0] = o->rx;
+                            func_00108950(&v[0], a, 1, g->sintab);
+                            func_00108950(&v[1], a, 1, g->sintab);
+                            func_00108950(&v[2], a, 1, g->sintab);
+                            func_00108950(&v[3], a, 1, g->sintab);
+                        }
+                        func_00106E90(&v[0], g->sc);
+                        func_00106E90(&v[1], g->sc);
+                        func_00106E90(&v[2], g->sc);
+                        func_00106E90(&v[3], g->sc);
+                        func_00106B50(&v[0], &pos);
+                        func_00106B50(&v[1], &pos);
+                        func_00106B50(&v[2], &pos);
+                        func_00106B50(&v[3], &pos);
+                        if (func_00205630(v, 0x70000000, 0, p, &g->depth) != 0) {
+                            func_002075F0(p, g->ot, func_001A23B0(g->depth));
+                        }
+                    }
+                    if (g->t == 34) {
+                        o->vx = g->pt[i][j].x / 15.0f;
+                        o->vy = g->pt[i][j].y / 15.0f;
+                        o->vz = g->pt[i][j].z / 15.0f;
+                    } else if (g->t > 35 && g->state > 4) {
+                        o->x += o->vx;
+                        o->y += o->vy;
+                        o->z += o->vz;
+                        o->rx += 12;
+                        o->ry += 12;
+                    }
+                    n++;
+                }
+            }
+        }
+        if (g->t > 35 && g->state > 4 && g->col[3] > 16) {
+            g->col[3] -= 13;
+        }
+    }
+}
 
 /* shape c024:01E01CD0, 210 insns (C024_MAP_ATTACK_1): builds a 10x24 point bowl at ctx+0x150: rings of radius 100
    shrinking by 10 (at least 1), 15 degrees between points; each ring is shifted by a random walk (-5..4 a ring on x and
