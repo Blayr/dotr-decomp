@@ -220,3 +220,11 @@ there is a source form that gives the original.
 - **A pointer counter in a nested loop kept twice (spilled and in a register), the original keeps no integer
   counter:** index with a counter that runs through both loops and is used anyway (`&g->obj[n]` on the draw
   counter); a dedicated `k++` leaves a dead counter, `i * 24 + j` a multiply. (c024:01E015D0)
+- **A new function matches in `dk try` and `tools/mod_infile.sh`, but the accept is REJECTED and an already-matched
+  function further down now loads two float constants in the other order:** MWCC orders constant loads by when
+  each constant first appears in the file, and the new function uses one of them first (here `5.0f`). Splice by hand
+  (`work/splice.py`), build the module and diff it against the disc (`work/moddiff.py`), then change the later
+  function's call so both orders give the original: `f32 r = 5.0f;` as a block local and pass `r`. Commit it with the
+  new function. (b244:01E02B40 changed func_01E031E0_b244)
+- **Two float constant arguments where the first argument's address (`addiu a0`) comes before `mtc1 f12`:** a
+  `static inline` wrapper taking only `void *p` that does the cast and passes the constants. (b244:01E02B40)
