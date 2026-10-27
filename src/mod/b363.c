@@ -22,7 +22,75 @@ static s32 func_01E00080_b363(Vec4f *dst, s32 n, s32 arg2, Vec4f *src) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E00110_b363);
+/* shape b363:01E00110 (POLPAN_UVIN_FT4), 345 insns, 1 copy: texture coordinates of a sprite quad from a rectangle,
+   modes 0-3 as b034:01E00110 plus a fifth corner order for mode 5 */
+
+typedef struct Rect_b363_01E00110 {
+    s16 x, y, w, h;
+} Rect_b363_01E00110;
+
+typedef struct Uv_b363_01E00110 {
+    u16 u : 14;
+    u16 pu : 2;
+    u16 v : 14;
+    u16 pv : 2;
+    u32 pad4;
+    u64 xyz;
+} Uv_b363_01E00110;
+
+typedef struct Pk_b363_01E00110 {
+    u8 pad0[0x18];
+    Uv_b363_01E00110 c[4];
+} Pk_b363_01E00110;
+
+static void func_01E00110_b363(Pk_b363_01E00110 *p, Rect_b363_01E00110 *r, s32 mode) {
+    if (mode == 0) {
+        p->c[0].u = (r->x) << 4;
+        p->c[0].v = (r->y) << 4;
+        p->c[1].u = (r->x + r->w) << 4;
+        p->c[1].v = (r->y) << 4;
+        p->c[2].u = (r->x) << 4;
+        p->c[2].v = (r->y + r->h) << 4;
+        p->c[3].u = (r->x + r->w) << 4;
+        p->c[3].v = (r->y + r->h) << 4;
+    } else if (mode == 1) {
+        p->c[3].u = (r->x) << 4;
+        p->c[3].v = (r->y) << 4;
+        p->c[2].u = (r->x + r->w) << 4;
+        p->c[2].v = (r->y) << 4;
+        p->c[1].u = (r->x) << 4;
+        p->c[1].v = (r->y + r->h) << 4;
+        p->c[0].u = (r->x + r->w) << 4;
+        p->c[0].v = (r->y + r->h) << 4;
+    } else if (mode == 2) {
+        p->c[1].u = (r->x) << 4;
+        p->c[1].v = (r->y) << 4;
+        p->c[0].u = (r->x + r->w) << 4;
+        p->c[0].v = (r->y) << 4;
+        p->c[3].u = (r->x) << 4;
+        p->c[3].v = (r->y + r->h) << 4;
+        p->c[2].u = (r->x + r->w) << 4;
+        p->c[2].v = (r->y + r->h) << 4;
+    } else if (mode == 3) {
+        p->c[2].u = (r->x) << 4;
+        p->c[2].v = (r->y) << 4;
+        p->c[3].u = (r->x + r->w) << 4;
+        p->c[3].v = (r->y) << 4;
+        p->c[0].u = (r->x) << 4;
+        p->c[0].v = (r->y + r->h) << 4;
+        p->c[1].u = (r->x + r->w) << 4;
+        p->c[1].v = (r->y + r->h) << 4;
+    } else if (mode == 5) {
+        p->c[2].u = (r->x) << 4;
+        p->c[2].v = (r->y) << 4;
+        p->c[0].u = (r->x + r->w) << 4;
+        p->c[0].v = (r->y) << 4;
+        p->c[3].u = (r->x) << 4;
+        p->c[3].v = (r->y + r->h) << 4;
+        p->c[1].u = (r->x + r->w) << 4;
+        p->c[1].v = (r->y + r->h) << 4;
+    }
+}
 
 /* shape b034:01E00E60, 115 insns, 33 copies: builds a 4-vertex sprite packet from the object's two
    texture refs, sets the blend mode from arg2 >> 4 and, when arg2 & 0xF is 0, puts every vertex at the
