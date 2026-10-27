@@ -508,7 +508,139 @@ static void func_01E00AE0_c024(Scene_c024_01E00AE0 *g, s32 arg) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c024", func_01E00CD0_c024);
+/* shape c024:01E00CD0 (C024PAINT_RAIN2), 340 insns, 1 copy: mode 0 sets the drawing state (a 0x9C
+   matrix, packet header, top colours 0x2A, bottom 0x2E, texture 15); otherwise a quad cut from the scene grid (point
+   j, j+1, j+24, j+25 less point j), scaled by 0.15, drawn at three points 120 degrees apart around (0x14, 0x18) at
+   radius 0x16, height 0x26 x sin(0x16) */
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_c024_01E00CD0;
+
+typedef struct {
+    Rgbaq_c024_01E00CD0 c;
+    u64 st;
+    u64 xyz;
+} Vtx_c024_01E00CD0;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_c024_01E00CD0 v[4];
+} Pkt_c024_01E00CD0;
+
+typedef struct {
+    s32 rx;
+    s32 pad4;
+    s32 rz;
+    u8 padC[8];
+    s16 x;
+    s16 r;
+    s16 z;
+    u8 pad1A[6];
+    s16 j;
+    u8 pad22[4];
+    s16 h;
+    u8 pad28[2];
+    u8 col0[4];
+    u8 col1[4];
+} Obj_c024_01E00CD0;
+
+typedef struct {
+    u8 pad0[0x80];
+    u8 m[0x50];
+    u8 padD0[0x3C];
+    s32 tex;
+    u8 pad110[0x30];
+    f32 sc[4];
+    Vec4f pt[1];
+    u8 pad160[0x3AE0 - 0x160];
+    Vec4f quad[4];
+    u8 pad3B20[0xC];
+    s32 ot;
+    u8 pad3B30[0x18];
+    f32 depth;
+    u8 pad3B4C[0x34];
+    f32 sintab[91];
+} Scene_c024_01E00CD0;
+
+static void func_01E00CD0_c024(Scene_c024_01E00CD0 *g, Obj_c024_01E00CD0 *o, Pkt_c024_01E00CD0 *p, s32 mode) {
+    extern void func_00106080(void *, s32, s32, void *);
+    extern Rgbaq_c024_01E00CD0 func_00107740(void *);
+    extern void func_00108500(void *, void *, s32);
+    extern void func_00208700(void *, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    extern void func_00106B50(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, void *);
+    extern s32 func_001A23B0(f32);
+    extern void func_002075F0(void *, s32, s32);
+    Vec4f v[4];
+    f32 pos[4];
+    f32 rm[4];
+    s16 a;
+    s16 b;
+    s16 i;
+    f32 s;
+
+    if (mode == 0) {
+        func_00106080(rm, 0x9C, 0, rm);
+        p->count = 0x34;
+        p->tag = 0xC;
+        p->regs = ((u64)0x4214 << 32) | 0x21421421;
+        p->pad = 0;
+        p->count |= 0x800;
+        func_002086D0(p, ((u64)0x80 << 32) | 0x48);
+        p->v[0].c = func_00107740(o->col0);
+        p->v[1].c = func_00107740(o->col0);
+        p->v[2].c = func_00107740(o->col1);
+        p->v[3].c = func_00107740(o->col1);
+        func_00108500(p, rm, 0);
+        func_00208700(p, g->tex, 1);
+    } else {
+        v[0].x = g->pt[o->j].x - g->pt[o->j].x;
+        v[0].y = g->pt[o->j].y - g->pt[o->j].y;
+        v[0].z = g->pt[o->j].z - g->pt[o->j].z;
+        v[1].x = g->pt[o->j + 1].x - g->pt[o->j].x;
+        v[1].y = g->pt[o->j + 1].y - g->pt[o->j].y;
+        v[1].z = g->pt[o->j + 1].z - g->pt[o->j].z;
+        v[2].x = g->pt[o->j + 24].x - g->pt[o->j].x;
+        v[2].y = g->pt[o->j + 24].y - g->pt[o->j].y;
+        v[2].z = g->pt[o->j + 24].z - g->pt[o->j].z;
+        v[3].x = g->pt[o->j + 25].x - g->pt[o->j].x;
+        v[3].y = g->pt[o->j + 25].y - g->pt[o->j].y;
+        v[3].z = g->pt[o->j + 25].z - g->pt[o->j].z;
+        s = 0.15f;
+        func_00106DD0(g->sc, s, s, s);
+        func_00106E90(&v[0], g->sc);
+        func_00106E90(&v[1], g->sc);
+        func_00106E90(&v[2], g->sc);
+        func_00106E90(&v[3], g->sc);
+        a = o->rx / 182;
+        b = o->rz / 182;
+        for (i = 0; i < 3; i++) {
+            pos[0] = o->x;
+            pos[2] = o->z;
+            pos[0] += o->r * func_00108030(g->sintab, a + i * 120, 0);
+            pos[2] += o->r * func_00108030(g->sintab, b + i * 120, 0);
+            a = o->r;
+            pos[1] = o->h * func_00108030(g->sintab, a, 0);
+            g->quad[0] = v[0];
+            g->quad[1] = v[1];
+            g->quad[2] = v[2];
+            g->quad[3] = v[3];
+            func_00106B50(&g->quad[0], pos);
+            func_00106B50(&g->quad[1], pos);
+            func_00106B50(&g->quad[2], pos);
+            func_00106B50(&g->quad[3], pos);
+            if (func_00205630(g->quad, 0x70000000, g->m, p, &g->depth) != 0) {
+                func_002075F0(p, g->ot, func_001A23B0(g->depth));
+            }
+        }
+    }
+}
 
 /* shape c024:01E01220, 233 insns: b004:01E01A00's hanging quad in two passes: with lit 0 it sets up the packet (rect
    0x8C,0,4,0x7F, colours 0x2A top and 0x2E bottom, scene texture 0x10C) and returns; otherwise it builds the scene
