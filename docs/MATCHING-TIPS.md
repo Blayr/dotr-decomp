@@ -228,3 +228,11 @@ there is a source form that gives the original.
   new function. (b244:01E02B40 changed func_01E031E0_b244)
 - **Two float constant arguments where the first argument's address (`addiu a0`) comes before `mtc1 f12`:** a
   `static inline` wrapper taking only `void *p` that does the cast and passes the constants. (b244:01E02B40)
+- **A call to a static sibling defined earlier passes one more argument than its definition, or its argument
+  registers are set in another order:** declare the sibling by its real name as a block-scope extern with no
+  prototype (`extern void func_01E00920_b098();`) and pass what the asm shows. (b098:01E01F30, b494:01E013C0)
+- **A sign-extended value meant for a saved register lands in a temp before a `div`:** assign it to its s16 local
+  first and divide in place, `step = s->col.a; step /= (s16)(n * 3);`. (b092:01E04290)
+- **A call matches in `dk try` but `tools/mod_infile.sh` says "undefined identifier":** the callee is a static
+  defined later in the file (`#include "mod/<mod>.c"` hides this); call it by its link name `<mod>_<VADDR>` through a
+  block-scope extern with no prototype. (b494:01E013C0)

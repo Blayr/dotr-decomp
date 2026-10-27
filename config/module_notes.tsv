@@ -271,3 +271,4 @@ c605:01E028C0	96% (337/343 vs 352)	hard: left: a dead 24-byte copy of o+0x60..0x
 c606:01E00080	70% (127/182, same length)	hard: stack: original d[3] at sp+0x158 + 8-aligned pkt at 0x168 (ours 0x160/0x170); regs o=s0 mode=s2 t=s1 (ours s2/s1/s0) (best draft: drafts/mod/c606_01E00080.c)
 c611:01E01050	dk try 100%	hard: REJECTED by the full build
 m000:01E00080	89% (113/127)	hard: 3 call-crossing webs rot/arg/ot get s2/s1/s0, target s0/s2/s1 (probe: pop order v35 ot, v33 arg, v32 rot); local copies of rot get propagated (best draft: drafts/mod/m000_01E00080.c)
+b494:01E013C0	96%	hard: scene manager; first slot-step loop has its counter and slot pointer in swapped registers (s0/s2); names per loop, declaration orders, loop forms, pragmas and 40 min of dk perm do not move it
