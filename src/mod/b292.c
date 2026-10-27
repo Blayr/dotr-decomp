@@ -1038,4 +1038,131 @@ static s32 func_01E02B60_b292(Scene_b292_01E02B60 *g, s32 a1, s32 a2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b292", func_01E02D00_b292);
+/* shape b292:01E02D00 (B292KPOINT_RAIN_3), 347 insns, 9 copies: the B092KPOINT_RAIN_3 ribbon (b092:01E04290): two
+   point trails drawn as 4 spline quads per segment, the far edge fading by alpha / (3n) */
+
+typedef struct Rgbaq_b292_01E02D00 {
+    u8 r, g, b, a;
+    f32 q;
+} Rgbaq_b292_01E02D00;
+
+typedef struct {
+    Rgbaq_b292_01E02D00 c;
+    u64 xyz;
+} Vtx_b292_01E02D00;
+
+typedef struct {
+    s16 tag;
+    u16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b292_01E02D00 v[4];
+    u8 tail[0x40];
+} Pkt_b292_01E02D00;
+
+typedef struct {
+    u8 r, g, b, a;
+} C4_b292_01E02D00;
+
+typedef struct {
+    u8 pad00[6];
+    s16 n;
+    u8 pad08[0x58];
+    C4_b292_01E02D00 col;
+} Rib_b292_01E02D00;
+
+static inline u8 b292_01E02D00_fade(s32 x, s16 step) {
+    s16 r = x;
+
+    r -= step;
+    if (r < 0) {
+        r = 0;
+    }
+    return r;
+}
+
+static void func_01E02D00_b292(void *o, Rib_b292_01E02D00 *s, Vec_b018_01E00EE0 *pa __attribute__((aligned(16))), Vec_b018_01E00EE0 *pb __attribute__((aligned(16)))) {
+    extern Rgbaq_b292_01E02D00 func_00107740(void *);
+    extern void func_001092E0(void *, s32);
+    extern void func_001094F0(void *);
+    extern void func_00109A70(void *, void *);
+    extern s32 func_00205630(void *, s32, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    f32 depth[4];
+    Vec_b018_01E00EE0 quad[4];
+    Vec_b018_01E00EE0 A[2];
+    Vec_b018_01E00EE0 B[2];
+    Vec_b018_01E00EE0 a4[4];
+    Vec_b018_01E00EE0 b4[4];
+    Pkt_b292_01E02D00 pkt __attribute__((aligned(8)));
+    C4_b292_01E02D00 c0;
+    C4_b292_01E02D00 c1;
+    s32 k;
+    s32 j;
+    s16 n;
+    s16 al;
+    s16 step;
+    s32 ot;
+    Pkt_b292_01E02D00 *p;
+    Vec_b018_01E00EE0 *pp;
+    Vec_b018_01E00EE0 *pq;
+    f32 t;
+
+    ot = (s32)func_00207500();
+    n = s->n;
+    p = (Pkt_b292_01E02D00 *)(s32)&pkt;
+    func_001092E0(p, 0);
+    func_001094F0(p);
+    c0 = s->col;
+    c1 = s->col;
+    c0.a = 0;
+    a4[0] = pa[0];
+    a4[1] = pa[0];
+    a4[2] = pa[1];
+    a4[3] = pa[2];
+    b4[0] = pb[0];
+    b4[1] = pb[0];
+    b4[2] = pb[1];
+    b4[3] = pb[2];
+    pkt.v[0].c = func_00107740(&c0);
+    pkt.v[1].c = func_00107740(&c0);
+    pkt.v[2].c = func_00107740(&c1);
+    pkt.v[3].c = func_00107740(&c1);
+    step = s->col.a;
+    step /= (s16)(n * 3);
+    for (k = 0; k < n - 1; k++) {
+        t = 0.0f;
+        pp = pa + (k - 1);
+        pq = pb + (k - 1);
+        for (j = 0; j < 4; j++) {
+            p->v[2].c = func_00107740(&c1);
+            al = c1.a;
+            if (al - step > 0) {
+                c1.a = b292_01E02D00_fade(al, step);
+            } else {
+                c1.a = 0;
+            }
+            p->v[3].c = func_00107740(&c1);
+            if (k != 0) {
+                A[0] = func_01E00C70_b292(pp, 0, t);
+                B[0] = func_01E00C70_b292(pq, 0, t);
+                t += 0.25f;
+                A[1] = func_01E00C70_b292(pp, 0, t);
+                B[1] = func_01E00C70_b292(pq, 0, t);
+            } else {
+                A[0] = func_01E00C70_b292(a4, 0, t);
+                B[0] = func_01E00C70_b292(b4, 0, t);
+                t += 0.25f;
+                A[1] = func_01E00C70_b292(a4, 0, t);
+                B[1] = func_01E00C70_b292(b4, 0, t);
+            }
+            func_00109A70(&quad[0], &A[0]);
+            func_00109A70(&quad[1], &A[1]);
+            func_00109A70(&quad[2], &B[0]);
+            func_00109A70(&quad[3], &B[1]);
+            if (func_00205630(quad, 0x70000000, NULL, p, depth) != 0) {
+                func_002075F0(p, ot, 0);
+            }
+        }
+    }
+}
