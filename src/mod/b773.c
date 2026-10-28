@@ -303,7 +303,144 @@ static s32 func_01E00890_b773(Obj_b015_01E01620 *obj, s32 life, f32 y) {
 
 INCLUDE_ASM("asm/nonmatchings/mod/b773", func_01E00A50_b773);
 
-INCLUDE_ASM("asm/nonmatchings/mod/b773", func_01E017B0_b773);
+/* shape b773:01E017B0 (LkPrim_SortQuadrBillBoard), 363 insns, 1 copy: draws a square billboard as four quads fanned
+   around the centre: 8 rim points (from a template, sized by the half-width) rotated by the sprite rotation,
+   projected per quad, depth-sorted unless flag 0x13 */
+
+typedef struct {
+    u8 b, g, r, a;
+} Src_b773_01E017B0;
+
+typedef struct {
+    u8 r, g, b, a;
+    f32 q;
+    u64 st;
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 f : 8;
+} Vtx_b773_01E017B0;
+
+typedef struct {
+    s16 tag;
+    s16 count;
+    s32 pad;
+    u64 regs;
+    Vtx_b773_01E017B0 v[4];
+    u8 tail[0x20];
+} Pkt_b773_01E017B0;
+
+typedef struct {
+    f32 x, y, z, w;
+} Vec_b773_01E017B0;
+
+typedef struct {
+    Vec_b773_01E017B0 v[9];
+} Quad9_b773_01E017B0;
+
+typedef struct {
+    void *texture;
+    s32 flags;
+    Src_b773_01E017B0 color;
+    f32 size;
+    s16 u;
+    s16 v;
+    s16 tw;
+    s16 th;
+    u8 pad18[8];
+    Vec_b773_01E017B0 rot;
+} Spr_b773_01E017B0;
+
+typedef struct {
+    u8 pad[0x30];
+    f32 view[1];
+} Cam_b773_01E017B0;
+
+static s32 func_01E017B0_b773(s32 obj, Spr_b773_01E017B0 *spr, Cam_b773_01E017B0 *cam) {
+    extern Quad9_b773_01E017B0 D_01E05F80_b773;
+    extern s32 func_00205440(void *, void *, void *, f32 *);
+    extern void func_002075F0(void *, s32, s32);
+    extern s32 func_00104540(void *, void *, s32);
+    Quad9_b773_01E017B0 in;
+    Vec_b773_01E017B0 out[9];
+    f32 m[16];
+    f32 depth[4];
+    Pkt_b773_01E017B0 pkt;
+    s32 i;
+
+    in = D_01E05F80_b773;
+    in.v[0].x = -spr->size;
+    in.v[1].x = -spr->size;
+    in.v[1].y = spr->size;
+    in.v[2].y = spr->size;
+    in.v[3].x = spr->size;
+    in.v[3].y = spr->size;
+    in.v[4].x = spr->size;
+    in.v[5].x = spr->size;
+    in.v[5].y = -spr->size;
+    in.v[6].y = -spr->size;
+    in.v[7].x = -spr->size;
+    in.v[7].y = -spr->size;
+    func_0020C630(m, &spr->rot);
+    for (i = 0; i < 8; i++) {
+        func_0020CDD0(&out[i], m, &in.v[i]);
+    }
+    ((Pkt_b773_01E017B0 *)(s32)&pkt)->count = 0x34;
+    ((Pkt_b773_01E017B0 *)(s32)&pkt)->tag = 0xC;
+    ((Pkt_b773_01E017B0 *)(s32)&pkt)->regs = ((u64)0x4214 << 32) | 0x21421421;
+    ((Pkt_b773_01E017B0 *)(s32)&pkt)->pad = 0;
+    if (func_00104520(spr->flags, 0xC) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x44);
+    } else if (func_00104520(spr->flags, 0xB) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x88);
+    } else if (func_00104520(spr->flags, 0xA) != 0) {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(&pkt, ((u64)0x80 << 32) | 0x48);
+    }
+    func_01E00080_b773((Vtx_b000_01E00100 *)&pkt, (Src_b000_01E00100 *)&spr->color);
+    func_00104540(&pkt, &spr->u, 0);
+    for (i = 0; i < 4; i++) {
+        if (func_00205440(&out[i + i + 1], cam->view, &pkt.v[0].st + 1, &depth[0]) != 0) {
+            spr->flags |= 0x100000;
+        }
+        if (i < 2) {
+            if (func_00205440(&out[2], cam->view, &pkt.v[1].st + 1, &depth[1]) != 0) {
+                spr->flags |= 0x200000;
+            }
+        } else {
+            if (func_00205440(&out[6], cam->view, &pkt.v[1].st + 1, &depth[1]) != 0) {
+                spr->flags |= 0x200000;
+            }
+        }
+        if (i == 1 || i == 2) {
+            if (func_00205440(&out[4], cam->view, &pkt.v[2].st + 1, &depth[2]) != 0) {
+                spr->flags |= 0x400000;
+            }
+        } else {
+            if (func_00205440(&out[0], cam->view, &pkt.v[2].st + 1, &depth[2]) != 0) {
+                spr->flags |= 0x400000;
+            }
+        }
+        if (func_00205440(m, cam->view, &pkt.v[3].st + 1, &depth[3]) != 0) {
+            spr->flags |= 0x800000;
+        }
+        func_00208CB0(&pkt, (u64)0xA | ((u64)spr->u << 4) | ((u64)(spr->u + spr->tw - 1) << 14) |
+                                ((u64)spr->v << 24) | ((u64)(spr->v + spr->th - 1) << 34));
+        func_00208700(&pkt, spr->texture, 1);
+        if (func_00104520(spr->flags, 0x14) != 0 && func_00104520(spr->flags, 0x15) != 0 &&
+            func_00104520(spr->flags, 0x16) != 0 && func_00104520(spr->flags, 0x17) != 0) {
+            if (func_00104520(spr->flags, 0x13) != 0) {
+                pkt.v[0].z = pkt.v[1].z = pkt.v[2].z = pkt.v[3].z = 0xFFFFFF;
+                func_002075F0(&pkt, obj, 0);
+            } else {
+                func_002075F0(&pkt, obj, func_001A23B0((depth[0] + depth[1] + depth[2] + depth[3]) / 4.0f));
+            }
+        }
+        spr->flags &= 0xFF0FFFFF;
+    }
+    return 0;
+}
 
 /* shape b000:01E02A30, 546 insns, 18 copies: draws one particle as a textured quad of the sprite's size, aspect-scaled,
    rotated by the sprite angle (flag 0x1F) or axis-aligned; depth-sorted unless flag 0x13.
