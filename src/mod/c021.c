@@ -1,6 +1,211 @@
 #include "common.h"
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00080_c021);
+/* shape c021:01E00080 (C021_W_S), 363 insns, 1 copy: C021_W_S, the scene script: colour 0x30, counts the frame
+   (0x38BA); frame 1 sets twelve colours, the 0.5 scale, four random times, one c021:01E00630 orbit object with ten
+   ring heights 30 apart and radii 3,3,2,2,2,2, then ten c021:01E00E00 links, fifteen c021:01E016C0 and five
+   c021:01E013C0 pieces and one c021:01E00AF0; odd frames grow the scale by 0.1 up to 4; every third frame under 135
+   spawns one c021:01E00B90 at a random spot */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 padC[8];
+    s16 ang;
+    s16 r;
+} Ring_c021_01E00080;
+
+typedef struct {
+    u8 pad0[0x118];
+    Ring_c021_01E00080 ring[10];
+} Rings_c021_01E00080;
+
+typedef struct {
+    u8 pad0[0xC0];
+    f32 vx, vy, vz;
+    u8 padCC[0x3344 - 0xCC];
+    s32 w3344;
+    u8 pad3348[0x3370 - 0x3348];
+    Rings_c021_01E00080 rings;
+    u8 pad3578[4];
+    u8 col[4];
+    u8 pad3580[8];
+    s32 w3588;
+    u8 pad358C[4];
+    f32 f3590;
+    f32 f3594;
+    f32 f3598;
+    u8 pad359C[0x3898 - 0x359C];
+    f32 scale;
+    u8 pad389C[0x38A6 - 0x389C];
+    s16 ang;
+    u8 pad38A8[0x38B0 - 0x38A8];
+    s16 last;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[0x38BA - 0x38B6];
+    s16 t;
+    u8 pad38BC[0x38C4 - 0x38BC];
+    s16 tog;
+    s16 when[4];
+    u8 pad38CE[2];
+    u8 cols[12][4];
+} Ctx_c021_01E00080;
+
+static void func_01E00080_c021(Ctx_c021_01E00080 *g) {
+    extern s32 func_0019A5C8(void);
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern void c021_01E00630();
+    extern void c021_01E00AF0();
+    extern void c021_01E00B90();
+    extern void c021_01E00E00();
+    extern void c021_01E013C0();
+    extern void c021_01E016C0();
+    extern void c021_01E02820();
+    extern void c021_01E028F0();
+    extern void c021_01E029F0();
+    extern void c021_01E02BE0();
+    extern void c021_01E02E40();
+    extern void c021_01E03060();
+    Rings_c021_01E00080 *p;
+    s32 i;
+
+    g->col[0] = 0x30;
+    g->col[1] = 0x30;
+    g->col[2] = 0x30;
+    g->t++;
+    if (g->t == 1) {
+        for (i = 0; i < 12; i++) {
+            g->cols[i][0] = 0xA0;
+            g->cols[i][1] = 0;
+            g->cols[i][2] = 0xA0;
+            g->cols[i][3] = 0x80;
+        }
+        g->scale = 0.5f;
+        g->when[0] = func_0019A5C8() % 60 + 50;
+        g->when[1] = func_0019A5C8() % 60 + 130;
+        g->when[2] = func_0019A5C8() % 60 + 210;
+        g->when[3] = func_0019A5C8() % 60 + 270;
+        p = &g->rings;
+        c021_01E02820(g, c021_01E00630);
+        p->ring[0].y = 0.0f;
+        p->ring[1].y = 30.0f + p->ring[0].y;
+        p->ring[2].y = 30.0f + p->ring[1].y;
+        p->ring[3].y = 30.0f + p->ring[2].y;
+        p->ring[4].y = 30.0f + p->ring[3].y;
+        p->ring[5].y = 30.0f + p->ring[4].y;
+        p->ring[6].y = 30.0f + p->ring[5].y;
+        p->ring[7].y = 30.0f + p->ring[6].y;
+        p->ring[8].y = 30.0f + p->ring[7].y;
+        p->ring[9].y = 30.0f + p->ring[8].y;
+        p->ring[0].r = 3;
+        p->ring[1].r = 3;
+        p->ring[2].r = 2;
+        p->ring[3].r = 2;
+        p->ring[4].r = 2;
+        p->ring[5].r = 2;
+        func_001076F0(g->col, 0xA0, 0xA0, 0xA0);
+        g->vx = 0.0f;
+        g->vy = 1.0f;
+        g->vz = 0.0f;
+        g->f3590 = 10.0f;
+        g->w3588 = 0;
+        for (i = 0; i < 10; i++) {
+            if (g->tog == 0) {
+                g->tog = 1;
+            } else {
+                g->tog = 0;
+            }
+            g->f3590 = i * 11 + 1;
+            g->f3594 = i * 12 + 1;
+            if (i != 9) {
+                g->last = 0;
+            } else {
+                g->last = 1;
+            }
+            g->f3598 = i * 18;
+            g->h38B4 = 1;
+            g->vy = 0.0f;
+            func_001076F0(g->col, 0x50, 0x50, 0xC0);
+            g->col[3] = 0;
+            g->vx = 0.0f;
+            g->vz = 0.0f;
+            g->ang = (s16)(i * 10);
+            c021_01E02BE0(g, c021_01E00E00);
+        }
+        g->col[0] = 0x40;
+        g->col[1] = 0x40;
+        g->col[2] = 0x40;
+        g->w3588 = 0;
+        for (i = 0; i < 15; i++) {
+            g->f3590 = i * 10 + 1;
+            g->f3594 = i * 11 + 1;
+            if (i != 14) {
+                g->last = 0;
+            } else {
+                g->last = 1;
+            }
+            g->f3598 = i * 13;
+            g->h38B4 = 1;
+            g->vy = 0.0f;
+            g->col[3] = 0;
+            g->vx = 0.0f;
+            g->vz = 0.0f;
+            g->ang = (s16)(i * 15);
+            c021_01E03060(g, c021_01E016C0);
+        }
+        g->col[0] = 0x10;
+        g->col[1] = 0x10;
+        g->col[2] = 0x10;
+        g->w3588 = 0;
+        for (i = 0; i < 5; i++) {
+            g->f3590 = 30.0f;
+            g->f3594 = 30.0f;
+            if (i == 4) {
+                g->last = 1;
+            } else {
+                g->last = 0;
+            }
+            g->f3598 = i * 25;
+            g->h38B4 = 1;
+            g->vy = 0.0f;
+            g->vx = 0.0f;
+            g->vz = 0.0f;
+            g->col[3] = 0;
+            g->ang = (s16)(i * 15);
+            if (g->tog == 0) {
+                g->tog = 1;
+            } else {
+                g->tog = 0;
+            }
+            c021_01E02E40(g, c021_01E013C0);
+        }
+        g->col[0] = 0x20;
+        g->col[1] = 0x20;
+        g->col[2] = 0x20;
+        g->col[3] = 0;
+        c021_01E028F0(g, c021_01E00AF0);
+    }
+    if (g->t % 2 == 1) {
+        if (g->scale < 4.0f) {
+            g->scale += 0.1f;
+        }
+    }
+    if (g->t % 3 == 1 && g->t <= 134) {
+        for (i = 0; i < 1; i++) {
+            g->col[0] = 0x80;
+            g->col[1] = 0x80;
+            g->col[2] = 0x80;
+            g->vx = func_0019A5C8() % 70 + 80;
+            g->vy = func_0019A5C8() % 50 + 60;
+            g->vz = 0.0f;
+            g->ang = func_0019A5C8() % 360;
+            g->w3344 = 0;
+            g->col[3] = 0;
+            c021_01E029F0(g, c021_01E00B90);
+        }
+    }
+}
 
 /* shape c021:01E00630, 303 insns: turns the scene's six orbit rings (ctx+0x3370+0x118, 0x18 apiece): each places its
    point at radius r on its angle from the sine table (ctx+0x35E4) and turns by +3, -8, +11, -12, +18, -9 (wrapped
