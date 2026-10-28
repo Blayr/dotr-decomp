@@ -268,3 +268,5 @@ there is a source form that gives the original.
   by hand and run the full check, since `dk accept` refuses. (b489:01E00FA0)
 - **-O1 scene manager with the scene pointer in the lowest saved register where the original has it in the highest:**
   take the scene as a typed parameter (`Scene *g`), not `s32 arg0` plus `g = (Scene *)arg0;`. (b181:01E03830)
+- **`lw`/`sw` where yours has `lwc1`/`swc1` copying one field into a vector local:** type the field and the local as
+  s32 (a struct of four s32), not a pointer cast at the store. (b773:01E038D0)
