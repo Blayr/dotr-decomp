@@ -263,3 +263,6 @@ there is a source form that gives the original.
   alike):** write the bare test, `if (v.x)`. (b191:01E01A70)
 - **A value read just before a call to a static sibling lands in `$a0` where the original has `$a1`:** drop the cast
   on the struct-address argument (the reverse of the b740 tip). (b292:01E02580)
+- **`dk try` alone is one off (an argument address before a float `mtc1`) but `tools/mod_infile.sh` matches:** trust the
+  in-file result and leave the call alone (the float-local and inline-wrapper fixes broke it in the file); splice
+  by hand and run the full check, since `dk accept` refuses. (b489:01E00FA0)
