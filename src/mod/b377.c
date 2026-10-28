@@ -562,7 +562,127 @@ static void func_01E01350_b377(Obj_b020_01E00E70 *o, Fx_b020_01E00E70 *fx, s32 f
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b377", func_01E016C0_b377);
+/* shape b377:01E016C0 (B377_W_S), 376 insns, 1 copy: B377_W_S, the effect scene step (b235:01E01C70 form): counts the
+   frame (0xB2BC); frames 28..224 spawn 0x1E01CA0 on sides 0,6,12.. for each of n (n grows every 5th frame up to 11);
+   frames 0..11 spawn 0x1E01F60 on side m++; frame 195 takes joint 0xB244 point, 193 the camera point; frames 193..234
+   put the point 20 under it and spawn 0x1E02320 on sides 0/1 (odd) and 2 (even); frame 1 spawns four 0x1E027B0
+   (angles 0/90/45/135), 0x1E02C80 and 0x1E02A50; frames 118/191 and 141/191 spawn ten 0x1E02150 around joints
+   0xB248/0xB24A */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xB1D0 - 0x260];
+    Vec4f pt;
+    u8 padB1E0[0xB244 - 0xB1E0];
+    s16 joint0;
+    u8 padB246[2];
+    s16 joint1;
+    s16 joint2;
+    u8 padB24C[0xB2A2 - 0xB24C];
+    s16 ang;
+    u8 padB2A4[0xB2AE - 0xB2A4];
+    s16 m;
+    s16 n;
+    u8 padB2B2[2];
+    s16 side;
+    u8 padB2B6[2];
+    s16 flag;
+    u8 padB2BA[2];
+    s16 t;
+} Scene_b377_01E016C0;
+
+static void func_01E016C0_b377(Scene_b377_01E016C0 *g) {
+    extern void b377_01E01CA0(void);
+    extern void b377_01E01F60(void);
+    extern void b377_01E02150(void);
+    extern void b377_01E02320(void);
+    extern void b377_01E027B0(void);
+    extern void b377_01E02A50(void);
+    extern void b377_01E02C80(void);
+    extern void b377_01E036F0(Scene_b377_01E016C0 *, void (*)(void), s32);
+    extern s32 func_001F5380(void);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    extern void func_001F5F90(s32, void *);
+    s16 i;
+    s16 j;
+
+    g->t++;
+    if (g->t > 27 && g->t < 225) {
+        for (i = 0, j = 0; i < g->n; j += 6, i++) {
+            g->side = j;
+            b377_01E036F0(g, b377_01E01CA0, 0);
+        }
+        if (g->t % 5 == 0 && g->n < 11) {
+            g->n++;
+        }
+    }
+    if (g->t < 12) {
+        g->side = g->m;
+        b377_01E036F0(g, b377_01E01F60, 0);
+        g->m++;
+    }
+    if (g->t == 195) {
+        func_001F5620(func_001F53A0(), g->joint0, &g->pt);
+    }
+    if (g->t == 193) {
+        func_001F5F90(func_001F5380(), &g->pt);
+    }
+    if (g->t >= 193 && g->t < 235) {
+        func_001F5620(func_001F53A0(), g->joint0, &g->pos);
+        g->pos.y = 40.0f;
+        if (g->flag) {
+            g->pos.z -= 4.0f;
+        } else {
+            g->pos.z += 4.0f;
+        }
+        g->pos = g->pt;
+        g->pos.y -= 20.0f;
+        g->side = 0;
+        if (g->t % 2 == 1) {
+            b377_01E036F0(g, b377_01E02320, 0);
+        }
+        g->side = 1;
+        if (g->t % 2 == 1) {
+            b377_01E036F0(g, b377_01E02320, 0);
+        }
+        g->side = 2;
+        if (g->t % 2 == 0) {
+            b377_01E036F0(g, b377_01E02320, 0);
+        }
+    }
+    if (g->t == 1) {
+        g->ang = 0;
+        g->side = 0;
+        b377_01E036F0(g, b377_01E027B0, 0);
+        g->ang = 90;
+        g->side = 0;
+        b377_01E036F0(g, b377_01E027B0, 0);
+        g->ang = 45;
+        g->side = 1;
+        b377_01E036F0(g, b377_01E027B0, 0);
+        g->ang = 135;
+        g->side = 1;
+        b377_01E036F0(g, b377_01E027B0, 0);
+        b377_01E036F0(g, b377_01E02C80, 0);
+        b377_01E036F0(g, b377_01E02A50, 0);
+    }
+    if (g->t == 118 || g->t == 191) {
+        func_001F5620(func_001F53A0(), g->joint1, &g->pos);
+        for (j = 0, i = 0; j < 10; i += 36, j++) {
+            g->ang = i;
+            b377_01E036F0(g, b377_01E02150, 0);
+        }
+    }
+    if (g->t == 141 || g->t == 191) {
+        func_001F5620(func_001F53A0(), g->joint2, &g->pos);
+        for (j = 0, i = 0; j < 10; i += 36, j++) {
+            g->ang = i;
+            b377_01E036F0(g, b377_01E02150, 0);
+        }
+    }
+}
 
 /* shape b377:01E01CA0, 174 insns: b411:01E015C0's spark in dark blue (0x20/0x20/0x80), size 8..27, hold 1..2; each tick
    it sits at joint 0xB244 moved k fiftieths (0x52) of the way to joint 0xB246, and the size grows by 2 */
