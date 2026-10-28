@@ -259,3 +259,5 @@ there is a source form that gives the original.
   converts as unsigned. (c021:01E00E00; the reverse of c021:01E03390)
 - **A run of `if (g->n == k)` blocks, each with a short copy loop; only the first loop matches, or the base folds into
   the store offsets:** give each block its own `{ s32 i; Vec4f *p = g->row[k]; for (...; i++, p++) ... }`. (b136:01E002E0)
+- **A float tested against zero with the zero and the value in each other's registers (`x != 0.0f` and `0.0f != x`
+  alike):** write the bare test, `if (v.x)`. (b191:01E01A70)
