@@ -555,7 +555,125 @@ static void func_01E018E0_b363(Obj_b279_01E00920 *o, Anim_b279_01E00920 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E01D30_b363);
+/* shape b363:01E01D30 (IWMagicSmoke2), 206 insns, 4 copies: b849:01E01570's source: b016:01E00ED0 with the view's y
+   column raised by cam h + cam 0x34, then func_00109100(view, {cam 0x5C, 0x5A, 0x5C}, 2 and 0, obj 0xD8); one sprite
+   quad at an object's position; mode (flags & 0xF) 0 = depth from the projection, 1 = far z, else -1. Texture corners
+   by the module helper func_01E00110_b363 (static, defined above) */
+
+typedef struct Cam_b363_01E01D30 {
+    u8 pad0[8];
+    s16 w;
+    s16 h;
+    u8 padC[0x14];
+    Vec4f pos;
+    u8 pad30[4];
+    f32 f34;
+    u8 pad38[0x22];
+    s16 f5A;
+    s16 f5C;
+    u8 pad5E[2];
+    Vec4f at;
+} Cam_b363_01E01D30;
+
+typedef struct Obj_b363_01E01D30 {
+    u8 pad0[0x80];
+    s32 f80;
+    u8 pad84[4];
+    s32 f88;
+    u8 pad8C[8];
+    u8 f94[0x2A];
+    s16 fBE;
+    u8 padC0[0x18];
+    u8 fD8[4];
+} Obj_b363_01E01D30;
+
+typedef struct Xyz_b363_01E01D30 {
+    u64 x : 16;
+    u64 y : 16;
+    u64 z : 24;
+    u64 fog : 8;
+    u64 reg;
+} Xyz_b363_01E01D30;
+
+typedef struct Uv_b363_01E01D30 {
+    f32 u, v;
+} Uv_b363_01E01D30;
+
+typedef struct Pk_b363_01E01D30 {
+    u16 size;
+    u16 flags;
+    s32 pad4;
+    u64 regs;
+    Uv_b363_01E01D30 uv;
+    u64 pad18;
+    Xyz_b363_01E01D30 v[4];
+    u64 pad60[6];
+} Pk_b363_01E01D30;
+
+typedef struct Buf_b363_01E01D30 {
+    u64 tag;
+    Pk_b363_01E01D30 pk;
+} Buf_b363_01E01D30;
+
+static void func_01E01D30_b363(Obj_b363_01E01D30 *obj, Cam_b363_01E01D30 *cam, s32 flags, Vec4f c) {
+    extern void func_00108EF0();
+    extern void func_00109100();
+    f32 view[4][4];
+    Vec4f a;
+    Vec4f s;
+    f32 out[4];
+    f32 m[4][4];
+    s32 arg[4];
+    Buf_b363_01E01D30 buf;
+    Uv_b363_01E01D30 uv;
+    s32 sel;
+    s32 k;
+    s32 mode;
+    Pk_b363_01E01D30 *p = &buf.pk;
+
+    sel = (flags >> 4) & 0xF;
+    p->flags = 0x24;
+    p->size = 9;
+    p->regs = ((u64)4 << 32) | 0x24242421;
+    p->pad4 = 0;
+    p->flags |= 0x800;
+    if (sel == 0) {
+        func_002086D0(p, ((u64)0x80 << 32) | 0x42);
+    } else {
+        func_002086D0(p, ((s64)sel << 2) | (((u64)0x80 << 32) | 0x40));
+    }
+    func_00107740(&uv, &cam->at);
+    p->uv = uv;
+    func_01E00110_b363((Pk_b363_01E00110 *)p, (Rect_b363_01E00110 *)obj->f94, obj->fBE);
+    func_00208700(p, (void *)obj->f88, 1);
+    s.x = 0.1f;
+    a.x = c.x;
+    s.y = 0.1f;
+    a.y = c.y;
+    s.z = 0.1f;
+    a.z = c.z;
+    func_00108EF0(m, &s, &cam->pos, &a);
+    func_00108CE0(view, cam->w, cam->h);
+    for (k = 0; k < 4; k++) {
+        view[k][1] += cam->h + cam->f34;
+    }
+    arg[0] = cam->f5C;
+    arg[1] = cam->f5A;
+    arg[2] = cam->f5C;
+    func_00109100(view, arg, 2, obj->fD8);
+    func_00109100(view, arg, 0, obj->fD8);
+    if (func_00205630((s32)view, 0x70000000, (s32)m, (s32)p, out) != 0) {
+        mode = flags & 0xF;
+        if (mode == 0) {
+            func_002075F0((s32)p, obj->f80, func_001A23B0(out[0]));
+        } else if (mode == 1) {
+            p->v[0].z = p->v[1].z = p->v[2].z = p->v[3].z = 0xFFFFFF;
+            func_002075F0((s32)p, obj->f80, 0);
+        } else {
+            func_002075F0((s32)p, obj->f80, -1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/mod/b363", func_01E02070_b363);
 
