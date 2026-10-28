@@ -449,7 +449,215 @@ static s32 func_01E00B90_c021(Scene_c021_01E00B90 *g, Node_c021_01E00B90 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/c021", func_01E00E00_c021);
+/* shape c021:01E00E00 (C021_OBJ_MOVE_8_), 368 insns, 1 copy: C021_OBJ_MOVE_8_, c021:01E013C0's link: turning back 4 a
+   tick, its frame vector from the first ring above its top (f60) through func_001098E0 into 0x40 and 0x0, its two
+   widths (0x86/0x87) narrowing by 3 past i x 10 + 5 / i x 11 + 5 after scene frame 7 and shrinking with the scale (by
+   1 under 2.0, else to width - scale); the top and tail sink by the scale (tail 18 behind); while under 180 it hands
+   colour, alpha 10, 155 sizes, tail, position and turn to the scene (ctx+0x3588..) and spawns it through
+   c021:01E02BE0; alphas up by 6/15 to 0x60 for the first 8 scene frames, down by 16 while the timer is under 18, else
+   up by 5 */
+
+typedef struct {
+    f32 x;
+    f32 y;
+    f32 z;
+    u8 padC[0xC];
+} Pt_c021_01E00E00;
+
+typedef struct {
+    u8 pad0[0x118];
+    Pt_c021_01E00E00 pt[10];
+} Path_c021_01E00E00;
+
+typedef struct {
+    u8 pad0[0x68];
+    s32 w68;
+} Link_c021_01E00E00;
+
+typedef struct {
+    Vec4f v0;
+    u8 pad10[0x30];
+    Vec4f v40;
+    u8 pad50[0x10];
+    f32 f60;
+    f32 f64;
+    u8 pad68[4];
+    Link_c021_01E00E00 *link;
+    u8 pad70[0xC];
+    u8 col[4];
+    u8 col2[4];
+    s16 h84;
+    u8 c86;
+    u8 c87;
+    u8 pad88[4];
+    s16 ang;
+    s16 h8E;
+    u8 pad90[2];
+    s16 h92;
+} Obj_c021_01E00E00;
+
+typedef struct {
+    u8 pad0[0x3350];
+    Vec4f v3350;
+    u8 pad3360[0x10];
+    Path_c021_01E00E00 path;
+    s32 timer;
+    u8 col[4];
+    u8 pad3580[8];
+    Obj_c021_01E00E00 *parent;
+    u8 pad358C[4];
+    f32 f3590;
+    f32 f3594;
+    f32 f3598;
+    u8 pad359C[0x3898 - 0x359C];
+    f32 scale;
+    u8 pad389C[0x38A6 - 0x389C];
+    s16 ang;
+    u8 pad38A8[8];
+    s16 h38B0;
+    u8 pad38B2[2];
+    s16 h38B4;
+    u8 pad38B6[4];
+    s16 t;
+    u8 pad38BC[8];
+    s16 h38C4;
+} Scene_c021_01E00E00;
+
+static s32 func_01E00E00_c021(Scene_c021_01E00E00 *g, Obj_c021_01E00E00 *o) {
+    extern void c021_01E02BE0(Scene_c021_01E00E00 *, void *);
+    extern void func_00106DD0(void *, f32, f32, f32);
+    extern void func_001098E0(Vec4f *, Vec4f *, Vec4f *, Pt_c021_01E00E00 *, Pt_c021_01E00E00 *);
+    extern s32 func_001A23B0(f32);
+    s32 i;
+    Path_c021_01E00E00 *path;
+    Pt_c021_01E00E00 *cur;
+    Pt_c021_01E00E00 *prev;
+    Vec4f v;
+    Vec4f a;
+    Vec4f r1;
+    Vec4f r2;
+
+    path = &g->path;
+    func_00106DD0(&v, 0.0f, o->f60, 0.0f);
+    a.y = 0.0f;
+    o->ang -= 4;
+    if (o->ang < -359) {
+        o->ang %= 360;
+    }
+    for (i = 1; i < 8; i++) {
+        if (path->pt[i].y > o->f60) {
+            cur = &path->pt[i];
+            a.x = path->pt[0].x;
+            prev = &path->pt[i - 1];
+            a.z = path->pt[0].z;
+            func_001098E0(&r1, &a, &v, prev, cur);
+            o->v40 = r1;
+            func_001098E0(&r2, &a, &v, prev, cur);
+            o->v0 = r2;
+            if (g->t > 7) {
+                if (o->c86 >= i * 10 + 5) {
+                    o->c86 -= 3;
+                }
+                if (o->c87 >= i * 11 + 5) {
+                    o->c87 -= 3;
+                }
+            }
+            i = 8;
+        }
+    }
+    if (g->scale < 2.0f) {
+        if (o->c86 > 3) {
+            o->c86 -= 1;
+        }
+    } else if (o->c86 > 3) {
+        o->c86 = func_001A23B0((f32)o->c86 - g->scale);
+    }
+    if (g->scale < 2.0f) {
+        if (o->c87 > 3) {
+            o->c87 -= 1;
+        }
+    } else if (o->c87 > 3) {
+        o->c87 = func_001A23B0((f32)o->c87 - g->scale);
+    }
+    if (o->f60 > 0.0f) {
+        o->f60 -= g->scale;
+        if (o->f64 - o->f60 >= 18.0f) {
+            o->f64 -= g->scale;
+        }
+    } else {
+        o->f64 -= g->scale;
+        if (o->f64 < o->f60) {
+            o->f64 = o->f60;
+            if (o->link != NULL) {
+                o->link->w68 = 0;
+            }
+            o->h84 = 0;
+        }
+    }
+    if (o->c87 < 6) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 16;
+        }
+        if (o->col2[3] > 16) {
+            o->col2[3] -= 16;
+        }
+    }
+    if (o->h8E > 0 && o->f64 < 180.0f) {
+        g->parent = o;
+        g->f3590 = g->f3594 = 155.0f;
+        g->col[0] = o->col[0];
+        g->col[1] = o->col[1];
+        g->col[2] = o->col[2];
+        g->col[3] = 10;
+        g->h38B0 = 1;
+        g->f3598 = o->f64;
+        g->h38B4 = 1;
+        g->v3350 = o->v0;
+        g->ang = o->ang;
+        if (o->h92 != 0) {
+            g->h38C4 = 0;
+        } else {
+            g->h38C4 = 1;
+        }
+        c021_01E02BE0(g, func_01E00E00_c021);
+        o->h8E = 0;
+    }
+    if (g->t < 8) {
+        if (o->f64 > 120.0f) {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 6;
+            }
+            if (o->col2[3] < 0x60) {
+                o->col2[3] += 6;
+            }
+        } else {
+            if (o->col[3] < 0x60) {
+                o->col[3] += 15;
+            }
+            if (o->col2[3] < 0x60) {
+                o->col2[3] += 15;
+            }
+        }
+    } else if (g->timer < 18) {
+        if (o->col[3] > 16) {
+            o->col[3] -= 16;
+        }
+        if (o->col2[3] > 16) {
+            o->col2[3] -= 16;
+        }
+    } else {
+        if (o->col[3] < 0x60) {
+            o->col[3] += 5;
+        }
+        if (o->col2[3] < 0x60) {
+            o->col2[3] += 5;
+        }
+    }
+    if (g->timer < 11) {
+        o->h84 = 0;
+    }
+    return 0;
+}
 
 /* shape c021:01E013C0, 192 insns: c030:01E00E30's segment hand-on: turning back 1 a tick, its two lengths (f60/f64)
    saved as bytes and shrinking by 4 (the tail follows once 18 behind); while under 200 it hands its colour, lengths
