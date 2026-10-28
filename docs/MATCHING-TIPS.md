@@ -266,3 +266,5 @@ there is a source form that gives the original.
 - **`dk try` alone is one off (an argument address before a float `mtc1`) but `tools/mod_infile.sh` matches:** trust the
   in-file result and leave the call alone (the float-local and inline-wrapper fixes broke it in the file); splice
   by hand and run the full check, since `dk accept` refuses. (b489:01E00FA0)
+- **-O1 scene manager with the scene pointer in the lowest saved register where the original has it in the highest:**
+  take the scene as a typed parameter (`Scene *g`), not `s32 arg0` plus `g = (Scene *)arg0;`. (b181:01E03830)
