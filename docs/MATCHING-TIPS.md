@@ -261,3 +261,5 @@ there is a source form that gives the original.
   the store offsets:** give each block its own `{ s32 i; Vec4f *p = g->row[k]; for (...; i++, p++) ... }`. (b136:01E002E0)
 - **A float tested against zero with the zero and the value in each other's registers (`x != 0.0f` and `0.0f != x`
   alike):** write the bare test, `if (v.x)`. (b191:01E01A70)
+- **A value read just before a call to a static sibling lands in `$a0` where the original has `$a1`:** drop the cast
+  on the struct-address argument (the reverse of the b740 tip). (b292:01E02580)
