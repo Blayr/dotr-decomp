@@ -245,3 +245,8 @@ there is a source form that gives the original.
   `dk accept` refuses on the name difference. (b712:01E00FD0)
 - **The original keeps `i` and computes `addu v0, i, i; addiu v0, 1; sll`, yours counts a register up by 2:** write the
   index as `out[i + i + 1]`, not `out[i * 2 + 1]`. (b773:01E017B0)
+- **A value read twice is loaded into a saved register in a `jal`'s delay slot and reused after the call
+  (`rand() % (2t) - t`):** write the field read straight into the expression, `func_0019A5C8() % (g->t * 2) - g->t`;
+  a named local or an inline helper moves the loop counters to other saved registers. (c603:01E00E10)
+- **`dk perm` says "no better version found" at once:** `base.c` has the `__builtin_offsetof` layout checks; delete
+  them from `nonmatchings/<func>/base.c` and run `permuter.py` yourself. (c603:01E00E10)
