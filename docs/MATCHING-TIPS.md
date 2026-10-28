@@ -250,3 +250,8 @@ there is a source form that gives the original.
   a named local or an inline helper moves the loop counters to other saved registers. (c603:01E00E10)
 - **`dk perm` says "no better version found" at once:** `base.c` has the `__builtin_offsetof` layout checks; delete
   them from `nonmatchings/<func>/base.c` and run `permuter.py` yourself. (c603:01E00E10)
+- **A stack vector's address taken once before a loop (`addiu sN, sp, &p`), `.x` read through `sN`, `.y` straight from
+  `sp`:** make it the second element of an array with the stack vector below it, `Vec4f t[2]`, and use `t[1]`.
+  (b740:01E01F30, as b353:01E02660)
+- **Two argument addresses computed in the other order at a join:** a cast on the struct-address argument, even to
+  its own type (`(Emit_b000_01E01140 *)&g->emit`), restores the order. (b740:01E01F30)
