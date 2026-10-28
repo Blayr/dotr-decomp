@@ -236,3 +236,6 @@ there is a source form that gives the original.
 - **A call matches in `dk try` but `tools/mod_infile.sh` says "undefined identifier":** the callee is a static
   defined later in the file (`#include "mod/<mod>.c"` hides this); call it by its link name `<mod>_<VADDR>` through a
   block-scope extern with no prototype. (b494:01E013C0)
+- **`work/port.py` drops a donor's `#pragma opt_propagation off` / `reset` pair:** `dk try` matches but the module comes out
+  bigger and later `jal` targets shift, since the pragma stays on for every later function. Copy both lines.
+  (b498:01E03710)
