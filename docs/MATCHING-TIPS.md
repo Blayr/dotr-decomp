@@ -239,3 +239,7 @@ there is a source form that gives the original.
 - **`work/port.py` drops a donor's `#pragma opt_propagation off` / `reset` pair:** `dk try` matches but the module comes out
   bigger and later `jal` targets shift, since the pragma stays on for every later function. Copy both lines.
   (b498:01E03710)
+- **`dk try` stuck at N-2/N, the only difference `%%hi/%%lo(D_X+4 label)` against `%%hi/%%lo(D_X)` on a field read of an
+  indexed module table:** the words are the same; splat just put an extra label inside the table. Do not declare
+  the label; check with `work/fulltry.sh`, then splice by hand (`work/splice.py`) and run the full check, since
+  `dk accept` refuses on the name difference. (b712:01E00FD0)
