@@ -255,3 +255,5 @@ there is a source form that gives the original.
   (b740:01E01F30, as b353:01E02660)
 - **Two argument addresses computed in the other order at a join:** a cast on the struct-address argument, even to
   its own type (`(Emit_b000_01E01140 *)&g->emit`), restores the order. (b740:01E01F30)
+- **An extra `andi v0, 0xFF` before a u8-to-float conversion:** drop the `(u32)` and write `(f32)o->c86`; a u8 already
+  converts as unsigned. (c021:01E00E00; the reverse of c021:01E03390)
