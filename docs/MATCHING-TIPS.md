@@ -243,3 +243,5 @@ there is a source form that gives the original.
   indexed module table:** the words are the same; splat just put an extra label inside the table. Do not declare
   the label; check with `work/fulltry.sh`, then splice by hand (`work/splice.py`) and run the full check, since
   `dk accept` refuses on the name difference. (b712:01E00FD0)
+- **The original keeps `i` and computes `addu v0, i, i; addiu v0, 1; sll`, yours counts a register up by 2:** write the
+  index as `out[i + i + 1]`, not `out[i * 2 + 1]`. (b773:01E017B0)
