@@ -275,3 +275,6 @@ there is a source form that gives the original.
 - **No twin by name, `shapes.py similar` and `port.py scan` find nothing:** rank the C functions by how close their
   sequence of main-program calls is to the target's (`difflib` over `port.calls()`, `work/gus3/callsim.py`); the top
   hits give donors for parts of the body. (b598:01E055C0)
+- **In a call to a static sibling, a later argument's address (`addiu a3`) set before `li a2`:** cast the first two
+  arguments `(void *)` and pass the late one bare; a cast on it brings the early `addiu` back. (b546:01E021E0; see the
+  b740 and b292 cast tips)
