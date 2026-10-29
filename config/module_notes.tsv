@@ -231,7 +231,6 @@ c022:01E00C70	58% (98/168)	hard: structure right, all register names: g wants s0
 c022:01E010E0	93% (273/292)	hard: regs only: n (s5) vs angle temp a (s6) swapped, &q[3].y/&q[2].y pointer temps fp/s7 swapped; decl orders tried (best draft: drafts/mod/c022_01E010E0.c)
 c026:01E00F20	94% (138/147)	hard: draw loop: node pointer and `draw` local swapped (orig s3 ptr / s4 draw); decl order and draw forms did not move it; try mwprobe (best draft: drafts/mod/c026_01E00F20.c)
 c027:01E00660	67%	an earlier try got this far
-c027:01E01930	311/314	hard: func_00106DD0(&cp, 0, 30, 0): orig loads 30 before mtc1 zero (same kind as c059:01E031C0), + one extra nop after the 1-pass loop's blez (best draft: drafts/mod/c027_01E01930.c)
 c030:01E01510	69% (161/233)	hard: colouring fixed with `T *g = (T *)arg0;` + a separate init counter k; left: 12 unfilled delay-slot nops the original keeps (cmov/jump-threading "give up"?), slot loops want counter s3/pointer s2, pragmas no help (best draft: drafts/mod/c030_01E01510.c)
 c031:01E006E0	67%	an earlier try got this far
 c034:01E00350	167/176	hard: s1/s2 swap in draw loop (slot ptr vs fn ptr); decl order, counters, c035-style n tried (best draft: drafts/mod/c034_01E00350.c)
