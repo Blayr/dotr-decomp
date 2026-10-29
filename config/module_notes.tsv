@@ -231,7 +231,6 @@ c026:01E00F20	94% (138/147)	hard: draw loop: node pointer and `draw` local swapp
 c027:01E00660	67%	an earlier try got this far
 c030:01E01510	69% (161/233)	hard: colouring fixed with `T *g = (T *)arg0;` + a separate init counter k; left: 12 unfilled delay-slot nops the original keeps (cmov/jump-threading "give up"?), slot loops want counter s3/pointer s2, pragmas no help (best draft: drafts/mod/c030_01E01510.c)
 c031:01E006E0	67%	an earlier try got this far
-c034:01E00350	167/176	hard: s1/s2 swap in draw loop (slot ptr vs fn ptr); decl order, counters, c035-style n tried (best draft: drafts/mod/c034_01E00350.c)
 c051:01E00590	65% (100/155)	hard: in-file; s-register colouring of params (orig s2=a1, s0=a0, s1=counter) all swapped (best draft: drafts/mod/c051_01E00590.c)
 c056:01E00360	dk try 100%	hard: REJECTED by the full build
 c056:01E04CF0	97%	an earlier try got this far
