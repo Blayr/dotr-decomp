@@ -924,7 +924,136 @@ static s32 func_01E037A0_b178(s32 arg0, Obj_b178_01E037A0 *o) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b178", func_01E03940_b178);
+/* shape b178:01E03940 (B178_OBJ_MOVE_10_), 390 insns, 1 copy (-O3,p): a jittery spark trail by slot (kind = slot %
+   6): set up once at the origin pushed out 8 (kinds 0-1) or 13 along the scene angle (ctx+0xDA5A by kind pair, +180
+   for odd kinds), size 0.3..4.2, speed 0.3..4.7, head turned 165..194, random pitch, life 3..17; frame up to 15
+   before tick 7 then down; alpha 0xC0 for its life, then down by 0x1D and ends; blinks white / grey; jitters -40..39
+   and moves in x/y; feeds its 20-point trail until tick 7 */
+
+typedef struct {
+    Vec4f p[0x14];
+} Track_b178_01E03940;
+
+typedef struct {
+    u8 pad0[0x7030];
+    Track_b178_01E03940 track[0x40];
+    u8 pad[0xD430 - 0x7030 - 0x40 * 0x140];
+    Vec4f pt[0x62];
+    u8 padA5A[0xDA5A - 0xD430 - 0x62 * 0x10];
+    s16 ang[3];
+    u8 padA60[0xDC70 - 0xDA60];
+    u8 trig[1];
+} World_b178_01E03940;
+
+typedef struct {
+    u8 pad0[6];
+    s16 frame;
+    s16 life;
+    u8 padA[0x26];
+    Vec4f v;
+    u8 pad40[8];
+    f32 size;
+    f32 speed;
+    s16 idx;
+    s16 kind;
+    s16 t;
+    u8 pad56[2];
+    s16 state;
+    s16 head;
+    s16 pitch;
+    u8 pad5E[2];
+    u8 c0[4];
+} Spark_b178_01E03940;
+
+#pragma optimization_level 3
+
+static s32 func_01E03940_b178(World_b178_01E03940 *w, Spark_b178_01E03940 *o) {
+    extern void func_001076F0(void *, s32, s32, s32);
+    extern f32 func_00108030(void *, s16, s32);
+    f32 r;
+    s16 i;
+    Vec4f *dst;
+    Vec4f *src;
+
+    if (o->state == 1) {
+        o->frame = 1;
+        o->c0[3] = 0;
+        o->kind = o->idx % 6;
+        w->pt[o->idx].x = 0.0f;
+        w->pt[o->idx].y = 0.0f;
+        w->pt[o->idx].z = 0.0f;
+        if (o->kind < 2) {
+            r = 8.0f;
+        } else if (o->kind < 4) {
+            r = 13.0f;
+        } else if (o->kind < 6) {
+            r = 13.0f;
+        }
+        if (o->kind < 2) {
+            o->head = w->ang[0];
+        } else if (o->kind < 4) {
+            o->head = w->ang[1];
+        } else if (o->kind < 6) {
+            o->head = w->ang[2];
+        }
+        if (o->kind % 2 == 1) {
+            o->head += 180;
+        }
+        w->pt[o->idx].x += r * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += r * func_00108030(w->trig, o->head, 0);
+        src = &w->pt[o->idx];
+        dst = w->track[o->idx].p;
+        for (i = 0; i < 0x14; i++) {
+            dst->x = src->x;
+            dst->y = src->y;
+            dst->z = src->z;
+            dst++;
+        }
+        o->size = func_0019A5C8() % 40 + 3;
+        o->size /= 10.0f;
+        o->speed = func_0019A5C8() % 45 + 3;
+        o->speed /= 10.0f;
+        o->head += (s16)(func_0019A5C8() % 30 + 165);
+        o->pitch = (func_0019A5C8() >> 4) % 360;
+        o->life = func_0019A5C8() % 15 + 3;
+        o->state = 2;
+    }
+    if (o->t < 7) {
+        if (o->frame < 0xF) {
+            o->frame++;
+        }
+    } else if (o->frame > 0) {
+        o->frame--;
+    }
+    if (o->t < o->life) {
+        o->c0[3] = 0xC0;
+    } else if (o->c0[3] > 0x1E) {
+        o->c0[3] -= 0x1D;
+    } else {
+        o->state = 0;
+    }
+    if (o->t % 2 == 0) {
+        func_001076F0(o->c0, 0xFF, 0xFF, 0xFF);
+    } else {
+        func_001076F0(o->c0, 0x80, 0x80, 0x80);
+    }
+    o->v.x = func_0019A5C8() % 80 - 40;
+    o->v.y = func_0019A5C8() % 80 - 40;
+    o->v.z = func_0019A5C8() % 80 - 40;
+    if (o->t != 0) {
+        w->pt[o->idx].x += o->speed * func_00108030(w->trig, o->head, 1);
+        w->pt[o->idx].y += o->speed * func_00108030(w->trig, o->head, 0);
+        w->pt[o->idx].x += o->v.x / 10.0f;
+        w->pt[o->idx].y += o->v.y / 10.0f;
+    }
+    if (o->t < 7) {
+        func_01E00080_b178(&w->track[o->idx].p[0x13], 0x14, 0, &w->pt[o->idx]);
+    }
+    o->t++;
+    return 0;
+}
+
+#pragma optimization_level reset
 
 /* shape b178:01E03F60, 85 insns: a grey-purple stretching flash: random turn on all three axes, size 20x20; f4C grows by 20 a
    frame with f48 10 past it; second alpha up by 0x50 to 0xA0 for 10 frames, then down by 12 until it ends */
