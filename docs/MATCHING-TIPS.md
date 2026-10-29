@@ -306,3 +306,10 @@ there is a source form that gives the original.
   scope, set it just before the first call, pass it only in the last. (c532:01E01040)
 - **The divisor and the step's `cvt.s.w` hoisted above the table loads in the original:** fold the multiply into each
   delta, `dx = (a.x - b.x) / 50.0f * o->step;`, with no step local. (b709:01E055C0)
+- **Scene manager draw loop, the function pointer and the slot pointer (or counter) in each other's saved registers:**
+  keep `draw = g->slot[i].draw;` but test the field again, `if (g->slot[i].draw != NULL)`; if the same variable serves
+  the handler loop, give that loop its own `fn` local. (c034:01E00350, c006:01E00B80)
+- **The c532 `one` trick goes on whichever call loads its second constant first in the original** (the second of
+  three in c531:01E01040).
+- **One counter for two loops, one with a call and one without, the later loop's counter swapped with a saved local:**
+  give the loop without a call its own counter. (c059:01E00340)
