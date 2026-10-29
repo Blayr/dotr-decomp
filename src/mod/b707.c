@@ -590,7 +590,127 @@ static void func_01E01220_b707(Obj_b016_01E00ED0 *obj, Cam_b016_01E00ED0 *cam, s
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b707", func_01E014E0_b707);
+/* shape b707:01E014E0 (B707_W_S), 400 insns, 1 copy: B707_W_S, the effect scene step: counts the frame (0x8776);
+   before 160 takes joint 0x8740 twice and 0x8742 into the trail point 0x86C0 led by 0x8724, then slides it by 6.8
+   (side flag 0x8772) to 183 and turns 0x8720 by 32 to 187 and by 5 to 229; setup at 1, two 0x1E02B00 at 185, on
+   93..294 0x1E01B20 and two 0x1E02240, every third frame 0x1E01D30 to 180 and 0x1E01ED0 on 216..280, 0x1E02070 at
+   190; from 54 turns 0x8720 by 1.5 to 109 and by 3 to 149 and grows 0x8724 by 0.02 up to 1 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0x86C0 - 0x260];
+    Vec4f a;
+    u8 pad86D0[0x8720 - 0x86D0];
+    f32 ang;
+    f32 k;
+    u8 pad8728[0x8740 - 0x8728];
+    s16 j0;
+    s16 j1;
+    u8 pad8744[0x876E - 0x8744];
+    s16 side;
+    u8 pad8770[2];
+    s16 flag;
+    u8 pad8774[2];
+    s16 t;
+} Scene_b707_01E014E0;
+
+static void func_01E014E0_b707(Scene_b707_01E014E0 *g) {
+    extern void b707_01E01B20(void);
+    extern void b707_01E01D30(void);
+    extern void b707_01E01ED0(void);
+    extern void b707_01E02070(void);
+    extern void b707_01E02240(void);
+    extern void b707_01E02580(void);
+    extern void b707_01E02810(void);
+    extern void b707_01E02B00(void);
+    extern void b707_01E02C90(void);
+    extern void b707_01E02D80(void);
+    extern void b707_01E03C40(Scene_b707_01E014E0 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v;
+
+    g->t++;
+    if (g->t < 160) {
+        func_001F5620(func_001F53A0(), g->j0, &g->a);
+        func_001F5620(func_001F53A0(), g->j0, &v);
+        func_001F5620(func_001F53A0(), g->j1, &g->pos);
+        g->a.y = g->pos.y;
+        g->a.z = g->pos.z;
+        g->a.y += g->k * (g->a.y - v.y);
+        g->a.z += g->k * (g->a.z - v.z);
+    } else if (g->t < 184) {
+        if (g->flag) {
+            g->a.z -= 6.8f;
+        } else {
+            g->a.z += 6.8f;
+        }
+        g->a.y -= 0.2f;
+    } else if (g->t < 188) {
+        g->ang += 32.0f;
+    } else if (g->t < 230) {
+        g->ang += 5.0f;
+    }
+    if (g->t == 1) {
+        b707_01E03C40(g, b707_01E02D80, 0);
+    }
+    if (g->t == 1) {
+        b707_01E03C40(g, b707_01E02C90, 0);
+    }
+    if (g->t == 1) {
+        b707_01E03C40(g, b707_01E02580, 0);
+    }
+    if (g->t == 1) {
+        b707_01E03C40(g, b707_01E02C90, 0);
+        g->side = 0;
+        b707_01E03C40(g, b707_01E02810, 0);
+        g->side = 1;
+    }
+    if (g->t == 185) {
+        g->side = 0;
+        b707_01E03C40(g, b707_01E02B00, 0);
+        g->side = 1;
+        b707_01E03C40(g, b707_01E02B00, 0);
+        g->side = 2;
+    }
+    if (g->t >= 53 && g->t < 301) {
+        g->side = 0;
+        g->side = 1;
+        if (g->t >= 93 && g->t < 295) {
+            b707_01E03C40(g, b707_01E01B20, 0);
+        }
+        if (g->t >= 93) {
+            g->side = 0;
+            if (g->t < 295) {
+                b707_01E03C40(g, b707_01E02240, 0);
+            }
+            g->side = 1;
+            if (g->t < 295) {
+                b707_01E03C40(g, b707_01E02240, 0);
+            }
+            if (g->t % 3 == 1 && g->t < 181) {
+                b707_01E03C40(g, b707_01E01D30, 0);
+            }
+            if (g->t >= 216 && g->t % 3 == 1 && g->t < 281) {
+                b707_01E03C40(g, b707_01E01ED0, 0);
+            }
+        }
+    }
+    if (g->t == 190) {
+        b707_01E03C40(g, b707_01E02070, 0);
+    }
+    if (g->t > 53) {
+        if (g->t < 110) {
+            g->ang += 1.5f;
+        } else if (g->t < 150) {
+            g->ang += 3.0f;
+        }
+        if (g->k < 1.0f) {
+            g->k += 0.02f;
+        }
+    }
+}
 
 /* shape b707:01E01B20, 131 insns: white spark (size 10, frame 0..3, f50 10.. + random below twice the scene scale at ctx+0x8720, angle 0..359, f8 0..34): alpha up by 64 to 0xC0 for 3..5 ticks, then down by 14; after scene count 240 f50 grows 15..34 per tick; between 161 and 209 rot[2] turns -0x300 */
 
