@@ -270,3 +270,5 @@ there is a source form that gives the original.
   take the scene as a typed parameter (`Scene *g`), not `s32 arg0` plus `g = (Scene *)arg0;`. (b181:01E03830)
 - **`lw`/`sw` where yours has `lwc1`/`swc1` copying one field into a vector local:** type the field and the local as
   s32 (a struct of four s32), not a pointer cast at the store. (b773:01E038D0)
+- **A loop counter spilled to the stack and the frame 0x10 too big, with two neighbouring stack vectors each held by
+  address in a saved register:** declare them (and the vector before them) as one `Vec4f v[3]`. (b042:01E05C20)

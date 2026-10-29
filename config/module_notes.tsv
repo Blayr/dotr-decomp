@@ -34,7 +34,6 @@ b034:01E06010	96%	an earlier try got this far
 b037:01E05F30	98% (138/141)	hard: float args of b037_01E03BD0(p,q,4,10,0): orig sets f13, f14 then f12; 16 block/file-scope prototype mixes, direct static call (worse) tried (best draft: drafts/mod/b037_01E05F30.c)
 b040:01E02320	94.5%	an earlier try got this far
 b040:01E03440	99.2%	an earlier try got this far
-b042:01E05C20	73%	an earlier try got this far
 b043:01E03790	82%	an earlier try got this far
 b044:01E02940	90%	an earlier try got this far
 b046:01E01520	94%	hard: STQ block only: original divides t0/256 twice and keeps t1/256 in a mov.s copy; MWCC shares t0/256 under every form tried (needs opt_propagation off so 0/64/256 stay unfolded)
