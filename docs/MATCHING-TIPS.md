@@ -284,3 +284,8 @@ there is a source form that gives the original.
 - **A pointer-walk copy loop with no call inside, the counter and pointer in each other's temps (`$v1`/`$a0`):**
   give the loop its own block counter declared before the pointer, `{ s16 k; Vec4f *p; ... }`. (b702:01E013E0;
   see b136:01E002E0)
+- **A run of `x == 104 || x == 105 || ...` kept as one `beq` per value where yours becomes a range check (`addiu; sltiu`):**
+  the function is -O3. (b053:01E010F0)
+- **Scene manager with two counted draw loops, the second's counter and count in each other's saved registers:** run
+  the second loop on the first loop's count variable and count in its counter, `j = 0; for (n = 0; ...) if (used) j++;`.
+  (b053:01E010F0)
