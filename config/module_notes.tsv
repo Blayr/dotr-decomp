@@ -31,7 +31,6 @@ b033:01E02B80	99.7%	an earlier try got this far
 b034:01E054C0	86% (317/369)	hard: box/ring draw: `i == 2 (best draft: drafts/mod/b034_01E054C0.c)
 b034:01E05A90	85% (298/349)	hard: ring draw: second angle is ((ang + 20) + a) + 90 unfolded in the original (MWCC folds my 20+90 into 0x6E); pk pointer / flags / a registers rotated; a < limit compare operands swapped (best draft: drafts/mod/b034_01E05A90.c)
 b034:01E06010	96%	an earlier try got this far
-b037:01E05F30	98% (138/141)	hard: float args of b037_01E03BD0(p,q,4,10,0): orig sets f13, f14 then f12; 16 block/file-scope prototype mixes, direct static call (worse) tried (best draft: drafts/mod/b037_01E05F30.c)
 b040:01E02320	94.5%	an earlier try got this far
 b040:01E03440	99.2%	an earlier try got this far
 b043:01E03790	82%	an earlier try got this far
@@ -50,7 +49,6 @@ b062:01E00DF0	89%	an earlier try got this far
 b062:01E020A0	97%	an earlier try got this far
 b062:01E042E0	83%	an earlier try got this far
 b064:01E030D0	71%	an earlier try got this far
-b065:01E01BA0	97% (127/131)	hard: 15.0f/5.0f constant load order + mul/add regs swapped; operand orders, locals, pscan all no change (best draft: drafts/mod/b065_01E01BA0.c)
 b070:01E00E80	99.2%	an earlier try got this far
 b070:01E034D0	95%	an earlier try got this far
 b080:01E010C0	47% (130/278)	hard: first draft only: spilled params/counters on stack, frame 0x220 vs 0x200; needs the real stack layout first (best draft: drafts/mod/b080_01E010C0.c)
@@ -81,7 +79,7 @@ b131:01E053B0	93%	an earlier try got this far
 b132:01E01340	99.2%	an earlier try got this far
 b134:01E011E0	67%	hard: heavy spills (k/j/pq/n3/last on stack, pts+s params spilled); B gets a struct-return temp per call site (sp1D0/sp1E0) that A does not; cousin of b134:01E00820 (best draft: drafts/mod/b134_01E011E0.c)
 b136:01E019D0	66% (217/330), same length	hard: scene manager; b136:01E01950's body is written inline (not auto-inlined); needs `#include ""` for its D_ globals; left: g/id/n/i register rotation (best draft: drafts/mod/b136_01E019D0.c)
-b136:01E020D0	97% (197/204)	hard: schedule only: the 0.8f scale const (f14, mov.s f12) loads before the pos.x convert in ours, interleaved after it in the original; statement order / const-arg forms tried (best draft: drafts/mod/b136_01E020D0.c)
+b136:01E020D0	99% (202/204)	hard: block-local f32 r = 0.8f fixes the 0.8f schedule but r gets f12 (mov to f14) where orig has f14 (mov to f12); every form with the right regs schedules the load early; permuter nothing (best draft: drafts/mod/b136_01E020D0.c)
 b137:01E01340	94.5%	an earlier try got this far
 b149:01E02D30	72%	an earlier try got this far
 b151:01E027D0	134/143	hard: frame 0x10 short (two 8-byte gaps at sp+0x50 and 0x90 in orig) + s1/s2 swap (best draft: drafts/mod/b151_01E027D0.c)
