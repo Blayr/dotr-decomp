@@ -205,7 +205,6 @@ b701:01E037D0	41% (117/282)	hard: structure written (KPOINT_RAIN_2 family, none 
 b704:01E03240	87% (287/331), same length	hard: only stack offsets: both GS packets 8 bytes low (orig 0x158/0x188), out-param at 0x21C (frame 0x220 vs 0x200): some 8-byte local before the packets and ~0x24 after that my C lacks (best draft: drafts/mod/b704_01E03240.c)
 b706:01E02260	99.2%	an earlier try got this far
 b706:01E050E0	81%	hard: frame 0x1D0 vs 0x1B0 (two unknown 16-byte stack slots after the packet); xyz[] copied through address regs (sp+0x110..0x128); f20/f22 (tw vs u0) and s2/s3 (tex vs k) swapped (best draft: drafts/mod/b706_01E050E0.c)
-b709:01E055C0	244/267	hard: float schedule of the dx/dy/dz + step block (50.0f and step conversion hoisted in orig) (best draft: drafts/mod/b709_01E055C0.c)
 b710:01E00440	40%	an earlier try got this far
 b711:01E054B0	131/174	hard: old chatB draft converted; packet init scheduled before first call + frame 0x10 short (b151 kin) (best draft: drafts/mod/b711_01E054B0.c)
 b715:01E02E00	99%	an earlier try got this far
