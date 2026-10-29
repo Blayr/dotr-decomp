@@ -853,7 +853,131 @@ static void func_01E020D0_b746(Obj_b065_01E012B0 *o, Anim_b065_01E012B0 *an, s32
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/mod/b746", func_01E024E0_b746);
+/* shape b746:01E024E0 (B746_W_S), 382 insns, 1 copy: B746_W_S, the effect scene step: counts the frame (0xCBCC);
+   frame 1 spawns 0x1E042C0, 0x1E04080, 0x1E03F70 and four 0x1E036B0 (angles 0/90/45/135, sides 0/0/1/1); 74/95 spawn
+   0x1E03D90 on sides 0,1 / 2; each frame vel is an eighth of joint 0xCB58 minus joint 0xCB5C; 70 spawns 0x1E03990; 79
+   takes joint 0xCB58 into pt; frames 79..89 copy pt to pos and spawn 0x1E03210, three 0x1E03010 and ten 0x1E02E40;
+   from 79 pt.z moves 1 by flag; 40/74 and 48/74 spawn ten 0x1E02AE0 around joints 0xCB5E/0xCB60 */
+
+typedef struct {
+    u8 pad0[0x250];
+    Vec4f pos;
+    u8 pad260[0xCAD0 - 0x260];
+    Vec4f pt;
+    u8 padCAE0[0xCAF0 - 0xCAE0];
+    f32 vel[3];
+    u8 padCAFC[0xCB58 - 0xCAFC];
+    s16 joint0;
+    u8 padCB5A[2];
+    s16 joint1;
+    s16 joint2;
+    s16 joint3;
+    u8 padCB62[0xCBB6 - 0xCB62];
+    s16 ang;
+    u8 padCBB8[0xCBC4 - 0xCBB8];
+    s16 side;
+    u8 padCBC6[2];
+    s16 flag;
+    u8 padCBCA[2];
+    s16 t;
+} Scene_b746_01E024E0;
+
+static void func_01E024E0_b746(Scene_b746_01E024E0 *g) {
+    extern void b746_01E02AE0(void);
+    extern void b746_01E02E40(void);
+    extern void b746_01E03010(void);
+    extern void b746_01E03210(void);
+    extern void b746_01E036B0(void);
+    extern void b746_01E03990(void);
+    extern void b746_01E03D90(void);
+    extern void b746_01E03F70(void);
+    extern void b746_01E04080(void);
+    extern void b746_01E042C0(void);
+    extern void b746_01E05080(Scene_b746_01E024E0 *, void (*)(void), s32);
+    extern s32 func_001F53A0(void);
+    extern void func_001F5620(s32, s32, void *);
+    Vec4f v[2];
+    s16 i;
+    s16 j;
+
+    g->t++;
+    if (g->t == 1) {
+        b746_01E05080(g, b746_01E042C0, 0);
+    }
+    if (g->t == 1) {
+        b746_01E05080(g, b746_01E04080, 0);
+    }
+    if (g->t == 74) {
+        g->side = 0;
+        b746_01E05080(g, b746_01E03D90, 0);
+        g->side = 1;
+        b746_01E05080(g, b746_01E03D90, 0);
+    }
+    if (g->t == 95) {
+        g->side = 2;
+        b746_01E05080(g, b746_01E03D90, 0);
+    }
+    func_001F5620(func_001F53A0(), g->joint0, &v[0]);
+    func_001F5620(func_001F53A0(), g->joint1, &v[1]);
+    g->vel[0] = (v[0].x - v[1].x) / 8.0f;
+    g->vel[1] = (v[0].y - v[1].y) / 8.0f;
+    g->vel[2] = (v[0].z - v[1].z) / 8.0f;
+    if (g->t == 1) {
+        b746_01E05080(g, b746_01E03F70, 0);
+    }
+    if (g->t == 70) {
+        b746_01E05080(g, b746_01E03990, 0);
+    }
+    if (g->t == 79) {
+        func_001F5620(func_001F53A0(), g->joint0, &g->pt);
+    }
+    if (g->t >= 79 && g->t < 90) {
+        g->pos = g->pt;
+        g->side = 0;
+        b746_01E05080(g, b746_01E03210, 0);
+        for (i = 0; i < 3; i++) {
+            b746_01E05080(g, b746_01E03010, 0);
+        }
+        for (i = 0; i < 10; i++) {
+            b746_01E05080(g, b746_01E02E40, 0);
+        }
+    }
+    if (g->t >= 79) {
+        if (g->flag) {
+            g->pt.z -= 1.0f;
+        } else {
+            g->pt.z += 1.0f;
+        }
+    }
+    if (g->t == 1) {
+        g->ang = 0;
+        g->side = 0;
+        b746_01E05080(g, b746_01E036B0, 0);
+        g->ang = 90;
+        g->side = 0;
+        b746_01E05080(g, b746_01E036B0, 0);
+        g->ang = 45;
+        g->side = 1;
+        b746_01E05080(g, b746_01E036B0, 0);
+        g->ang = 135;
+        g->side = 1;
+        b746_01E05080(g, b746_01E036B0, 0);
+    }
+    if (g->t == 40 || g->t == 74) {
+        func_001F5620(func_001F53A0(), g->joint2, &g->pos);
+        for (i = 0, j = 0; i < 10; j += 36, i++) {
+            g->ang = j;
+            b746_01E05080(g, b746_01E02AE0, 0);
+        }
+    }
+    if (g->t == 48 || g->t == 74) {
+        func_001F5620(func_001F53A0(), g->joint3, &g->pos);
+        for (j = 0, i = 0; j < 10; i += 36, j++) {
+            g->ang = i;
+            b746_01E05080(g, b746_01E02AE0, 0);
+        }
+    }
+}
 
 /* shape b746:01E02AE0, 113 insns: a white drifting spark (b092:01E02420 shape): size 40, sub-frame 2..4, frame 0..3; pushed 2
    along its angle at the start, then drifting 0.5 a frame; alpha up by 0x60 for 6 frames, then down by 19 until it ends; turns */
