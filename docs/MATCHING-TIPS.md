@@ -278,3 +278,6 @@ there is a source form that gives the original.
 - **In a call to a static sibling, a later argument's address (`addiu a3`) set before `li a2`:** cast the first two
   arguments `(void *)` and pass the late one bare; a cast on it brings the early `addiu` back. (b546:01E021E0; see the
   b740 and b292 cast tips)
+- **Two calls passing the same two zero float arguments, the copy between `$f14` and `$f15` going the other way in
+  the second:** declare two float locals last, set them to 0.0f before the first call, pass literals to the first
+  call and the locals to the second. (c613:01E02540)
