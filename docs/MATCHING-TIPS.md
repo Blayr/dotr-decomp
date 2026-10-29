@@ -289,3 +289,7 @@ there is a source form that gives the original.
 - **Scene manager with two counted draw loops, the second's counter and count in each other's saved registers:** run
   the second loop on the first loop's count variable and count in its counter, `j = 0; for (n = 0; ...) if (used) j++;`.
   (b053:01E010F0)
+- **Two calls each loading two float constants, the block-local `f32 r = K;` fix for the second flips the first (in the
+  file):** add a `(void *)` cast on the first call's pointer argument, or pass both its constants as locals. Small
+  unrelated changes (a parameter's u32/s32, `!= 0` or a bare test) can flip these orders too; judge in-file. Retried
+  hard rows b591:01E048E0 and b648:01E04F40 matched this way.
