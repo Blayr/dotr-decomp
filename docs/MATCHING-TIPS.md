@@ -272,3 +272,6 @@ there is a source form that gives the original.
   s32 (a struct of four s32), not a pointer cast at the store. (b773:01E038D0)
 - **A loop counter spilled to the stack and the frame 0x10 too big, with two neighbouring stack vectors each held by
   address in a saved register:** declare them (and the vector before them) as one `Vec4f v[3]`. (b042:01E05C20)
+- **No twin by name, `shapes.py similar` and `port.py scan` find nothing:** rank the C functions by how close their
+  sequence of main-program calls is to the target's (`difflib` over `port.calls()`, `work/gus3/callsim.py`); the top
+  hits give donors for parts of the body. (b598:01E055C0)
