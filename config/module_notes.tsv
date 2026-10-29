@@ -248,7 +248,6 @@ c501:01E00910	96%	hard: g must take s0 over ot: local copy + opt_propagation off
 c507:01E01540	99.7% (306/307)	hard: one store order: `g->texE0 = tex[0]` must load early (after h14C) but store after fE8; every statement position tried (best draft: drafts/mod/c507_01E01540.c)
 c508:01E015C0	95%	an earlier try got this far
 c514:01E01040	98%	an earlier try got this far
-c531:01E01040	99% (271/273)	hard: same 1.0f/0.3f order as c532:01E01040, with c531:01E00120 in C in-file (best draft: drafts/mod/c531_01E01040.c)
 c534:01E027F0	86% (345/399, ours 395)	hard: logic decoded (LkSortRing idioms); left: UV writes go through pointers to the vertex uv words (orig a0/a1/a2/v1 = &pkt.v[k].uv) and the obj arg spill slot (0xA8 vs 0xAC) (best draft: drafts/mod/c534_01E027F0.c)
 c536:01E00120	84% (110/131)	hard: float sub order: orig does t34-c34 before t30-c30 and z before y in pos; temps, orders, loops tried (best draft: drafts/mod/c536_01E00120.c)
 c541:01E02C40	84%	an earlier try got this far
