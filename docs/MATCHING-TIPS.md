@@ -297,3 +297,8 @@ there is a source form that gives the original.
   helps:** check a same-shape twin for `#pragma opt_propagation off`. (b065:01E01BA0, from b235:01E02370)
 - **A float constant passed to an earlier call in the same block, and the next call's constants load out of order:**
   put it in one function-scope local and pass that local to both calls. (b037:01E05F30)
+- **`f(p, A, B, A)` with the original loading B first and copying A from `$f14` to `$f12`:** pass the middle constant
+  through a block local, `{ f32 r = B; f(p, A, r, A); }`. (b774:01E02F60, c059:01E031C0, c027:01E01930)
+- **Two calls `f(x, 1.5f, k, 1.5f)` in a row, the second copying `$f14` to `$f12`:** pass the second call's array as
+  `&sc[0]`, not `sc`. (c021:01E02350)
+- **`work/fulltry.sh` now prints FAILED on a splice or build error.** Before 2026-10-29 it could print a stale OK.
