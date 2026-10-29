@@ -302,3 +302,7 @@ there is a source form that gives the original.
 - **Two calls `f(x, 1.5f, k, 1.5f)` in a row, the second copying `$f14` to `$f12`:** pass the second call's array as
   `&sc[0]`, not `sc`. (c021:01E02350)
 - **`work/fulltry.sh` now prints FAILED on a splice or build error.** Before 2026-10-29 it could print a stale OK.
+- **Three calls `f(&sc[k], 1.0f, 0.2f)` in a row, only the last loading 0.2f first:** declare `f32 one;` at function
+  scope, set it just before the first call, pass it only in the last. (c532:01E01040)
+- **The divisor and the step's `cvt.s.w` hoisted above the table loads in the original:** fold the multiply into each
+  delta, `dx = (a.x - b.x) / 50.0f * o->step;`, with no step local. (b709:01E055C0)
