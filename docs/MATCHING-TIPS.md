@@ -293,3 +293,7 @@ there is a source form that gives the original.
   file):** add a `(void *)` cast on the first call's pointer argument, or pass both its constants as locals. Small
   unrelated changes (a parameter's u32/s32, `!= 0` or a bare test) can flip these orders too; judge in-file. Retried
   hard rows b591:01E048E0 and b648:01E04F40 matched this way.
+- **Two constants in one expression (`15.0f + 5.0f * k`) loaded in the other order, no float-local or wrapper form
+  helps:** check a same-shape twin for `#pragma opt_propagation off`. (b065:01E01BA0, from b235:01E02370)
+- **A float constant passed to an earlier call in the same block, and the next call's constants load out of order:**
+  put it in one function-scope local and pass that local to both calls. (b037:01E05F30)
